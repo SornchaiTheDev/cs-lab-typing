@@ -1,0 +1,1 @@
+export { checkPassword } from "./passwordValidation";
