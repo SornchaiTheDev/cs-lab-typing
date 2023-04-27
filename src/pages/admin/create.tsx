@@ -75,7 +75,10 @@ export default CreateAdmin;
 export const getServerSideProps: GetServerSideProps = async () => {
   // BACKEND TODO
 
+  // return {
+  //   notFound: true,
+  // };
   return {
-    notFound: true,
+    props: {},
   };
 };
