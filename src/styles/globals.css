@@ -3,8 +3,16 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Sarabun', sans-serif;
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  font-family: "Sarabun", "Roboto", sans-serif;
+}
+
+.roboto {
+  font-family: "Roboto", sans-serif;
+}
+
+.sarabun {
+  font-family: "Sarabun", sans-serif;
 }
