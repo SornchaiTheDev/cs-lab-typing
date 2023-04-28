@@ -23,23 +23,22 @@ function TimePickerRange({ onApply }: Props) {
   }, [startTime, endTime]);
 
   return (
-    <div className="flex items-center gap-2 p-1 text-sand-12">
-      <label>Start at</label>
+    <div className="flex items-center gap-2 text-sand-12">
       <input
         value={startTime}
-        className="p-1 border rounded outline-none bg-sand-3 w-28 border-sand-6"
+        className="p-2 border rounded outline-none bg-sand-3 w-28 border-sand-6"
         onChange={handleStartTimeChange}
       />
       <label>to</label>
       <input
         value={endTime}
-        className="p-1 border rounded outline-none bg-sand-3 w-28 border-sand-6"
+        className="p-2 border rounded outline-none bg-sand-3 w-28 border-sand-6"
         onChange={handleEndTimeChange}
       />
       <button
         onClick={() => onApply(startTime, endTime)}
         disabled={!validateTimeRange(startTime, endTime)}
-        className="px-4 py-2 text-sm rounded text-sand-1 bg-sand-12 active:bg-sand-11 disabled:bg-sand-8"
+        className="w-full px-4 py-2 text-sm rounded text-sand-1 bg-sand-12 active:bg-sand-11 disabled:bg-sand-8"
       >
         Apply
       </button>

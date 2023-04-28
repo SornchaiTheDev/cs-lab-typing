@@ -186,7 +186,7 @@ function Logger() {
   return (
     <Layout title="Logger">
       <div className="min-h-screen overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
-        <div className="flex justify-end p-2">
+        <div className="flex justify-end p-2 ">
           <button
             onClick={exportCSV}
             className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
@@ -195,7 +195,7 @@ function Logger() {
             Export as CSV
           </button>
         </div>
-        <div className="flex justify-between p-2">
+        <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
           <DatePicker onApply={(startDate, endDate) => {}} />
           <TimePickerRange onApply={(startTime, endTime) => {}} />
         </div>
