@@ -18,12 +18,6 @@ const menus: Menus[] = [
     path: "courses",
   },
   {
-    name: "Labs Management",
-    description: "Create, modify, and delete labs.",
-    icon: "solar:checklist-minimalistic-line-duotone",
-    path: "labs",
-  },
-  {
     name: "Tasks Management",
     description: "Create, modify, and delete tasks",
     icon: "solar:programming-line-duotone",
@@ -64,7 +58,7 @@ function Dashboard() {
             href={`/admin/${path}`}
             key={name}
             className={clsx(
-              "col-span-4 h-[10rem] relative rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
+              "col-span-12 md:col-span-4 h-[10rem] relative rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
             )}
           >
             <div className="absolute flex flex-col items-center w-full gap-4 bottom-4 text-whites">
