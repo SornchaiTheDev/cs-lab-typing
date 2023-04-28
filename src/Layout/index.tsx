@@ -17,7 +17,7 @@ function Layout({ children, title }: Props) {
   const breadcrumbs = ["Dashboard"].concat(router.pathname.split("/").slice(3));
 
   return (
-    <div className="container max-w-6xl py-4 mx-auto roboto">
+    <div className="container max-w-6xl px-2 py-4 mx-auto md:px-0 roboto">
       <div className="flex justify-between mt-10">
         <div>
           {!isBasePath && <BackArrow />}
