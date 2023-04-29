@@ -21,13 +21,13 @@ const menus: Menus[] = [
     name: "Teacher",
     description: "Create, modify, and delete Teacher Role",
     icon: "solar:case-round-minimalistic-linear",
-    path: "teachers",
+    path: "teacher",
   },
   {
     name: "Student",
     description: "Create, modify, and delete Student Role",
     icon: "solar:user-hand-up-line-duotone",
-    path: "students",
+    path: "student",
   },
 ];
 

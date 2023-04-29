@@ -1,64 +1,74 @@
 import { Icon } from "@iconify/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import Input from "../Input";
-import { useForm } from "react-hook-form";
-import { schema, TAddAdmin } from "@/types/TAddUser";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useRef, useEffect } from "react";
+import Codemirror from "@/codemirror";
+import Button from "../Common/Button";
+import { useOnClickOutside } from "usehooks-ts";
 
-function AddUserBtn() {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<TAddAdmin>({ resolver: zodResolver(schema) });
+interface Props {
+  title: string;
+}
+function AddUserBtn({ title }: Props) {
+  const [isShow, setIsShow] = useState(false);
+  const [value, setValue] = useState("");
+  const addAmount = value
+    .split("\n")
+    .filter((value) => value.split(",").length === 3).length;
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleOnChange = (value: string, viewUpdate: any) => {
+    setValue(value);
+  };
+
+  const onClose = () => {
+    setIsShow(false);
+  };
+
+  useOnClickOutside(modalRef, onClose);
+
+  useEffect(() => {
+    console.log(
+      value.split("\n").filter((value) => value.split(",").length === 3).length
+    );
+  }, [value]);
 
   return (
-    <Dialog.Root>
-      <Dialog.Trigger asChild>
-        <button className="flex items-center gap-2 px-4 py-2 border rounded-lg outline-none bg-sand-9 hover:bg-sand-10 text-whiteA-12">
-          <Icon icon="solar:user-plus-line-duotone" />
-          Add New User
-        </button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="bg-blackA-7 data-[state=open]:animate-overlayShow fixed inset-0" />
-        <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none">
-          <Dialog.Title className="text-mauve-12 m-0 text-[17px] font-medium">
-            Add User
-          </Dialog.Title>
-          {/* <Dialog.Description className="text-mauve-11 mt-[10px] mb-5 text-[15px] leading-normal">
-            jkjk
-          </Dialog.Description> */}
-
-          <div className="">
-            <Input
-              label="username"
-              register={register}
-              error="Username is required"
-              isError={true}
-              title="Username"
-            />
-          </div>
-
-          <div className="mt-[25px] flex justify-end">
-            <Dialog.Close asChild>
-              <button className="bg-green4 text-green11 hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-[4px] px-[15px] font-medium leading-none focus:shadow-[0_0_0_2px] focus:outline-none">
-                Save changes
-              </button>
-            </Dialog.Close>
-          </div>
-          <Dialog.Close asChild>
-            <button
-              className="text-violet11 hover:bg-violet4 focus:shadow-violet7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
-              aria-label="Close"
-            >
+    <>
+      <Button
+        onClick={() => setIsShow(true)}
+        icon="solar:user-plus-rounded-line-duotone"
+        className="m-2"
+      >
+        Add {title}
+      </Button>
+      {isShow && (
+        <div className="fixed top-0 left-0 w-full h-screen bg-sand-12 bg-opacity-30">
+          <div
+            ref={modalRef}
+            className="absolute p-4 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 bg-sand-1 w-[40rem] rounded-md shadow flex flex-col gap-4"
+          >
+            <h4 className="text-xl font-bold">Add {title}</h4>
+            <button className="absolute p-2 text-xl rounded-full top-4 right-4 hover:bg-sand-3 active:bg-sand-4">
               <Icon icon="material-symbols:close-rounded" />
             </button>
-          </Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+
+            <Codemirror
+              value={value}
+              onChange={handleOnChange}
+              height="30rem"
+              className="overflow-hidden text-sm border rounded-md border-sand-6"
+            />
+            <Button
+              isLoading={false}
+              icon="solar:user-plus-rounded-line-duotone"
+              className="w-full"
+            >
+              Add {addAmount > 1 && `${addAmount}`} {title}
+              {addAmount > 1 ? "s" : ""}
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

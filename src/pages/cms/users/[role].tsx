@@ -6,6 +6,7 @@ import React, { useMemo } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import AddUserBtn from "@/components/AddUser";
+import { GetStaticProps } from "next";
 
 dayjs.extend(relativeTime);
 
@@ -18,7 +19,12 @@ interface UserRole {
   last_logined: string;
 }
 
-function Admin() {
+interface Props {
+  title: string;
+  role: string;
+}
+
+function Admin({ title, role }: Props) {
   const columns = useMemo<ColumnDef<UserRole, string>[]>(
     () => [
       {
@@ -147,11 +153,10 @@ function Admin() {
   );
 
   return (
-    <Layout title="Administrator">
+    <Layout title={title}>
       <div className="min-h-screen overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
-        <div className="m-2">
-          <AddUserBtn />
-        </div>
+        <AddUserBtn title={title} />
+        <div className="m-2"></div>
         <Table data={data} columns={columns} />
       </div>
     </Layout>
@@ -159,3 +164,40 @@ function Admin() {
 }
 
 export default Admin;
+
+export const getStaticPaths = async () => {
+  return {
+    paths: [
+      { params: { role: "admin" } },
+      { params: { role: "student" } },
+      { params: { role: "teacher" } },
+    ],
+    fallback: false,
+  };
+};
+
+export const getStaticProps: GetStaticProps<
+  Props,
+  { role: "admin" | "teacher" | "student" }
+> = async ({ params }) => {
+  let title = "";
+
+  switch (params?.role) {
+    case "admin":
+      title = "Administrator";
+      break;
+    case "teacher":
+      title = "Teacher";
+      break;
+    case "student":
+      title = "Student";
+      break;
+  }
+
+  return {
+    props: {
+      title,
+      role: params?.role!,
+    },
+  };
+};
