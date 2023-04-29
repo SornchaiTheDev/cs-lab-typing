@@ -13,8 +13,8 @@ interface Props {
 function Layout({ children, title }: Props) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
-  const isBasePath = router.pathname === "/admin/dashboard";
-  const breadcrumbs = ["Dashboard"].concat(router.pathname.split("/").slice(3));
+  const isBasePath = router.pathname === "/cms/dashboard";
+  const breadcrumbs = ["Dashboard"].concat(router.pathname.split("/").slice(2,-1));
 
   return (
     <div className="container max-w-6xl px-2 py-4 mx-auto md:px-0 roboto">
@@ -26,7 +26,7 @@ function Layout({ children, title }: Props) {
               breadcrumbs.map((breadcrumb) => (
                 <Link
                   key={breadcrumb}
-                  href={`/admin/${breadcrumb.toLowerCase()}`}
+                  href={`/cms/${breadcrumb.toLowerCase()}`}
                   className="block text-xl text-sand-11 hover:text-sand-12"
                 >
                   {breadcrumb} /

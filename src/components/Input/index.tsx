@@ -1,20 +1,20 @@
 import clsx from "clsx";
-import { forwardRef } from "react";
 import type { HTMLInputTypeAttribute } from "react";
-import { UseFormRegister } from "react-hook-form";
-import { FormData } from "@/types/CreateAdminAccount";
-interface Props {
+import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import { z } from "zod";
+
+interface Props<T extends FieldValues> {
   title: string;
-  label: keyof FormData;
+  label: Path<T>;
   type?: HTMLInputTypeAttribute;
   placeholder?: string;
   isError?: boolean;
   error?: string;
-  register: UseFormRegister<FormData>;
+  register: UseFormRegister<T>;
   className?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, Props>((props, ref) => {
+const Input = <T extends FieldValues>(props: Props<T>) => {
   const {
     title,
     label,
@@ -28,7 +28,7 @@ const Input = forwardRef<HTMLInputElement, Props>((props, ref) => {
   return (
     <div {...{ className }}>
       <div className="flex justify-between">
-        <h4 className="block mb-2 font-semibold">{title}</h4>
+        <h4 className="block mb-2 font-semibold text-sand-12">{title}</h4>
         {isError && (
           <h6 className="block mb-2 text-sm font-semibold text-tomato-9">
             {error}
@@ -37,15 +37,13 @@ const Input = forwardRef<HTMLInputElement, Props>((props, ref) => {
       </div>
       <input
         className={clsx(
-          "w-full p-2 border rounded-md outline-none",
+          "w-full p-2 border border-sand-6 rounded-md outline-none bg-sand-1",
           isError && "border-tomato-7"
         )}
         {...{ type, placeholder, ...register(label) }}
       />
     </div>
   );
-});
-
-Input.displayName = "Input";
+};
 
 export default Input;

@@ -1,12 +1,8 @@
 import { Icon } from "@iconify/react";
 import clsx from "clsx";
-
+import { checkPassword } from "@/helpers/index";
 interface Props {
-  length: boolean;
-  uppercase: boolean;
-  lowercase: boolean;
-  number: boolean;
-  special: boolean;
+  password: string;
 }
 
 const Check = ({ isPass, text }: { isPass: boolean; text: string }) => (
@@ -19,15 +15,11 @@ const Check = ({ isPass, text }: { isPass: boolean; text: string }) => (
   </div>
 );
 
-function PasswordRequirement({
-  length = false,
-  uppercase = false,
-  lowercase = false,
-  number = false,
-  special = false,
-}: Props) {
+function PasswordRequirement({ password }: Props) {
+  const { requirements } = checkPassword(password);
+  const { length, lowercase, number, special, uppercase } = requirements;
   return (
-    <div className="my-2 text-sm">
+    <div className="my-2 text-sm text-sand-12">
       <Check text="It must contain at least 12 Characters" isPass={length} />
       <Check text="It must contain at least one uppercase" isPass={uppercase} />
       <Check text="It must contain at least one lowercase" isPass={lowercase} />
