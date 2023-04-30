@@ -35,6 +35,6 @@ export const getStaticProps: GetStaticProps<Props> = () => {
 export const getStaticPaths = () => {
   return {
     paths: [],
-    fallback: true,
+    fallback: "blocking",
   };
 };
