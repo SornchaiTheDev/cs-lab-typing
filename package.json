@@ -20,6 +20,7 @@
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-popover": "^1.0.5",
     "@stitches/react": "^1.2.8",
+    "@tailwindcss/typography": "^0.5.9",
     "@tanstack/react-query": "^4.29.5",
     "@tanstack/react-table": "^8.8.5",
     "@trpc/client": "^10.21.1",

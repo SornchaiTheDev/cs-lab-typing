@@ -1,16 +1,17 @@
-import { Icon } from "@iconify/react";
 import { useState, useRef, ReactNode } from "react";
 import Button from "./Button";
 import { useOnClickOutside } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
+import clsx from "clsx";
 
 interface Props {
   title: string;
   children: ReactNode;
   icon: string;
+  className?: string;
 }
 
-function ModalWithButton({ title, children, icon }: Props) {
+function ModalWithButton({ title, children, icon, className }: Props) {
   const [isShow, setIsShow] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -22,7 +23,7 @@ function ModalWithButton({ title, children, icon }: Props) {
 
   return (
     <>
-      <Button onClick={() => setIsShow(true)} icon={icon} className="m-2">
+      <Button onClick={() => setIsShow(true)} icon={icon} className="m-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11">
         {title}
       </Button>
       <AnimatePresence>
@@ -32,7 +33,10 @@ function ModalWithButton({ title, children, icon }: Props) {
               initial={{ opacity: 0, translateY: "10px" }}
               animate={{ opacity: 1, translateY: 0 }}
               ref={modalRef}
-              className="absolute p-4  bg-sand-1 w-[95%] max-w-full md:w-[40rem] rounded-md shadow flex flex-col gap-4"
+              className={clsx(
+                "absolute p-4 bg-sand-1 max-w-full rounded-md shadow flex flex-col gap-4",
+                className
+              )}
             >
               {children}
             </motion.div>

@@ -13,7 +13,7 @@ function Button({ onClick, children, icon, className, isLoading }: Props) {
     <button
       onClick={onClick}
       className={clsx(
-        "flex items-center gap-4 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11 justify-center",
+        "flex items-center gap-4 p-2 rounded-lg  justify-center",
         className
       )}
     >

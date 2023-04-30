@@ -65,13 +65,13 @@ function Admin({ title, role, pattern }: Props) {
       columnHelper.display({
         id: "actions",
         header: "Edit/Delete",
-        cell: () => (
+        cell: (props) => (
           <>
             <button className="mr-2 text-xl rounded-xl text-sand-12">
               <Icon icon="solar:pen-new-square-line-duotone" />
             </button>
             <button
-              onClick={() => setIsShow(true)}
+              onClick={() => setSelected(props.row.getValue("username"))}
               className="text-xl rounded-xl text-sand-12"
             >
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
@@ -83,15 +83,20 @@ function Admin({ title, role, pattern }: Props) {
     [columnHelper]
   );
 
-  const [isShow, setIsShow] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
 
   return (
     <Layout title={title}>
-      {isShow && <DeleteAffect onClose={() => setIsShow(false)} />}
+      {selected !== null && (
+        <DeleteAffect
+          title="User"
+          selected={selected}
+          onClose={() => setSelected(null)}
+        />
+      )}
 
       <div className="min-h-screen overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
         <AddUserBtn pattern={pattern} title={title} />
-        <div className="m-2"></div>
         <Table
           data={[
             {
