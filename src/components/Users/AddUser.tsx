@@ -114,13 +114,13 @@ function AddUserBtn({ title, pattern }: Props) {
   return (
     <>
       <ModalWithButton
-        title={`Add ${title}`}
+        title={`Add/Edit ${title}`}
         icon="solar:user-plus-rounded-line-duotone"
         className="w-[95%] md:w-[40rem]"
       >
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-xl font-bold">Add {title}</h4>
+            <h4 className="text-xl font-bold">Add/Edit {title}</h4>
             <p className="text-sand-9">( {pattern} )</p>
           </div>
           <button

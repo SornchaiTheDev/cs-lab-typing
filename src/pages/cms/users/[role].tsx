@@ -5,7 +5,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import AddUserBtn from "@/components/AddUser";
+import AddUserBtn from "@/components/Users/AddUser";
 import { GetStaticProps } from "next";
 import DeleteAffect from "@/components/DeleteAffect";
 
@@ -64,19 +64,14 @@ function Admin({ title, role, pattern }: Props) {
       },
       columnHelper.display({
         id: "actions",
-        header: "Edit/Delete",
+        header: "Delete",
         cell: (props) => (
-          <>
-            <button className="mr-2 text-xl rounded-xl text-sand-12">
-              <Icon icon="solar:pen-new-square-line-duotone" />
-            </button>
-            <button
-              onClick={() => setSelected(props.row.getValue("username"))}
-              className="text-xl rounded-xl text-sand-12"
-            >
-              <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
-            </button>
-          </>
+          <button
+            onClick={() => setSelected(props.row.getValue("username"))}
+            className="text-xl rounded-xl text-sand-12"
+          >
+            <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
+          </button>
         ),
       }),
     ],
@@ -92,6 +87,7 @@ function Admin({ title, role, pattern }: Props) {
           title="User"
           selected={selected}
           onClose={() => setSelected(null)}
+          onDelete={() => setSelected(null)}
         />
       )}
 
