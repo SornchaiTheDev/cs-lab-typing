@@ -19,7 +19,7 @@ function Courses() {
         {new Array(10).fill(0).map((_, i) => (
           <Link
             key={i}
-            href=""
+            href="courses/01418112"
             className="relative col-span-12 md:col-span-4 overflow-hidden border flex flex-col justify-end border-sand-6 h-[12rem] rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
           >
             <div className="flex flex-col gap-2 p-2">

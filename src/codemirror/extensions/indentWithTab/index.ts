@@ -38,7 +38,6 @@ function changeBySelectedLine(
 }
 
 export const indentWithTab: StateCommand = ({ state, dispatch }) => {
-  console.log("called")
   const indent = Array(state.facet(EditorState.tabSize)).fill(" ").join("");
   if (state.selection.ranges.some((r) => !r.empty))
     return indentMore({ state, dispatch });

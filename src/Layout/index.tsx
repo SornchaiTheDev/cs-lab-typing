@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { replaceSlugwithQueryPath } from "@/helpers";
 
 interface Props {
   children?: React.ReactNode;
@@ -13,11 +14,21 @@ interface Props {
 function Layout({ children, title }: Props) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
-  const isBasePath = router.pathname === "/cms/dashboard";
-  const breadcrumbs = ["Dashboard"].concat(
-    router.pathname.split("/").slice(2, -1)
-  );
 
+  const isBasePath = router.pathname === "/cms";
+  const breadcrumbs = router.pathname
+    .split("/")
+    .slice(1)
+    .map((segment, index, segments) => ({
+      label:
+        segment === "cms"
+          ? "Dashboard"
+          : replaceSlugwithQueryPath(segment, router.query),
+      path: `/${segments
+        .map((seg) => replaceSlugwithQueryPath(seg, router.query))
+        .slice(0, index + 1)
+        .join("/")}`,
+    }));
   return (
     <div className="flex flex-col min-h-screen">
       <div className="container flex-1 max-w-6xl px-2 py-4 mx-auto md:px-0 roboto">
@@ -26,13 +37,13 @@ function Layout({ children, title }: Props) {
             {!isBasePath && <BackArrow />}
             <div className="flex gap-2">
               {!isBasePath &&
-                breadcrumbs.map((breadcrumb) => (
+                breadcrumbs.map(({ label, path }) => (
                   <Link
-                    key={breadcrumb}
-                    href={`/cms/${breadcrumb.toLowerCase()}`}
+                    key={label}
+                    href={path}
                     className="block text-xl text-sand-11 hover:text-sand-12"
                   >
-                    {breadcrumb} /
+                    {label} /
                   </Link>
                 ))}
             </div>
