@@ -42,10 +42,10 @@ function Table({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="p-3 w-fit text-start">
+                <th key={header.id} className="p-3 w-fit" style={{width : header.getSize()}}>
                   {header.isPlaceholder ? null : (
                     <button
-                      className="flex items-center gap-2"
+                      className="flex items-center justify-center w-full gap-2"
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {flexRender(
@@ -75,7 +75,7 @@ function Table({
         </thead>
         <tbody className="divide-y">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-sand-4">
+            <tr key={row.id} className="text-center hover:bg-sand-4">
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="p-3">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

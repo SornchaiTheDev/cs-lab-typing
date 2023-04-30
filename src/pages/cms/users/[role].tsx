@@ -1,12 +1,13 @@
 import Layout from "@/Layout";
 import Table from "@/components/Table";
 import { Icon } from "@iconify/react";
-import { ColumnDef } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import React, { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import AddUserBtn from "@/components/AddUser";
 import { GetStaticProps } from "next";
+import DeleteAffect from "@/components/DeleteAffect";
 
 dayjs.extend(relativeTime);
 
@@ -22,18 +23,16 @@ interface UserRole {
 interface Props {
   title: string;
   role: string;
+  pattern: string;
 }
 
-function Admin({ title, role }: Props) {
+function Admin({ title, role, pattern }: Props) {
+  const columnHelper = createColumnHelper<UserRole>();
   const columns = useMemo<ColumnDef<UserRole, string>[]>(
     () => [
       {
         header: "Username",
         accessorKey: "username",
-      },
-      {
-        header: "Password",
-        accessorKey: "password",
       },
       {
         header: "Email",
@@ -49,10 +48,11 @@ function Admin({ title, role }: Props) {
         cell: (props) => dayjs(props.getValue()).toNow(true),
       },
       {
-        header: "KU Goes Google",
+        header: "OAuth",
         accessorKey: "isOAuthEnabled",
+        size: 30,
         cell: (props) => (
-          <div className="text-2xl">
+          <div className="flex justify-center text-2xl">
             {props.getValue() && (
               <Icon
                 icon="solar:verified-check-bold-duotone"
@@ -62,102 +62,121 @@ function Admin({ title, role }: Props) {
           </div>
         ),
       },
+      columnHelper.display({
+        id: "actions",
+        header: "Edit/Delete",
+        cell: () => (
+          <>
+            <button className="mr-2 text-xl rounded-xl text-sand-12">
+              <Icon icon="solar:pen-new-square-line-duotone" />
+            </button>
+            <button
+              onClick={() => setIsShow(true)}
+              className="text-xl rounded-xl text-sand-12"
+            >
+              <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
+            </button>
+          </>
+        ),
+      }),
     ],
-    []
+    [columnHelper]
   );
 
-  const data = useMemo<UserRole[]>(
-    () => [
-      {
-        username: "johndoe",
-        password: "123456",
-        email: "johndoe@example.com",
-        isOAuthEnabled: true,
-        created_at: "2021-09-30T05:46:41.983Z",
-        last_logined: "2021-01-19T09:14:04.588Z",
-      },
-      {
-        username: "janedoe",
-        password: "654321",
-        email: "janedoe@example.com",
-        isOAuthEnabled: false,
-        created_at: "2022-01-09T06:43:13.567Z",
-        last_logined: "2022-10-16T06:42:57.192Z",
-      },
-      {
-        username: "bobsmith",
-        password: "password123",
-        email: "bobsmith@example.com",
-        isOAuthEnabled: true,
-        created_at: "2021-05-14T04:05:29.511Z",
-        last_logined: "2022-11-08T09:49:39.021Z",
-      },
-      {
-        username: "sallyjones",
-        password: "passw0rd",
-        email: "sallyjones@example.com",
-        isOAuthEnabled: false,
-        created_at: "2020-09-11T11:57:02.827Z",
-        last_logined: "2020-12-14T06:48:01.541Z",
-      },
-      {
-        username: "mikebrown",
-        password: "p@ssword",
-        email: "mikebrown@example.com",
-        isOAuthEnabled: true,
-        created_at: "2022-06-12T00:54:08.048Z",
-        last_logined: "2020-04-14T01:40:22.001Z",
-      },
-      {
-        username: "jennybrown",
-        password: "p@ssword",
-        email: "jennybrown@example.com",
-        isOAuthEnabled: true,
-        created_at: "2022-04-24T19:09:12.121Z",
-        last_logined: "2021-08-27T13:54:35.619Z",
-      },
-      {
-        username: "jasonlee",
-        password: "qwerty123",
-        email: "jasonlee@example.com",
-        isOAuthEnabled: false,
-        created_at: "2021-11-03T16:43:47.452Z",
-        last_logined: "2021-11-22T16:27:04.884Z",
-      },
-      {
-        username: "amysmith",
-        password: "ilovecats",
-        email: "amysmith@example.com",
-        isOAuthEnabled: true,
-        created_at: "2020-07-08T16:24:22.945Z",
-        last_logined: "2022-04-23T03:47:24.754Z",
-      },
-      {
-        username: "davidwilliams",
-        password: "1q2w3e4r",
-        email: "davidwilliams@example.com",
-        isOAuthEnabled: false,
-        created_at: "2022-05-12T12:32:48.202Z",
-        last_logined: "2021-08-04T18:27:00.765Z",
-      },
-      {
-        username: "laurajones",
-        password: "letmein",
-        email: "laurajones@example.com",
-        isOAuthEnabled: true,
-        created_at: "2020-07-17T03:35:56.813Z",
-        last_logined: "2021-05-24T07:07:52.845Z",
-      },
-    ],
-    []
-  );
+  const [isShow, setIsShow] = useState(false);
 
   return (
     <Layout title={title}>
+      {isShow && <DeleteAffect onClose={() => setIsShow(false)} />}
+
       <div className="min-h-screen overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
-        <AddUserBtn title={title} />
+        <AddUserBtn pattern={pattern} title={title} />
         <div className="m-2"></div>
-        <Table data={data} columns={columns} />
+        <Table
+          data={[
+            {
+              username: "johndoe",
+              password: "123456",
+              email: "johndoe@example.com",
+              isOAuthEnabled: true,
+              created_at: "2021-01-14T11:52:00.958Z",
+              last_logined: "2020-02-18T10:37:54.116Z",
+            },
+            {
+              username: "janedoe",
+              password: "654321",
+              email: "janedoe@example.com",
+              isOAuthEnabled: false,
+              created_at: "2020-11-10T12:44:43.106Z",
+              last_logined: "2022-08-27T07:36:08.691Z",
+            },
+            {
+              username: "bobsmith",
+              password: "password123",
+              email: "bobsmith@example.com",
+              isOAuthEnabled: true,
+              created_at: "2022-09-25T04:24:54.135Z",
+              last_logined: "2022-05-01T01:57:59.544Z",
+            },
+            {
+              username: "sallyjones",
+              password: "passw0rd",
+              email: "sallyjones@example.com",
+              isOAuthEnabled: false,
+              created_at: "2021-04-18T07:06:14.586Z",
+              last_logined: "2022-08-09T10:51:01.489Z",
+            },
+            {
+              username: "mikebrown",
+              password: "p@ssword",
+              email: "mikebrown@example.com",
+              isOAuthEnabled: true,
+              created_at: "2021-12-16T02:00:38.165Z",
+              last_logined: "2020-03-05T03:54:57.518Z",
+            },
+            {
+              username: "jennybrown",
+              password: "p@ssword",
+              email: "jennybrown@example.com",
+              isOAuthEnabled: true,
+              created_at: "2020-11-29T22:08:04.191Z",
+              last_logined: "2021-03-11T15:50:11.320Z",
+            },
+            {
+              username: "jasonlee",
+              password: "qwerty123",
+              email: "jasonlee@example.com",
+              isOAuthEnabled: false,
+              created_at: "2021-12-04T06:36:16.697Z",
+              last_logined: "2022-08-19T15:49:57.956Z",
+            },
+            {
+              username: "amysmith",
+              password: "ilovecats",
+              email: "amysmith@example.com",
+              isOAuthEnabled: true,
+              created_at: "2021-09-17T01:00:10.871Z",
+              last_logined: "2020-03-12T13:02:20.796Z",
+            },
+            {
+              username: "davidwilliams",
+              password: "1q2w3e4r",
+              email: "davidwilliams@example.com",
+              isOAuthEnabled: false,
+              created_at: "2021-12-24T20:42:19.942Z",
+              last_logined: "2020-07-10T15:23:04.673Z",
+            },
+            {
+              username: "laurajones",
+              password: "letmein",
+              email: "laurajones@example.com",
+              isOAuthEnabled: true,
+              created_at: "2020-10-25T13:42:24.555Z",
+              last_logined: "2022-01-24T23:12:19.606Z",
+            },
+          ]}
+          columns={columns}
+        />
       </div>
     </Layout>
   );
@@ -181,16 +200,20 @@ export const getStaticProps: GetStaticProps<
   { role: "admin" | "teacher" | "student" }
 > = async ({ params }) => {
   let title = "";
+  let pattern = "";
 
   switch (params?.role) {
     case "admin":
       title = "Administrator";
+      pattern = "username,password,email";
       break;
     case "teacher":
       title = "Teacher";
+      pattern = "email,fullname";
       break;
     case "student":
       title = "Student";
+      pattern = "student-id,email,ชื่อ นามสกุล";
       break;
   }
 
@@ -198,6 +221,7 @@ export const getStaticProps: GetStaticProps<
     props: {
       title,
       role: params?.role!,
+      pattern,
     },
   };
 };

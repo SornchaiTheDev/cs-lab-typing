@@ -16,15 +16,17 @@ interface LoggerRow {
 
 const Type = ({ type }: { type: string }) => {
   return (
-    <div
-      className={clsx(
-        "px-2 text-sm font-medium rounded-md w-fit",
-        type === "LOGIN" && "bg-lime-3 text-lime-9",
-        type === "LOGOUT" && "bg-amber-3 text-amber-9",
-        type === "FAILED-LOGIN" && "bg-red-3 text-red-9"
-      )}
-    >
-      {type}
+    <div className="flex justify-center w-full">
+      <button
+        className={clsx(
+          "px-2 text-sm font-medium rounded-md",
+          type === "LOGIN" && "bg-lime-3 text-lime-9",
+          type === "LOGOUT" && "bg-amber-3 text-amber-9",
+          type === "FAILED-LOGIN" && "bg-red-3 text-red-9"
+        )}
+      >
+        {type}
+      </button>
     </div>
   );
 };

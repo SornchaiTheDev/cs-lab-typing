@@ -61,6 +61,7 @@ interface Props {
   className?: string;
   syntaxHighlighting?: boolean;
   theme?: Extension;
+  autoFocus?: boolean;
 }
 
 function CodemirrorRoot({
@@ -71,6 +72,7 @@ function CodemirrorRoot({
   className,
   syntaxHighlighting = true,
   theme,
+  autoFocus = false,
 }: Props) {
   return (
     <Codemirror
@@ -81,7 +83,11 @@ function CodemirrorRoot({
       onChange={onChange}
       theme={theme ? theme : syntaxHighlighting ? myTheme : "none"}
       indentWithTab={false}
-      basicSetup={{ syntaxHighlighting: syntaxHighlighting }}
+      basicSetup={{
+        syntaxHighlighting: syntaxHighlighting,
+        autocompletion: false,
+      }}
+      autoFocus={autoFocus}
       extensions={[
         baseTheme,
         javascript(),
