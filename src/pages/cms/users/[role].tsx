@@ -191,6 +191,7 @@ export const getStaticPaths = async () => {
       { params: { role: "admin" } },
       { params: { role: "student" } },
       { params: { role: "teacher" } },
+      { params: { role: "non-ku-student" } },
     ],
     fallback: false,
   };
@@ -198,7 +199,7 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<
   Props,
-  { role: "admin" | "teacher" | "student" }
+  { role: "admin" | "teacher" | "student" | "non-ku-student" }
 > = async ({ params }) => {
   let title = "";
   let pattern = "";
@@ -215,6 +216,10 @@ export const getStaticProps: GetStaticProps<
     case "student":
       title = "Student";
       pattern = "student-id,email,ชื่อ นามสกุล";
+      break;
+    case "non-ku-student":
+      title = "Non-KU Student";
+      pattern = "username,password,email,ชื่อ นามสกุล";
       break;
   }
 

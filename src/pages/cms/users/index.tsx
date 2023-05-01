@@ -29,6 +29,12 @@ const menus: Menus[] = [
     icon: "solar:user-hand-up-line-duotone",
     path: "student",
   },
+  {
+    name: "Non-KU Student",
+    description: "Create, modify, and delete Non-KU Student Role",
+    icon: "solar:user-line-duotone",
+    path: "non-ku-student",
+  },
 ];
 
 function Users() {

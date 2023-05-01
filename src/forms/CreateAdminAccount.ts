@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const schema = z
+export const CreateAdminAccountSchemna = z
   .object({
     username: z.string().min(1, { message: "Username cannot be empty" }),
     password: z
@@ -28,4 +28,4 @@ export const schema = z
     message: "Password Doesn't Match",
   });
 
-export type TCreateAdminAccount = z.infer<typeof schema>;
+export type TCreateAdminAccount = z.infer<typeof CreateAdminAccountSchemna>;

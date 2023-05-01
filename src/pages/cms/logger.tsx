@@ -164,6 +164,7 @@ function Logger() {
         header: "Type",
         accessorKey: "type",
         cell: (props) => <Type type={props.getValue()} />,
+        size: 40,
       },
       {
         header: "Date",

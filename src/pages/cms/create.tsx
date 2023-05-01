@@ -3,7 +3,10 @@ import { Icon } from "@iconify/react";
 import PasswordRequirement from "@/components/CreateAdminAccount/PasswordRequirement";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { schema, type TCreateAdminAccount } from "@/types/TCreateAdminAccount";
+import {
+  CreateAdminAccountSchemna,
+  type TCreateAdminAccount,
+} from "@/forms/CreateAdminAccount";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
@@ -15,7 +18,7 @@ function CreateAdmin() {
     watch,
     formState: { errors, isValid, isSubmitting },
   } = useForm<TCreateAdminAccount>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(CreateAdminAccountSchemna),
   });
 
   const handleCreateAccount = async (formData: TCreateAdminAccount) => {

@@ -1,4 +1,7 @@
 import Layout from "@/Layout";
+import Button from "@/components/Common/Button";
+import ModalWithButton from "@/components/Common/ModalWithButton";
+import AddCourse from "@/components/Course/AddCourse";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React from "react";
@@ -15,12 +18,13 @@ function Courses() {
 
   return (
     <Layout title="courses">
+      <AddCourse />
       <div className="grid grid-cols-12 gap-6">
         {new Array(10).fill(0).map((_, i) => (
           <Link
             key={i}
             href="courses/01418112"
-            className="relative col-span-12 md:col-span-4 overflow-hidden border flex flex-col justify-end border-sand-6 h-[12rem] rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
+            className="-z-10 relative col-span-12 md:col-span-4 overflow-hidden border flex flex-col justify-end border-sand-6 h-[12rem] rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
           >
             <div className="flex flex-col gap-2 p-2">
               <div

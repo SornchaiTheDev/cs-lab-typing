@@ -112,24 +112,13 @@ function AddUserBtn({ title, pattern }: Props) {
   }, [value]);
 
   return (
-    <>
+    <div className="m-2">
       <ModalWithButton
         title={`Add/Edit ${title}`}
+        description={`( ${pattern} )`}
         icon="solar:user-plus-rounded-line-duotone"
-        className="w-[95%] md:w-[40rem]"
+        className="w-[95%] md:w-[40rem] flex flex-col gap-4"
       >
-        <div className="flex items-center justify-between">
-          <div>
-            <h4 className="text-xl font-bold">Add/Edit {title}</h4>
-            <p className="text-sand-9">( {pattern} )</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-xl rounded-full hover:bg-sand-3 active:bg-sand-4"
-          >
-            <Icon icon="material-symbols:close-rounded" />
-          </button>
-        </div>
         <Codemirror
           autoFocus
           theme={addUserTheme}
@@ -148,7 +137,7 @@ function AddUserBtn({ title, pattern }: Props) {
           {addAmount > 1 ? "s" : ""}
         </Button>
       </ModalWithButton>
-    </>
+    </div>
   );
 }
 
