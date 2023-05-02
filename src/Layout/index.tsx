@@ -37,7 +37,7 @@ function Layout({ children, title }: Props) {
             {!isBasePath && <BackArrow />}
             <div className="flex gap-2">
               {!isBasePath &&
-                breadcrumbs.map(({ label, path }) => (
+                breadcrumbs.slice(0, -1).map(({ label, path }) => (
                   <Link
                     key={label}
                     href={path}

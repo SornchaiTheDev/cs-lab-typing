@@ -46,7 +46,7 @@ function ModalWithButton({
               animate={{ opacity: 1, translateY: 0 }}
               ref={modalRef}
               className={clsx(
-                "absolute p-4 bg-sand-1 max-w-full rounded-md shadow",
+                "absolute p-4 bg-sand-1 max-w-full rounded-md shadow w-[95%]",
                 className
               )}
             >

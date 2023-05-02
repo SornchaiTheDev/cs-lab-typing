@@ -36,7 +36,7 @@ function Table({
   });
 
   return (
-    <div className="max-w-full overflow-x-scroll">
+    <div className="max-w-full overflow-x-auto">
       <table className={clsx("w-full text-sm", className)}>
         <thead className="bg-sand-3">
           {table.getHeaderGroups().map((headerGroup) => (

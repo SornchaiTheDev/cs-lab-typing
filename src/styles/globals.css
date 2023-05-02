@@ -25,7 +25,8 @@ body {
 
 /* Set the track color (background of the scrollbar) */
 ::-webkit-scrollbar-track {
-  background-color: #eeeeec; /* Use the recommended lightest shade of sand from Radix UI */
+  background-color: #eeeeec;
+  border-radius: 10px; /* Use the recommended lightest shade of sand from Radix UI */
 }
 
 /* Set the thumb color (the moving part of the scrollbar) */
@@ -37,4 +38,9 @@ body {
 /* Set the hover color of the thumb */
 ::-webkit-scrollbar-thumb:hover {
   background-color: #1b1b18; /* Use the recommended darker shade of sand from Radix UI */
+}
+
+/* Hide the scrollbar buttons */
+::-webkit-scrollbar-button {
+  display: none;
 }

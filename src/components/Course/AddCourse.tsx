@@ -39,7 +39,7 @@ function AddCourse() {
       <ModalWithButton
         title="Add Course"
         icon="solar:add-circle-line-duotone"
-        className="w-[40rem] max-h-[90%] overflow-y-scroll"
+        className="md:w-[40rem] max-h-[90%] overflow-y-auto"
       >
         <form
           className="flex flex-col gap-2"

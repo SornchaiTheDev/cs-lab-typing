@@ -157,7 +157,7 @@ const Multiple = (props: Props) => {
           </div>
         </div>
         {isSeaching && !isEmpty && (
-          <ul className="mt-2 absolute z-20 flex flex-col w-full max-h-[14rem] overflow-y-scroll shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6">
+          <ul className="mt-2 absolute z-20 flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6">
             {filteredDatas.map((data, i) => (
               <HightLightText
                 key={data}

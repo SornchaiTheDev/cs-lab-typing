@@ -11,7 +11,7 @@ interface Props {
 function DeleteAffect({ onClose, selected, title, onDelete }: Props) {
   return (
     <Modal onClose={onClose} className="w-[90%]  md:w-[50rem] max-h-[90%]">
-      <div className="flex-1 overflow-y-scroll">
+      <div className="flex-1 overflow-y-auto">
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -32,7 +32,7 @@ function DeleteAffect({ onClose, selected, title, onDelete }: Props) {
               <Icon icon="material-symbols:close-rounded" />
             </button>
           </div>
-          <div className="overflow-scroll whitespace-nowrap">
+          <div className="overflow-auto whitespace-nowrap">
             <h3 className="mt-2 text-lg font-bold">Summary</h3>
             <ul className="list-disc list-inside">
               <li>Semester : 6</li>
