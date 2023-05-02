@@ -35,7 +35,7 @@ function CreateAdmin() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen gap-4 px-4 md:px-0 roboto">
+    <div className="flex flex-col items-center justify-center w-full h-screen gap-4 px-4 lg:px-0 roboto">
       <div className="p-4 m-flex flex-col gap-2 w-[40rem] max-w-full bg-white shadow-md rounded-lg">
         <h4 className="text-2xl font-bold text-center">Setup Admin Account</h4>
         <form onSubmit={handleSubmit(handleCreateAccount)}>

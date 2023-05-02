@@ -39,7 +39,7 @@ function CourseLayout({ title, children }: Props) {
 
   return (
     <Layout {...{ title }}>
-      <div className="flex items-center gap-8 px-2 pb-1 overflow-x-scroll text-sm border-b border-sand-6 text-sand-11">
+      <div className="flex items-center gap-8 px-2 pb-1 overflow-x-auto overflow-y-hidden text-sm border-b border-sand-6 text-sand-11">
         {menus.map(({ name, href }) => (
           <Link
             key={name}

@@ -31,7 +31,7 @@ function Layout({ children, title }: Props) {
     }));
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="container flex-1 max-w-6xl px-2 py-4 mx-auto md:px-0 roboto">
+      <div className="container flex-1 max-w-6xl px-2 py-4 mx-auto lg:px-0 roboto">
         <div className="flex justify-between mt-10">
           <div>
             {!isBasePath && <BackArrow />}

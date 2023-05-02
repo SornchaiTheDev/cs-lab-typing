@@ -17,3 +17,24 @@ body {
   font-family: "Sarabun", sans-serif;
 }
 
+/* Set the scrollbar width and style */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Set the track color (background of the scrollbar) */
+::-webkit-scrollbar-track {
+  background-color: #eeeeec; /* Use the recommended lightest shade of sand from Radix UI */
+}
+
+/* Set the thumb color (the moving part of the scrollbar) */
+::-webkit-scrollbar-thumb {
+  background-color: #706f6c; /* Use the recommended base shade of sand from Radix UI */
+  border-radius: 10px;
+}
+
+/* Set the hover color of the thumb */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #1b1b18; /* Use the recommended darker shade of sand from Radix UI */
+}

@@ -5,7 +5,7 @@ interface Props<T extends FieldValues> {
   title: string;
   label: Path<T>;
   isError?: boolean;
-  error?: boolean;
+  error?: string;
   className?: string;
   register: UseFormRegister<T>;
   optional?: boolean;
