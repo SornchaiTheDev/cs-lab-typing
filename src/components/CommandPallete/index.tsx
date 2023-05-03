@@ -136,7 +136,7 @@ function CommandPallete() {
 
   return (
     <div className="fixed z-50 w-full h-screen bg-opacity-20 bg-sand-12">
-      <div className="shadow absolute top-[20%] max-h-[30rem] overflow-auto left-1/2 -translate-x-1/2 w-[40rem] rounded-lg bg-white px-4">
+      <div className="shadow absolute max-w-[90%] md:max-w-[40rem] top-[20%] max-h-[30rem] overflow-auto left-1/2 -translate-x-1/2 w-[40rem] rounded-lg bg-white px-4">
         <div className="flex items-center gap-2">
           <Icon icon="solar:magnifer-line-duotone" className="text-xl" />
           <input
