@@ -5,7 +5,7 @@ import { useOnClickOutside } from "usehooks-ts";
 
 interface Props {
   options: string[];
-  value: string;
+  value: string | null;
   onChange: (value: string) => void;
   className?: string;
   title: string;
@@ -83,7 +83,7 @@ function Select({
         tabIndex={0}
         ref={selectRef}
         className={clsx(
-          "w-full border border-sand-6 rounded-md outline-none bg-sand-1 relative",
+          "w-full border border-sand-6 rounded-md outline-none bg-sand-1 relative min-h-[2.5rem]",
           isError && "border-tomato-7"
         )}
         onClick={() => setIsShow(!isShow)}

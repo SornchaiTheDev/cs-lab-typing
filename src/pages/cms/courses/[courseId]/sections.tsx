@@ -1,7 +1,7 @@
 import CourseLayout from "@/Layout/CourseLayout";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GetStaticProps } from "next";
 import ModalWithButton from "@/components/Common/ModalWithButton";
@@ -12,42 +12,7 @@ import Input from "@/components/Common/Input";
 import Multiple from "@/components/Search/Multiple";
 import Button from "@/components/Common/Button";
 import Select from "@/components/Common/Select";
-
-const semesters = [
-  "2023 First",
-  "2023 Second",
-  "2023 Summer",
-  "2024 First",
-  "2024 Second",
-  "2024 Summer",
-  "2025 First",
-  "2025 Second",
-  "2025 Summer",
-  "2026 First",
-  "2026 Second",
-  "2026 Summer",
-  "2027 First",
-  "2027 Second",
-  "2027 Summer",
-  "2028 First",
-  "2028 Second",
-  "2028 Summer",
-  "2029 First",
-  "2029 Second",
-  "2029 Summer",
-  "2030 First",
-  "2030 Second",
-  "2030 Summer",
-  "2031 First",
-  "2031 Second",
-  "2031 Summer",
-  "2032 First",
-  "2032 Second",
-  "2032 Summer",
-  "2033 First",
-  "2033 Second",
-  "2033 Summer",
-];
+import { semesters } from "@/__mock__";
 
 interface Props {
   course: {
@@ -61,16 +26,29 @@ function Sections({ course }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitted },
   } = useForm<TAddSection>({
     resolver: zodResolver(AddSectionSchema),
   });
 
-  const addSection = () => {};
-
   const [instructors, setInstructors] = useState<string[]>([]);
   const [isInstructorsError, setIsInstructorsError] = useState(false);
-  const [semester, setSemester] = useState<string>("2023 First");
+  const [semester, setSemester] = useState<string | null>(null);
+  const [isSemesterError, setIsSemesterError] = useState(false);
+
+  const addSection = (formData: TAddSection) => {
+    const { name, note } = formData;
+  };
+
+  useEffect(() => {
+    if (isSubmitted) {
+      if (instructors.length === 0) setIsInstructorsError(true);
+      else setIsInstructorsError(false);
+
+      if (!semester) setIsSemesterError(true);
+      else setIsSemesterError(false);
+    }
+  }, [instructors, semester, isSubmitted]);
 
   return (
     <CourseLayout title={course.name}>
@@ -89,6 +67,8 @@ function Sections({ course }: Props) {
               title="Semester"
               value={semester}
               onChange={setSemester}
+              isError={isSemesterError}
+              error="Semester cannot be empty"
             />
             <Input
               title="Name"

@@ -10,6 +10,7 @@ import { Icon } from "@iconify/react";
 import { createId } from "@paralleldrive/cuid2";
 import TextHighlight from "./TextHighlight";
 import { generatePerson } from "@/helpers";
+import { useOnClickOutside } from "usehooks-ts";
 interface Props {
   title: string;
   isError?: boolean;
@@ -41,10 +42,13 @@ const Multiple = (props: Props) => {
   const [selectedDatas, setSelectedDatas] = useState<selectedData[]>([]);
   const isSeaching = search.length > 0;
   const optionsRef = useRef<HTMLUListElement>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // TODO: fetch data from server
   }, [search]);
+
+  useOnClickOutside(selectRef, () => setIsFocus(false));
 
   const filteredDatas = isSeaching
     ? datas.filter(
@@ -93,13 +97,12 @@ const Multiple = (props: Props) => {
     }
   };
 
-  const addItem = () => {
-    const text = filteredDatas[selectedIndex];
+  const addItem = (text?: string) => {
+    if (!text) text = filteredDatas[selectedIndex];
     if (!canAddItemNotInList && !datas.includes(text)) return;
     if (selectedDatas.map((data) => data.text).includes(text)) return;
-    setSelectedDatas((prev) => [...prev, { text, key: createId() }]);
+    setSelectedDatas((prev) => [...prev, { text: text!, key: createId() }]);
     setSearch("");
-    setIsFocus(false);
     setSelectedIndex(0);
   };
 
@@ -141,7 +144,7 @@ const Multiple = (props: Props) => {
           </h6>
         )}
       </div>
-      <div className="relative">
+      <div className="relative" ref={selectRef}>
         <div
           className={clsx(
             "w-full p-2 border border-sand-6 min-h-[2.5rem] rounded-md outline-none bg-sand-1 flex flex-wrap items-center gap-2",
@@ -160,13 +163,13 @@ const Multiple = (props: Props) => {
           <div className="relative flex-1">
             <input
               onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
+              // onBlur={() => setIsFocus(false)}
               value={search}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setSearch(e.target.value)
               }
               onKeyDown={handleOnKeyDown}
-              className="w-full outline-none"
+              className="w-full outline-none min-w-[5rem]"
             />
           </div>
         </div>
@@ -181,6 +184,7 @@ const Multiple = (props: Props) => {
                 search={search}
                 text={data}
                 isSelected={selectedIndex === i}
+                onClick={() => addItem(data)}
               />
             ))}
           </ul>

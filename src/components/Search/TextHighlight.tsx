@@ -5,20 +5,20 @@ const isCharIncludeInSearch = (search: string, char: string) => {
   return search.toLowerCase().includes(char.toLowerCase());
 };
 
-const HightLightText = ({
-  text,
-  isSelected,
-  search,
-}: {
+interface Props {
   text: string;
   isSelected: boolean;
   search: string;
-}) => (
+  onClick: () => void;
+}
+
+const HightLightText = ({ text, isSelected, search, onClick }: Props) => (
   <li
     className={clsx(
       "p-2 rounded-lg cursor-pointer hover:bg-sand-2",
       isSelected && "bg-sand-4 selected"
     )}
+    onClick={onClick}
   >
     {Array.from(text).map((char, i) => (
       <span

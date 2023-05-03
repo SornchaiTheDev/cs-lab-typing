@@ -13,7 +13,7 @@ function AddCourse() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitted },
+    formState: { errors, isSubmitted },
   } = useForm<TAddCourse>({
     resolver: zodResolver(AddCourseSchema),
   });
