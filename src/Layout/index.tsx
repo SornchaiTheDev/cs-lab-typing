@@ -20,10 +20,7 @@ function Layout({ children, title }: Props) {
     .split("/")
     .slice(1)
     .map((segment, index, segments) => ({
-      label:
-        segment === "cms"
-          ? "Dashboard"
-          : replaceSlugwithQueryPath(segment, router.query),
+      label: replaceSlugwithQueryPath(segment, router.query),
       path: `/${segments
         .map((seg) => replaceSlugwithQueryPath(seg, router.query))
         .slice(0, index + 1)

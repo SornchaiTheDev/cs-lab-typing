@@ -88,7 +88,7 @@ function Settings({ course }: Props) {
 
             <Button
               icon="solar:add-circle-line-duotone"
-              className="py-3 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="w-1/3 py-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
             >
               Edit
             </Button>

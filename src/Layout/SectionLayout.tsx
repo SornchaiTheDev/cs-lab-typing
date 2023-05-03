@@ -6,7 +6,7 @@ import HorizontalMenu from "@/components/Common/HorizontalMenu";
 
 interface Props {
   title: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 function SectionLayout({ title, children }: Props) {
