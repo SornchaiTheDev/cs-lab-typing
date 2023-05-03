@@ -1,27 +1,29 @@
 import Modal from "../Common/Modal";
 import { Icon } from "@iconify/react";
 import Button from "../Common/Button";
+import { ChangeEvent, useState } from "react";
 
 interface Props {
   onClose: () => void;
   selected: string;
-  title?: string;
+  type: "course" | "section" | "task" | "lab" | "user";
   onDelete: () => void;
 }
-function DeleteAffect({ onClose, selected, title, onDelete }: Props) {
+function DeleteAffect({ onClose, selected, onDelete, type }: Props) {
+  const [confirmMsg, setConfirmMsg] = useState<string>("");
   return (
-    <Modal onClose={onClose} className="w-[90%]  md:w-[50rem] max-h-[90%]">
+    <Modal onClose={onClose} className="w-[90%]  md:w-[40rem] max-h-[90%]">
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              {!!title && <h4 className="text-xl font-bold">Delete {title}</h4>}
+              <h4 className="text-xl font-bold capitalize">Delete {type}</h4>
               <p className="text-sand-9">
-                Are you sure to delete user{" "}
+                Are you sure to delete {type}{" "}
                 <span className="text-lg font-bold">
                   &ldquo; {selected} &rdquo;
                 </span>
-                ? All of these following related items will be deleted.
+                ? All of these following related items will be deleted
               </p>
             </div>
 
@@ -96,18 +98,21 @@ function DeleteAffect({ onClose, selected, title, onDelete }: Props) {
           </div>
         </div>
       </div>
-      <div className="flex gap-2 p-4 border-t">
+      <div className="flex flex-col gap-2 p-4 border-t">
+        <input
+          value={confirmMsg}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setConfirmMsg(e.target.value)
+          }
+          className="w-full p-2 border rounded-md outline-none border-sand-6 bg-sand-1"
+          placeholder={`Type "${selected}" to confirm`}
+        />
         <Button
+          disabled={confirmMsg !== selected}
           onClick={onDelete}
           className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
         >
-          Confirm
-        </Button>
-        <Button
-          onClick={onClose}
-          className="w-full border hover:bg-sand-4 border-sand-6"
-        >
-          Cancel
+          Delete
         </Button>
       </div>
     </Modal>

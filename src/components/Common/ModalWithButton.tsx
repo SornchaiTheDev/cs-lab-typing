@@ -11,6 +11,7 @@ interface Props {
   icon: string;
   className?: string;
   description?: string;
+  color?: string;
 }
 
 function ModalWithButton({
@@ -19,6 +20,7 @@ function ModalWithButton({
   icon,
   className,
   description,
+  color = "bg-sand-12",
 }: Props) {
   const [isShow, setIsShow] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -34,7 +36,7 @@ function ModalWithButton({
       <Button
         onClick={() => setIsShow(true)}
         icon={icon}
-        className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+        className={clsx("shadow  text-sand-1 active:bg-sand-11", color)}
       >
         {title}
       </Button>

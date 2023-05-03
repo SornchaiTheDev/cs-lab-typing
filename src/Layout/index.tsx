@@ -39,7 +39,7 @@ function Layout({ children, title }: Props) {
               {!isBasePath &&
                 breadcrumbs.slice(0, -1).map(({ label, path }) => (
                   <Link
-                    key={label}
+                    key={path}
                     href={path}
                     className="block text-xl text-sand-11 hover:text-sand-12"
                   >

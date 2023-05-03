@@ -3,17 +3,30 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/router";
+import { GetStaticProps } from "next";
 
-function Sections() {
+interface Props {
+  course: {
+    id: string;
+    name: string;
+  };
+}
+
+function Sections({ course }: Props) {
   const router = useRouter();
-  const { courseId } = router.query;
+
   return (
-    <CourseLayout title={courseId as string}>
+    <CourseLayout title={course.name}>
+      <div className=""></div>
       <div className="grid grid-cols-12 gap-6 mt-4">
-        {new Array(0).fill(0).map((_, i) => (
+        {new Array(10).fill(0).map((_, i) => (
           <Link
             key={i}
-            href="courses/01418112"
+            href={{
+              pathname: "sections/[sectionId]",
+              query: { ...router.query, sectionId: 1 },
+            }}
+            shallow={true}
             className="relative col-span-12 md:col-span-4 overflow-hidden border flex flex-col justify-end border-sand-6 h-[12rem] rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
           >
             <div className="flex flex-col gap-2 p-2">
@@ -43,3 +56,21 @@ function Sections() {
 }
 
 export default Sections;
+
+export const getStaticProps: GetStaticProps<Props> = () => {
+  return {
+    props: {
+      course: {
+        id: "01418112",
+        name: "Fundamental Programming Concept",
+      },
+    },
+  };
+};
+
+export const getStaticPaths = () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+};

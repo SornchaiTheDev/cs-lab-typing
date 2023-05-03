@@ -7,13 +7,22 @@ interface Props {
   icon?: string;
   className?: string;
   isLoading?: boolean;
+  disabled?: boolean;
 }
-function Button({ onClick, children, icon, className, isLoading }: Props) {
+function Button({
+  onClick,
+  children,
+  icon,
+  className,
+  isLoading,
+  disabled,
+}: Props) {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={clsx(
-        "flex items-center gap-4 p-2 rounded-lg  justify-center",
+        "flex items-center gap-4 p-2 rounded-lg  justify-center disabled:bg-sand-3 disabled:cursor-not-allowed disabled:text-sand-8",
         className
       )}
     >

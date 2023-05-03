@@ -84,7 +84,7 @@ function Admin({ title, role, pattern }: Props) {
     <Layout title={title}>
       {selected !== null && (
         <DeleteAffect
-          title="User"
+          type="user"
           selected={selected}
           onClose={() => setSelected(null)}
           onDelete={() => setSelected(null)}

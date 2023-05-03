@@ -17,24 +17,24 @@ const menus: Menus[] = [
     icon: "solar:book-2-line-duotone",
     path: "courses",
   },
-  {
-    name: "Tasks Management",
-    description: "Create, modify, and delete tasks",
-    icon: "solar:programming-line-duotone",
-    path: "tasks",
-  },
-  {
-    name: "Sections Management",
-    description: "Create, modify, and delete sections",
-    icon: "solar:widget-line-duotone",
-    path: "sections",
-  },
-  {
-    name: "Semesters Management",
-    description: "Create, modify, and delete semesters",
-    icon: "solar:calendar-line-duotone",
-    path: "semesters",
-  },
+  // {
+  //   name: "Tasks Management",
+  //   description: "Create, modify, and delete tasks",
+  //   icon: "solar:programming-line-duotone",
+  //   path: "tasks",
+  // },
+  // {
+  //   name: "Sections Management",
+  //   description: "Create, modify, and delete sections",
+  //   icon: "solar:widget-line-duotone",
+  //   path: "sections",
+  // },
+  // {
+  //   name: "Semesters Management",
+  //   description: "Create, modify, and delete semesters",
+  //   icon: "solar:calendar-line-duotone",
+  //   path: "semesters",
+  // },
   {
     name: "Users Management",
     description: "Create, modify, and delete users",
