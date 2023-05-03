@@ -15,7 +15,7 @@ function SectionLayout({ title, children }: Props) {
       <HorizontalMenu
         basePath="/cms/courses/[courseId]/sections/[sectionId]"
         menus={[
-          { name: "Overview", path: "[sectionId]" },
+          { name: "Overview", path: "" },
           { name: "LAB SET", path: "labset" },
           { name: "Logs", path: "logs" },
           {

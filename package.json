@@ -13,6 +13,7 @@
     "@codemirror/lang-javascript": "^6.1.7",
     "@codemirror/language": "^6.6.0",
     "@codemirror/view": "^6.10.0",
+    "@faker-js/faker": "^7.6.0",
     "@hookform/resolvers": "^3.1.0",
     "@lezer/highlight": "^1.1.4",
     "@paralleldrive/cuid2": "^2.2.0",

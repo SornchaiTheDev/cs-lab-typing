@@ -18,7 +18,7 @@ function CourseLayout({ title, children }: Props) {
         menus={[
           {
             name: "Overview",
-            path: "[courseId]",
+            path: "",
           },
           {
             name: "Sections",

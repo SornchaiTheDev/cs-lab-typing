@@ -13,8 +13,9 @@ function HorizontalMenu({ menus, basePath }: Props) {
   const router = useRouter();
   const pathname = basePath ? basePath : router.pathname;
   const queryKey = Object.keys(router.query).at(-1) as string;
-  const activePath = router.pathname.split("/").pop() as string;
+  let activePath = router.pathname.split("/").pop() as string;
   const isRootPath = activePath.includes(queryKey);
+  if (isRootPath) activePath = "";
 
   return (
     <div className="flex items-center gap-8 px-2 pb-1 overflow-x-auto text-sm border-b border-sand-6 text-sand-11">
@@ -22,7 +23,7 @@ function HorizontalMenu({ menus, basePath }: Props) {
         <Link
           key={path}
           href={{
-            pathname: isRootPath ? pathname + "/" + path : pathname,
+            pathname: pathname + "/" + path,
             query: { ...router.query },
           }}
           className={clsx(

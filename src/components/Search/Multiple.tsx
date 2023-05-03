@@ -1,9 +1,15 @@
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
-import { useState, type KeyboardEvent, ChangeEvent, useEffect } from "react";
+import {
+  useState,
+  useRef,
+  type KeyboardEvent,
+  ChangeEvent,
+  useEffect,
+} from "react";
 import clsx from "clsx";
 import { Icon } from "@iconify/react";
 import { createId } from "@paralleldrive/cuid2";
-
+import TextHighlight from "./TextHighlight";
+import { generatePerson } from "@/helpers";
 interface Props {
   title: string;
   isError?: boolean;
@@ -11,70 +17,54 @@ interface Props {
   className?: string;
   optional?: boolean;
   value: (value: string[]) => void;
+  canAddItemNotInList?: boolean;
 }
 
 type selectedData = { text: string; key: string };
 
-const isCharIncludeInSearch = (search: string, char: string) => {
-  return search.toLowerCase().includes(char.toLowerCase());
-};
-
-const HightLightText = ({
-  text,
-  isSelected,
-  search,
-}: {
-  text: string;
-  isSelected: boolean;
-  search: string;
-}) => (
-  <li
-    className={clsx(
-      "p-2 rounded-lg cursor-pointer hover:bg-sand-2",
-      isSelected && "bg-sand-4"
-    )}
-  >
-    {Array.from(text).map((char, i) => (
-      <span
-        key={i}
-        className={clsx(
-          i < search.length && isCharIncludeInSearch(search, char)
-            ? "font-medium text-sand-12"
-            : "text-sand-11"
-        )}
-      >
-        {char}
-      </span>
-    ))}
-  </li>
-);
-
 const Multiple = (props: Props) => {
-  const { className, title, optional, isError, error, value } = props;
+  const {
+    className,
+    title,
+    optional,
+    isError,
+    error,
+    value,
+
+    canAddItemNotInList,
+  } = props;
 
   const [search, setSearch] = useState("");
-  const [datas, setDatas] = useState(["SornchaiTheDev", "SaacSOS"]);
+  const [datas, setDatas] = useState(generatePerson(100));
+  const [isFocus, setIsFocus] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedDatas, setSelectedDatas] = useState<selectedData[]>([]);
   const isSeaching = search.length > 0;
-
-  const filteredDatas = isSeaching
-    ? datas.filter((data) => data.toLowerCase().includes(search.toLowerCase()))
-    : [];
-
-  const isEmpty = filteredDatas.length === 0;
-
-  useEffect(() => {
-    if (!isSeaching || isEmpty) setSelectedIndex(-1);
-    else {
-      setSelectedIndex(0);
-    }
-  }, [isSeaching, isEmpty]);
+  const optionsRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     // TODO: fetch data from server
   }, [search]);
 
+  const filteredDatas = isSeaching
+    ? datas.filter(
+        (data) =>
+          data.toLowerCase().includes(search.toLowerCase()) &&
+          !selectedDatas.some((selected) => selected.text === data)
+      )
+    : isFocus
+    ? datas
+    : [];
+
+  const isEmpty = filteredDatas.length === 0;
+
+  useEffect(() => {
+    if (isEmpty) {
+      setSelectedIndex(0);
+    }
+  }, [search, isEmpty]);
+
+  // send value to parent component
   useEffect(() => {
     value(selectedDatas.map((data) => data.text));
   }, [selectedDatas, value]);
@@ -83,11 +73,13 @@ const Multiple = (props: Props) => {
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % datas.length);
+        setSelectedIndex((prev) => (prev + 1) % filteredDatas.length);
         break;
       case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + datas.length) % datas.length);
+        setSelectedIndex(
+          (prev) => (prev - 1 + filteredDatas.length) % filteredDatas.length
+        );
         break;
       case "Enter":
         e.preventDefault();
@@ -102,18 +94,39 @@ const Multiple = (props: Props) => {
   };
 
   const addItem = () => {
-    let text = search;
-    if (search.length === 0) return;
-    if (selectedIndex !== -1) {
-      text = filteredDatas[selectedIndex];
-    }
+    const text = filteredDatas[selectedIndex];
+    if (!canAddItemNotInList && !datas.includes(text)) return;
+    if (selectedDatas.map((data) => data.text).includes(text)) return;
     setSelectedDatas((prev) => [...prev, { text, key: createId() }]);
     setSearch("");
+    setIsFocus(false);
+    setSelectedIndex(0);
   };
 
   const handleDelete = (key: string) => {
     setSelectedDatas((prev) => prev.filter((data) => data.key !== key));
   };
+
+  useEffect(() => {
+    const optionsList = optionsRef.current;
+    const selectedOption = optionsList?.querySelector(
+      ".selected"
+    ) as HTMLElement;
+    if (selectedOption && optionsList) {
+      const offset = selectedOption.offsetTop - optionsList.offsetTop + 10;
+      optionsList?.scrollTo({
+        top: offset,
+        behavior: "smooth",
+      });
+    }
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    if (!isSeaching || isEmpty) setSelectedIndex(-1);
+    else {
+      setSelectedIndex(0);
+    }
+  }, [isSeaching, isEmpty]);
 
   return (
     <div {...{ className }}>
@@ -146,7 +159,8 @@ const Multiple = (props: Props) => {
           ))}
           <div className="relative flex-1">
             <input
-              onBlur={addItem}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
               value={search}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setSearch(e.target.value)
@@ -156,10 +170,13 @@ const Multiple = (props: Props) => {
             />
           </div>
         </div>
-        {isSeaching && !isEmpty && (
-          <ul className="mt-2 absolute z-20 flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6">
+        {isFocus && !isEmpty && (
+          <ul
+            ref={optionsRef}
+            className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6"
+          >
             {filteredDatas.map((data, i) => (
-              <HightLightText
+              <TextHighlight
                 key={data}
                 search={search}
                 text={data}
