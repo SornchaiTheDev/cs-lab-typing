@@ -5,7 +5,7 @@ import { useOnClickOutside } from "usehooks-ts";
 
 interface Props {
   options: string[];
-  value: string | null;
+  value: string;
   onChange: (value: string) => void;
   className?: string;
   title: string;
@@ -15,8 +15,8 @@ interface Props {
 }
 
 function Select({
-  options,
-  value,
+  options = [],
+  value = "",
   onChange,
   className,
   title,

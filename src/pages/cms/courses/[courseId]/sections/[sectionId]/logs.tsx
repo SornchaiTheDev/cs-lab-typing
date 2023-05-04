@@ -188,8 +188,13 @@ function SectionLog() {
 
   return (
     <SectionLayout title="12 (F 15 - 17)">
-      <div className="min-h-screen mt-10 overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
-        <div className="flex justify-end p-2 ">
+      <Table
+        data={data}
+        columns={columns}
+        defaultSortingState={{ id: "date", desc: true }}
+        className="mt-6"
+      >
+        <div className="flex justify-end p-2">
           <button
             onClick={exportCSV}
             className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
@@ -202,12 +207,7 @@ function SectionLog() {
           <DatePicker onApply={(startDate, endDate) => {}} />
           <TimePickerRange onApply={(startTime, endTime) => {}} />
         </div>
-        <Table
-          data={data}
-          columns={columns}
-          defaultSortingState={{ id: "date", desc: true }}
-        />
-      </div>
+      </Table>
     </SectionLayout>
   );
 }

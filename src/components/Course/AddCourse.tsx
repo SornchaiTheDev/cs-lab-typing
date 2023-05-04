@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ModalWithButton from "../Common/ModalWithButton";
 import Input from "../Common/Input";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { AddCourseSchema, type TAddCourse } from "@/forms/AddCourse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import TextArea from "../Common/TextArea";
 import Button from "../Common/Button";
 import Multiple from "../Search/Multiple";
 import { z } from "zod";
+import { generatePerson } from "@/helpers";
 
 function AddCourse() {
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isSubmitted },
@@ -18,21 +20,9 @@ function AddCourse() {
     resolver: zodResolver(AddCourseSchema),
   });
 
-  const [authors, setAuthors] = useState<string[]>([]);
-  const [isAuthorError, setisAuthorError] = useState<boolean>(false);
-
   const addCourse = (formData: TAddCourse) => {
     const { name, comments, note, number } = formData;
   };
-
-  useEffect(() => {
-    if (isSubmitted && authors.length === 0) {
-      setisAuthorError(true);
-      return;
-    }
-
-    setisAuthorError(false);
-  }, [authors.length, isSubmitted]);
 
   return (
     <div className="mb-4">
@@ -68,12 +58,19 @@ function AddCourse() {
               className="flex-1"
             />
           </div>
-
-          <Multiple
-            title="Authors"
-            value={setAuthors}
-            isError={isAuthorError}
-            error="Authors cannot be empty"
+          <Controller
+            control={control}
+            name="authors"
+            render={({ field: { onChange, value } }) => (
+              <Multiple
+                title="Authors"
+                datas={generatePerson(10)}
+                value={value}
+                onChange={onChange}
+                isError={errors.authors !== undefined}
+                error="Authors cannot be empty"
+              />
+            )}
           />
           <Input title="Note" label="note" register={register} optional />
 

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import SectionLayout from "@/Layout/SectionLayout";
+import LabLayout from "@/Layout/LabLayout";
 import Table from "@/components/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
@@ -65,14 +65,14 @@ function History() {
   };
 
   return (
-    <SectionLayout title="12 (F 15 - 17)">
+    <LabLayout title="Test">
       <Table
         data={data}
         columns={columns}
         defaultSortingState={{ id: "date", desc: true }}
-        className="mt-6"
+        className="mt-4 "
       >
-        <div className="flex justify-end p-2 ">
+        <div className="flex justify-end p-2">
           <button
             onClick={exportCSV}
             className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
@@ -86,7 +86,7 @@ function History() {
           <TimePickerRange onApply={(startTime, endTime) => {}} />
         </div>
       </Table>
-    </SectionLayout>
+    </LabLayout>
   );
 }
 

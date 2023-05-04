@@ -2,7 +2,7 @@ import CourseLayout from "@/Layout/CourseLayout";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Input from "@/components/Common/Input";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { AddCourseSchema, TAddCourse } from "@/forms/AddCourse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import TextArea from "@/components/Common/TextArea";
@@ -19,9 +19,9 @@ interface Props {
 
 function Settings({ course }: Props) {
   const router = useRouter();
-  const [authors, setAuthos] = useState<string[]>([]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -57,11 +57,19 @@ function Settings({ course }: Props) {
               className="flex-1"
             />
 
-            <Multiple
-              title="Authors"
-              value={setAuthos}
-              isError={false}
-              error="Authors cannot be empty"
+            <Controller
+              control={control}
+              name="authors"
+              render={({ field: { onChange, value } }) => (
+                <Multiple
+                  datas={[]}
+                  title="Authors"
+                  value={value}
+                  onChange={onChange}
+                  isError={errors.authors !== undefined}
+                  error={errors.authors?.message}
+                />
+              )}
             />
             <Input title="Note" label="note" register={register} optional />
 

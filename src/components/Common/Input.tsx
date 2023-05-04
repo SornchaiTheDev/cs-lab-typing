@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import type { HTMLInputTypeAttribute } from "react";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
-import { z } from "zod";
 
 interface Props<T extends FieldValues> {
   title: string;

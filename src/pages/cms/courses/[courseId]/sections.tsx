@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GetStaticProps } from "next";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { AddSectionSchema, TAddSection } from "@/forms/AddSection";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/components/Common/Input";
@@ -13,6 +13,7 @@ import Multiple from "@/components/Search/Multiple";
 import Button from "@/components/Common/Button";
 import Select from "@/components/Common/Select";
 import { semesters } from "@/__mock__";
+import { generatePerson } from "@/helpers";
 
 interface Props {
   course: {
@@ -24,31 +25,17 @@ interface Props {
 function Sections({ course }: Props) {
   const router = useRouter();
   const {
+    control,
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors },
   } = useForm<TAddSection>({
     resolver: zodResolver(AddSectionSchema),
   });
 
-  const [instructors, setInstructors] = useState<string[]>([]);
-  const [isInstructorsError, setIsInstructorsError] = useState(false);
-  const [semester, setSemester] = useState<string | null>(null);
-  const [isSemesterError, setIsSemesterError] = useState(false);
-
   const addSection = (formData: TAddSection) => {
-    const { name, note } = formData;
+    const { name, note, instructors, semester } = formData;
   };
-
-  useEffect(() => {
-    if (isSubmitted) {
-      if (instructors.length === 0) setIsInstructorsError(true);
-      else setIsInstructorsError(false);
-
-      if (!semester) setIsSemesterError(true);
-      else setIsSemesterError(false);
-    }
-  }, [instructors, semester, isSubmitted]);
 
   return (
     <CourseLayout title={course.name}>
@@ -60,20 +47,26 @@ function Sections({ course }: Props) {
           confirmBtn={{
             title: "Add Section",
             icon: "solar:add-circle-line-duotone",
-            onClick: () => {},
+            onClick: handleSubmit(addSection),
           }}
         >
           <form
             className="flex flex-col gap-2"
             onSubmit={handleSubmit(addSection)}
           >
-            <Select
-              options={semesters}
-              title="Semester"
-              value={semester}
-              onChange={setSemester}
-              isError={isSemesterError}
-              error="Semester cannot be empty"
+            <Controller
+              control={control}
+              name="semester"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  options={semesters}
+                  title="Semester"
+                  value={value}
+                  onChange={onChange}
+                  isError={errors.semester !== undefined}
+                  error={errors.semester?.message}
+                />
+              )}
             />
             <Input
               title="Name"
@@ -84,11 +77,19 @@ function Sections({ course }: Props) {
               className="flex-1"
             />
 
-            <Multiple
-              title="Instructors"
-              value={setInstructors}
-              isError={isInstructorsError}
-              error="Instructors cannot be empty"
+            <Controller
+              control={control}
+              name="instructors"
+              render={({ field: { onChange, value } }) => (
+                <Multiple
+                  datas={generatePerson(100)}
+                  title="Instructors"
+                  value={value ?? []}
+                  onChange={onChange}
+                  isError={errors.instructors !== undefined}
+                  error={errors.instructors?.message}
+                />
+              )}
             />
             <Input title="Note" label="note" register={register} optional />
           </form>

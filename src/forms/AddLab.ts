@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const AddLabSchema = z.object({
   name: z.string().nonempty({ message: "Name cannot be empty" }),
-  tags: z.array(z.string()).nullable(),
+  tags: z.array(z.string()).default([]),
   isDisabled: z.boolean().nullable(),
 });
 

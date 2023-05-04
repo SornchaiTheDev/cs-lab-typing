@@ -1,18 +1,14 @@
-import CourseLayout from "@/Layout/CourseLayout";
-import React, { useEffect, useState } from "react";
+import LabLayout from "@/Layout/LabLayout";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Input from "@/components/Common/Input";
 import { Controller, useForm } from "react-hook-form";
-import { AddCourseSchema, TAddCourse } from "@/forms/AddCourse";
+import { AddLabSchema, TAddLabSchema } from "@/forms/AddLab";
 import { zodResolver } from "@hookform/resolvers/zod";
 import TextArea from "@/components/Common/TextArea";
 import Button from "@/components/Common/Button";
 import Multiple from "@/components/Search/Multiple";
 import DeleteAffect from "@/components/DeleteAffect";
-import SectionLayout from "@/Layout/SectionLayout";
-import Select from "@/components/Common/Select";
-import { AddSectionSchema, TAddSection } from "@/forms/AddSection";
-import { semesters } from "@/__mock__";
 
 interface Props {
   course: {
@@ -22,37 +18,19 @@ interface Props {
 }
 
 function Settings({ course }: Props) {
+  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const {
     control,
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
-  } = useForm<TAddSection>({
-    resolver: zodResolver(AddSectionSchema),
+    formState: { errors },
+  } = useForm<TAddLabSchema>({
+    resolver: zodResolver(AddLabSchema),
   });
 
-  const [instructors, setInstructors] = useState<string[]>([]);
-  const [isInstructorsError, setIsInstructorsError] = useState(false);
-  const [semester, setSemester] = useState<string | null>(null);
-  const [isSemesterError, setIsSemesterError] = useState(false);
-
-  const addSection = (formData: TAddSection) => {
-    const { name, note } = formData;
-  };
-
-  useEffect(() => {
-    if (isSubmitted) {
-      if (instructors.length === 0) setIsInstructorsError(true);
-      else setIsInstructorsError(false);
-
-      if (!semester) setIsSemesterError(true);
-      else setIsSemesterError(false);
-    }
-  }, [instructors, semester, isSubmitted]);
-
   return (
-    <SectionLayout title="12 (F 15 - 17)">
+    <LabLayout title="Fundamental Programming Concept">
       <div className="w-1/2 p-4">
         <div className="w-full">
           <h4 className="text-xl">General</h4>
@@ -60,22 +38,8 @@ function Settings({ course }: Props) {
 
           <form
             className="flex flex-col gap-2"
-            onSubmit={handleSubmit(addSection)}
+            onSubmit={handleSubmit(() => {})}
           >
-            <Controller
-              control={control}
-              name="semester"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  options={semesters}
-                  title="Semester"
-                  value={value}
-                  onChange={onChange}
-                  isError={errors.semester !== undefined}
-                  error={errors.semester?.message}
-                />
-              )}
-            />
             <Input
               title="Name"
               label="name"
@@ -84,24 +48,25 @@ function Settings({ course }: Props) {
               isError={errors.name !== undefined}
               className="flex-1"
             />
+
             <Controller
               control={control}
-              name="instructors"
+              name="tags"
               render={({ field: { onChange, value } }) => (
                 <Multiple
                   datas={[]}
-                  title="Instructors"
+                  title="Tags"
                   value={value}
                   onChange={onChange}
-                  isError={errors.instructors !== undefined}
-                  error={errors.instructors?.message}
+                  isError={errors.tags !== undefined}
+                  error={errors.tags?.message}
+                  canAddItemNotInList
                 />
               )}
             />
-            <Input title="Note" label="note" register={register} optional />
 
             <Button
-              icon="solar:add-circle-line-duotone"
+              icon="solar:pen-2-line-duotone"
               className="w-1/3 py-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
             >
               Edit
@@ -116,19 +81,19 @@ function Settings({ course }: Props) {
             icon="solar:trash-bin-minimalistic-line-duotone"
             className="shadow bg-red-9 text-sand-1 active:bg-sand-11"
           >
-            Delete Section
+            Delete Course
           </Button>
           {isDeleteOpen && (
             <DeleteAffect
-              type="section"
+              type="course"
               onClose={() => setIsDeleteOpen(false)}
               onDelete={() => setIsDeleteOpen(false)}
-              selected="12 (F 15 - 17)"
+              selected="Fundamental Programming Concept"
             />
           )}
         </div>
       </div>
-    </SectionLayout>
+    </LabLayout>
   );
 }
 

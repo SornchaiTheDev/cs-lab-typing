@@ -55,12 +55,12 @@ function Sections() {
           ))}
         </div>
         <h5 className="mt-4 mb-2 font-bold">Students (20)</h5>
-        <div className="w-1/2 min-h-[10rem] overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
+
+        <Table data={[]} columns={columns} className="w-1/2">
           <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
             <AddUserBtn title="Student" pattern="student-id" />
           </div>
-          <Table data={[]} columns={columns} />
-        </div>
+        </Table>
       </div>
     </SectionLayout>
   );

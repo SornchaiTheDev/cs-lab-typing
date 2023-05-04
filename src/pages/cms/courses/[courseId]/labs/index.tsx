@@ -1,5 +1,6 @@
 import CourseLayout from "@/Layout/CourseLayout";
 import Badge from "@/components/Common/Badge";
+import Checkbox from "@/components/Common/Checkbox";
 import Input from "@/components/Common/Input";
 import ModalWithButton from "@/components/Common/ModalWithButton";
 import Multiple from "@/components/Search/Multiple";
@@ -9,8 +10,9 @@ import { generatePerson } from "@/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useRouter } from "next/router";
 
 interface LabsRow {
   id: string;
@@ -20,19 +22,25 @@ interface LabsRow {
 
 function Labs() {
   const columnHelper = createColumnHelper<LabsRow>();
+  const router = useRouter();
   const {
     control,
     register,
-    watch,
     formState: { errors },
     handleSubmit,
   } = useForm<TAddLabSchema>({
     resolver: zodResolver(AddLabSchema),
   });
 
-  const [tags, setTags] = useState<string[]>([]);
+  const addLab = (formData: TAddLabSchema) => {
+    const { isDisabled, name, tags } = formData;
+    router.push({
+      pathname: router.pathname + "/[labId]",
+      query: { ...router.query, labId: 1 },
+    });
 
-  const addSection = () => {};
+    // TODO add lab
+  };
 
   const columns = useMemo<ColumnDef<LabsRow, string[]>[]>(
     () => [
@@ -77,10 +85,54 @@ function Labs() {
     [columnHelper]
   );
 
-  console.log(watch("tags"));
   return (
     <CourseLayout title="Fundamental Programming Concept">
-      <div className="mt-10 w-full min-h-[10rem] overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
+      <Table
+        className="mt-6"
+        data={[
+          {
+            id: 1,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+          {
+            id: 2,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+          {
+            id: 3,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+          {
+            id: 4,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+          {
+            id: 5,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+          {
+            id: 6,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+          {
+            id: 7,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+          {
+            id: 8,
+            name: "C 113 Lab 1",
+            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+          },
+        ]}
+        columns={columns}
+      >
         <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
           <ModalWithButton
             title="Add Lab"
@@ -89,11 +141,11 @@ function Labs() {
             confirmBtn={{
               title: `Add Lab`,
               icon: "solar:checklist-minimalistic-line-duotone",
-              onClick: handleSubmit(addSection),
+              onClick: handleSubmit(addLab),
             }}
           >
             <form
-              onSubmit={handleSubmit(addSection)}
+              onSubmit={handleSubmit(addLab)}
               className="flex flex-col gap-2"
             >
               <Input
@@ -110,61 +162,21 @@ function Labs() {
                   <Multiple
                     datas={generatePerson(100)}
                     title="Tags"
-                    value={value ?? []}
+                    value={value}
                     onChange={onChange}
                     canAddItemNotInList
                   />
                 )}
               />
+              <Checkbox
+                register={register}
+                label="isDisabled"
+                title="Disabled"
+              />
             </form>
           </ModalWithButton>
         </div>
-        <Table
-          data={[
-            {
-              id: 1,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-            {
-              id: 2,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-            {
-              id: 3,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-            {
-              id: 4,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-            {
-              id: 5,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-            {
-              id: 6,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-            {
-              id: 7,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-            {
-              id: 8,
-              name: "C 113 Lab 1",
-              tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
-            },
-          ]}
-          columns={columns}
-        />
-      </div>
+      </Table>
     </CourseLayout>
   );
 }
