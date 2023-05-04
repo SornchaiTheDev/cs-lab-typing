@@ -7,33 +7,28 @@ interface Props {
   children?: ReactNode;
 }
 
-function CourseLayout({ title, children }: Props) {
+function TaskLayout({ title, children }: Props) {
   return (
     <Layout {...{ title }}>
       <HorizontalMenu
+        basePath="/cms/courses/[courseId]/sections/[sectionId]"
         menus={[
+          { name: "Overview", path: "" },
+          { name: "LAB SET", path: "labset" },
+          { name: "Logs", path: "logs" },
           {
-            name: "Overview",
-            path: "",
-          },
-          {
-            name: "Sections",
-            path: "sections",
-          },
-          {
-            name: "Labs",
-            path: "labs",
+            name: "History",
+            path: "history",
           },
           {
             name: "Settings",
             path: "settings",
           },
         ]}
-        basePath="/cms/courses/[courseId]"
       />
       {children}
     </Layout>
   );
 }
 
-export default CourseLayout;
+export default TaskLayout;

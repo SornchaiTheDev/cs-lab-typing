@@ -10,7 +10,7 @@ const Header = ({
   nextMonthButtonDisabled,
   setStartDate,
 }: ReactDatePickerCustomHeaderProps & {
-  setStartDate: (value: Date | null) => void;
+  setStartDate: (value: Date, event: undefined) => void;
 }) => {
   const months = [
     "January",
@@ -32,14 +32,12 @@ const Header = ({
   const handleMonthChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newDate = new Date(date);
     newDate.setMonth(months.indexOf(e.target.value));
-    setStartDate(newDate);
-
-    console.log(newDate);
+    setStartDate(newDate, undefined);
   };
   const handleYearChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newDate = new Date(date);
     newDate.setFullYear(parseInt(e.target.value));
-    setStartDate(newDate);
+    setStartDate(newDate, undefined);
   };
 
   return (

@@ -13,6 +13,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface LabsRow {
   id: string;
@@ -47,6 +48,17 @@ function Labs() {
       {
         header: "Name",
         accessorKey: "name",
+        cell: (props) => (
+          <Link
+            href={{
+              pathname: router.pathname + "/[labId]",
+              query: { ...router.query, labId: 1 },
+            }}
+          >
+            {props.getValue()}
+          </Link>
+        ),
+        size: 100,
       },
       {
         header: "Tags",
@@ -62,22 +74,14 @@ function Labs() {
       },
       columnHelper.display({
         id: "actions",
-        header: "Edit/Delete",
+        header: "Delete",
         cell: (props) => (
-          <div className="flex justify-center w-full gap-3">
-            <button
-              onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
-              className="text-xl rounded-xl text-sand-12"
-            >
-              <Icon icon="solar:pen-2-line-duotone" />
-            </button>
-            <button
-              onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
-              className="text-xl rounded-xl text-sand-12"
-            >
-              <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
-            </button>
-          </div>
+          <button
+            onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
+            className="text-xl rounded-xl text-sand-12"
+          >
+            <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
+          </button>
         ),
         size: 50,
       }),
@@ -93,42 +97,42 @@ function Labs() {
           {
             id: 1,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python", "cs112"],
           },
           {
             id: 2,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python", "cs112"],
           },
           {
             id: 3,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python"],
           },
           {
             id: 4,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python"],
           },
           {
             id: 5,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python"],
           },
           {
             id: 6,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python"],
           },
           {
             id: 7,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python"],
           },
           {
             id: 8,
             name: "C 113 Lab 1",
-            tags: ["python", "cs112", "test", "hi", "hehe", "haha", "hoho"],
+            tags: ["python"],
           },
         ]}
         columns={columns}

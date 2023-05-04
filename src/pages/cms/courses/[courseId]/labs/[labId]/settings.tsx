@@ -81,14 +81,14 @@ function Settings({ course }: Props) {
             icon="solar:trash-bin-minimalistic-line-duotone"
             className="shadow bg-red-9 text-sand-1 active:bg-sand-11"
           >
-            Delete Course
+            Delete Lab
           </Button>
           {isDeleteOpen && (
             <DeleteAffect
-              type="course"
+              type="lab"
               onClose={() => setIsDeleteOpen(false)}
               onDelete={() => setIsDeleteOpen(false)}
-              selected="Fundamental Programming Concept"
+              selected="Test"
             />
           )}
         </div>

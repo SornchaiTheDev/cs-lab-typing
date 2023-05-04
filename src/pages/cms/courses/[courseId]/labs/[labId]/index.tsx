@@ -1,4 +1,5 @@
 import LabLayout from "@/Layout/LabLayout";
+import ModalWithButton from "@/components/Common/ModalWithButton";
 import Table from "@/components/Table";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
@@ -66,7 +67,14 @@ function Lab() {
         ]}
         columns={columns}
         className="mt-6"
-      />
+      >
+        <div className="p-4">
+          <ModalWithButton
+            title="Add Task"
+            icon="solar:programming-line-duotone"
+          ></ModalWithButton>
+        </div>
+      </Table>
     </LabLayout>
   );
 }
