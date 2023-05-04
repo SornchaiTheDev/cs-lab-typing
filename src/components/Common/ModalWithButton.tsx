@@ -5,6 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { Icon } from "@iconify/react";
 
+interface ConfirmBtn {
+  title: string;
+  icon?: string;
+  onClick: () => void;
+}
 interface Props {
   title: string;
   children?: ReactNode;
@@ -12,6 +17,7 @@ interface Props {
   className?: string;
   description?: string;
   color?: string;
+  confirmBtn?: ConfirmBtn;
 }
 
 function ModalWithButton({
@@ -21,12 +27,20 @@ function ModalWithButton({
   className,
   description,
   color = "bg-sand-12",
+  confirmBtn,
 }: Props) {
   const [isShow, setIsShow] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const onClose = () => {
     setIsShow(false);
+  };
+
+  const handleOnConfirmClick = () => {
+    if (confirmBtn) {
+      confirmBtn.onClick();
+    }
+    onClose();
   };
 
   useOnClickOutside(modalRef, onClose);
@@ -67,6 +81,16 @@ function ModalWithButton({
                 </button>
               </div>
               {children}
+              {confirmBtn && (
+                <Button
+                  onClick={handleOnConfirmClick}
+                  isLoading={false}
+                  icon={confirmBtn.icon}
+                  className="w-full py-3 mt-4 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                >
+                  {confirmBtn.title}
+                </Button>
+              )}
             </motion.div>
           </div>
         )}

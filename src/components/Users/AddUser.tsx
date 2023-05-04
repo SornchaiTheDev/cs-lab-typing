@@ -118,6 +118,11 @@ function AddUserBtn({ title, pattern }: Props) {
         description={`( ${pattern} )`}
         icon="solar:user-plus-rounded-line-duotone"
         className="w-[95%] md:w-[40rem] flex flex-col gap-4"
+        confirmBtn={{
+          title: `Add ${addAmount} ${title}${addAmount > 1 ? "s" : ""}`,
+          icon: "solar:user-plus-rounded-line-duotone",
+          onClick: () => {},
+        }}
       >
         <Codemirror
           autoFocus
@@ -127,15 +132,6 @@ function AddUserBtn({ title, pattern }: Props) {
           height="30rem"
           className="overflow-hidden h-[30rem] text-sm border rounded-md border-sand-6"
         />
-
-        <Button
-          isLoading={false}
-          icon="solar:user-plus-rounded-line-duotone"
-          className="w-full shadow bg-sand-12 text-sand-1 active:bg-sand-11"
-        >
-          Add {addAmount > 1 && `${addAmount}`} {title}
-          {addAmount > 1 ? "s" : ""}
-        </Button>
       </ModalWithButton>
     </div>
   );

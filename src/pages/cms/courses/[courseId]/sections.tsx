@@ -57,6 +57,11 @@ function Sections({ course }: Props) {
           title="Add Section"
           icon="solar:add-circle-line-duotone"
           className="md:w-[40rem] max-h-[90%] /overflow-y-auto"
+          confirmBtn={{
+            title: "Add Section",
+            icon: "solar:add-circle-line-duotone",
+            onClick: () => {},
+          }}
         >
           <form
             className="flex flex-col gap-2"
@@ -86,13 +91,6 @@ function Sections({ course }: Props) {
               error="Instructors cannot be empty"
             />
             <Input title="Note" label="note" register={register} optional />
-
-            <Button
-              icon="solar:add-circle-line-duotone"
-              className="py-3 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
-            >
-              Add Section
-            </Button>
           </form>
         </ModalWithButton>
       </div>

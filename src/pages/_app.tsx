@@ -8,7 +8,7 @@ import CommandPallete from "@/components/CommandPallete";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <CommandPallete />
+      {/* <CommandPallete /> */}
       <ToastContainer />
       <Component {...pageProps} />
     </>

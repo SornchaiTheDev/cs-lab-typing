@@ -1,9 +1,6 @@
-import Layout from "@/Layout";
 import React from "react";
 import { useRouter } from "next/router";
 import { GetStaticProps } from "next";
-import Link from "next/link";
-import { Icon } from "@iconify/react";
 import CourseLayout from "@/Layout/CourseLayout";
 
 interface Props {

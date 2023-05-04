@@ -104,7 +104,10 @@ function Select({
           >
             {options.map((data, i) => (
               <li
-                onClick={() => onChange(data)}
+                onClick={() => {
+                  onChange(data);
+                  setSelectedIndex(i);
+                }}
                 key={data}
                 className={clsx(
                   "p-2 rounded-lg cursor-pointer hover:bg-sand-2 text-sand-11",

@@ -31,6 +31,7 @@ function Sections() {
     <SectionLayout title="12 (F 15 - 17)">
       <div className="p-4">
         <h4 className="text-2xl">Section Information</h4>
+
         <h5 className="mt-4 mb-2 font-bold">Instructor(s)</h5>
         <div className="flex gap-2">
           {istructors.map((instructor) => (
