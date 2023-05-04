@@ -7,46 +7,40 @@ import {
 } from "react";
 import clsx from "clsx";
 import { Icon } from "@iconify/react";
-import { createId } from "@paralleldrive/cuid2";
 import TextHighlight from "./TextHighlight";
-import { generatePerson } from "@/helpers";
 import { useOnClickOutside } from "usehooks-ts";
+
 interface Props {
+  datas: string[];
   title: string;
   isError?: boolean;
   error?: string;
   className?: string;
   optional?: boolean;
-  value: (value: string[]) => void;
+  value: string[];
+  onChange: (value: string[]) => void;
   canAddItemNotInList?: boolean;
 }
 
-type selectedData = { text: string; key: string };
-
 const Multiple = (props: Props) => {
   const {
+    datas = [],
     className,
     title,
     optional,
     isError,
     error,
-    value,
-
     canAddItemNotInList,
+    value,
+    onChange,
   } = props;
 
   const [search, setSearch] = useState("");
-  const [datas, setDatas] = useState(generatePerson(100));
   const [isFocus, setIsFocus] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [selectedDatas, setSelectedDatas] = useState<selectedData[]>([]);
   const isSeaching = search.length > 0;
   const optionsRef = useRef<HTMLUListElement>(null);
   const selectRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // TODO: fetch data from server
-  }, [search]);
 
   useOnClickOutside(selectRef, () => setIsFocus(false));
 
@@ -54,7 +48,7 @@ const Multiple = (props: Props) => {
     ? datas.filter(
         (data) =>
           data.toLowerCase().includes(search.toLowerCase()) &&
-          !selectedDatas.some((selected) => selected.text === data)
+          !value.some((selected) => selected === data)
       )
     : isFocus
     ? datas
@@ -69,9 +63,6 @@ const Multiple = (props: Props) => {
   }, [search, isEmpty]);
 
   // send value to parent component
-  useEffect(() => {
-    value(selectedDatas.map((data) => data.text));
-  }, [selectedDatas, value]);
 
   const handleOnKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
@@ -87,27 +78,31 @@ const Multiple = (props: Props) => {
         break;
       case "Enter":
         e.preventDefault();
-        addItem();
+        addItem(filteredDatas[selectedIndex]);
         break;
       case "Backspace":
         if (search.length === 0) {
-          setSelectedDatas((prev) => prev.slice(0, prev.length - 1));
+          handleDelete();
         }
         break;
     }
   };
 
   const addItem = (text?: string) => {
-    if (!text) text = filteredDatas[selectedIndex];
+    if (!text) text = search;
     if (!canAddItemNotInList && !datas.includes(text)) return;
-    if (selectedDatas.map((data) => data.text).includes(text)) return;
-    setSelectedDatas((prev) => [...prev, { text: text!, key: createId() }]);
+    if (value.map((data) => data).includes(text)) return;
+    onChange([...value, text!]);
     setSearch("");
     setSelectedIndex(0);
   };
 
-  const handleDelete = (key: string) => {
-    setSelectedDatas((prev) => prev.filter((data) => data.key !== key));
+  const handleDelete = (item?: string) => {
+    if (item) {
+      onChange(value.filter((data) => data !== item));
+      return;
+    }
+    onChange(value.slice(0, value.length - 1));
   };
 
   useEffect(() => {
@@ -151,19 +146,18 @@ const Multiple = (props: Props) => {
             isError && "border-tomato-7"
           )}
         >
-          {selectedDatas.map(({ text, key }) => (
+          {value.map((value) => (
             <button
-              key={key}
+              key={value}
               className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
-              onClick={() => handleDelete(key)}
+              onClick={() => handleDelete(value)}
             >
-              {text} <Icon icon="material-symbols:close-rounded" />
+              {value} <Icon icon="material-symbols:close-rounded" />
             </button>
           ))}
           <div className="relative flex-1">
             <input
               onFocus={() => setIsFocus(true)}
-              // onBlur={() => setIsFocus(false)}
               value={search}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setSearch(e.target.value)

@@ -40,7 +40,7 @@ function ModalWithButton({
     if (confirmBtn) {
       confirmBtn.onClick();
     }
-    onClose();
+    // onClose();
   };
 
   useOnClickOutside(modalRef, onClose);
