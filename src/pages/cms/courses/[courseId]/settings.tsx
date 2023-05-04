@@ -9,6 +9,7 @@ import TextArea from "@/components/Common/TextArea";
 import Button from "@/components/Common/Button";
 import Multiple from "@/components/Search/Multiple";
 import DeleteAffect from "@/components/DeleteAffect";
+import { generatePerson } from "@/helpers";
 
 interface Props {
   course: {
@@ -62,7 +63,7 @@ function Settings({ course }: Props) {
               name="authors"
               render={({ field: { onChange, value } }) => (
                 <Multiple
-                  datas={[]}
+                  datas={generatePerson(100)}
                   title="Authors"
                   value={value}
                   onChange={onChange}

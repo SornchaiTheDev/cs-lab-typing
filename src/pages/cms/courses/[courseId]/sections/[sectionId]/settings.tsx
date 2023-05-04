@@ -13,6 +13,7 @@ import SectionLayout from "@/Layout/SectionLayout";
 import Select from "@/components/Common/Select";
 import { AddSectionSchema, TAddSection } from "@/forms/AddSection";
 import { semesters } from "@/__mock__";
+import { generatePerson } from "@/helpers";
 
 interface Props {
   course: {
@@ -89,7 +90,7 @@ function Settings({ course }: Props) {
               name="instructors"
               render={({ field: { onChange, value } }) => (
                 <Multiple
-                  datas={[]}
+                  datas={generatePerson(100)}
                   title="Instructors"
                   value={value}
                   onChange={onChange}
