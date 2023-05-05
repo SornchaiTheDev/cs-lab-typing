@@ -47,7 +47,7 @@ function Courses() {
               {
                 label: "authors",
                 title: "Authors",
-                type: "multiple",
+                type: "multiple-search",
                 options: generatePerson(100),
               },
               { label: "note", title: "Note", type: "text", optional: true },

@@ -106,14 +106,14 @@ function Tasks() {
                 {
                   label: "tags",
                   title: "Tags",
-                  type: "multiple",
+                  type: "multiple-search",
                   options: ["C++", "Python", "Java"],
                   optional: true,
                 },
                 {
                   label: "owner",
                   title: "Owner",
-                  type: "multiple",
+                  type: "single-search",
                   options: generatePerson(10),
                 },
                 {

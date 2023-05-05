@@ -138,7 +138,7 @@ function Labs() {
                 {
                   label: "tags",
                   title: "Tags",
-                  type: "multiple",
+                  type: "multiple-search",
                 },
                 {
                   label: "isDisabled",

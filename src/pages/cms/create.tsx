@@ -1,4 +1,4 @@
-import Input from "@/components/Common/Input";
+import Input from "@/components/Forms/Input";
 import { Icon } from "@iconify/react";
 import PasswordRequirement from "@/components/CreateAdminAccount/PasswordRequirement";
 import { useForm } from "react-hook-form";

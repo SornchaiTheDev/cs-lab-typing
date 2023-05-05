@@ -29,7 +29,7 @@ const TextArea = <T extends FieldValues>(props: Props<T>) => {
 
       <textarea
         rows={5}
-        className="w-full p-2 border rounded-lg outline-none border-sand-6 caret-sand-12"
+        className="w-full p-2 border rounded-lg outline-none bg-sand-1 border-sand-6 caret-sand-12"
         {...{ ...register(label) }}
       ></textarea>
     </div>

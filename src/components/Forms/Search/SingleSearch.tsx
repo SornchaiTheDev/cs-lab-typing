@@ -6,9 +6,9 @@ import {
   useEffect,
 } from "react";
 import clsx from "clsx";
-import { Icon } from "@iconify/react";
 import TextHighlight from "./TextHighlight";
 import { useOnClickOutside } from "usehooks-ts";
+import { Icon } from "@iconify/react";
 
 interface Props {
   datas: string[];
@@ -17,12 +17,12 @@ interface Props {
   error?: string;
   className?: string;
   optional?: boolean;
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: string;
+  onChange: (value: string) => void;
   canAddItemNotInList?: boolean;
 }
 
-const Multiple = (props: Props) => {
+const SingleSearch = (props: Props) => {
   const {
     datas = [],
     className,
@@ -31,10 +31,9 @@ const Multiple = (props: Props) => {
     isError,
     error,
     canAddItemNotInList,
-    value = [],
+    value,
     onChange,
   } = props;
-
   const [search, setSearch] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -45,11 +44,7 @@ const Multiple = (props: Props) => {
   useOnClickOutside(selectRef, () => setIsFocus(false));
 
   const filteredDatas = isSeaching
-    ? datas.filter(
-        (data) =>
-          data.toLowerCase().includes(search.toLowerCase()) &&
-          !value.some((selected) => selected === data)
-      )
+    ? datas.filter((data) => data.toLowerCase().includes(search.toLowerCase()))
     : isFocus
     ? datas
     : [];
@@ -60,9 +55,7 @@ const Multiple = (props: Props) => {
     if (isEmpty) {
       setSelectedIndex(0);
     }
-  }, [search, isEmpty]);
-
-  // send value to parent component
+  }, [isEmpty]);
 
   const handleOnKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
@@ -81,9 +74,7 @@ const Multiple = (props: Props) => {
         addItem(filteredDatas[selectedIndex]);
         break;
       case "Backspace":
-        if (search.length === 0) {
-          handleDelete();
-        }
+        onClear();
         break;
     }
   };
@@ -91,18 +82,15 @@ const Multiple = (props: Props) => {
   const addItem = (text?: string) => {
     if (!text) text = search;
     if (!canAddItemNotInList && !datas.includes(text)) return;
-    if (value.map((data) => data).includes(text)) return;
-    onChange([...value, text!]);
-    setSearch("");
+
+    onChange(text);
     setSelectedIndex(0);
+    setIsFocus(false);
+    setSearch("");
   };
 
-  const handleDelete = (item?: string) => {
-    if (item) {
-      onChange(value.filter((data) => data !== item));
-      return;
-    }
-    onChange(value.slice(0, value.length - 1));
+  const onClear = () => {
+    onChange("");
   };
 
   useEffect(() => {
@@ -142,31 +130,31 @@ const Multiple = (props: Props) => {
       <div className="relative" ref={selectRef}>
         <div
           className={clsx(
-            "w-full p-2 border border-sand-6 min-h-[2.5rem] rounded-md outline-none bg-sand-1 flex flex-wrap items-center gap-2",
+            "relative w-full p-2 border border-sand-6 min-h-[2.5rem] rounded-md bg-sand-1 flex flex-wrap items-center gap-2",
             isError && "border-tomato-7"
           )}
         >
-          {value.map((value) => (
+          {value.length > 0 ? (
             <button
               key={value}
               className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
-              onClick={() => handleDelete(value)}
+              onClick={() => onClear()}
             >
               {value} <Icon icon="material-symbols:close-rounded" />
             </button>
-          ))}
-          <div className="relative flex-1">
+          ) : (
             <input
               onFocus={() => setIsFocus(true)}
               value={search}
+              className="w-full bg-transparent outline-none"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setSearch(e.target.value)
               }
               onKeyDown={handleOnKeyDown}
-              className="w-full outline-none min-w-[5rem] bg-transparent"
             />
-          </div>
+          )}
         </div>
+
         {isFocus && !isEmpty && (
           <ul
             ref={optionsRef}
@@ -175,7 +163,7 @@ const Multiple = (props: Props) => {
             {filteredDatas.map((data, i) => (
               <TextHighlight
                 key={data}
-                search={search}
+                search={value}
                 text={data}
                 isSelected={selectedIndex === i}
                 onClick={() => addItem(data)}
@@ -188,4 +176,4 @@ const Multiple = (props: Props) => {
   );
 };
 
-export default Multiple;
+export default SingleSearch;

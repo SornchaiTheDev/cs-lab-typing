@@ -40,7 +40,7 @@ function Settings({ course }: Props) {
               {
                 label: "instructors",
                 title: "Instructors",
-                type: "multiple",
+                type: "multiple-search",
                 options: generatePerson(100),
               },
               { label: "note", title: "Note", type: "text" },

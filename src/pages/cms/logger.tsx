@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
 import TimePickerRange from "@/components/TimePickerRange";
 import { Icon } from "@iconify/react";
-import RangePicker from "@/components/DatePicker/RangePicker";
+import RangePicker from "@/components/Forms/DatePicker/RangePicker";
 
 interface LoggerRow {
   type: string;

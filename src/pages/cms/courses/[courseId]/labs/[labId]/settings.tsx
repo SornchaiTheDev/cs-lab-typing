@@ -35,7 +35,7 @@ function Settings({ course }: Props) {
                 title: "Name",
                 type: "text",
               },
-              { label: "tags", title: "Tags", type: "multiple" },
+              { label: "tags", title: "Tags", type: "multiple-search" },
               {
                 label: "isDisabled",
                 title: "Disabled",

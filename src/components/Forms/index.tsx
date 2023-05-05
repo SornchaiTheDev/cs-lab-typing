@@ -1,14 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import Input from "../Common/Input";
-import Select from "../Common/Select";
-import Multiple from "../Search/Multiple";
-import Checkbox from "../Common/Checkbox";
+import Input from "./Input";
+import Select from "./Select";
+import SingleSearch from "./Search/SingleSearch";
+import MultipleSearch from "./Search/MultipleSearch";
+import Checkbox from "./Checkbox";
 import { ZodObject, z } from "zod";
-import TextArea from "../Common/TextArea";
+import TextArea from "./TextArea";
 import Button from "@/components/Common/Button";
 import clsx from "clsx";
-import SinglePicker from "../DatePicker/SinglePicker";
+import SinglePicker from "./DatePicker/SinglePicker";
 
 interface ConfirmBtn {
   title: string;
@@ -19,9 +20,17 @@ interface ConfirmBtn {
 type EachField<T> = {
   label: keyof T;
   title: string;
-  type: "select" | "multiple" | "text" | "checkbox" | "textarea" | "date";
+  type:
+    | "select"
+    | "single-search"
+    | "multiple-search"
+    | "text"
+    | "checkbox"
+    | "textarea"
+    | "date";
   optional?: boolean;
   options?: string[];
+  canAddItemNotInList?: boolean;
   conditional?: (data: string) => boolean;
   children?: EachField<T>;
 };
@@ -76,14 +85,15 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             )}
           />
         );
-      case "multiple":
+
+      case "single-search":
         return (
           <Controller
             key={field.label as string}
             control={control}
             name={field.label as string}
             render={({ field: { onChange, value } }) => (
-              <Multiple
+              <SingleSearch
                 datas={field.options ?? []}
                 title={field.title}
                 value={value ?? []}
@@ -91,6 +101,27 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
+                canAddItemNotInList={field.canAddItemNotInList}
+              />
+            )}
+          />
+        );
+      case "multiple-search":
+        return (
+          <Controller
+            key={field.label as string}
+            control={control}
+            name={field.label as string}
+            render={({ field: { onChange, value } }) => (
+              <MultipleSearch
+                datas={field.options ?? []}
+                title={field.title}
+                value={value ?? []}
+                onChange={onChange}
+                isError={!!errors[field.label]}
+                error={errors[field.label]?.message as string}
+                optional={field.optional}
+                canAddItemNotInList={field.canAddItemNotInList}
               />
             )}
           />
