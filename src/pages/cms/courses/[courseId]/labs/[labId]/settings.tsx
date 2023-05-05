@@ -10,6 +10,7 @@ import Button from "@/components/Common/Button";
 import Multiple from "@/components/Search/Multiple";
 import DeleteAffect from "@/components/DeleteAffect";
 import { generatePerson } from "@/helpers";
+import Forms from "@/components/Forms";
 
 interface Props {
   course: {
@@ -30,6 +31,10 @@ function Settings({ course }: Props) {
     resolver: zodResolver(AddLabSchema),
   });
 
+  const editLab = (formData: TAddLabSchema) => {
+    const { name, isDisabled, tags } = formData;
+  };
+
   return (
     <LabLayout title="Fundamental Programming Concept">
       <div className="w-1/2 p-4">
@@ -37,42 +42,28 @@ function Settings({ course }: Props) {
           <h4 className="text-xl">General</h4>
           <hr className="my-2" />
 
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={handleSubmit(() => {})}
-          >
-            <Input
-              title="Name"
-              label="name"
-              register={register}
-              error={errors.name && errors.name.message}
-              isError={errors.name !== undefined}
-              className="flex-1"
-            />
-
-            <Controller
-              control={control}
-              name="tags"
-              render={({ field: { onChange, value } }) => (
-                <Multiple
-                  datas={generatePerson(100)}
-                  title="Tags"
-                  value={value}
-                  onChange={onChange}
-                  isError={errors.tags !== undefined}
-                  error={errors.tags?.message}
-                  canAddItemNotInList
-                />
-              )}
-            />
-
-            <Button
-              icon="solar:pen-2-line-duotone"
-              className="w-1/3 py-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
-            >
-              Edit
-            </Button>
-          </form>
+          <Forms
+            schema={AddLabSchema}
+            onSubmit={editLab}
+            fields={[
+              {
+                label: "name",
+                title: "Name",
+                type: "text",
+              },
+              { label: "tags", title: "Tags", type: "multiple" },
+              {
+                label: "isDisabled",
+                title: "Disabled",
+                type: "checkbox",
+              },
+            ]}
+            confirmBtn={{
+              title: "Edit Lab",
+              icon: "solar:pen-2-line-duotone",
+              className: "w-1/3 py-2 ",
+            }}
+          />
         </div>
         <div className="mt-10">
           <h4 className="text-xl text-red-9">Danger Zone</h4>

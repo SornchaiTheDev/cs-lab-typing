@@ -88,7 +88,7 @@ function Tasks() {
                 {
                   label: "name",
                   title: "Name",
-                  type: "input",
+                  type: "text",
                 },
                 {
                   label: "type",
@@ -121,7 +121,7 @@ function Tasks() {
                   title: "Private",
                   type: "checkbox",
                 },
-                { label: "note", title: "Note", type: "input" },
+                { label: "note", title: "Note", type: "text" },
               ]}
             />
           </ModalWithButton>

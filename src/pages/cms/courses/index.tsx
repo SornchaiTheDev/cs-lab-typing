@@ -1,7 +1,8 @@
 import Layout from "@/Layout";
-import Button from "@/components/Common/Button";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import AddCourse from "@/components/Course/AddCourse";
+import Forms from "@/components/Forms";
+import { AddCourseSchema, TAddCourse } from "@/forms/AddCourse";
+import { generatePerson } from "@/helpers";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React from "react";
@@ -16,9 +17,50 @@ function Courses() {
     return color;
   }
 
+  const addCourse = (formData: TAddCourse) => {
+    const { name, comments, note, number } = formData;
+    // TODO add course
+  };
+
   return (
     <Layout title="courses">
-      <AddCourse />
+      <div className="mb-4">
+        <ModalWithButton
+          title="Add Course"
+          icon="solar:add-circle-line-duotone"
+          className="md:w-[40rem] max-h-[90%] overflow-y-auto"
+        >
+          <Forms
+            confirmBtn={{
+              title: "Add Course",
+              icon: "solar:add-circle-line-duotone",
+            }}
+            schema={AddCourseSchema}
+            onSubmit={addCourse}
+            fields={[
+              { label: "number", title: "Number", type: "text" },
+              {
+                label: "name",
+                title: "Name",
+                type: "text",
+              },
+              {
+                label: "authors",
+                title: "Authors",
+                type: "multiple",
+                options: generatePerson(100),
+              },
+              { label: "note", title: "Note", type: "text", optional: true },
+              {
+                label: "comments",
+                title: "Comments",
+                type: "textarea",
+                optional: true,
+              },
+            ]}
+          />
+        </ModalWithButton>
+      </div>
       <div className="grid grid-cols-12 gap-6">
         {new Array(10).fill(0).map((_, i) => (
           <Link

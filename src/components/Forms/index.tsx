@@ -6,11 +6,20 @@ import Multiple from "../Search/Multiple";
 import Checkbox from "../Common/Checkbox";
 import { ZodObject, z } from "zod";
 import TextArea from "../Common/TextArea";
+import Button from "@/components/Common/Button";
+import clsx from "clsx";
+
+interface ConfirmBtn {
+  title: string;
+  icon?: string;
+  className?: string;
+}
 
 type EachField<T> = {
   label: keyof T;
   title: string;
-  type: "select" | "multiple" | "input" | "checkbox" | "textarea";
+  type: "select" | "multiple" | "text" | "checkbox" | "textarea";
+  optional?: boolean;
   options?: string[];
   conditional?: (data: string) => boolean;
   children?: EachField<T>;
@@ -20,9 +29,10 @@ interface Props<T> {
   onSubmit: (formData: T) => void;
   schema: ZodObject<any>;
   fields: EachField<T>[];
+  confirmBtn?: ConfirmBtn;
 }
 
-function Forms<T>({ onSubmit, schema, fields }: Props<T>) {
+function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
   const {
     watch,
     control,
@@ -34,13 +44,16 @@ function Forms<T>({ onSubmit, schema, fields }: Props<T>) {
   });
   const render = (field: EachField<T>) => {
     switch (field.type) {
-      case "input":
+      case "text":
         return (
           <Input
             key={field.label as string}
             register={register}
             label={field.label as string}
             title={field.title}
+            optional={field.optional}
+            isError={!!errors[field.label]}
+            error={errors[field.label]?.message as string}
           />
         );
       case "select":
@@ -55,8 +68,9 @@ function Forms<T>({ onSubmit, schema, fields }: Props<T>) {
                 title={field.title}
                 value={value}
                 onChange={onChange}
-                isError={!!errors.type}
-                error={errors.type?.message as string}
+                isError={!!errors[field.label]}
+                error={errors[field.label]?.message as string}
+                optional={field.optional}
               />
             )}
           />
@@ -73,8 +87,9 @@ function Forms<T>({ onSubmit, schema, fields }: Props<T>) {
                 title={field.title}
                 value={value ?? []}
                 onChange={onChange}
-                isError={!!errors.owner}
-                error={errors.owner?.message as string}
+                isError={!!errors[field.label]}
+                error={errors[field.label]?.message as string}
+                optional={field.optional}
               />
             )}
           />
@@ -95,7 +110,7 @@ function Forms<T>({ onSubmit, schema, fields }: Props<T>) {
             label={field.label as string}
             title={field.title}
             register={register}
-            optional
+            optional={field.optional}
           />
         );
     }
@@ -117,6 +132,18 @@ function Forms<T>({ onSubmit, schema, fields }: Props<T>) {
         }
         return renderItem;
       })}
+      {confirmBtn && (
+        <Button
+          isLoading={false}
+          icon={confirmBtn.icon}
+          className={clsx(
+            "shadow bg-sand-12 text-sand-1 active:bg-sand-11",
+            confirmBtn.className ?? "py-3 w-full  mt-4"
+          )}
+        >
+          {confirmBtn.title}
+        </Button>
+      )}
     </form>
   );
 }

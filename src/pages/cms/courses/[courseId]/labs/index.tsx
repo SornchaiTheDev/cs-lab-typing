@@ -14,6 +14,7 @@ import { useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Forms from "@/components/Forms";
 
 interface LabsRow {
   id: string;
@@ -142,42 +143,32 @@ function Labs() {
             title="Add Lab"
             icon="solar:checklist-minimalistic-line-duotone"
             className="w-[95%] md:w-[40rem] flex flex-col gap-4"
-            confirmBtn={{
-              title: `Add Lab`,
-              icon: "solar:checklist-minimalistic-line-duotone",
-              onClick: handleSubmit(addLab),
-            }}
           >
-            <form
-              onSubmit={handleSubmit(addLab)}
-              className="flex flex-col gap-2"
-            >
-              <Input
-                register={register}
-                label="name"
-                title="Name"
-                isError={errors.name != undefined}
-                error={errors.name?.message}
-              />
-              <Controller
-                control={control}
-                name="tags"
-                render={({ field: { onChange, value } }) => (
-                  <Multiple
-                    datas={generatePerson(100)}
-                    title="Tags"
-                    value={value}
-                    onChange={onChange}
-                    canAddItemNotInList
-                  />
-                )}
-              />
-              <Checkbox
-                register={register}
-                label="isDisabled"
-                title="Disabled"
-              />
-            </form>
+            <Forms
+              schema={AddLabSchema}
+              onSubmit={addLab}
+              confirmBtn={{
+                title: `Add Lab`,
+                icon: "solar:checklist-minimalistic-line-duotone",
+              }}
+              fields={[
+                {
+                  label: "name",
+                  title: "Name",
+                  type: "text",
+                },
+                {
+                  label: "tags",
+                  title: "Tags",
+                  type: "multiple",
+                },
+                {
+                  label: "isDisabled",
+                  title: "Disabled",
+                  type: "checkbox",
+                },
+              ]}
+            />
           </ModalWithButton>
         </div>
       </Table>

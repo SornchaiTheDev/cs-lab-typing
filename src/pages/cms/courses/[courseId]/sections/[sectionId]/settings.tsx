@@ -14,6 +14,7 @@ import Select from "@/components/Common/Select";
 import { AddSectionSchema, TAddSection } from "@/forms/AddSection";
 import { semesters } from "@/__mock__";
 import { generatePerson } from "@/helpers";
+import Forms from "@/components/Forms";
 
 interface Props {
   course: {
@@ -38,7 +39,7 @@ function Settings({ course }: Props) {
   const [semester, setSemester] = useState<string | null>(null);
   const [isSemesterError, setIsSemesterError] = useState(false);
 
-  const addSection = (formData: TAddSection) => {
+  const editSection = (formData: TAddSection) => {
     const { name, note } = formData;
   };
 
@@ -59,55 +60,30 @@ function Settings({ course }: Props) {
           <h4 className="text-xl">General</h4>
           <hr className="my-2" />
 
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={handleSubmit(addSection)}
-          >
-            <Controller
-              control={control}
-              name="semester"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  options={semesters}
-                  title="Semester"
-                  value={value}
-                  onChange={onChange}
-                  isError={errors.semester !== undefined}
-                  error={errors.semester?.message}
-                />
-              )}
-            />
-            <Input
-              title="Name"
-              label="name"
-              register={register}
-              error={errors.name && errors.name.message}
-              isError={errors.name !== undefined}
-              className="flex-1"
-            />
-            <Controller
-              control={control}
-              name="instructors"
-              render={({ field: { onChange, value } }) => (
-                <Multiple
-                  datas={generatePerson(100)}
-                  title="Instructors"
-                  value={value}
-                  onChange={onChange}
-                  isError={errors.instructors !== undefined}
-                  error={errors.instructors?.message}
-                />
-              )}
-            />
-            <Input title="Note" label="note" register={register} optional />
-
-            <Button
-              icon="solar:add-circle-line-duotone"
-              className="w-1/3 py-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
-            >
-              Edit
-            </Button>
-          </form>
+          <Forms
+            onSubmit={editSection}
+            schema={AddSectionSchema}
+            fields={[
+              {
+                label: "semester",
+                title: "Semester",
+                type: "select",
+              },
+              { label: "name", title: "Name", type: "text" },
+              {
+                label: "instructors",
+                title: "Instructors",
+                type: "multiple",
+                options: generatePerson(100),
+              },
+              { label: "note", title: "Note", type: "text" },
+            ]}
+            confirmBtn={{
+              title: "Edit Section",
+              icon: "solar:pen-2-line-duotone",
+              className: "w-1/3 py-2 ",
+            }}
+          />
         </div>
         <div className="mt-10">
           <h4 className="text-xl text-red-9">Danger Zone</h4>

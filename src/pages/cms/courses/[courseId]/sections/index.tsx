@@ -14,6 +14,7 @@ import Button from "@/components/Common/Button";
 import Select from "@/components/Common/Select";
 import { semesters } from "@/__mock__";
 import { generatePerson } from "@/helpers";
+import Forms from "@/components/Forms";
 
 interface Props {
   course: {
@@ -44,55 +45,31 @@ function Sections({ course }: Props) {
           title="Add Section"
           icon="solar:add-circle-line-duotone"
           className="md:w-[40rem] max-h-[90%] /overflow-y-auto"
-          confirmBtn={{
-            title: "Add Section",
-            icon: "solar:add-circle-line-duotone",
-            onClick: handleSubmit(addSection),
-          }}
         >
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={handleSubmit(addSection)}
-          >
-            <Controller
-              control={control}
-              name="semester"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  options={semesters}
-                  title="Semester"
-                  value={value}
-                  onChange={onChange}
-                  isError={errors.semester !== undefined}
-                  error={errors.semester?.message}
-                />
-              )}
-            />
-            <Input
-              title="Name"
-              label="name"
-              register={register}
-              error={errors.name && errors.name.message}
-              isError={errors.name !== undefined}
-              className="flex-1"
-            />
-
-            <Controller
-              control={control}
-              name="instructors"
-              render={({ field: { onChange, value } }) => (
-                <Multiple
-                  datas={generatePerson(100)}
-                  title="Instructors"
-                  value={value ?? []}
-                  onChange={onChange}
-                  isError={errors.instructors !== undefined}
-                  error={errors.instructors?.message}
-                />
-              )}
-            />
-            <Input title="Note" label="note" register={register} optional />
-          </form>
+          <Forms
+            confirmBtn={{
+              title: "Add Section",
+              icon: "solar:add-circle-line-duotone",
+            }}
+            schema={AddSectionSchema}
+            onSubmit={addSection}
+            fields={[
+              {
+                label: "semester",
+                title: "Semester",
+                type: "select",
+                options: ["2566/FIRST" , "2566/SECOND" , "2566/SUMMER"],
+              },
+              { label: "name", title: "Name", type: "text" },
+              {
+                label: "instructors",
+                title: "Instructors",
+                type: "multiple",
+                options: generatePerson(100),
+              },
+              { label: "note", title: "Note", type: "text", optional: true },
+            ]}
+          />
         </ModalWithButton>
       </div>
       <div className="grid grid-cols-12 gap-6 mt-4">

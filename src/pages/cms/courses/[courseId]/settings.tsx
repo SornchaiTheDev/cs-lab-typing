@@ -10,6 +10,7 @@ import Button from "@/components/Common/Button";
 import Multiple from "@/components/Search/Multiple";
 import DeleteAffect from "@/components/DeleteAffect";
 import { generatePerson } from "@/helpers";
+import Forms from "@/components/Forms";
 
 interface Props {
   course: {
@@ -30,6 +31,10 @@ function Settings({ course }: Props) {
     resolver: zodResolver(AddCourseSchema),
   });
 
+  const addCourse = (formData: TAddCourse) => {
+    const { number, name, authors, note, comments } = formData;
+  };
+
   return (
     <CourseLayout title="Fundamental Programming Concept">
       <div className="w-1/2 p-4">
@@ -37,56 +42,36 @@ function Settings({ course }: Props) {
           <h4 className="text-xl">General</h4>
           <hr className="my-2" />
 
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={handleSubmit(() => {})}
-          >
-            <Input
-              title="Number"
-              label="number"
-              error={errors.number && errors.number.message}
-              isError={errors.number !== undefined}
-              register={register}
-              className="flex-1"
-            />
-            <Input
-              title="Name"
-              label="name"
-              register={register}
-              error={errors.name && errors.name.message}
-              isError={errors.name !== undefined}
-              className="flex-1"
-            />
-
-            <Controller
-              control={control}
-              name="authors"
-              render={({ field: { onChange, value } }) => (
-                <Multiple
-                  datas={generatePerson(100)}
-                  title="Authors"
-                  value={value}
-                  onChange={onChange}
-                  isError={errors.authors !== undefined}
-                  error={errors.authors?.message}
-                />
-              )}
-            />
-            <Input title="Note" label="note" register={register} optional />
-
-            <TextArea
-              title="Comments"
-              label="comments"
-              register={register}
-              optional
-            />
-            <Button
-              icon="solar:pen-2-line-duotone"
-              className="w-1/3 py-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
-            >
-              Edit
-            </Button>
-          </form>
+          <Forms
+            confirmBtn={{
+              title: "Edit Course",
+              icon: "solar:pen-2-line-duotone",
+              className: "w-1/3 py-2 ",
+            }}
+            schema={AddCourseSchema}
+            onSubmit={addCourse}
+            fields={[
+              { label: "number", title: "Number", type: "text" },
+              {
+                label: "name",
+                title: "Name",
+                type: "text",
+              },
+              {
+                label: "authors",
+                title: "Authors",
+                type: "multiple",
+                options: generatePerson(100),
+              },
+              { label: "note", title: "Note", type: "text", optional: true },
+              {
+                label: "comments",
+                title: "Comments",
+                type: "textarea",
+                optional: true,
+              },
+            ]}
+          />
         </div>
         <div className="mt-10">
           <h4 className="text-xl text-red-9">Danger Zone</h4>
