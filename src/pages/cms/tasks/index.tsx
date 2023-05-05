@@ -1,7 +1,7 @@
 import TaskLayout from "@/Layout/TaskLayout";
 import ModalWithButton from "@/components/Common/ModalWithButton";
 import Forms from "@/components/Forms";
-import Table from "@/components/Table";
+import Table from "@/components/Common/Table";
 import { AddTaskSchema, TAddTask } from "@/forms/TaskSchema";
 import { generatePerson } from "@/helpers";
 import { ColumnDef } from "@tanstack/react-table";

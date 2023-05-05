@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import Layout from "@/Layout";
-import Table from "@/components/Table";
+import Table from "@/components/Common/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
 import TimePickerRange from "@/components/TimePickerRange";

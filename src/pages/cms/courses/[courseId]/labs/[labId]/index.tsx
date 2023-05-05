@@ -1,6 +1,6 @@
 import LabLayout from "@/Layout/LabLayout";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import Table from "@/components/Table";
+import Table from "@/components/Common/Table";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
