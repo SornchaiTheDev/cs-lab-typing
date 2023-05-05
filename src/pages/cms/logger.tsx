@@ -3,7 +3,6 @@ import Layout from "@/Layout";
 import Table from "@/components/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
-import DatePicker from "@/components/DatePicker";
 import TimePickerRange from "@/components/TimePickerRange";
 import { Icon } from "@iconify/react";
 import RangePicker from "@/components/DatePicker/RangePicker";
