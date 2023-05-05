@@ -6,6 +6,7 @@ import clsx from "clsx";
 import DatePicker from "@/components/DatePicker";
 import TimePickerRange from "@/components/TimePickerRange";
 import { Icon } from "@iconify/react";
+import RangePicker from "@/components/DatePicker/RangePicker";
 
 interface LoggerRow {
   type: string;
@@ -188,7 +189,11 @@ function Logger() {
 
   return (
     <Layout title="Logger">
-      <div className="min-h-screen overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
+      <Table
+        data={data}
+        columns={columns}
+        defaultSortingState={{ id: "date", desc: true }}
+      >
         <div className="flex justify-end p-2 ">
           <button
             onClick={exportCSV}
@@ -199,15 +204,14 @@ function Logger() {
           </button>
         </div>
         <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          <DatePicker onApply={(startDate, endDate) => {}} />
+          <RangePicker
+            value={new Date("2023-05-04T09:30:00").getTime()}
+            onChange={(range) => {}}
+          />
+
           <TimePickerRange onApply={(startTime, endTime) => {}} />
         </div>
-        <Table
-          data={data}
-          columns={columns}
-          defaultSortingState={{ id: "date", desc: true }}
-        />
-      </div>
+      </Table>
     </Layout>
   );
 }

@@ -15,7 +15,14 @@ interface Props {
   error?: string;
 }
 
-function Single({ value, onChange, title, optional, isError, error }: Props) {
+function SinglePicker({
+  value,
+  onChange,
+  title,
+  optional,
+  isError,
+  error,
+}: Props) {
   const [isShow, setIsShow] = useState<boolean>(false);
   const dateRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(dateRef, () => setIsShow(false));
@@ -62,4 +69,4 @@ function Single({ value, onChange, title, optional, isError, error }: Props) {
   );
 }
 
-export default Single;
+export default SinglePicker;

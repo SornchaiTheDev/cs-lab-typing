@@ -1,4 +1,6 @@
 import "@/styles/globals.css";
+import "react-day-picker/dist/style.css";
+import "@/styles/datepicker.css"
 import type { AppProps } from "next/app";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

@@ -91,94 +91,93 @@ function Admin({ title, role, pattern }: Props) {
         />
       )}
 
-      <div className="min-h-screen overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6">
+      <Table
+        data={[
+          {
+            username: "johndoe",
+            password: "123456",
+            email: "johndoe@example.com",
+            isOAuthEnabled: true,
+            created_at: "2021-01-14T11:52:00.958Z",
+            last_logined: "2020-02-18T10:37:54.116Z",
+          },
+          {
+            username: "janedoe",
+            password: "654321",
+            email: "janedoe@example.com",
+            isOAuthEnabled: false,
+            created_at: "2020-11-10T12:44:43.106Z",
+            last_logined: "2022-08-27T07:36:08.691Z",
+          },
+          {
+            username: "bobsmith",
+            password: "password123",
+            email: "bobsmith@example.com",
+            isOAuthEnabled: true,
+            created_at: "2022-09-25T04:24:54.135Z",
+            last_logined: "2022-05-01T01:57:59.544Z",
+          },
+          {
+            username: "sallyjones",
+            password: "passw0rd",
+            email: "sallyjones@example.com",
+            isOAuthEnabled: false,
+            created_at: "2021-04-18T07:06:14.586Z",
+            last_logined: "2022-08-09T10:51:01.489Z",
+          },
+          {
+            username: "mikebrown",
+            password: "p@ssword",
+            email: "mikebrown@example.com",
+            isOAuthEnabled: true,
+            created_at: "2021-12-16T02:00:38.165Z",
+            last_logined: "2020-03-05T03:54:57.518Z",
+          },
+          {
+            username: "jennybrown",
+            password: "p@ssword",
+            email: "jennybrown@example.com",
+            isOAuthEnabled: true,
+            created_at: "2020-11-29T22:08:04.191Z",
+            last_logined: "2021-03-11T15:50:11.320Z",
+          },
+          {
+            username: "jasonlee",
+            password: "qwerty123",
+            email: "jasonlee@example.com",
+            isOAuthEnabled: false,
+            created_at: "2021-12-04T06:36:16.697Z",
+            last_logined: "2022-08-19T15:49:57.956Z",
+          },
+          {
+            username: "amysmith",
+            password: "ilovecats",
+            email: "amysmith@example.com",
+            isOAuthEnabled: true,
+            created_at: "2021-09-17T01:00:10.871Z",
+            last_logined: "2020-03-12T13:02:20.796Z",
+          },
+          {
+            username: "davidwilliams",
+            password: "1q2w3e4r",
+            email: "davidwilliams@example.com",
+            isOAuthEnabled: false,
+            created_at: "2021-12-24T20:42:19.942Z",
+            last_logined: "2020-07-10T15:23:04.673Z",
+          },
+          {
+            username: "laurajones",
+            password: "letmein",
+            email: "laurajones@example.com",
+            isOAuthEnabled: true,
+            created_at: "2020-10-25T13:42:24.555Z",
+            last_logined: "2022-01-24T23:12:19.606Z",
+          },
+        ]}
+        columns={columns}
+      >
         <AddUserBtn pattern={pattern} title={title} />
-        <Table
-          data={[
-            {
-              username: "johndoe",
-              password: "123456",
-              email: "johndoe@example.com",
-              isOAuthEnabled: true,
-              created_at: "2021-01-14T11:52:00.958Z",
-              last_logined: "2020-02-18T10:37:54.116Z",
-            },
-            {
-              username: "janedoe",
-              password: "654321",
-              email: "janedoe@example.com",
-              isOAuthEnabled: false,
-              created_at: "2020-11-10T12:44:43.106Z",
-              last_logined: "2022-08-27T07:36:08.691Z",
-            },
-            {
-              username: "bobsmith",
-              password: "password123",
-              email: "bobsmith@example.com",
-              isOAuthEnabled: true,
-              created_at: "2022-09-25T04:24:54.135Z",
-              last_logined: "2022-05-01T01:57:59.544Z",
-            },
-            {
-              username: "sallyjones",
-              password: "passw0rd",
-              email: "sallyjones@example.com",
-              isOAuthEnabled: false,
-              created_at: "2021-04-18T07:06:14.586Z",
-              last_logined: "2022-08-09T10:51:01.489Z",
-            },
-            {
-              username: "mikebrown",
-              password: "p@ssword",
-              email: "mikebrown@example.com",
-              isOAuthEnabled: true,
-              created_at: "2021-12-16T02:00:38.165Z",
-              last_logined: "2020-03-05T03:54:57.518Z",
-            },
-            {
-              username: "jennybrown",
-              password: "p@ssword",
-              email: "jennybrown@example.com",
-              isOAuthEnabled: true,
-              created_at: "2020-11-29T22:08:04.191Z",
-              last_logined: "2021-03-11T15:50:11.320Z",
-            },
-            {
-              username: "jasonlee",
-              password: "qwerty123",
-              email: "jasonlee@example.com",
-              isOAuthEnabled: false,
-              created_at: "2021-12-04T06:36:16.697Z",
-              last_logined: "2022-08-19T15:49:57.956Z",
-            },
-            {
-              username: "amysmith",
-              password: "ilovecats",
-              email: "amysmith@example.com",
-              isOAuthEnabled: true,
-              created_at: "2021-09-17T01:00:10.871Z",
-              last_logined: "2020-03-12T13:02:20.796Z",
-            },
-            {
-              username: "davidwilliams",
-              password: "1q2w3e4r",
-              email: "davidwilliams@example.com",
-              isOAuthEnabled: false,
-              created_at: "2021-12-24T20:42:19.942Z",
-              last_logined: "2020-07-10T15:23:04.673Z",
-            },
-            {
-              username: "laurajones",
-              password: "letmein",
-              email: "laurajones@example.com",
-              isOAuthEnabled: true,
-              created_at: "2020-10-25T13:42:24.555Z",
-              last_logined: "2022-01-24T23:12:19.606Z",
-            },
-          ]}
-          columns={columns}
-        />
-      </div>
+      </Table>
     </Layout>
   );
 }

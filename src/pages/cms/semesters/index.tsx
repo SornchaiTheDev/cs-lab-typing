@@ -15,7 +15,8 @@ import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Select from "@/components/Common/Select";
-import DatePicker from "@/components/DatePicker/Single";
+import SinglePicker from "@/components/DatePicker/SinglePicker";
+import DeleteAffect from "@/components/DeleteAffect";
 
 interface SemesterRow {
   id: string;
@@ -70,6 +71,7 @@ function Semesters() {
 
   return (
     <SemesterLayout title="Semesters">
+      {/* <DeleteAffect onClose={() => {}} onDelete={() => {}} selected="" type="section"/> */}
       <Table
         className="mt-6"
         data={[
@@ -105,7 +107,7 @@ function Semesters() {
                     onChange={onChange}
                     options={new Array(10)
                       .fill(0)
-                      .map((_, i) => new Date().getFullYear() + i)
+                      .map((_, i) => new Date().getFullYear() + i + 543)
                       .map((year) => year.toString())}
                     title="Year"
                     error={errors.year?.message}
@@ -132,7 +134,7 @@ function Semesters() {
                 control={control}
                 name="startDate"
                 render={({ field: { onChange, value } }) => (
-                  <DatePicker
+                  <SinglePicker
                     title="Start Date"
                     value={value}
                     onChange={onChange}
