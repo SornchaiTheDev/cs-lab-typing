@@ -16,7 +16,7 @@ function CreateAdmin() {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm<TCreateAdminAccount>({
     resolver: zodResolver(CreateAdminAccountSchemna),
   });
@@ -43,8 +43,8 @@ function CreateAdmin() {
             title="Username"
             className="my-2"
             label="username"
-            error={errors.username && errors.username.message}
-            isError={errors.username !== undefined}
+            error={errors.username?.message}
+            isError={!!errors.username}
             register={register}
           />
 
@@ -53,8 +53,8 @@ function CreateAdmin() {
             type="email"
             placeholder="johndoe@mail.com"
             className="my-2"
-            error={errors.email && errors.email.message}
-            isError={errors.email !== undefined}
+            error={errors.email?.message}
+            isError={!!errors.email}
             label="email"
             register={register}
           />
@@ -66,6 +66,8 @@ function CreateAdmin() {
             className="my-2"
             label="password"
             register={register}
+            error={errors.password?.message}
+            isError={!!errors.password}
           />
           <PasswordRequirement password={watch("password") ?? ""} />
 
@@ -74,16 +76,13 @@ function CreateAdmin() {
             type="password"
             placeholder="••••••••••••"
             className="my-2"
-            error={errors.confirmPassword && errors.confirmPassword.message}
-            isError={errors.confirmPassword !== undefined}
+            error={errors.confirmPassword?.message}
+            isError={!!errors.confirmPassword}
             label="confirmPassword"
             register={register}
           />
 
-          <button
-            className="flex items-center justify-center w-full h-12 gap-4 py-3 mt-4 rounded-lg bg-sand-12 text-sand-1 disabled:bg-sand-3 disabled:cursor-not-allowed disabled:text-sand-12"
-            disabled={!isValid}
-          >
+          <button className="flex items-center justify-center w-full h-12 gap-4 py-3 mt-4 rounded-lg bg-sand-12 text-sand-1 disabled:bg-sand-3 disabled:cursor-not-allowed disabled:text-sand-12">
             {isSubmitting ? (
               <Icon icon="line-md:loading-twotone-loop" className="text-lg" />
             ) : (

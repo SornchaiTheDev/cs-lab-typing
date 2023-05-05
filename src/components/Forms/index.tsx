@@ -5,7 +5,7 @@ import Select from "./Select";
 import SingleSearch from "./Search/SingleSearch";
 import MultipleSearch from "./Search/MultipleSearch";
 import Checkbox from "./Checkbox";
-import { ZodObject, z } from "zod";
+import { ZodEffects, ZodObject, z } from "zod";
 import TextArea from "./TextArea";
 import Button from "@/components/Common/Button";
 import clsx from "clsx";
@@ -37,7 +37,7 @@ type EachField<T> = {
 
 interface Props<T> {
   onSubmit: (formData: T) => void;
-  schema: ZodObject<any>;
+  schema: ZodEffects<ZodObject<any>> | ZodObject<any>;
   fields: EachField<T>[];
   confirmBtn?: ConfirmBtn;
 }
@@ -48,10 +48,12 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
     control,
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
+  console.log(errors);
   const render = (field: EachField<T>) => {
     switch (field.type) {
       case "text":

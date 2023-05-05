@@ -5,7 +5,8 @@ import Table from "@/components/Common/Table";
 import { AddTaskSchema, TAddTask } from "@/forms/TaskSchema";
 import { generatePerson } from "@/helpers";
 import { ColumnDef } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
+import { useRouter } from "next/router";
 
 interface TaskRow {
   id: string;
@@ -18,8 +19,14 @@ interface TaskRow {
 }
 
 function Tasks() {
+  const router = useRouter();
   const addTask = (formData: TAddTask) => {
     const { isPrivate, language, name, owner, type, note, tags } = formData;
+
+    router.push({
+      pathname: router.pathname + "/[taskID]",
+      query: { taskID: "1" },
+    });
   };
 
   const columns = useMemo<ColumnDef<TaskRow, string>[]>(
@@ -73,14 +80,13 @@ function Tasks() {
           <ModalWithButton
             title="Add Task"
             icon="solar:programming-line-duotone"
-            className="max-w-[40rem]"
-            confirmBtn={{
-              title: "Add Task",
-              icon: "solar:programming-line-duotone",
-              onClick: () => {}, //handleSubmit(addTask),
-            }}
+            className="w-[90%] md:w-[36rem] max-w-[40rem]"
           >
             <Forms
+              confirmBtn={{
+                title: "Add Task",
+                icon: "solar:programming-line-duotone",
+              }}
               schema={AddTaskSchema}
               onSubmit={addTask}
               fields={[
