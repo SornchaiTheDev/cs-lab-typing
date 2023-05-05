@@ -17,7 +17,7 @@ const Checkbox = <T extends FieldValues>({
       <input
         {...{ ...register(label) }}
         type="checkbox"
-        className="w-4 h-4 rounded-full accent-sand-12"
+        className="w-4 h-4 rounded-sm outline-none text-sand-12 border-sand-9 ring-sand-10 focus:ring-sand-12 checked:bg-sand-12 bg-sand-1 accent-sand-12"
       />
       <label htmlFor={title} className="ml-2 font-medium text-sand-12">
         {title}

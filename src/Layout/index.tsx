@@ -28,7 +28,7 @@ function Layout({ children, title }: Props) {
     }));
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="container flex-1 max-w-6xl px-2 py-4 mx-auto lg:px-0 roboto">
+      <div className="container flex flex-col flex-1 max-w-6xl px-2 py-4 mx-auto lg:px-0 roboto">
         <div className="flex justify-between mt-10">
           <div>
             {!isBasePath && <BackArrow />}
@@ -105,7 +105,7 @@ function Layout({ children, title }: Props) {
             </Popover.Root>
           </div>
         </div>
-        <div className="mt-6">{children}</div>
+        <div className="flex flex-col flex-1 mt-6">{children}</div>
       </div>
       <div className="w-full gap-2 py-6 text-center bg-sand-12 roboto">
         <h6 className="text-sand-6">

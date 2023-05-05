@@ -163,14 +163,14 @@ const Multiple = (props: Props) => {
                 setSearch(e.target.value)
               }
               onKeyDown={handleOnKeyDown}
-              className="w-full outline-none min-w-[5rem]"
+              className="w-full outline-none min-w-[5rem] bg-transparent"
             />
           </div>
         </div>
         {isFocus && !isEmpty && (
           <ul
             ref={optionsRef}
-            className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6"
+            className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6 z-50"
           >
             {filteredDatas.map((data, i) => (
               <TextHighlight
