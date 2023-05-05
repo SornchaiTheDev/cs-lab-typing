@@ -22,11 +22,11 @@ function Tasks() {
   const router = useRouter();
   const addTask = (formData: TAddTask) => {
     const { isPrivate, language, name, owner, type, note, tags } = formData;
-
-    router.push({
-      pathname: router.pathname + "/[taskID]",
-      query: { taskID: "1" },
-    });
+    console.log(formData)
+    // router.push({
+    //   pathname: router.pathname + "/[taskID]",
+    //   query: { taskID: "1" },
+    // });
   };
 
   const columns = useMemo<ColumnDef<TaskRow, string>[]>(
@@ -106,15 +106,16 @@ function Tasks() {
                     label: "language",
                     title: "Language",
                     type: "select",
-                    options: ["C++", "Python", "Java"],
+                    options: ["C++", "Python", "Java", "C#", "C"],
                   },
                 },
                 {
                   label: "tags",
                   title: "Tags",
                   type: "multiple-search",
-                  options: ["C++", "Python", "Java"],
+                  options: ["C++", "Python", "Java", "C#", "C"],
                   optional: true,
+                  canAddItemNotInList: true,
                 },
                 {
                   label: "owner",

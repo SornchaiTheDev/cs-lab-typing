@@ -44,15 +44,13 @@ const Multiple = (props: Props) => {
 
   useOnClickOutside(selectRef, () => setIsFocus(false));
 
-  const filteredDatas = isSeaching
+  const filteredDatas = isFocus
     ? datas.filter(
         (data) =>
           data.toLowerCase().includes(search.toLowerCase()) &&
           !value.some((selected) => selected === data)
       )
-    : isFocus
-    ? datas
-    : [];
+    : datas;
 
   const isEmpty = filteredDatas.length === 0;
 
@@ -92,6 +90,7 @@ const Multiple = (props: Props) => {
     if (!text) text = search;
     if (!canAddItemNotInList && !datas.includes(text)) return;
     if (value.map((data) => data).includes(text)) return;
+    if (text.length === 0) return;
     onChange([...value, text!]);
     setSearch("");
     setSelectedIndex(0);

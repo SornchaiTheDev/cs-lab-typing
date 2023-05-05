@@ -53,7 +53,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
-  console.log(errors);
+
   const render = (field: EachField<T>) => {
     switch (field.type) {
       case "text":
@@ -189,7 +189,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
           icon={confirmBtn.icon}
           className={clsx(
             "shadow bg-sand-12 text-sand-1 active:bg-sand-11",
-            confirmBtn.className ?? "py-3 w-full  mt-4"
+            confirmBtn.className ?? "py-3 w-full mt-4"
           )}
         >
           {confirmBtn.title}

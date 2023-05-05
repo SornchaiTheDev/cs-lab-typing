@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import LabLayout from "@/Layout/LabLayout";
+import TaskLayout from "@/Layout/TaskLayout";
 import Table from "@/components/Common/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
@@ -65,7 +65,7 @@ function TaskHistory() {
   };
 
   return (
-    <LabLayout title="Test">
+    <TaskLayout title="Test">
       <Table
         data={data}
         columns={columns}
@@ -86,7 +86,7 @@ function TaskHistory() {
           <TimePickerRange onApply={(startTime, endTime) => {}} />
         </div>
       </Table>
-    </LabLayout>
+    </TaskLayout>
   );
 }
 
