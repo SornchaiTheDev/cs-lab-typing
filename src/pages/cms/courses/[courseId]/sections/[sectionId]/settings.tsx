@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Button from "@/components/Common/Button";
 import DeleteAffect from "@/components/DeleteAffect";
 import SectionLayout from "@/Layout/SectionLayout";
-import { AddSectionSchema, TAddSection } from "@/forms/AddSection";
+import { AddSectionSchema, TAddSection } from "@/forms/SectionSchema";
 import { generatePerson } from "@/helpers";
 import Forms from "@/components/Forms";
 

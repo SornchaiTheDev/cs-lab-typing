@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { GetStaticProps } from "next";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import { AddSectionSchema, TAddSection } from "@/forms/AddSection";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AddSectionSchema, TAddSection } from "@/forms/SectionSchema";
 import { generatePerson } from "@/helpers";
 import Forms from "@/components/Forms";
 

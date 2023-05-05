@@ -1,7 +1,7 @@
 import CourseLayout from "@/Layout/CourseLayout";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { AddCourseSchema, TAddCourse } from "@/forms/AddCourse";
+import { AddCourseSchema, TAddCourse } from "@/forms/CourseSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/Common/Button";
 import DeleteAffect from "@/components/DeleteAffect";

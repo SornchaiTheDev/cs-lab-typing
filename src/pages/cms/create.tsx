@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateAdminAccountSchemna,
   type TCreateAdminAccount,
-} from "@/forms/CreateAdminAccount";
+} from "@/forms/CreateAdminAccountSchema";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 

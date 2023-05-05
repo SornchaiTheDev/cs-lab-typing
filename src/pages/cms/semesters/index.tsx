@@ -1,7 +1,7 @@
 import SemesterLayout from "@/Layout/SemesterLayout";
 import ModalWithButton from "@/components/Common/ModalWithButton";
 import Table from "@/components/Table";
-import { TAddSemesterSchema, AddSemesterSchema } from "@/forms/AddSemester";
+import { TAddSemesterSchema, AddSemesterSchema } from "@/forms/SemesterSchema";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";

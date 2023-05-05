@@ -18,10 +18,6 @@ function TaskLayout({ title, children }: Props) {
             name: "History",
             path: "history",
           },
-          {
-            name: "Settings",
-            path: "settings",
-          },
         ]}
       />
       {children}

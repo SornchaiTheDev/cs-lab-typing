@@ -1,7 +1,7 @@
 import Layout from "@/Layout";
 import ModalWithButton from "@/components/Common/ModalWithButton";
 import Forms from "@/components/Forms";
-import { AddCourseSchema, TAddCourse } from "@/forms/AddCourse";
+import { AddCourseSchema, TAddCourse } from "@/forms/CourseSchema";
 import { generatePerson } from "@/helpers";
 import { Icon } from "@iconify/react";
 import Link from "next/link";

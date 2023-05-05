@@ -1,7 +1,7 @@
 import CourseLayout from "@/Layout/CourseLayout";
 import ModalWithButton from "@/components/Common/ModalWithButton";
 import Table from "@/components/Table";
-import { AddLabSchema, TAddLabSchema } from "@/forms/AddLab";
+import { AddLabSchema, TAddLabSchema } from "@/forms/LabSchema";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";

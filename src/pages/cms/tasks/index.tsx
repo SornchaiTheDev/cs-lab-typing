@@ -2,7 +2,7 @@ import TaskLayout from "@/Layout/TaskLayout";
 import ModalWithButton from "@/components/Common/ModalWithButton";
 import Forms from "@/components/Forms";
 import Table from "@/components/Table";
-import { AddTaskSchema, TAddTask } from "@/forms/AddTask";
+import { AddTaskSchema, TAddTask } from "@/forms/TaskSchema";
 import { generatePerson } from "@/helpers";
 import { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo } from "react";

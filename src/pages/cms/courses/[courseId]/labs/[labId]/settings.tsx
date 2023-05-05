@@ -1,6 +1,6 @@
 import LabLayout from "@/Layout/LabLayout";
 import React, { useState } from "react";
-import { AddLabSchema, TAddLabSchema } from "@/forms/AddLab";
+import { AddLabSchema, TAddLabSchema } from "@/forms/LabSchema";
 import Button from "@/components/Common/Button";
 import DeleteAffect from "@/components/DeleteAffect";
 import Forms from "@/components/Forms";
