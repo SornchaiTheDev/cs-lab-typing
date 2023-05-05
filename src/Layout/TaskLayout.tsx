@@ -11,9 +11,9 @@ function TaskLayout({ title, children }: Props) {
   return (
     <Layout {...{ title }}>
       <HorizontalMenu
-        basePath="/cms/courses/[courseId]/sections/[sectionId]"
+        basePath="/cms/tasks"
         menus={[
-          { name: "Overview", path: "" },
+          { name: "Overview", path: "tasks" },
           { name: "LAB SET", path: "labset" },
           { name: "Logs", path: "logs" },
           {

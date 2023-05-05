@@ -3,7 +3,7 @@ import SectionLayout from "@/Layout/SectionLayout";
 import Table from "@/components/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
-import DatePicker from "@/components/DatePicker";
+import RangePicker from "@/components/DatePicker/RangePicker";
 import TimePickerRange from "@/components/TimePickerRange";
 import { Icon } from "@iconify/react";
 
@@ -204,7 +204,7 @@ function SectionLog() {
           </button>
         </div>
         <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          <DatePicker onApply={(startDate, endDate) => {}} />
+          <RangePicker onChange={(range) => {}} />
           <TimePickerRange onApply={(startTime, endTime) => {}} />
         </div>
       </Table>

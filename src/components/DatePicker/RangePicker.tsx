@@ -7,13 +7,13 @@ import clsx from "clsx";
 import "react-day-picker/dist/style.css";
 
 interface Props {
-  value: number;
+  value?: number | undefined;
   onChange: (date: DateRange) => void;
 }
 
 const pastMonth = new Date(2023, 4, 15);
 
-function RangePicker({ value, onChange }: Props) {
+function RangePicker({ value = undefined, onChange }: Props) {
   const [isShow, setIsShow] = useState<boolean>(false);
   const dateRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(dateRef, () => setIsShow(false));
@@ -26,8 +26,8 @@ function RangePicker({ value, onChange }: Props) {
   };
 
   const [range, setRange] = useState<DateRange | undefined>({
-    from: new Date(value),
-    to: new Date(value),
+    from: value ? new Date(value) : undefined,
+    to: value ? new Date(value) : undefined,
   });
 
   let footer = <p>Please pick the first day.</p>;
