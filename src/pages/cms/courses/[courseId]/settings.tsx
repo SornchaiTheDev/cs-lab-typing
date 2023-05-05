@@ -1,13 +1,9 @@
 import CourseLayout from "@/Layout/CourseLayout";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import Input from "@/components/Common/Input";
-import { Controller, useForm } from "react-hook-form";
 import { AddCourseSchema, TAddCourse } from "@/forms/AddCourse";
 import { zodResolver } from "@hookform/resolvers/zod";
-import TextArea from "@/components/Common/TextArea";
 import Button from "@/components/Common/Button";
-import Multiple from "@/components/Search/Multiple";
 import DeleteAffect from "@/components/DeleteAffect";
 import { generatePerson } from "@/helpers";
 import Forms from "@/components/Forms";
@@ -22,14 +18,7 @@ interface Props {
 function Settings({ course }: Props) {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TAddCourse>({
-    resolver: zodResolver(AddCourseSchema),
-  });
+ 
 
   const addCourse = (formData: TAddCourse) => {
     const { number, name, authors, note, comments } = formData;

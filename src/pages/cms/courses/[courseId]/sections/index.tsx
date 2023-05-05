@@ -1,18 +1,11 @@
 import CourseLayout from "@/Layout/CourseLayout";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GetStaticProps } from "next";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import { Controller, useForm } from "react-hook-form";
 import { AddSectionSchema, TAddSection } from "@/forms/AddSection";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/components/Common/Input";
-import Multiple from "@/components/Search/Multiple";
-import Button from "@/components/Common/Button";
-import Select from "@/components/Common/Select";
-import { semesters } from "@/__mock__";
 import { generatePerson } from "@/helpers";
 import Forms from "@/components/Forms";
 
@@ -25,14 +18,6 @@ interface Props {
 
 function Sections({ course }: Props) {
   const router = useRouter();
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TAddSection>({
-    resolver: zodResolver(AddSectionSchema),
-  });
 
   const addSection = (formData: TAddSection) => {
     const { name, note, instructors, semester } = formData;
@@ -58,7 +43,7 @@ function Sections({ course }: Props) {
                 label: "semester",
                 title: "Semester",
                 type: "select",
-                options: ["2566/FIRST" , "2566/SECOND" , "2566/SUMMER"],
+                options: ["2566/FIRST", "2566/SECOND", "2566/SUMMER"],
               },
               { label: "name", title: "Name", type: "text" },
               {

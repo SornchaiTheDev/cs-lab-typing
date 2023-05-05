@@ -1,22 +1,11 @@
 import SemesterLayout from "@/Layout/SemesterLayout";
-import Badge from "@/components/Common/Badge";
-import Checkbox from "@/components/Common/Checkbox";
-import Input from "@/components/Common/Input";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import Multiple from "@/components/Search/Multiple";
 import Table from "@/components/Table";
 import { TAddSemesterSchema, AddSemesterSchema } from "@/forms/AddSemester";
-import { generatePerson } from "@/helpers";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { useRouter } from "next/router";
-import Link from "next/link";
-import Select from "@/components/Common/Select";
-import SinglePicker from "@/components/DatePicker/SinglePicker";
-import DeleteAffect from "@/components/DeleteAffect";
+import Forms from "@/components/Forms";
 
 interface SemesterRow {
   id: string;
@@ -26,16 +15,7 @@ interface SemesterRow {
 
 function Semesters() {
   const columnHelper = createColumnHelper<SemesterRow>();
-  const router = useRouter();
-  const {
-    control,
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<TAddSemesterSchema>({
-    resolver: zodResolver(AddSemesterSchema),
-  });
-  console.log(errors);
+
   const addSemester = (formData: TAddSemesterSchema) => {
     const { startDate, term, year } = formData;
 
@@ -88,62 +68,32 @@ function Semesters() {
             title="Add Semester"
             icon="solar:calendar-line-duotone"
             className="w-[95%] md:w-[40rem] flex flex-col gap-4"
-            confirmBtn={{
-              title: "Add Semester",
-              icon: "solar:calendar-line-duotone",
-              onClick: handleSubmit(addSemester),
-            }}
           >
-            <form
-              onSubmit={handleSubmit(addSemester)}
-              className="flex flex-col gap-2"
-            >
-              <Controller
-                control={control}
-                name="year"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    value={value}
-                    onChange={onChange}
-                    options={new Array(10)
-                      .fill(0)
-                      .map((_, i) => new Date().getFullYear() + i + 543)
-                      .map((year) => year.toString())}
-                    title="Year"
-                    error={errors.year?.message}
-                    isError={!!errors.year}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="term"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    value={value}
-                    onChange={onChange}
-                    options={["first", "second", "summer"]}
-                    title="Term"
-                    error={errors.term?.message}
-                    isError={!!errors.term}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="startDate"
-                render={({ field: { onChange, value } }) => (
-                  <SinglePicker
-                    title="Start Date"
-                    value={value}
-                    onChange={onChange}
-                    error={errors.startDate?.message}
-                    isError={!!errors.startDate}
-                  />
-                )}
-              />
-            </form>
+            <Forms
+              confirmBtn={{
+                title: "Add Semester",
+                icon: "solar:calendar-line-duotone",
+              }}
+              schema={AddSemesterSchema}
+              onSubmit={addSemester}
+              fields={[
+                {
+                  label: "year",
+                  title: "Year",
+                  type: "select",
+                },
+                {
+                  label: "term",
+                  title: "Term",
+                  type: "select",
+                },
+                {
+                  label: "startDate",
+                  title: "Start Date",
+                  type: "date",
+                },
+              ]}
+            />
           </ModalWithButton>
         </div>
       </Table>

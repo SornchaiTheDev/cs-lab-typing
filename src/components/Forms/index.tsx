@@ -8,6 +8,7 @@ import { ZodObject, z } from "zod";
 import TextArea from "../Common/TextArea";
 import Button from "@/components/Common/Button";
 import clsx from "clsx";
+import SinglePicker from "../DatePicker/SinglePicker";
 
 interface ConfirmBtn {
   title: string;
@@ -18,7 +19,7 @@ interface ConfirmBtn {
 type EachField<T> = {
   label: keyof T;
   title: string;
-  type: "select" | "multiple" | "text" | "checkbox" | "textarea";
+  type: "select" | "multiple" | "text" | "checkbox" | "textarea" | "date";
   optional?: boolean;
   options?: string[];
   conditional?: (data: string) => boolean;
@@ -111,6 +112,23 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             title={field.title}
             register={register}
             optional={field.optional}
+          />
+        );
+
+      case "date":
+        return (
+          <Controller
+            control={control}
+            name="startDate"
+            render={({ field: { onChange, value } }) => (
+              <SinglePicker
+                title="Start Date"
+                value={value}
+                onChange={onChange}
+                isError={!!errors[field.label]}
+                error={errors[field.label]?.message as string}
+              />
+            )}
           />
         );
     }

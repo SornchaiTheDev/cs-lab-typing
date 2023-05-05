@@ -1,17 +1,10 @@
 import CourseLayout from "@/Layout/CourseLayout";
-import Badge from "@/components/Common/Badge";
-import Checkbox from "@/components/Common/Checkbox";
-import Input from "@/components/Common/Input";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import Multiple from "@/components/Search/Multiple";
 import Table from "@/components/Table";
 import { AddLabSchema, TAddLabSchema } from "@/forms/AddLab";
-import { generatePerson } from "@/helpers";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Forms from "@/components/Forms";
@@ -25,14 +18,6 @@ interface LabsRow {
 function Labs() {
   const columnHelper = createColumnHelper<LabsRow>();
   const router = useRouter();
-  const {
-    control,
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<TAddLabSchema>({
-    resolver: zodResolver(AddLabSchema),
-  });
 
   const addLab = (formData: TAddLabSchema) => {
     const { isDisabled, name, tags } = formData;
@@ -64,13 +49,6 @@ function Labs() {
       {
         header: "Tags",
         accessorKey: "tags",
-        cell: (props) => (
-          <div className="flex flex-wrap justify-center gap-2">
-            {props.getValue().map((tag) => (
-              <Badge key={tag}>{tag}</Badge>
-            ))}
-          </div>
-        ),
         size: 60,
       },
       columnHelper.display({

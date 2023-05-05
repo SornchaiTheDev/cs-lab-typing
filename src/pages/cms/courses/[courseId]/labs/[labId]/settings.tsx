@@ -1,15 +1,8 @@
 import LabLayout from "@/Layout/LabLayout";
 import React, { useState } from "react";
-import { useRouter } from "next/router";
-import Input from "@/components/Common/Input";
-import { Controller, useForm } from "react-hook-form";
 import { AddLabSchema, TAddLabSchema } from "@/forms/AddLab";
-import { zodResolver } from "@hookform/resolvers/zod";
-import TextArea from "@/components/Common/TextArea";
 import Button from "@/components/Common/Button";
-import Multiple from "@/components/Search/Multiple";
 import DeleteAffect from "@/components/DeleteAffect";
-import { generatePerson } from "@/helpers";
 import Forms from "@/components/Forms";
 
 interface Props {
@@ -20,16 +13,7 @@ interface Props {
 }
 
 function Settings({ course }: Props) {
-  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TAddLabSchema>({
-    resolver: zodResolver(AddLabSchema),
-  });
 
   const editLab = (formData: TAddLabSchema) => {
     const { name, isDisabled, tags } = formData;

@@ -1,23 +1,17 @@
 import TaskLayout from "@/Layout/TaskLayout";
-import Checkbox from "@/components/Common/Checkbox";
-import Input from "@/components/Common/Input";
 import ModalWithButton from "@/components/Common/ModalWithButton";
-import Select from "@/components/Common/Select";
 import Forms from "@/components/Forms";
-import Multiple from "@/components/Search/Multiple";
 import Table from "@/components/Table";
 import { AddTaskSchema, TAddTask } from "@/forms/AddTask";
 import { generatePerson } from "@/helpers";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-
+import { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
 
 interface TaskRow {
   id: string;
   name: string;
   type: string;
+  tags: string[];
   language: string;
   owner: string;
   submission_count: number;
@@ -37,6 +31,10 @@ function Tasks() {
       {
         header: "Type",
         accessorKey: "type",
+      },
+      {
+        header: "Tags",
+        accessorKey: "tags",
       },
       {
         header: "Language",
@@ -61,6 +59,7 @@ function Tasks() {
           {
             id: "1",
             name: "สร้างรถยนต์ไร้คนขับ",
+            tags: ["C++", "CS113"],
             type: "Problem",
             language: "C++",
             owner: "SornchaiTheDev",
@@ -109,6 +108,7 @@ function Tasks() {
                   title: "Tags",
                   type: "multiple",
                   options: ["C++", "Python", "Java"],
+                  optional: true,
                 },
                 {
                   label: "owner",
@@ -121,7 +121,7 @@ function Tasks() {
                   title: "Private",
                   type: "checkbox",
                 },
-                { label: "note", title: "Note", type: "text" },
+                { label: "note", title: "Note", type: "text", optional: true },
               ]}
             />
           </ModalWithButton>
