@@ -3,6 +3,7 @@ import Checkbox from "@/components/Common/Checkbox";
 import Input from "@/components/Common/Input";
 import ModalWithButton from "@/components/Common/ModalWithButton";
 import Select from "@/components/Common/Select";
+import Forms from "@/components/Forms";
 import Multiple from "@/components/Search/Multiple";
 import Table from "@/components/Table";
 import { AddTaskSchema, TAddTask } from "@/forms/AddTask";
@@ -23,18 +24,6 @@ interface TaskRow {
 }
 
 function Tasks() {
-  const columnHelper = createColumnHelper<TaskRow>();
-
-  const {
-    watch,
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TAddTask>({
-    resolver: zodResolver(AddTaskSchema),
-  });
-
   const addTask = (formData: TAddTask) => {
     const { isPrivate, language, name, owner, type, note, tags } = formData;
   };
@@ -64,6 +53,7 @@ function Tasks() {
     ],
     []
   );
+
   return (
     <TaskLayout title="Tasks">
       <Table
@@ -88,83 +78,52 @@ function Tasks() {
             confirmBtn={{
               title: "Add Task",
               icon: "solar:programming-line-duotone",
-              onClick: handleSubmit(addTask),
+              onClick: () => {}, //handleSubmit(addTask),
             }}
           >
-            <form
-              onSubmit={handleSubmit(addTask)}
-              className="flex flex-col gap-2"
-            >
-              <Input
-                register={register}
-                label="name"
-                title="Name"
-                isError={!!errors.name}
-                error={errors.name?.message}
-              />
-              <Controller
-                control={control}
-                name="type"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    options={["Lesson", "Problem", "Contest", "Typing"]}
-                    title="Type"
-                    value={value}
-                    onChange={onChange}
-                    isError={!!errors.type}
-                    error={errors.type?.message}
-                  />
-                )}
-              />
-              {watch("type") !== undefined && watch("type") !== "Typing" && (
-                <Controller
-                  control={control}
-                  name="language"
-                  render={({ field: { onChange, value } }) => (
-                    <Select
-                      options={["C++", "Python", "Java", "C#", "Typing"]}
-                      title="Language"
-                      value={value}
-                      onChange={onChange}
-                      isError={!!errors.language}
-                      error={errors.language?.message}
-                    />
-                  )}
-                />
-              )}
-              <Controller
-                control={control}
-                name="owner"
-                render={({ field: { onChange, value } }) => (
-                  <Multiple
-                    datas={generatePerson(100)}
-                    title="Owner"
-                    value={value ?? []}
-                    onChange={onChange}
-                    isError={!!errors.owner}
-                    error={errors.owner?.message}
-                  />
-                )}
-              />
-              <Checkbox register={register} label="isPrivate" title="Private" />
-              <Controller
-                control={control}
-                name="tags"
-                render={({ field: { onChange, value } }) => (
-                  <Multiple
-                    datas={generatePerson(100)}
-                    title="Tags"
-                    value={value ?? []}
-                    onChange={onChange}
-                    canAddItemNotInList
-                    isError={!!errors.tags}
-                    error={errors.tags?.message}
-                  />
-                )}
-              />
-
-              <Input register={register} label="note" title="Note" />
-            </form>
+            <Forms
+              schema={AddTaskSchema}
+              onSubmit={addTask}
+              fields={[
+                {
+                  label: "name",
+                  title: "Name",
+                  type: "input",
+                },
+                {
+                  label: "type",
+                  title: "Type",
+                  options: ["Lesson", "Problem", "Typing"],
+                  type: "select",
+                  conditional: (data) =>
+                    data !== undefined && data !== "Typing",
+                  children: {
+                    label: "language",
+                    title: "Language",
+                    type: "select",
+                    options: ["C++", "Python", "Java"],
+                  },
+                },
+                {
+                  label: "tags",
+                  title: "Tags",
+                  type: "multiple",
+                  options: ["C++", "Python", "Java"],
+                },
+                {
+                  label: "owner",
+                  title: "Owner",
+                  type: "multiple",
+                  options: generatePerson(10),
+                },
+                {
+                  label: "isPrivate",
+                  title: "Private",
+                  type: "checkbox",
+                },
+                { label: "note", title: "Note", type: "input" },
+              ]}
+            />
           </ModalWithButton>
         </div>
       </Table>
