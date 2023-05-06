@@ -1,11 +1,13 @@
 import SemesterLayout from "@/Layout/SemesterLayout";
-import ModalWithButton from "@/components/Common/ModalWithButton";
 import Table from "@/components/Common/Table";
 import { TAddSemesterSchema, AddSemesterSchema } from "@/forms/SemesterSchema";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Forms from "@/components/Forms";
+import DeleteAffect from "@/components/DeleteAffect";
+import Modal from "@/components/Common/Modal";
+import Button from "@/components/Common/Button";
 
 interface SemesterRow {
   id: string;
@@ -15,10 +17,12 @@ interface SemesterRow {
 
 function Semesters() {
   const columnHelper = createColumnHelper<SemesterRow>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
 
   const addSemester = (formData: TAddSemesterSchema) => {
     const { startDate, term, year } = formData;
-
+    setIsModalOpen(false);
     // TODO add semester
   };
 
@@ -37,7 +41,7 @@ function Semesters() {
         header: "Delete",
         cell: (props) => (
           <button
-            onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
+            onClick={() => setSelected(props.row.getValue("year"))}
             className="text-xl rounded-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
@@ -50,54 +54,84 @@ function Semesters() {
   );
 
   return (
-    <SemesterLayout title="Semesters">
-      {/* <DeleteAffect onClose={() => {}} onDelete={() => {}} selected="" type="section"/> */}
-      <Table
-        className="mt-6"
-        data={[
-          {
-            id: "1",
-            year: "2021",
-            startDate: new Date("2023-05-04T20:20:00"),
-          },
-        ]}
-        columns={columns}
+    <>
+      {selected && (
+        <DeleteAffect
+          onClose={() => setSelected(null)}
+          onDelete={() => setSelected(null)}
+          selected={selected}
+          type="section"
+        />
+      )}
+
+      <Modal
+        title="Add Semester"
+        isOpen={isModalOpen}
+        className="w-[95%] md:w-[40rem] flex flex-col gap-4"
+        onClose={() => setIsModalOpen(false)}
       >
-        <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          <ModalWithButton
-            title="Add Semester"
-            icon="solar:calendar-line-duotone"
-            className="w-[95%] md:w-[40rem] flex flex-col gap-4"
-          >
-            <Forms
-              confirmBtn={{
-                title: "Add Semester",
-                icon: "solar:calendar-line-duotone",
-              }}
-              schema={AddSemesterSchema}
-              onSubmit={addSemester}
-              fields={[
-                {
-                  label: "year",
-                  title: "Year",
-                  type: "select",
-                },
-                {
-                  label: "term",
-                  title: "Term",
-                  type: "select",
-                },
-                {
-                  label: "startDate",
-                  title: "Start Date",
-                  type: "date",
-                },
-              ]}
-            />
-          </ModalWithButton>
-        </div>
-      </Table>
-    </SemesterLayout>
+        <Forms
+          confirmBtn={{
+            title: "Add Semester",
+            icon: "solar:calendar-line-duotone",
+          }}
+          schema={AddSemesterSchema}
+          onSubmit={addSemester}
+          fields={[
+            {
+              label: "year",
+              title: "Year",
+              type: "select",
+              options: ["2023", "2024"],
+            },
+            {
+              label: "term",
+              title: "Term",
+              type: "select",
+              options: ["First", "Second", "Summer"],
+            },
+            {
+              label: "startDate",
+              title: "Start Date",
+              type: "date",
+            },
+          ]}
+        />
+      </Modal>
+      <SemesterLayout title="Semesters">
+        <Table
+          className="mt-6"
+          data={[
+            {
+              id: "1",
+              year: "2021/F",
+              startDate: new Date("2023-05-04T20:20:00"),
+            },
+            {
+              id: "1",
+              year: "2021/S",
+              startDate: new Date("2023-05-04T20:20:00"),
+            },
+            {
+              id: "1",
+              year: "2021/SM",
+              startDate: new Date("2023-05-04T20:20:00"),
+            },
+          ]}
+          columns={columns}
+        >
+          <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              icon="solar:calendar-line-duotone"
+              className="shadow text-sand-1 active:bg-sand-11 bg-sand-12"
+            >
+              Add Semester
+            </Button>
+          </div>
+        </Table>
+      </SemesterLayout>
+    </>
   );
 }
 

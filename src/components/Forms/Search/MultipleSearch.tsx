@@ -9,6 +9,7 @@ import clsx from "clsx";
 import { Icon } from "@iconify/react";
 import TextHighlight from "./TextHighlight";
 import { useOnClickOutside } from "usehooks-ts";
+import { createPortal } from "react-dom";
 
 interface Props {
   datas: string[];
@@ -41,6 +42,7 @@ const Multiple = (props: Props) => {
   const isSeaching = search.length > 0;
   const optionsRef = useRef<HTMLUListElement>(null);
   const selectRef = useRef<HTMLDivElement>(null);
+  const inputBox = useRef<HTMLDivElement>(null);
 
   useOnClickOutside(selectRef, () => setIsFocus(false));
 
@@ -96,7 +98,12 @@ const Multiple = (props: Props) => {
     setSelectedIndex(0);
   };
 
+  useEffect(() => {
+    inputBox.current?.scrollTo(0, inputBox.current.scrollHeight);
+  }, [value]);
+
   const handleDelete = (item?: string) => {
+    if (!isFocus) return;
     if (item) {
       onChange(value.filter((data) => data !== item));
       return;
@@ -140,8 +147,9 @@ const Multiple = (props: Props) => {
       </div>
       <div className="relative" ref={selectRef}>
         <div
+          ref={inputBox}
           className={clsx(
-            "w-full p-2 border border-sand-6 min-h-[2.5rem] rounded-md outline-none bg-sand-1 flex flex-wrap items-center gap-2",
+            "w-full p-2 border border-sand-6 min-h-[2.5rem] max-h-[10rem] overflow-auto rounded-md outline-none bg-sand-1 flex flex-wrap items-center gap-2",
             isError && "border-tomato-7"
           )}
         >

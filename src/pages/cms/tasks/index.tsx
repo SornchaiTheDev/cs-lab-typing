@@ -22,11 +22,11 @@ function Tasks() {
   const router = useRouter();
   const addTask = (formData: TAddTask) => {
     const { isPrivate, language, name, owner, type, note, tags } = formData;
-    console.log(formData)
-    // router.push({
-    //   pathname: router.pathname + "/[taskID]",
-    //   query: { taskID: "1" },
-    // });
+    // TODO add Task
+    router.push({
+      pathname: router.pathname + "/[taskID]",
+      query: { taskID: "1" },
+    });
   };
 
   const columns = useMemo<ColumnDef<TaskRow, string>[]>(

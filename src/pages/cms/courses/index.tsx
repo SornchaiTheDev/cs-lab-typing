@@ -6,8 +6,10 @@ import { generatePerson } from "@/helpers";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React from "react";
+import { useRouter } from "next/router";
 
 function Courses() {
+  const router = useRouter();
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
@@ -19,6 +21,11 @@ function Courses() {
 
   const addCourse = (formData: TAddCourse) => {
     const { name, comments, note, number } = formData;
+
+    router.push({
+      pathname: router.pathname + "/[sectionId]",
+      query: { ...router.query, sectionId: 1 },
+    });
     // TODO add course
   };
 

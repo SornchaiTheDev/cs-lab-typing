@@ -20,6 +20,10 @@ function Sections({ course }: Props) {
 
   const addSection = (formData: TAddSection) => {
     const { name, note, instructors, semester } = formData;
+    router.push({
+      pathname: router.pathname + "/[sectionId]",
+      query: { ...router.query, sectionId: 1 },
+    });
   };
 
   return (

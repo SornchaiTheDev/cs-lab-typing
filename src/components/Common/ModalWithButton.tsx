@@ -1,4 +1,4 @@
-import { useState, useRef, ReactNode } from "react";
+import { useState, useRef, ReactNode, useEffect } from "react";
 import Button from "./Button";
 import { useOnClickOutside } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +18,7 @@ interface Props {
   description?: string;
   color?: string;
   confirmBtn?: ConfirmBtn;
+  show?: boolean;
 }
 
 function ModalWithButton({
@@ -28,10 +29,16 @@ function ModalWithButton({
   description,
   color = "bg-sand-12",
   confirmBtn,
+  show,
 }: Props) {
   const [isShow, setIsShow] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!show) {
+      onClose();
+    }
+  }, [show]);
   const onClose = () => {
     setIsShow(false);
   };

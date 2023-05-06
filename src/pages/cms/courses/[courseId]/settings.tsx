@@ -35,7 +35,7 @@ function Settings({ course }: Props) {
             confirmBtn={{
               title: "Edit Course",
               icon: "solar:pen-2-line-duotone",
-              className: "w-1/3 py-2 ",
+              className: "w-1/3 py-2",
             }}
             schema={AddCourseSchema}
             onSubmit={addCourse}

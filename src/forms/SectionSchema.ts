@@ -1,11 +1,14 @@
 import { z } from "zod";
 
 export const AddSectionSchema = z.object({
-  semester: z.string().nonempty({ message: "Semester cannot be empty" }),
-  name: z.string().nonempty({ message: "Name cannot be empty" }),
+  semester: z
+    .string()
+    .nonempty({ message: "Semester cannot be empty" })
+    .default(""),
+  name: z.string().min(1, { message: "Name cannot be empty" }),
   instructors: z
     .array(z.string())
-    .nonempty({ message: "Instructors cannot be empty" }),
+    .min(1, { message: "Instructors cannot be empty" }),
   note: z.string().optional(),
 });
 
