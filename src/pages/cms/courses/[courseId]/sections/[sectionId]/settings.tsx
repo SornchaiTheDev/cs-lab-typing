@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
 import Button from "@/components/Common/Button";
 import DeleteAffect from "@/components/DeleteAffect";
 import SectionLayout from "@/Layout/SectionLayout";
 import { AddSectionSchema, TAddSection } from "@/forms/SectionSchema";
 import { generatePerson } from "@/helpers";
 import Forms from "@/components/Forms";
+import { useState } from "react";
 
 interface Props {
   course: {
@@ -15,7 +15,6 @@ interface Props {
 
 function Settings({ course }: Props) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
   const editSection = (formData: TAddSection) => {
     const { name, note } = formData;
   };
@@ -58,18 +57,16 @@ function Settings({ course }: Props) {
           <Button
             onClick={() => setIsDeleteOpen(true)}
             icon="solar:trash-bin-minimalistic-line-duotone"
-            className="shadow bg-red-9 text-sand-1 active:bg-sand-11"
+            className="shadow bg-red-9 text-sand-1 active:bg-red-11"
           >
             Delete Section
           </Button>
-          {isDeleteOpen && (
-            <DeleteAffect
-              type="section"
-              onClose={() => setIsDeleteOpen(false)}
-              onDelete={() => setIsDeleteOpen(false)}
-              selected="12 (F 15 - 17)"
-            />
-          )}
+          <DeleteAffect
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            type="section"
+            selected="12 (F 15 - 17)"
+          />
         </div>
       </div>
     </SectionLayout>

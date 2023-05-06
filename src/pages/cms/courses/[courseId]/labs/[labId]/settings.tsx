@@ -55,18 +55,16 @@ function Settings({ course }: Props) {
           <Button
             onClick={() => setIsDeleteOpen(true)}
             icon="solar:trash-bin-minimalistic-line-duotone"
-            className="shadow bg-red-9 text-sand-1 active:bg-sand-11"
+            className="shadow bg-red-9 text-sand-1 active:bg-red-11"
           >
             Delete Lab
           </Button>
-          {isDeleteOpen && (
-            <DeleteAffect
-              type="lab"
-              onClose={() => setIsDeleteOpen(false)}
-              onDelete={() => setIsDeleteOpen(false)}
-              selected="Test"
-            />
-          )}
+          <DeleteAffect
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            type="lab"
+            selected="Test"
+          />
         </div>
       </div>
     </LabLayout>

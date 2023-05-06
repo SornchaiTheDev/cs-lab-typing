@@ -55,14 +55,12 @@ function Semesters() {
 
   return (
     <>
-      {selected && (
-        <DeleteAffect
-          onClose={() => setSelected(null)}
-          onDelete={() => setSelected(null)}
-          selected={selected}
-          type="section"
-        />
-      )}
+      <DeleteAffect
+        selected={selected!}
+        type="section"
+        isOpen={selected !== null}
+        onClose={() => setSelected(null)}
+      />
 
       <Modal
         title="Add Semester"

@@ -7,10 +7,10 @@ import { Icon } from "@iconify/react";
 interface Props {
   children?: ReactNode;
   className?: string;
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
   title: string;
-  description?: string;
+  description?: string | ReactNode;
 }
 
 const Modal = ({
@@ -38,7 +38,7 @@ const Modal = ({
       >
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-xl font-bold">{title}</h4>
+            <h4 className="text-xl font-bold capitalize">{title}</h4>
             {!!description && <p className="text-sand-9">{description}</p>}
           </div>
           <button

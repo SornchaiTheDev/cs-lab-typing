@@ -16,9 +16,8 @@ interface Props {
 }
 
 function Settings({ course }: Props) {
-  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
- 
+  const router = useRouter();
 
   const addCourse = (formData: TAddCourse) => {
     const { number, name, authors, note, comments } = formData;
@@ -68,18 +67,16 @@ function Settings({ course }: Props) {
           <Button
             onClick={() => setIsDeleteOpen(true)}
             icon="solar:trash-bin-minimalistic-line-duotone"
-            className="shadow bg-red-9 text-sand-1 active:bg-sand-11"
+            className="shadow bg-red-9 text-sand-1 active:bg-red-11"
           >
             Delete Course
           </Button>
-          {isDeleteOpen && (
-            <DeleteAffect
-              type="course"
-              onClose={() => setIsDeleteOpen(false)}
-              onDelete={() => setIsDeleteOpen(false)}
-              selected="Fundamental Programming Concept"
-            />
-          )}
+          <DeleteAffect
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            type="course"
+            selected="Fundamental Programming Concept"
+          />
         </div>
       </div>
     </CourseLayout>

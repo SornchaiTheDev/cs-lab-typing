@@ -82,14 +82,12 @@ function Admin({ title, role, pattern }: Props) {
 
   return (
     <Layout title={title}>
-      {selected !== null && (
-        <DeleteAffect
-          type="user"
-          selected={selected}
-          onClose={() => setSelected(null)}
-          onDelete={() => setSelected(null)}
-        />
-      )}
+      <DeleteAffect
+        type="user"
+        isOpen={selected !== null}
+        selected={selected!}
+        onClose={() => setSelected(null)}
+      />
 
       <Table
         data={[
