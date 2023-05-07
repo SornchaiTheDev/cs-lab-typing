@@ -25,7 +25,7 @@ export const usersRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { role, users } = input;
       if (role === "student") {
-        users.map(async (user) => {
+        for (const user of users) {
           if (isKUStudent(user)) {
             return await addStudent(ctx.prisma, user);
           } else if (isNonKUStudent(user)) {
@@ -36,7 +36,7 @@ export const usersRouter = router({
               message: "INVALID_INPUT",
             });
           }
-        });
+        }
       } else {
         const role_name = role.toUpperCase();
         let isValidUser = users.every(
