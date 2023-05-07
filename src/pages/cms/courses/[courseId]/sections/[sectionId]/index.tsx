@@ -58,7 +58,7 @@ function Sections() {
 
         <Table data={[]} columns={columns} className="w-1/2">
           <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-            <AddUserBtn title="Student" pattern="student-id" />
+            {/* <AddUserBtn title="Student" pattern="student-id" /> */}
           </div>
         </Table>
       </div>
