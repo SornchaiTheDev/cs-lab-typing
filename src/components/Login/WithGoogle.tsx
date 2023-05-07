@@ -33,7 +33,7 @@ function WithGoogle() {
                     }`,
                 })
             }
-            className="flex justify-center items-center gap-3 hover:bg-zinc-100 hover:dark:bg-secondary-1/70 bg-zinc-50 dark:bg-secondary-1 border border-zinc-200 dark:border-secondary-2 text-gray-700 dark:text-white py-3 rounded-lg w-full"
+            className="flex items-center justify-center w-full gap-3 py-3 text-gray-700 border rounded-lg hover:bg-sand-4 hover:dark:bg-secondary-1/70 bg-sand-3 dark:bg-secondary-1 border-zinc-200 dark:border-secondary-2 dark:text-white"
         >
             <FcGoogle size="1.5rem" />
             เข้าสู่ระบบด้วย Google

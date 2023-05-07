@@ -1,18 +1,18 @@
 import Modal from "../Common/Modal";
-import { Icon } from "@iconify/react";
 import Button from "../Common/Button";
 import { ChangeEvent, useState } from "react";
 
 interface Props {
   selected: string;
   type: "course" | "section" | "task" | "lab" | "user";
-
   isOpen: boolean;
   onClose: () => void;
 }
 function DeleteAffect({ selected, type, isOpen, onClose }: Props) {
   const [confirmMsg, setConfirmMsg] = useState<string>("");
+
   const handleDelete = () => {};
+
   return (
     <Modal
       title={`Delete ${type}`}

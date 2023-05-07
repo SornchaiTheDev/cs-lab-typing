@@ -1,9 +1,9 @@
-import React from 'react'
-
+import React from "react";
+import { trpc } from "@/helpers";
 function Index() {
-  return (
-    <div>Index</div>
-  )
+  const hello = trpc.hello.useQuery();
+  console.log(hello.data);
+  return <div>Index</div>;
 }
 
-export default Index
+export default Index;
