@@ -95,7 +95,6 @@ function Admin({ title, role, pattern }: Props) {
   const [isShow, setIsShow] = useState(false);
   const [isError, setIsError] = useState(false);
 
-
   const { mutate } = trpc.users.addUser.useMutation({
     onSuccess() {
       toast.custom((t) => (
@@ -107,7 +106,7 @@ function Admin({ title, role, pattern }: Props) {
     },
     onError(err) {
       setIsError(true);
-      console.log(err.message)
+      console.log(err.message);
       if (err.message === "INVALID_INPUT") {
         toast.custom((t) => (
           <Toast
@@ -206,15 +205,16 @@ export const getStaticProps: GetStaticProps<Props, { role: Role }> = async ({
   switch (params?.role) {
     case "admin":
       title = "Administrator";
-      pattern = "by Email";
+      pattern = "import by Email or create by email,fullname";
       break;
     case "teacher":
       title = "Teacher";
-      pattern = "by Email";
+      pattern = "email,fullname";
       break;
     case "student":
-      title = "KU/Non-KU Student";
-      pattern = "student-id,email,ชื่อ นามสกุล) / Non-KU (username,password,email,ชื่อ นามสกุล";
+      title = "Student";
+      pattern =
+        "student-id,email,ชื่อ นามสกุล) / Non-KU (username,password,email,ชื่อ นามสกุล)";
       break;
   }
 

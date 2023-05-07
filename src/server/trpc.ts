@@ -22,6 +22,7 @@ const t = initTRPC.context<Context>().create({
 });
 
 export const router = t.router;
+export const mergeRouter = t.mergeRouters;
 export const procedure = t.procedure;
 export const middleware = t.middleware;
 
