@@ -1,6 +1,5 @@
 import SectionLayout from "@/Layout/SectionLayout";
 import Table from "@/components/Common/Table";
-import AddUserBtn from "@/components/Users/AddUser";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useRef } from "react";
 
