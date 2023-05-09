@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/server/prisma";
 import bcrypt from "bcrypt";
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -22,6 +22,9 @@ const authOptions: NextAuthOptions = {
             where: {
               student_id: credentials.username,
             },
+            include: {
+              roles: true,
+            },
           });
 
           if (user) {
@@ -36,6 +39,7 @@ const authOptions: NextAuthOptions = {
                 student_id: user.student_id,
                 full_name: user.full_name,
                 email: user.email,
+                roles: JSON.stringify(user.roles.map((role) => role.name)),
               };
             }
           }
@@ -81,6 +85,18 @@ const authOptions: NextAuthOptions = {
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.roles = user.roles;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.roles = token.roles;
+      }
+      return session;
     },
   },
 };

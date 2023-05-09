@@ -1,4 +1,5 @@
 import { withAuth } from "next-auth/middleware";
+import { prisma } from "@/server/prisma";
 
 export default withAuth({
   pages: {
@@ -6,8 +7,7 @@ export default withAuth({
     error: "/login",
   },
   callbacks: {
-    authorized({ req, token }) {
-      console.log(token)
+    async authorized({ req, token }) {
       return !!token;
     },
   },
