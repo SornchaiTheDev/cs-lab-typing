@@ -22,7 +22,7 @@ model users {
   created_at   DateTime  @default(now())
   last_logined DateTime?
   updated_at   DateTime  @updatedAt
-  deleted_at   DateTime  @default(now())
+  deleted_at   DateTime?
   roles        roles[]   @relation("user_role")
 }
 

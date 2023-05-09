@@ -2,7 +2,7 @@ import Layout from "@/Layout";
 import Table from "@/components/Common/Table";
 import { Icon } from "@iconify/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Button from "@/components/Common/Button";
@@ -20,6 +20,7 @@ import EditNonKUStudent from "@/features/Users/EditNonKUStudent";
 import { getUserType } from "@/helpers/getUserType";
 import EditTeacher from "@/features/Users/EditTeacher";
 import { useDeleteAffectStore } from "@/store/deleteAffect";
+import { useDropzone } from "react-dropzone";
 
 dayjs.extend(relativeTime);
 
@@ -94,6 +95,8 @@ function Admin({ title, role = "student", pattern }: Props) {
 
   const onClose = () => {
     setIsShow(false);
+    setValue("");
+    setIsError(false);
   };
 
   useOnClickOutside(modalRef, onClose);
@@ -127,6 +130,27 @@ function Admin({ title, role = "student", pattern }: Props) {
     type: "KUStudent" | "NonKUStudent" | "Teacher" | "Admin";
   };
 
+  const handleFileUpload = useCallback((acceptedFiles: File[]) => {
+    acceptedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result;
+        if (typeof text === "string") {
+          setValue(text.trim());
+        }
+      };
+      reader.readAsText(file);
+    });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive, isDragReject } =
+    useDropzone({
+      onDrop: handleFileUpload,
+      accept: {
+        "text/csv": [".csv"],
+      },
+    });
+
   return (
     <>
       {selectedObj && (
@@ -146,8 +170,7 @@ function Admin({ title, role = "student", pattern }: Props) {
       <Modal
         isOpen={isShow}
         onClose={onClose}
-        title={`Add/Edit ${title}`}
-        description={`( ${pattern} )`}
+        title="Add/Edit User"
         className="w-[95%] md:w-[40rem] flex flex-col gap-4"
       >
         <div>
@@ -156,13 +179,39 @@ function Admin({ title, role = "student", pattern }: Props) {
             theme={addUserTheme}
             value={value}
             onChange={(value) => setValue(value)}
-            height="30rem"
+            height="20rem"
             className={clsx(
-              "overflow-hidden h-[30rem] text-sm border rounded-md",
+              "overflow-hidden text-sm border rounded-md",
               isError ? "border-red-500" : "border-sand-6"
             )}
           />
         </div>
+        <div className="flex items-center justify-center gap-2 ">
+          <div className="w-full h-[0.5px] bg-sand-9"></div>
+          <h4>or</h4>
+          <div className="w-full h-[0.5px] bg-sand-9"></div>
+        </div>
+
+        <div
+          {...getRootProps()}
+          className={clsx(
+            "flex justify-center p-4 border-2 border-dashed rounded-lg cursor-pointer",
+
+            isDragReject
+              ? "border-red-9 text-red-9"
+              : isDragActive
+              ? "border-lime-9 text-lime-11"
+              : "border-sand-6 text-sand-11"
+          )}
+        >
+          <input {...getInputProps()} />
+          {isDragReject
+            ? "This file is not CSV"
+            : isDragActive
+            ? "You can now drop the file here"
+            : "Click or Drop a CSV file here"}
+        </div>
+
         <Button
           onClick={() => mutate({ users: value.split("\n") })}
           icon="solar:user-plus-rounded-line-duotone"

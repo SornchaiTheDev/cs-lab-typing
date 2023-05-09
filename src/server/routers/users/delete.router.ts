@@ -10,9 +10,12 @@ export const deleteUserRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { email } = input;
-      await await ctx.prisma.users.delete({
+      await await ctx.prisma.users.update({
         where: {
           email,
+        },
+        data: {
+          deleted_at: new Date(),
         },
       });
       return "Success";

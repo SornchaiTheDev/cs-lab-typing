@@ -19,11 +19,7 @@ export const getUserRouter = router({
 
       const users = await ctx.prisma.users.findMany({
         where: {
-          // roles: {
-          //   some: {
-          //     name: role.toUpperCase(),
-          //   },
-          // },
+          deleted_at: null,
         },
         skip: (page - 1) * limit,
         take: limit,
