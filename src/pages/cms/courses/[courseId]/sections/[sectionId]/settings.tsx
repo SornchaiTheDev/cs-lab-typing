@@ -61,12 +61,7 @@ function Settings({ course }: Props) {
           >
             Delete Section
           </Button>
-          <DeleteAffect
-            isOpen={isDeleteOpen}
-            onClose={() => setIsDeleteOpen(false)}
-            type="section"
-            selected="12 (F 15 - 17)"
-          />
+          {/* <DeleteAffect type="section" selected="12 (F 15 - 17)" /> */}
         </div>
       </div>
     </SectionLayout>

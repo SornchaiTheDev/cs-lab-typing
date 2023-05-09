@@ -59,12 +59,7 @@ function Settings({ course }: Props) {
           >
             Delete Lab
           </Button>
-          <DeleteAffect
-            isOpen={isDeleteOpen}
-            onClose={() => setIsDeleteOpen(false)}
-            type="lab"
-            selected="Test"
-          />
+          {/* <DeleteAffect type="lab" selected="Test" /> */}
         </div>
       </div>
     </LabLayout>

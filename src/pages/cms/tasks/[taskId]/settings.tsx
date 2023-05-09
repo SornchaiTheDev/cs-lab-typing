@@ -95,12 +95,7 @@ function Settings({ course }: Props) {
             Delete Task
           </Button>
 
-          <DeleteAffect
-            type="task"
-            isOpen={isDeleteOpen}
-            onClose={() => setIsDeleteOpen(false)}
-            selected="Q KEY"
-          />
+          {/* <DeleteAffect type="task" selected="Q KEY" /> */}
         </div>
       </div>
     </InsideTaskLayout>

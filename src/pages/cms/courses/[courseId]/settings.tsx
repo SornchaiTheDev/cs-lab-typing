@@ -71,12 +71,10 @@ function Settings({ course }: Props) {
           >
             Delete Course
           </Button>
-          <DeleteAffect
-            isOpen={isDeleteOpen}
-            onClose={() => setIsDeleteOpen(false)}
+          {/* <DeleteAffect
             type="course"
             selected="Fundamental Programming Concept"
-          />
+          /> */}
         </div>
       </div>
     </CourseLayout>
