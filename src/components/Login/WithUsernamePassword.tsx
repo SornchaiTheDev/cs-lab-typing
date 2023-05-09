@@ -1,18 +1,17 @@
-import { FormEvent, useState, useRef, useEffect, ChangeEvent } from "react";
+import { FormEvent, useState, useRef, useEffect } from "react";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { BiLoaderCircle } from "react-icons/bi";
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { signInWithUsernameAndPassword } from "@/services/signin";
+import { signIn } from "next-auth/react";
 
 function WithEmail() {
   const [step, setStep] = useState<"username" | "password">("username");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
+  const { query } = useRouter();
 
   const handleOnSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -22,16 +21,13 @@ function WithEmail() {
     }
 
     setIsSubmit(true);
-    signInWithUsernameAndPassword({ username, password })
-      .then(({ status }) => {
-        if (status === "failed") {
-          setIsSubmit(false);
-          return setError(true);
-        }
-
-        router.push("/");
-      })
-      .catch((e) => console.log(e));
+    signIn("credentials", {
+      username,
+      password,
+      callbackUrl: `${
+        query.callbackUrl ? query.callbackUrl : window.location.origin
+      }`,
+    });
   };
 
   useEffect(() => {
@@ -47,10 +43,7 @@ function WithEmail() {
           placeholder="ชื่อผู้ใช้"
           className={clsx(
             "py-3 px-4 w-full border outline-none focus:ring-1 ring-zinc-200 dark:bg-secondary-1 dark:text-ascent-1",
-            step === "username" ? "rounded-lg" : "rounded-t-lg",
-            error
-              ? "border-red-500 focus:ring-red-500"
-              : "dark:border-secondary-2"
+            step === "username" ? "rounded-lg" : "rounded-t-lg"
           )}
         />
         {step === "username" && (
@@ -74,12 +67,7 @@ function WithEmail() {
               onChange={(e) => setPassword(e.target.value)}
               type="password"
               placeholder="รหัสผ่าน"
-              className={clsx(
-                "py-3 px-4 w-full border outline-none dark:bg-secondary-1 dark:text-ascent-1 rounded-b",
-                error
-                  ? "border-red-500 focus:ring-red-500"
-                  : "dark:border-secondary-2"
-              )}
+              className="w-full px-4 py-3 border rounded-b outline-none dark:bg-secondary-1 dark:text-ascent-1"
             />
 
             <button
@@ -98,12 +86,6 @@ function WithEmail() {
               )}
             </button>
           </div>
-
-          {error && (
-            <p className="my-2 text-sm text-red-500">
-              ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง
-            </p>
-          )}
         </>
       )}
     </form>
