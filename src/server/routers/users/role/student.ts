@@ -29,27 +29,3 @@ export const addStudent = async (prisma: PrismaClient, user: string) => {
     }
   }
 };
-
-export const getStudentObjectRelation = async (
-  prisma: PrismaClient,
-  email: string
-) => {
-  const user = await prisma.users.findUnique({
-    where: {
-      email,
-    },
-    include: {
-      roles: true,
-    },
-  });
-
-  return user;
-};
-
-export const deleteStudent = async (prisma: PrismaClient, id: number) => {
-  await prisma.users.delete({
-    where: {
-      id,
-    },
-  });
-};

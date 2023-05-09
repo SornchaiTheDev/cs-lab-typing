@@ -22,7 +22,7 @@ function Button({
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        "flex items-center gap-4 p-2 rounded-lg  justify-center disabled:bg-sand-3 disabled:cursor-not-allowed disabled:text-sand-8",
+        "flex items-center min-h-[2.5rem] gap-4 p-2 rounded-lg  justify-center disabled:bg-sand-6 disabled:cursor-not-allowed disabled:text-sand-8",
         className
       )}
     >

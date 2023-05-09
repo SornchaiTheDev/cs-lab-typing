@@ -20,7 +20,7 @@ function InCourse({ course }: Props) {
   const router = useRouter();
 
   return (
-    <CourseLayout title={course.name}>
+    <CourseLayout title="Fundamental Programming Concept">
       <div className="w-1/2 p-4 text-sand-12">
         <h4 className="text-2xl">Course Information</h4>
         <h5 className="mt-4 mb-2 font-bold">Enrolled Student</h5>

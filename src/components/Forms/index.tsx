@@ -5,7 +5,7 @@ import Select from "./Select";
 import SingleSearch from "./Search/SingleSearch";
 import MultipleSearch from "./Search/MultipleSearch";
 import Checkbox from "./Checkbox";
-import { ZodEffects, ZodObject, z } from "zod";
+import { ZodEffects, ZodObject, string, z } from "zod";
 import TextArea from "./TextArea";
 import Button from "@/components/Common/Button";
 import clsx from "clsx";
@@ -15,6 +15,7 @@ interface ConfirmBtn {
   title: string;
   icon?: string;
   className?: string;
+  isLoading?: boolean;
 }
 
 type EachField<T> = {
@@ -33,6 +34,8 @@ type EachField<T> = {
   canAddItemNotInList?: boolean;
   conditional?: (data: string) => boolean;
   children?: EachField<T>;
+  value?: string | string[];
+  disabled?: boolean;
 };
 
 interface Props<T> {
@@ -48,10 +51,12 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
     control,
     register,
     handleSubmit,
-    setValue,
-    formState: { errors },
+    formState: { errors, isValid, isDirty },
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
+    defaultValues: Object.fromEntries(
+      fields.map((field) => [field.label, field.value ?? ""])
+    ) as z.infer<typeof schema>,
   });
 
   const render = (field: EachField<T>) => {
@@ -66,6 +71,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             optional={field.optional}
             isError={!!errors[field.label]}
             error={errors[field.label]?.message as string}
+            disabled={field.disabled}
           />
         );
       case "select":
@@ -83,6 +89,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
+                disabled={field.disabled}
               />
             )}
           />
@@ -104,6 +111,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
                 canAddItemNotInList={field.canAddItemNotInList}
+                disabled={field.disabled}
               />
             )}
           />
@@ -124,6 +132,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
                 canAddItemNotInList={field.canAddItemNotInList}
+                disabled={field.disabled}
               />
             )}
           />
@@ -135,6 +144,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             label={field.label as string}
             register={register}
             title={field.title}
+            disabled={field.disabled}
           />
         );
       case "textarea":
@@ -145,6 +155,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             title={field.title}
             register={register}
             optional={field.optional}
+            disabled={field.disabled}
           />
         );
 
@@ -185,11 +196,12 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
       })}
       {confirmBtn && (
         <Button
-          isLoading={false}
+          disabled={!isValid || !isDirty}
+          isLoading={confirmBtn.isLoading}
           icon={confirmBtn.icon}
           className={clsx(
             "shadow bg-sand-12 text-sand-1 active:bg-sand-11",
-            confirmBtn.className ?? "py-3 w-full mt-4"
+            confirmBtn.className ?? "py-2 w-full mt-4"
           )}
         >
           {confirmBtn.title}

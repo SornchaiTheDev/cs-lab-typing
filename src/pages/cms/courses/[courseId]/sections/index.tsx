@@ -27,7 +27,7 @@ function Sections({ course }: Props) {
   };
 
   return (
-    <CourseLayout title={course.name}>
+    <CourseLayout title="Fundamental Programming Concept">
       <div className="my-4">
         <ModalWithButton
           title="Add Section"

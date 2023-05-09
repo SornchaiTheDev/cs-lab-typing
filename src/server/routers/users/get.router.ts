@@ -1,6 +1,5 @@
 import { adminProcedure, router } from "@/server/trpc";
 import { z } from "zod";
-import { getStudentObjectRelation } from "./role/student";
 
 export const getUserRouter = router({
   getUserPagination: adminProcedure
@@ -10,7 +9,6 @@ export const getUserRouter = router({
           z.literal("student"),
           z.literal("teacher"),
           z.literal("admin"),
-          z.literal("non-ku-student"),
         ]),
         page: z.number().default(1),
         limit: z.number().default(10),
@@ -21,11 +19,11 @@ export const getUserRouter = router({
 
       const users = await ctx.prisma.users.findMany({
         where: {
-          roles: {
-            some: {
-              name: role.toUpperCase(),
-            },
-          },
+          // roles: {
+          //   some: {
+          //     name: role.toUpperCase(),
+          //   },
+          // },
         },
         skip: (page - 1) * limit,
         take: limit,
@@ -35,11 +33,43 @@ export const getUserRouter = router({
       }
       return users;
     }),
-  getUserById: adminProcedure
+  getUserByEmail: adminProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
       const { email } = input;
+      const user = await ctx.prisma.users.findUnique({
+        where: {
+          email,
+        },
+        include: {
+          roles: true,
+        },
+      });
+      return user;
+    }),
+  getUserObjectRelation: adminProcedure
+    .input(z.object({ email: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { email } = input;
+      const user = await ctx.prisma.users.findUnique({
+        where: {
+          email,
+        },
+        include: {
+          roles: true,
+        },
+      });
 
-      return getStudentObjectRelation(ctx.prisma, email);
+      const relation = {
+        summary: [{ name: "Role", amount: user?.roles.length }],
+        object: [
+          {
+            name: "Role",
+            data: user?.roles.map((role) => role.name),
+          },
+        ],
+      };
+
+      return relation;
     }),
 });

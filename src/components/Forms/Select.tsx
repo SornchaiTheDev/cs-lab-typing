@@ -12,6 +12,7 @@ interface Props {
   error?: string;
   isError?: boolean;
   optional?: boolean;
+  disabled?: boolean;
 }
 
 function Select({
@@ -23,6 +24,7 @@ function Select({
   isError,
   error,
   optional,
+  disabled,
 }: Props) {
   const [isShow, setIsShow] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -32,6 +34,7 @@ function Select({
   useOnClickOutside(selectRef, () => setIsShow(false));
 
   const handleOnKeyDown = (e: KeyboardEvent) => {
+    if (disabled) return;
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
@@ -89,7 +92,10 @@ function Select({
             "w-full border border-sand-6 rounded-md outline-none bg-sand-1 relative min-h-[2.5rem]",
             isError && "border-tomato-7"
           )}
-          onClick={() => setIsShow(!isShow)}
+          onClick={() => {
+            if (disabled) return;
+            setIsShow(!isShow);
+          }}
         >
           <Icon
             icon={

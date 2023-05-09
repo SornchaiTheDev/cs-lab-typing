@@ -5,15 +5,26 @@ export const addTeacher = async (prisma: PrismaClient, user: string) => {
   const [email, full_name] = user.split(",");
 
   try {
-    await prisma.users.create({
-      data: {
+    await prisma.users.upsert({
+      where: {
+        email,
+      },
+      update: {
+        full_name,
+      },
+      create: {
         student_id: email,
         email,
         full_name,
         roles: {
-          connect: {
-            name: "STUDENT",
-          },
+          connect: [
+            {
+              name: "STUDENT",
+            },
+            {
+              name: "TEACHER",
+            },
+          ],
         },
       },
     });

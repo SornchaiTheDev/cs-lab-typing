@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 type ToastProps = {
   type: ToastType;
-  title: string;
+  msg: string;
   description?: string;
 } & Toast;
 
@@ -35,10 +35,25 @@ const iconType = (type: ToastType) => {
   return { icon, color };
 };
 
-function Toast({ title, type, description, duration = 0 }: ToastProps) {
+function Toast({ msg, type, description, duration = 0 }: ToastProps) {
   const { icon, color } = iconType(type);
   const progressRef = useRef<HTMLDivElement>(null);
   const [isPause, setIsPause] = useState(false);
+
+  if (msg === "INVALID_INPUT") {
+    msg = "Some fields are invalid";
+  }
+  if (msg === "DUPLICATED_USER") {
+    msg = "Some users are already added. If you want to Edit, Use edit button";
+  }
+
+  if (msg === "SOMETHING_WENT_WRONG") {
+    msg = "Something went wrong";
+  }
+
+  if (msg === "USER_NOT_FOUND") {
+    msg = "Cannot find that user";
+  }
 
   return (
     <motion.div
@@ -52,7 +67,7 @@ function Toast({ title, type, description, duration = 0 }: ToastProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h4 className="text-sand-12">{title}</h4>
+        <h4 className="text-sand-12">{msg}</h4>
         {description && <p className="text-sand-10">{description}</p>}
       </div>
       <motion.div

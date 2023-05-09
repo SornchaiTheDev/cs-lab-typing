@@ -9,10 +9,20 @@ interface Props<T extends FieldValues> {
   className?: string;
   register: UseFormRegister<T>;
   optional?: boolean;
+  disabled?: boolean;
 }
 
 const TextArea = <T extends FieldValues>(props: Props<T>) => {
-  const { title, isError, error, className, register, label, optional } = props;
+  const {
+    title,
+    isError,
+    error,
+    className,
+    register,
+    label,
+    optional,
+    disabled,
+  } = props;
   return (
     <div {...{ className }}>
       <div className="flex justify-between">
@@ -28,6 +38,7 @@ const TextArea = <T extends FieldValues>(props: Props<T>) => {
       </div>
 
       <textarea
+        disabled={disabled}
         rows={5}
         className="w-full p-2 border rounded-lg outline-none bg-sand-1 border-sand-6 caret-sand-12"
         {...{ ...register(label) }}

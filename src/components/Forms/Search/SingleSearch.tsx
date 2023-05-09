@@ -20,6 +20,7 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   canAddItemNotInList?: boolean;
+  disabled?: boolean;
 }
 
 const SingleSearch = (props: Props) => {
@@ -33,6 +34,7 @@ const SingleSearch = (props: Props) => {
     canAddItemNotInList,
     value,
     onChange,
+    disabled,
   } = props;
   const [search, setSearch] = useState("");
   const [isFocus, setIsFocus] = useState(false);
@@ -144,6 +146,7 @@ const SingleSearch = (props: Props) => {
             </button>
           ) : (
             <input
+              disabled={disabled}
               onFocus={() => setIsFocus(true)}
               value={search}
               className="w-full bg-transparent outline-none"

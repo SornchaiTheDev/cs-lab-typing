@@ -1,17 +1,61 @@
 import Modal from "../Common/Modal";
 import Button from "../Common/Button";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useDeleteAffectStore } from "@/store";
+import { trpc } from "@/helpers";
+import toast from "react-hot-toast";
+import Toast from "../Common/Toast";
 
 interface Props {
-  selected: string;
   type: "course" | "section" | "task" | "lab" | "user";
-  isOpen: boolean;
-  onClose: () => void;
 }
-function DeleteAffect({ selected, type, isOpen, onClose }: Props) {
-  const [confirmMsg, setConfirmMsg] = useState<string>("");
 
-  const handleDelete = () => {};
+interface fetchUserDataProps {
+  summary: { name: string; amount: number | undefined }[];
+  object: { name: string; data: string[] | undefined }[];
+}
+function DeleteAffect({ type }: Props) {
+  const [selectedObject, setSelectedObject] = useDeleteAffectStore((state) => [
+    state.selectedObj,
+    state.setSelectedObj,
+  ]);
+  const [confirmMsg, setConfirmMsg] = useState<string>("");
+  const [fetchData, setFetchData] = useState<fetchUserDataProps | null>(null);
+
+  const ctx = trpc.useContext();
+
+  const fetchUserData = useCallback(
+    async (email: string) => {
+      const data = await ctx.users.getUserObjectRelation.fetch({ email });
+      setFetchData(data);
+    },
+    [ctx.users.getUserObjectRelation]
+  );
+
+  useEffect(() => {
+    if (selectedObject) {
+      if (type === "user") {
+        fetchUserData(selectedObject.selected);
+      }
+    }
+  }, [selectedObject, type, fetchUserData]);
+  const deleteUser = trpc.users.deleteUser.useMutation({
+    onSuccess() {
+      toast.custom((t) => (
+        <Toast {...t} msg="Delete User successfully" type="success" />
+      ));
+      setSelectedObject(null);
+      setConfirmMsg("");
+      ctx.users.invalidate();
+    },
+  });
+  const handleDelete = () => {
+    if (selectedObject) {
+      if (type === "user") {
+        deleteUser.mutateAsync({ email: selectedObject.selected });
+      }
+    }
+  };
 
   return (
     <Modal
@@ -19,73 +63,44 @@ function DeleteAffect({ selected, type, isOpen, onClose }: Props) {
       description={
         <>
           Are you sure to delete {type}{" "}
-          <span className="text-lg font-bold">&ldquo;{selected}&rdquo;</span>?
-          All of these following related items will be deleted
+          <span className="text-lg font-bold">
+            &ldquo;{selectedObject?.selected}&rdquo;
+          </span>
+          ? All of these following related items will be deleted
         </>
       }
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={!!selectedObject}
+      onClose={() => setSelectedObject(null)}
       className="w-[90%]  md:w-[40rem] max-h-[90%]"
     >
       <div className="flex-1 overflow-y-auto">
         <div className="overflow-auto whitespace-nowrap">
           <h3 className="mt-2 text-lg font-bold">Summary</h3>
           <ul className="list-disc list-inside">
-            <li>Semester : 6</li>
-            <li>Courses : 3</li>
-            <li>Sections : 6</li>
-            <li>Submissions : 125</li>
+            {fetchData?.summary.map(({ name, amount }) => (
+              <li key={name}>
+                {name} : {amount}
+              </li>
+            ))}
           </ul>
           <h3 className="mt-2 text-lg font-bold">Objects</h3>
 
           <ul className="list-disc list-inside">
-            <li>
-              Semester : 9999/s
-              <ul className="pl-8 list-disc list-inside">
-                <li>
-                  Section : CS113 Computer Programming [9999/s] Sec:Test
-                  <ul className="pl-8 list-disc list-inside">
-                    <li>
-                      test1
-                      <ul className="pl-8 list-disc list-inside">
-                        <li>test2</li>
-                        <ul className="pl-8 list-disc list-inside">
-                          <li>test2</li>
-                          <ul className="pl-8 list-disc list-inside">
-                            <li>
-                              {" "}
-                              Lorem ipsum dolor sit amet consectetur adipisicing
-                              elit. Harum, ea necessitatibus facere aliquam
-                              consequuntur earum explicabo sit ipsam facilis
-                              commodi, maxime sequi quisquam quos neque hic
-                              molestiae suscipit esse rerum.
-                            </li>
-                            <ul className="pl-8 list-disc list-inside">
-                              <li>
-                                {" "}
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Harum, ea necessitatibus
-                                facere aliquam consequuntur earum explicabo sit
-                                ipsam facilis commodi, maxime sequi quisquam
-                                quos neque hic molestiae suscipit esse rerum.
-                              </li>
-
-                              <li>
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Harum, ea necessitatibus
-                                facere aliquam consequuntur earum explicabo sit
-                                ipsam facilis commodi, maxime sequi quisquam
-                                quos neque hic molestiae suscipit esse rerum.
-                              </li>
-                            </ul>
-                          </ul>
-                        </ul>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
+            {fetchData?.object.map(({ name, data }) => {
+              if (data) {
+                return (
+                  <li key={name}>
+                    {name}
+                    <ul className="pl-8 list-disc list-inside">
+                      {data.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              }
+              return null;
+            })}
           </ul>
         </div>
       </div>
@@ -96,11 +111,11 @@ function DeleteAffect({ selected, type, isOpen, onClose }: Props) {
             setConfirmMsg(e.target.value)
           }
           className="w-full p-2 border rounded-md outline-none border-sand-6 bg-sand-1"
-          placeholder={`Type "${selected}" to confirm`}
+          placeholder={`Type "${selectedObject?.selected}" to confirm`}
         />
 
         <Button
-          disabled={confirmMsg !== selected}
+          disabled={confirmMsg !== selectedObject?.selected}
           onClick={handleDelete}
           className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
         >

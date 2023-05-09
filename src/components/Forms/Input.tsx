@@ -12,6 +12,7 @@ interface Props<T extends FieldValues> {
   register: UseFormRegister<T>;
   className?: string;
   optional?: boolean;
+  disabled?: boolean;
 }
 
 const Input = <T extends FieldValues>(props: Props<T>) => {
@@ -25,6 +26,7 @@ const Input = <T extends FieldValues>(props: Props<T>) => {
     register,
     className,
     optional,
+    disabled,
   } = props;
   return (
     <div {...{ className }}>
@@ -40,6 +42,7 @@ const Input = <T extends FieldValues>(props: Props<T>) => {
         )}
       </div>
       <input
+        disabled={disabled}
         className={clsx(
           "w-full p-2 border border-sand-6 rounded-md outline-none bg-sand-1",
           isError && "border-tomato-7"

@@ -21,6 +21,7 @@ interface Props {
   value: string[];
   onChange: (value: string[]) => void;
   canAddItemNotInList?: boolean;
+  disabled?: boolean;
 }
 
 const Multiple = (props: Props) => {
@@ -34,6 +35,7 @@ const Multiple = (props: Props) => {
     canAddItemNotInList,
     value = [],
     onChange,
+    disabled,
   } = props;
 
   const [search, setSearch] = useState("");
@@ -65,6 +67,7 @@ const Multiple = (props: Props) => {
   // send value to parent component
 
   const handleOnKeyDown = (e: KeyboardEvent) => {
+    if (disabled) return;
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
@@ -81,7 +84,7 @@ const Multiple = (props: Props) => {
         addItem(filteredDatas[selectedIndex]);
         break;
       case "Backspace":
-        if (search.length === 0) {
+        if (search.length === 0 && isFocus) {
           handleDelete();
         }
         break;
@@ -89,6 +92,7 @@ const Multiple = (props: Props) => {
   };
 
   const addItem = (text?: string) => {
+    if (disabled) return;
     if (!text) text = search;
     if (!canAddItemNotInList && !datas.includes(text)) return;
     if (value.map((data) => data).includes(text)) return;
@@ -103,7 +107,7 @@ const Multiple = (props: Props) => {
   }, [value]);
 
   const handleDelete = (item?: string) => {
-    if (!isFocus) return;
+    if (disabled) return;
     if (item) {
       onChange(value.filter((data) => data !== item));
       return;
@@ -155,6 +159,7 @@ const Multiple = (props: Props) => {
         >
           {value.map((value) => (
             <button
+              type="button"
               key={value}
               className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
               onClick={() => handleDelete(value)}
@@ -164,6 +169,7 @@ const Multiple = (props: Props) => {
           ))}
           <div className="relative flex-1">
             <input
+              disabled={disabled}
               onFocus={() => setIsFocus(true)}
               value={search}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
