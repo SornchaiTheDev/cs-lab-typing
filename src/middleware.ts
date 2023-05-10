@@ -1,5 +1,6 @@
 import { withAuth } from "next-auth/middleware";
-import { prisma } from "@/server/prisma";
+import { NextResponse } from "next/server";
+import { PATH } from "@/constants/PATH";
 
 export default withAuth({
   pages: {
@@ -8,7 +9,20 @@ export default withAuth({
   },
   callbacks: {
     async authorized({ req, token }) {
-      return !!token;
+      if (!token) return false;
+      const { nextUrl } = req;
+
+      const resolvePath = PATH.find(
+        ({ pathname }) => nextUrl.pathname === pathname
+      );
+
+      if (resolvePath === undefined) return true;
+
+      const isAuthorized = resolvePath?.roles.some((role) =>
+        token?.roles!.includes(role)
+      );
+
+      return isAuthorized;
     },
   },
 });

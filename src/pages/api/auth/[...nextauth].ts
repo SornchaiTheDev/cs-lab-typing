@@ -39,7 +39,6 @@ export const authOptions: NextAuthOptions = {
                 student_id: user.student_id,
                 full_name: user.full_name,
                 email: user.email,
-                roles: JSON.stringify(user.roles.map((role) => role.name)),
               };
             }
           }
@@ -88,13 +87,24 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.roles = user.roles;
+        const fetchUser = await prisma.users.findUnique({
+          where: {
+            email: user.email as string,
+          },
+          include: {
+            roles: true,
+          },
+        });
+        token.roles = JSON.stringify(fetchUser?.roles.map((role) => role.name));
+        token.full_name = fetchUser?.full_name!;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.roles = token.roles;
+        session.roles = token.roles;
+        session.full_name = token.full_name;
+        session.email = token.email;
       }
       return session;
     },

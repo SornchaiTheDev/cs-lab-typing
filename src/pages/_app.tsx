@@ -8,15 +8,18 @@ import "react-toastify/dist/ReactToastify.css";
 import CommandPallete from "@/components/CommandPallete";
 import { Analytics } from "@vercel/analytics/react";
 import { trpc } from "@/helpers";
+import { SessionProvider } from "next-auth/react";
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
     <>
-      {/* <CommandPallete /> */}
-      <Analytics />
-      <Toaster position="top-right" />
-      <ToastContainer />
-      <Component {...pageProps} />
+      <SessionProvider>
+        {/* <CommandPallete /> */}
+        <Analytics />
+        <Toaster position="top-right" />
+        <ToastContainer />
+        <Component {...pageProps} />
+      </SessionProvider>
     </>
   );
 };

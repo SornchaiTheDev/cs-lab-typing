@@ -48,7 +48,9 @@ export const updateUserRouter = router({
         data: {
           full_name,
           student_id,
-          password: await bcrypt.hash(password, 10),
+          ...(password.length > 0 && {
+            password: await bcrypt.hash(password, 10),
+          }),
           roles: {
             set: roles.map((role: string) => ({ name: role.toUpperCase() })),
           },

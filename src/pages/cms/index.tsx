@@ -2,9 +2,6 @@ import { Icon } from "@iconify/react";
 import clsx from "clsx";
 import Link from "next/link";
 import Layout from "@/Layout";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { GetServerSidePropsContext } from "next";
 
 interface Menus {
   name: string;
@@ -79,31 +76,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-  if (session.user) {
-    const roles = JSON.parse(session.user.roles) as string[];
-    const isAdmin = !!roles.find((role) => role === "ADMIN");
-    if (!isAdmin) {
-      return {
-        redirect: {
-          destination: "/",
-          permanent: false,
-        },
-      };
-    }
-  }
-
-  return {
-    props: {},
-  };
-}

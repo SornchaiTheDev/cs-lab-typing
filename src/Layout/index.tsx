@@ -6,12 +6,17 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { replaceSlugwithQueryPath } from "@/helpers";
+import { signOut, useSession } from "next-auth/react";
 
 interface Props {
   children?: React.ReactNode;
   title: string;
 }
 function Layout({ children, title }: Props) {
+  const { data } = useSession();
+
+  console.log(data?.email);
+
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
@@ -68,13 +73,17 @@ function Layout({ children, title }: Props) {
                   align="end"
                 >
                   <div className="px-6 pt-4">
-                    <div className="p-1 mb-2 rounded bg-red-9 w-fit">
-                      <h5 className="text-xs text-white">ADMIN</h5>
+                    <div className="flex items-center gap-2">
+                      {JSON.parse(data?.roles as string).map((role) => (
+                        <div className="p-1 mb-2 rounded bg-red-9 w-fit">
+                          <h5 className="text-xs text-white">{role}</h5>
+                        </div>
+                      ))}
                     </div>
                     <h4 className="text-lg font-medium leading-tight text-sand-12">
-                      Sornchai Somsakul
+                      {data?.full_name}
                     </h4>
-                    <h5 className="text-sand-10">sornchaithedev@gmail.com</h5>
+                    <h5 className="text-sand-10">{data?.email}</h5>
                   </div>
                   <hr />
                   <button
@@ -93,7 +102,10 @@ function Layout({ children, title }: Props) {
                       />
                     </button>
 
-                    <button className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:text-sand-12 hover:bg-sand-4">
+                    <button
+                      onClick={() => signOut()}
+                      className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:text-sand-12 hover:bg-sand-4"
+                    >
                       Sign Out
                       <Icon icon="solar:login-2-line-duotone" />
                     </button>
