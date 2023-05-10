@@ -1,8 +1,7 @@
 import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
 import { PATH } from "@/constants/PATH";
 
-export default withAuth({
+export default withAuth(async function middleware(req) {}, {
   pages: {
     signIn: "/login",
     error: "/login",

@@ -2,8 +2,9 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import { Context } from "./context";
 import { transformer } from "@/helpers";
 import { ZodError } from "zod";
+import { OpenApiMeta } from 'trpc-openapi';
 
-const t = initTRPC.context<Context>().create({
+const t = initTRPC.meta<OpenApiMeta>().context<Context>().create({
   transformer,
   errorFormatter(opts) {
     const { shape, error } = opts;
