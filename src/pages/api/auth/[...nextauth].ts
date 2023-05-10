@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
                 student_id: user.student_id,
                 full_name: user.full_name,
                 email: user.email,
+                image: "/assets/profile-placeholder.png",
               };
             }
           }

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { replaceSlugwithQueryPath } from "@/helpers";
 import { signOut, useSession } from "next-auth/react";
+import clsx from "clsx";
 
 interface Props {
   children?: React.ReactNode;
@@ -14,8 +15,7 @@ interface Props {
 }
 function Layout({ children, title }: Props) {
   const { data } = useSession();
-
-  console.log(data?.email);
+  const profileImage = data?.user?.image;
 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
@@ -31,6 +31,9 @@ function Layout({ children, title }: Props) {
         .slice(0, index + 1)
         .join("/")}`,
     }));
+
+  const role = data ? (JSON.parse(data?.roles as string) as string[]) : [];
+  const showRole = role.filter((role) => role != "STUDENT")[0];
   return (
     <div className="flex flex-col min-h-screen">
       <div className="container flex flex-col flex-1 max-w-6xl px-2 py-4 mx-auto lg:px-0 roboto">
@@ -57,13 +60,15 @@ function Layout({ children, title }: Props) {
             <Popover.Root>
               <Popover.Trigger asChild>
                 <button>
-                  <Image
-                    src="https://lh3.googleusercontent.com/a/AGNmyxbgXeXNBWkivERv6OUy29IMSG3iHYH9HAfAozB2bw=s83-c-mo"
-                    alt="Sornchai Somsakul - Profile Image"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                  />
+                  {profileImage && (
+                    <Image
+                      src={profileImage}
+                      alt="Sornchai Somsakul - Profile Image"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                  )}
                 </button>
               </Popover.Trigger>
               <Popover.Portal>
@@ -74,11 +79,14 @@ function Layout({ children, title }: Props) {
                 >
                   <div className="px-6 pt-4">
                     <div className="flex items-center gap-2">
-                      {JSON.parse(data?.roles as string).map((role) => (
-                        <div className="p-1 mb-2 rounded bg-red-9 w-fit">
-                          <h5 className="text-xs text-white">{role}</h5>
-                        </div>
-                      ))}
+                      <div
+                        className={clsx(
+                          "p-1 mb-2 rounded w-fit",
+                          showRole === "ADMIN" ? "bg-red-9" : "bg-lime-9"
+                        )}
+                      >
+                        <h5 className="text-xs text-white">{showRole}</h5>
+                      </div>
                     </div>
                     <h4 className="text-lg font-medium leading-tight text-sand-12">
                       {data?.full_name}
@@ -94,14 +102,6 @@ function Layout({ children, title }: Props) {
                     <Icon icon="solar:sun-2-line-duotone" className="text-xl" />
                   </button>
                   <div>
-                    <button className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:text-sand-12 hover:bg-sand-4">
-                      Settings
-                      <Icon
-                        icon="solar:settings-line-duotone"
-                        className="text-xl"
-                      />
-                    </button>
-
                     <button
                       onClick={() => signOut()}
                       className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:text-sand-12 hover:bg-sand-4"
