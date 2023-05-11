@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/server/prisma";
 import bcrypt from "bcrypt";
-import { NextApiRequest, NextApiResponse } from "next";
+import { api } from "@/services/Axios";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,7 +17,7 @@ export const authOptions: NextAuthOptions = {
         username: { label: "username", type: "text", placeholder: "jsmith" },
         password: { label: "password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (credentials) {
           const user = await prisma.users.findUnique({
             where: {
@@ -33,6 +33,11 @@ export const authOptions: NextAuthOptions = {
               credentials.password,
               user.password!
             );
+
+            await api.post("/auth-logger", {
+              type: samePassword ? "LOGIN" : "FAILED-LOGIN",
+              email: user.email,
+            });
 
             if (samePassword) {
               return {
@@ -69,17 +74,20 @@ export const authOptions: NextAuthOptions = {
                 email: profile.email,
               },
             });
+
             if (user?.deleted_at === null) {
+              await api.post("/auth-logger", {
+                type: "LOGIN",
+                email: profile.email,
+              });
               return true;
             }
-
             throw new Error("not-found");
           }
         }
       }
       throw new Error("not-authorize");
     },
-
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
@@ -112,5 +120,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
-const withAuth = (req : NextApiRequest, res : NextApiResponse) => NextAuth(req, res, authOptions);
-export default withAuth;
+
+export default NextAuth(authOptions);

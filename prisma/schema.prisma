@@ -14,16 +14,17 @@ datasource db {
 }
 
 model users {
-  id           Int       @id @default(autoincrement())
-  student_id   String    @unique
+  id           Int           @id @default(autoincrement())
+  student_id   String        @unique
   full_name    String
-  email        String    @unique
+  email        String        @unique
   password     String?
-  created_at   DateTime  @default(now())
+  created_at   DateTime      @default(now())
   last_logined DateTime?
-  updated_at   DateTime  @updatedAt
+  updated_at   DateTime      @updatedAt
   deleted_at   DateTime?
-  roles        roles[]   @relation("user_role")
+  roles        roles[]       @relation("user_role")
+  auth_loggers auth_logger[]
 }
 
 model roles {
@@ -33,4 +34,13 @@ model roles {
   updatedAt DateTime @updatedAt
   deletedAt DateTime @default(now())
   users     users[]  @relation("user_role")
+}
+
+model auth_logger {
+  id         Int      @id @default(autoincrement())
+  type       String
+  date DateTime @default(now())
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    Int
+  ip_address String
 }

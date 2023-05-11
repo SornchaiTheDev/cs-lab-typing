@@ -1,9 +1,9 @@
-import { procedure, router } from "../trpc";
+import { router } from "../trpc";
 import { usersRouter } from "./users";
-import { z } from "zod";
-
+import { loggerRouter } from "./logger";
 export const appRouter = router({
   users: usersRouter,
+  logger: loggerRouter,
 });
 
 export type AppRouter = typeof appRouter;
