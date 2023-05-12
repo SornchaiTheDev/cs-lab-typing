@@ -37,8 +37,8 @@ const today = new Date();
 
 function Logger() {
   const [dateRange, setDateRange] = useState<DateRange>({
-    from: today,
-    to: today,
+    from: new Date(today.setHours(0, 0, 0, 0)),
+    to: new Date(today.setHours(23, 59, 59, 999)),
   });
 
   const authLogs = trpc.logger.getAuthLog.useQuery({
