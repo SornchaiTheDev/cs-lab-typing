@@ -3,17 +3,14 @@ import { format, addDays } from "date-fns";
 import { useState, useRef } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Icon } from "@iconify/react";
-import clsx from "clsx";
 import "react-day-picker/dist/style.css";
 
 interface Props {
-  value?: number | undefined;
+  value: DateRange;
   onChange: (date: DateRange) => void;
 }
 
-const pastMonth = new Date(2023, 4, 15);
-
-function RangePicker({ value = undefined, onChange }: Props) {
+function RangePicker({ value, onChange }: Props) {
   const [isShow, setIsShow] = useState<boolean>(false);
   const dateRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(dateRef, () => setIsShow(false));
@@ -25,9 +22,9 @@ function RangePicker({ value = undefined, onChange }: Props) {
     }
   };
 
-  const [range, setRange] = useState<DateRange | undefined>({
-    from: value ? new Date(value) : undefined,
-    to: value ? new Date(value) : undefined,
+  const [range, setRange] = useState<DateRange>({
+    from: value.from,
+    to: value.to,
   });
 
   let footer = <p>Please pick the first day.</p>;
@@ -56,7 +53,7 @@ function RangePicker({ value = undefined, onChange }: Props) {
         <div className="absolute bg-white border rounded-lg shadow top-14 border-sand-6">
           <DayPicker
             mode="range"
-            defaultMonth={pastMonth}
+            defaultMonth={new Date()}
             selected={range}
             max={new Date().getTime()}
             onSelect={handleOnSelect}

@@ -2,8 +2,8 @@ import { router, procedure } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-export const authLoggerRouter = router({
-  authLogger: procedure
+export const createAuthLogRouter = router({
+  createLog: procedure
     .meta({ openapi: { method: "POST", path: "/auth-logger", tags: ["logs"] } })
     .input(
       z.object({

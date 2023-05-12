@@ -1,3 +1,3 @@
 import { mergeRouter } from "@/server/trpc";
-import { authLoggerRouter } from "./authLogger";
+import { authLoggerRouter } from "./auth";
 export const loggerRouter = mergeRouter(authLoggerRouter);

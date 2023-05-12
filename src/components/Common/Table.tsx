@@ -40,7 +40,7 @@ function Table({
   return (
     <div
       className={clsx(
-        "min-h-[10rem] overflow-hidden border bg-sand-1 text-sand-12 rounded-xl border-sand-6",
+        "flex-1 border bg-sand-1 text-sand-12 rounded-xl border-sand-6",
         className
       )}
     >

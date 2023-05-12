@@ -1,13 +1,31 @@
 import { ChangeEvent, useState, useEffect } from "react";
 import { validateTimeRange } from "./timeValidate";
+import { DateRange } from "react-day-picker";
 
 interface Props {
-  onApply: (startTime: string, endTime: string) => void;
+  date: DateRange;
+  onApply: (date: DateRange) => void;
 }
 
-function TimePickerRange({ onApply }: Props) {
+function TimePickerRange({ date, onApply }: Props) {
   const [startTime, setStartTime] = useState("00:00");
   const [endTime, setEndTime] = useState("23:59");
+
+  const startDate = new Date(
+    date.from?.getFullYear()!,
+    date.from?.getMonth()!,
+    date.from?.getDate()!,
+    parseInt(startTime.split(":")[0]),
+    parseInt(startTime.split(":")[1])
+  );
+
+  const endDate = new Date(
+    date.to?.getFullYear()!,
+    date.to?.getMonth()!,
+    date.to?.getDate()!,
+    parseInt(endTime.split(":")[0]),
+    parseInt(endTime.split(":")[1])
+  );
 
   const handleStartTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
     setStartTime(event.target.value);
@@ -36,7 +54,7 @@ function TimePickerRange({ onApply }: Props) {
         onChange={handleEndTimeChange}
       />
       <button
-        onClick={() => onApply(startTime, endTime)}
+        onClick={() => onApply({ from: startDate, to: endDate })}
         disabled={!validateTimeRange(startTime, endTime)}
         className="w-full px-4 py-2 text-sm rounded text-sand-1 bg-sand-12 active:bg-sand-11 disabled:bg-sand-8"
       >

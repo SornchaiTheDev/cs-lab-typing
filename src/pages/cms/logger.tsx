@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Layout from "@/Layout";
 import Table from "@/components/Common/Table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -6,6 +6,8 @@ import clsx from "clsx";
 import TimePickerRange from "@/components/TimePickerRange";
 import { Icon } from "@iconify/react";
 import RangePicker from "@/components/Forms/DatePicker/RangePicker";
+import { trpc } from "@/helpers/trpc";
+import { DateRange } from "react-day-picker";
 
 interface LoggerRow {
   type: string;
@@ -31,132 +33,19 @@ const Type = ({ type }: { type: string }) => {
   );
 };
 
+const today = new Date();
+
 function Logger() {
-  const data: LoggerRow[] = useMemo(
-    () => [
-      {
-        type: "LOGIN",
-        date: "2022-09-16 12:31:22+07:00",
-        username: "lalita.b@ku.th",
-        ip: "255.255.255.255",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-16 16:45:33+07:00",
-        username: "john.doe@gmail.com",
-        ip: "192.168.1.1",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-17 08:12:01+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-17 10:21:15+07:00",
-        username: "admin",
-        ip: "172.16.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-17 14:30:59+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-18 09:15:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-18 15:20:45+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-19 11:59:10+07:00",
-        username: "user123",
-        ip: "172.16.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-19 13:08:53+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-19 17:45:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-16 12:31:22+07:00",
-        username: "lalita.b@ku.th",
-        ip: "255.255.255.255",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-16 16:45:33+07:00",
-        username: "john.doe@gmail.com",
-        ip: "192.168.1.1",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-17 08:12:01+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-17 10:21:15+07:00",
-        username: "admin",
-        ip: "172.16.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-17 14:30:59+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-18 09:15:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-18 15:20:45+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-19 11:59:10+07:00",
-        username: "user123",
-        ip: "172.16.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-19 13:08:53+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-19 17:45:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-    ],
-    []
-  );
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: today,
+    to: today,
+  });
+
+  const authLogs = trpc.logger.getAuthLog.useQuery({
+    limit: 10,
+    page: 1,
+    date: dateRange,
+  });
 
   const columns = useMemo<ColumnDef<LoggerRow, string>[]>(
     () => [
@@ -172,24 +61,33 @@ function Logger() {
       },
       {
         header: "Email / Username",
-        accessorKey: "username",
+        accessorKey: "user.email",
       },
       {
         header: "IP Address",
-        accessorKey: "ip",
+        accessorKey: "ip_address",
       },
     ],
     []
   );
 
   const exportCSV = () => {
-    //TODO
+    let csvString = "Type,Date,Email / Username,IP Address\n";
+    authLogs.data?.forEach((log) => {
+      csvString += `${log.type},${log.date},${log.user.email},${log.ip_address}\n`;
+    });
+    const csvBlob = new Blob([csvString], { type: "text/csv" });
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(csvBlob);
+    link.download = new Date().toISOString() + "-auth-log.csv";
+    link.click();
   };
 
   return (
     <Layout title="Logger">
       <Table
-        data={data}
+        data={authLogs.data ?? []}
         columns={columns}
         defaultSortingState={{ id: "date", desc: true }}
       >
@@ -203,12 +101,18 @@ function Logger() {
           </button>
         </div>
         <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          <RangePicker
-            value={new Date("2023-05-04T09:30:00").getTime()}
-            onChange={(range) => {}}
-          />
+          <RangePicker value={dateRange} onChange={setDateRange} />
 
-          <TimePickerRange onApply={(startTime, endTime) => {}} />
+          <TimePickerRange
+            date={dateRange}
+            onApply={({ from, to }) => {
+              console.log(from, to);
+              setDateRange({
+                from,
+                to,
+              });
+            }}
+          />
         </div>
       </Table>
     </Layout>
