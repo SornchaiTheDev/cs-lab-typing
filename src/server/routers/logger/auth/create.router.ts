@@ -1,5 +1,6 @@
 import { router, procedure } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
+import axios from "axios";
 import { z } from "zod";
 
 export const createAuthLogRouter = router({
@@ -17,10 +18,11 @@ export const createAuthLogRouter = router({
     .output(z.string().or(z.undefined()))
     .mutation(async ({ ctx, input }) => {
       const { email, type } = input;
+      const ip = (await axios.get("https://api.ipify.org")).data;
       try {
         await ctx.prisma.auth_logger.create({
           data: {
-            ip_address: ctx.ip,
+            ip_address: ip,
             type,
             user: {
               connect: {

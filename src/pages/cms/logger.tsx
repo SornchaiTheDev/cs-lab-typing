@@ -43,7 +43,7 @@ function Logger() {
   });
 
   const authLogs = trpc.logger.getAuthLog.useQuery({
-    limit: 10,
+    limit: 50,
     page: 1,
     date: dateRange,
   });

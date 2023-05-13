@@ -8,20 +8,21 @@ export default withAuth(async function middleware(req) {}, {
   },
   callbacks: {
     async authorized({ req, token }) {
-      if (!token) return false;
-      const { nextUrl } = req;
+      return !!token;
+      // if (!token) return false;
+      // const { nextUrl } = req;
 
-      const resolvePath = PATH.find(
-        ({ pathname }) => nextUrl.pathname === pathname
-      );
+      // const resolvePath = PATH.find(
+      //   ({ pathname }) => nextUrl.pathname === pathname
+      // );
 
-      if (resolvePath === undefined) return true;
+      // if (resolvePath === undefined) return true;
 
-      const isAuthorized = resolvePath?.roles.some((role) =>
-        token?.roles!.includes(role)
-      );
+      // const isAuthorized = resolvePath?.roles.some((role) =>
+      //   token?.roles!.includes(role)
+      // );
 
-      return isAuthorized;
+      // return isAuthorized;
     },
   },
 });
