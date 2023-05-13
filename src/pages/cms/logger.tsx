@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react";
 import RangePicker from "@/components/Forms/DatePicker/RangePicker";
 import { trpc } from "@/helpers/trpc";
 import { DateRange } from "react-day-picker";
+import dayjs from "dayjs";
 
 interface LoggerRow {
   type: string;
@@ -47,7 +48,7 @@ function Logger() {
     date: dateRange,
   });
 
-  const columns = useMemo<ColumnDef<LoggerRow, string>[]>(
+  const columns = useMemo<ColumnDef<LoggerRow, any>[]>(
     () => [
       {
         header: "Type",
@@ -61,7 +62,8 @@ function Logger() {
       },
       {
         header: "Email / Username",
-        accessorKey: "user.email",
+        accessorKey: "user",
+        cell: (props) => <span>{props.getValue().email}</span>,
       },
       {
         header: "IP Address",
@@ -76,17 +78,27 @@ function Logger() {
     authLogs.data?.forEach((log) => {
       csvString += `${log.type},${log.date},${log.user.email},${log.ip_address}\n`;
     });
+
+    const startDate = dayjs(dateRange.from);
+    const endDate = dayjs(dateRange.to);
     const csvBlob = new Blob([csvString], { type: "text/csv" });
+    let fileName = `${startDate.format("DD-MM-YYYY")}-${endDate.format(
+      "DD-MM-YYYY"
+    )}-auth-log.csv`;
+    if (startDate.diff(endDate, "day") === 0) {
+      fileName = `${startDate.format("DD-MM-YYYY")}-auth-log.csv`;
+    }
 
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(csvBlob);
-    link.download = new Date().toISOString() + "-auth-log.csv";
+    link.download = fileName;
     link.click();
   };
 
   return (
     <Layout title="Logger">
       <Table
+        isLoading={authLogs.isLoading}
         data={authLogs.data ?? []}
         columns={columns}
         defaultSortingState={{ id: "date", desc: true }}

@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useMemo } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -13,22 +13,44 @@ interface Props {
   data: any[];
   columns: any[];
   className?: string;
-  defaultSortingState?: ColumnSort | null;
+  defaultSortingState?: ColumnSort | undefined;
   children?: ReactNode;
+  isLoading?: boolean;
 }
 function Table({
   data,
   columns,
   className,
-  defaultSortingState = null,
+  defaultSortingState,
   children,
+  isLoading,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>(
     defaultSortingState ? [defaultSortingState] : []
   );
+
+  const tableData = useMemo(
+    () => (isLoading ? Array(8).fill({}) : data),
+    [isLoading, data]
+  );
+  const tableColumns = useMemo(
+    () =>
+      isLoading
+        ? columns.map((column) => ({
+            ...column,
+            cell: (
+              <div className="w-full h-4 rounded from-sand-6 to-sand-4 bg-gradient-to-r animate-pulse"></div>
+            ),
+          }))
+        : columns,
+    [isLoading, columns]
+  );
+
+  console.log(tableData);
+
   const table = useReactTable({
-    data,
-    columns,
+    data: tableData,
+    columns: tableColumns,
     state: {
       sorting,
     },

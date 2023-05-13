@@ -50,7 +50,7 @@ function RangePicker({ value, onChange }: Props) {
         {footer}
       </button>
       {isShow && (
-        <div className="absolute bg-white border rounded-lg shadow top-14 border-sand-6">
+        <div className="absolute z-40 bg-white border rounded-lg shadow top-14 border-sand-6">
           <DayPicker
             mode="range"
             defaultMonth={new Date()}

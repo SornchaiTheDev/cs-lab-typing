@@ -32,6 +32,7 @@ export const getAuthLoggerRouter = router({
           user: {
             select: {
               email: true,
+              student_id: true,
             },
           },
         },
