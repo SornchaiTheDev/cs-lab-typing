@@ -204,8 +204,8 @@ function SectionLog() {
           </button>
         </div>
         <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          <RangePicker onChange={(range) => {}} />
-          <TimePickerRange onApply={(startTime, endTime) => {}} />
+          {/* <RangePicker onChange={(range) => {}} />
+          <TimePickerRange onApply={(startTime, endTime) => {}} /> */}
         </div>
       </Table>
     </SectionLayout>
