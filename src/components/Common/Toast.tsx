@@ -46,7 +46,11 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
       break;
     case "DUPLICATED_USER":
       msg =
-        "Some users are already added. If you want to Edit, Use edit button";
+        "Some users are already added. If you want to edit, Use Edit button";
+      break;
+    case "DUPLICATED_SEMESTER":
+      msg =
+        "This semester is already added. If you want to edit, Use Edit button";
       break;
     case "SOMETHING_WENT_WRONG":
       msg = "Something went wrong";

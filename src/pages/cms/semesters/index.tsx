@@ -42,11 +42,11 @@ function Semesters() {
       toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
     },
   });
+
   const addSemester = (formData: TSemesterSchema) => {
     const { startDate, term, year } = formData;
     console.log(formData);
     addSemesterMutation.mutate({ startDate, term, year });
-    setIsModalOpen(false);
   };
 
   const columns = useMemo<ColumnDef<SemesterRow, string>[]>(

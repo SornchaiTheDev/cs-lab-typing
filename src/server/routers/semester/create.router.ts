@@ -1,4 +1,6 @@
 import { adminProcedure, router } from "@/server/trpc";
+import { Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const createSemesterRouter = router({
@@ -15,12 +17,24 @@ export const createSemesterRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { startDate, term, year } = input;
-      await ctx.prisma.semester.create({
-        data: {
-          startDate,
-          term,
-          year,
-        },
-      });
+      try {
+        await ctx.prisma.semester.create({
+          data: {
+            startDate,
+            term,
+            year,
+          },
+        });
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          if (e.code === "P2002") {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "DUPLICATED_SEMESTER",
+              cause: "DUPLICATED_SEMESTER",
+            });
+          }
+        }
+      }
     }),
 });
