@@ -26,7 +26,7 @@ const Modal = ({
   useOnClickOutside(modalRef, onClose);
   if (!isOpen) return null;
   return (
-    <div className="fixed top-0 left-0 flex items-center justify-center w-full h-screen bg-sand-12 bg-opacity-30 backdrop-blur-sm">
+    <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-sand-12 bg-opacity-30 backdrop-blur-sm">
       <motion.div
         ref={modalRef}
         initial={{ opacity: 0, translateY: "10px" }}

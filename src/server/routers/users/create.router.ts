@@ -1,12 +1,6 @@
 import { adminProcedure, router } from "@/server/trpc";
 import { z } from "zod";
-import {
-  importTeacher,
-  isAllUserValid,
-  isKUStudent,
-  isNonKUStudent,
-  isValidTeacher,
-} from "../../../helpers/isValidUser";
+import { isAllUserValid } from "../../../helpers/isValidUser";
 import { addStudent } from "./role/student";
 import { addNonKUStudent } from "./role/nonKU";
 import { TRPCError } from "@trpc/server";

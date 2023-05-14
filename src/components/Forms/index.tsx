@@ -34,7 +34,7 @@ type EachField<T> = {
   canAddItemNotInList?: boolean;
   conditional?: (data: string) => boolean;
   children?: EachField<T>;
-  value?: string | string[];
+  value?: string | string[] | Date;
   disabled?: boolean;
 };
 
@@ -162,6 +162,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
       case "date":
         return (
           <Controller
+            key={field.label as string}
             control={control}
             name="startDate"
             render={({ field: { onChange, value } }) => (

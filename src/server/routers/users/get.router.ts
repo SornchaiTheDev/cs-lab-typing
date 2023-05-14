@@ -5,17 +5,12 @@ export const getUserRouter = router({
   getUserPagination: adminProcedure
     .input(
       z.object({
-        role: z.union([
-          z.literal("student"),
-          z.literal("teacher"),
-          z.literal("admin"),
-        ]),
         page: z.number().default(1),
         limit: z.number().default(10),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, role } = input;
+      const { page, limit } = input;
 
       const users = await ctx.prisma.users.findMany({
         where: {

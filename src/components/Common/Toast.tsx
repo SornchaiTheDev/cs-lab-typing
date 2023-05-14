@@ -40,19 +40,23 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
   const progressRef = useRef<HTMLDivElement>(null);
   const [isPause, setIsPause] = useState(false);
 
-  if (msg === "INVALID_INPUT") {
-    msg = "Some fields are invalid";
-  }
-  if (msg === "DUPLICATED_USER") {
-    msg = "Some users are already added. If you want to Edit, Use edit button";
-  }
-
-  if (msg === "SOMETHING_WENT_WRONG") {
-    msg = "Something went wrong";
-  }
-
-  if (msg === "USER_NOT_FOUND") {
-    msg = "Cannot find that user";
+  switch (msg) {
+    case "INVALID_INPUT":
+      msg = "Some fields are invalid";
+      break;
+    case "DUPLICATED_USER":
+      msg =
+        "Some users are already added. If you want to Edit, Use edit button";
+      break;
+    case "SOMETHING_WENT_WRONG":
+      msg = "Something went wrong";
+      break;
+    case "USER_NOT_FOUND":
+      msg = "Cannot find that user";
+      break;
+    case "SAME_YEAR_AND_TERM":
+      msg = "There are already has same year and term";
+      break;
   }
 
   return (

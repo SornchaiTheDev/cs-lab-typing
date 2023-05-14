@@ -63,7 +63,7 @@ function ModalWithButton({
       </Button>
       <AnimatePresence>
         {isShow && (
-          <div className="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-screen bg-sand-12 bg-opacity-30 backdrop-blur-sm">
+          <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-sand-12 bg-opacity-30 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, translateY: "10px" }}
               animate={{ opacity: 1, translateY: 0 }}

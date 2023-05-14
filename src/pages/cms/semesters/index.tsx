@@ -1,6 +1,6 @@
 import SemesterLayout from "@/Layout/SemesterLayout";
 import Table from "@/components/Common/Table";
-import { TAddSemesterSchema, AddSemesterSchema } from "@/forms/SemesterSchema";
+import { TSemesterSchema, SemesterSchema } from "@/forms/SemesterSchema";
 import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
@@ -8,6 +8,12 @@ import Forms from "@/components/Forms";
 import DeleteAffect from "@/components/DeleteAffect";
 import Modal from "@/components/Common/Modal";
 import Button from "@/components/Common/Button";
+import { trpc } from "@/helpers/trpc";
+import toast from "react-hot-toast";
+import Toast from "@/components/Common/Toast";
+import dayjs from "dayjs";
+import EditSemester from "@/features/Semesters/EditSemester";
+import { useDeleteAffectStore } from "@/store";
 
 interface SemesterRow {
   id: string;
@@ -18,12 +24,29 @@ interface SemesterRow {
 function Semesters() {
   const columnHelper = createColumnHelper<SemesterRow>();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
+    state.selectedObj,
+    state.setSelectedObj,
+  ]);
 
-  const addSemester = (formData: TAddSemesterSchema) => {
+  const semesters = trpc.semester.getSemesters.useQuery({ page: 1, limit: 50 });
+  const addSemesterMutation = trpc.semester.createSemester.useMutation({
+    onSuccess() {
+      toast.custom((t) => (
+        <Toast {...t} msg="Added users successfully" type="success" />
+      ));
+      semesters.refetch();
+      setIsModalOpen(false);
+    },
+    onError(err) {
+      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+    },
+  });
+  const addSemester = (formData: TSemesterSchema) => {
     const { startDate, term, year } = formData;
+    console.log(formData);
+    addSemesterMutation.mutate({ startDate, term, year });
     setIsModalOpen(false);
-    // TODO add semester
   };
 
   const columns = useMemo<ColumnDef<SemesterRow, string>[]>(
@@ -33,30 +56,43 @@ function Semesters() {
         accessorKey: "year",
       },
       {
+        header: "Term",
+        accessorKey: "term",
+      },
+      {
         header: "Start Date",
         accessorKey: "startDate",
+        cell: (props) => (
+          <h4>{dayjs(props.getValue()).format("DD/MM/YYYY")}</h4>
+        ),
       },
       columnHelper.display({
         id: "actions",
-        header: "Delete",
+        header: "Edit",
+        size: 50,
         cell: (props) => (
           <button
-            onClick={() => setSelected(props.row.getValue("year"))}
+            onClick={() =>
+              setSelectedObj({
+                selected: `${props.row.getValue("year")}/${props.row.getValue(
+                  "term"
+                )}`,
+                type: "semester",
+              })
+            }
             className="text-xl rounded-xl text-sand-12"
           >
-            <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
+            <Icon icon="solar:pen-2-line-duotone" />
           </button>
         ),
-        size: 50,
       }),
     ],
-    [columnHelper]
+    [columnHelper, setSelectedObj]
   );
 
   return (
     <>
-      {/* <DeleteAffect selected={selected!} type="section" /> */}
-
+      {selectedObj && <EditSemester onClose={() => {}} />}
       <Modal
         title="Add Semester"
         isOpen={isModalOpen}
@@ -68,14 +104,13 @@ function Semesters() {
             title: "Add Semester",
             icon: "solar:calendar-line-duotone",
           }}
-          schema={AddSemesterSchema}
+          schema={SemesterSchema}
           onSubmit={addSemester}
           fields={[
             {
               label: "year",
               title: "Year",
-              type: "select",
-              options: ["2023", "2024"],
+              type: "text",
             },
             {
               label: "term",
@@ -93,24 +128,9 @@ function Semesters() {
       </Modal>
       <SemesterLayout title="Semesters">
         <Table
+          isLoading={semesters.isLoading}
           className="mt-6"
-          data={[
-            {
-              id: "1",
-              year: "2021/F",
-              startDate: new Date("2023-05-04T20:20:00"),
-            },
-            {
-              id: "1",
-              year: "2021/S",
-              startDate: new Date("2023-05-04T20:20:00"),
-            },
-            {
-              id: "1",
-              year: "2021/SM",
-              startDate: new Date("2023-05-04T20:20:00"),
-            },
-          ]}
+          data={semesters.data ?? []}
           columns={columns}
         >
           <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">

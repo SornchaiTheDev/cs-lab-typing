@@ -9,7 +9,7 @@ import Modal from "@/components/Common/Modal";
 import Forms from "@/components/Forms";
 import Button from "@/components/Common/Button";
 
-const EditNonKUStudent = ({ onClose }: { onClose: () => void }) => {
+const EditNonKUStudent = () => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -23,7 +23,7 @@ const EditNonKUStudent = ({ onClose }: { onClose: () => void }) => {
       toast.custom((t) => (
         <Toast {...t} msg="Edit users successfully" type="success" />
       ));
-      onClose();
+
       setSelectedObj(null);
       ctx.users.invalidate();
     },
@@ -51,7 +51,7 @@ const EditNonKUStudent = ({ onClose }: { onClose: () => void }) => {
       ) : (
         <Modal
           isOpen={true}
-          onClose={onClose}
+          onClose={() => setSelectedObj(null)}
           title="Edit User"
           className="md:w-[40rem]"
         >

@@ -1,13 +1,13 @@
 import Modal from "../Common/Modal";
 import Button from "../Common/Button";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useDeleteAffectStore } from "@/store";
 import { trpc } from "@/helpers";
 import toast from "react-hot-toast";
 import Toast from "../Common/Toast";
 
 interface Props {
-  type: "course" | "section" | "task" | "lab" | "user";
+  type: "course" | "section" | "task" | "lab" | "user" | "semester";
 }
 
 interface fetchUserDataProps {
@@ -24,21 +24,29 @@ function DeleteAffect({ type }: Props) {
 
   const ctx = trpc.useContext();
 
-  const fetchUserData = useCallback(
-    async (email: string) => {
-      const data = await ctx.users.getUserObjectRelation.fetch({ email });
-      setFetchData(data);
-    },
-    [ctx.users.getUserObjectRelation]
-  );
-
   useEffect(() => {
-    if (selectedObject) {
-      if (type === "user") {
-        fetchUserData(selectedObject.selected);
-      }
+    const fetchUserData = async () => {
+      const data = await ctx.users.getUserObjectRelation.fetch({
+        email: selectedObject!.selected,
+      });
+      setFetchData(data);
+    };
+
+    const fetchSemesterData = async () => {
+      const data = await ctx.semester.getSemesterObjectRelation.fetch({
+        yearAndTerm: selectedObject!.selected,
+      });
+      setFetchData(data);
+    };
+
+    if (type === "user") {
+      fetchUserData();
     }
-  }, [selectedObject, type, fetchUserData]);
+
+    if (type === "semester") {
+      fetchSemesterData();
+    }
+  }, [type, selectedObject, ctx]);
   const deleteUser = trpc.users.deleteUser.useMutation({
     onSuccess() {
       toast.custom((t) => (
@@ -48,11 +56,34 @@ function DeleteAffect({ type }: Props) {
       setConfirmMsg("");
       ctx.users.invalidate();
     },
+    onError() {
+      toast.custom((t) => (
+        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
+      ));
+    },
+  });
+  const deleteSemester = trpc.semester.deleteSemester.useMutation({
+    onSuccess() {
+      toast.custom((t) => (
+        <Toast {...t} msg="Delete Semester successfully" type="success" />
+      ));
+      setSelectedObject(null);
+      setConfirmMsg("");
+      ctx.semester.invalidate();
+    },
+    onError() {
+      toast.custom((t) => (
+        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
+      ));
+    },
   });
   const handleDelete = () => {
     if (selectedObject) {
       if (type === "user") {
-        deleteUser.mutateAsync({ email: selectedObject.selected });
+        deleteUser.mutate({ email: selectedObject.selected });
+      }
+      if (type === "semester") {
+        deleteSemester.mutate({ yearAndTerm: selectedObject.selected });
       }
     }
   };
@@ -71,7 +102,7 @@ function DeleteAffect({ type }: Props) {
       }
       isOpen={!!selectedObject}
       onClose={() => setSelectedObject(null)}
-      className="w-[90%]  md:w-[40rem] max-h-[90%]"
+      className="md:w-[40rem] max-h-[90%]"
     >
       <div className="flex-1 overflow-y-auto">
         <div className="overflow-auto whitespace-nowrap">

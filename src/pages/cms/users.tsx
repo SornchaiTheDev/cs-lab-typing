@@ -32,61 +32,56 @@ interface Props {
   pattern: string;
 }
 
-function Admin({ title, role = "student", pattern }: Props) {
+function Admin({ title, pattern }: Props) {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
   ]);
   const columnHelper = createColumnHelper<Users>();
   const columns = useMemo(
-    () =>
-      [
-        columnHelper.accessor("student_id", {
-          header: "Student ID",
-        }),
-        columnHelper.accessor("full_name", {
-          header: "Full name",
-        }),
-        columnHelper.accessor("email", {
-          header: "Email",
-        }),
-        columnHelper.accessor("created_at", {
-          header: "Created At",
-          cell: (props: any) => dayjs(props.getValue()).toNow(true),
-        }),
-        columnHelper.accessor("last_logined", {
-          header: "Last Logined",
-          cell: (props: any) => {
-            if (props.getValue()) {
-              return dayjs(props.getValue()).toNow(true);
-            }
-            return "-";
-          },
-        }),
-        columnHelper.display({
-          id: "actions",
-          header: "Edit",
-          cell: (props) => (
-            <button
-              onClick={() =>
-                setSelectedObj({
-                  selected: props.row.getValue("email"),
-                  type: getUserType(props.row.original),
-                })
-              }
-              className="text-xl rounded-xl text-sand-12"
-            >
-              <Icon icon="solar:pen-2-line-duotone" />
-            </button>
-          ),
-        }),
-      ].filter((column) => {
-        if (role !== "student") {
-          return column.header !== "Student ID";
-        }
-        return true;
+    () => [
+      columnHelper.accessor("student_id", {
+        header: "Student ID",
       }),
-    [columnHelper, role, setSelectedObj]
+      columnHelper.accessor("full_name", {
+        header: "Full name",
+      }),
+      columnHelper.accessor("email", {
+        header: "Email",
+      }),
+      columnHelper.accessor("created_at", {
+        header: "Created At",
+        cell: (props: any) => dayjs(props.getValue()).toNow(true),
+      }),
+      columnHelper.accessor("last_logined", {
+        header: "Last Logined",
+        cell: (props: any) => {
+          if (props.getValue()) {
+            return dayjs(props.getValue()).toNow(true);
+          }
+          return "-";
+        },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "Edit",
+        size: 50,
+        cell: (props) => (
+          <button
+            onClick={() =>
+              setSelectedObj({
+                selected: props.row.getValue("email"),
+                type: getUserType(props.row.original),
+              })
+            }
+            className="text-xl rounded-xl text-sand-12"
+          >
+            <Icon icon="solar:pen-2-line-duotone" />
+          </button>
+        ),
+      }),
+    ],
+    [columnHelper, setSelectedObj]
   );
 
   const [value, setValue] = useState("");
@@ -102,7 +97,6 @@ function Admin({ title, role = "student", pattern }: Props) {
   useOnClickOutside(modalRef, onClose);
 
   const users = trpc.users.getUserPagination.useQuery({
-    role,
     limit: 50,
     page: 1,
   });
@@ -155,15 +149,9 @@ function Admin({ title, role = "student", pattern }: Props) {
     <>
       {selectedObj && (
         <>
-          {selectedObj.type === "KUStudent" && (
-            <EditKUStudent onClose={() => setSelectedObj(null)} />
-          )}
-          {selectedObj.type === "NonKUStudent" && (
-            <EditNonKUStudent onClose={() => setSelectedObj(null)} />
-          )}
-          {selectedObj.type === "Teacher" && (
-            <EditTeacher onClose={() => setSelectedObj(null)} />
-          )}
+          {selectedObj.type === "KUStudent" && <EditKUStudent />}
+          {selectedObj.type === "NonKUStudent" && <EditNonKUStudent />}
+          {selectedObj.type === "Teacher" && <EditTeacher />}
         </>
       )}
 
@@ -171,7 +159,7 @@ function Admin({ title, role = "student", pattern }: Props) {
         isOpen={isShow}
         onClose={onClose}
         title="Add/Edit User"
-        className="w-[95%] md:w-[40rem] flex flex-col gap-4"
+        className="md:w-[40rem] flex flex-col gap-4"
       >
         <div>
           <Codemirror
@@ -222,7 +210,11 @@ function Admin({ title, role = "student", pattern }: Props) {
       </Modal>
 
       <Layout title="Users">
-        <Table data={users.data ?? []} columns={columns}>
+        <Table
+          isLoading={users.isLoading}
+          data={users.data ?? []}
+          columns={columns}
+        >
           <div className="flex justify-end">
             <Button
               onClick={() => setIsShow(true)}

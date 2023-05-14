@@ -46,8 +46,6 @@ function Table({
     [isLoading, columns]
   );
 
-  console.log(tableData);
-
   const table = useReactTable({
     data: tableData,
     columns: tableColumns,
