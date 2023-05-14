@@ -13,9 +13,10 @@ export async function createContext(opts: CreateNextContextOptions) {
   const res = opts?.res;
   const session = req && res && (await getServerSession(req, res, authOptions));
 
+  const ip = opts.req.headers["x-real-ip"] as string;
   return {
     session,
-
+    ip,
     prisma,
   };
 }

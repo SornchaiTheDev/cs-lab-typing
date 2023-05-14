@@ -7,21 +7,22 @@ import Header from "@/components/Login/Header";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { api } from "@/services/Axios";
 
 const Login: NextPage = () => {
   const { query } = useRouter();
 
-  useEffect(() => {
-    if (query.error) {
-      if (query.error === "not-authorize") {
+  const catchError = async (error: string) => {
+    if (error) {
+      if (error === "not-authorize") {
         toast("กรุณาเข้าสู่ระบบด้วย @ku.th !", {
           type: "error",
         });
-      } else if (query.error === "not-found") {
+      } else if (error === "not-found") {
         toast("ไม่พบผู้ใช้นี้", {
           type: "error",
         });
-      } else if (query.error === "wrong-credential") {
+      } else if (error === "wrong-credential") {
         toast("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", {
           type: "error",
         });
@@ -31,6 +32,9 @@ const Login: NextPage = () => {
         });
       }
     }
+  };
+  useEffect(() => {
+    catchError(query.error as string);
   }, [query]);
   return (
     <>

@@ -68,25 +68,30 @@ export const authOptions: NextAuthOptions = {
           return true;
         }
         if (account.type === "oauth") {
-          if (profile && profile.email?.endsWith("@ku.th")) {
-            const user = await prisma.users.findUnique({
-              where: {
-                email: profile.email,
-              },
-            });
-
-            if (user?.deleted_at === null) {
-              await api.post("/auth-logger", {
-                type: "LOGIN",
-                email: profile.email,
+          try {
+            if (profile && profile.email?.endsWith("@ku.th")) {
+              const user = await prisma.users.findUnique({
+                where: {
+                  email: profile.email,
+                },
               });
-              return true;
+
+              if (user?.deleted_at === null) {
+                await api.post("/auth-logger", {
+                  type: "LOGIN",
+                  email: profile.email,
+                });
+                return true;
+              }
+              throw new Error("not-found");
             }
-            throw new Error("not-found");
+          } catch (err) {
+            throw new Error("something-went-wrong");
           }
         }
+        throw new Error("not-authorize");
       }
-      throw new Error("not-authorize");
+      return false;
     },
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
