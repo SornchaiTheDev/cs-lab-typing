@@ -7,6 +7,7 @@ export const createAuthLogRouter = router({
     .meta({ openapi: { method: "POST", path: "/auth-logger", tags: ["logs"] } })
     .input(
       z.object({
+        ip: z.string(),
         email: z.string().email(),
         type: z
           .literal("LOGIN")
@@ -16,12 +17,12 @@ export const createAuthLogRouter = router({
     )
     .output(z.string().or(z.undefined()))
     .mutation(async ({ ctx, input }) => {
-      const { email, type } = input;
+      const { email, type, ip } = input;
 
       try {
         await ctx.prisma.auth_logger.create({
           data: {
-            ip_address: ctx.ip ?? "localhost",
+            ip_address: ip ?? "localhost",
             type,
             user: {
               connect: {
