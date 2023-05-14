@@ -56,61 +56,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
-
   callbacks: {
-    async signIn({ account, profile }) {
-      if (account) {
-        if (account.type === "credentials") {
-          return true;
-        }
-        if (account.type === "oauth") {
-          try {
-            if (profile && profile.email?.endsWith("@ku.th")) {
-              const user = await prisma.users.findUnique({
-                where: {
-                  email: profile.email,
-                },
-              });
-
-              if (user?.deleted_at === null) {
-                return true;
-              }
-              throw new Error("not-found");
-            }
-          } catch (err) {
-            throw new Error("something-went-wrong");
-          }
-        }
-        throw new Error("not-authorize");
-      }
-      return false;
-    },
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        const fetchUser = await prisma.users.findUnique({
-          where: {
-            email: user.email as string,
-          },
-          include: {
-            roles: true,
-          },
-        });
-        token.roles = JSON.stringify(fetchUser?.roles.map((role) => role.name));
-        token.full_name = fetchUser?.full_name!;
-      }
-      return token;
-    },
     async session({ session, token }) {
       if (session.user) {
         session.roles = token.roles;

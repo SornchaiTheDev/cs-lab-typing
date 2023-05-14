@@ -8,7 +8,8 @@ export default withAuth(async function middleware(req) {}, {
   },
   callbacks: {
     async authorized({ req, token }) {
-      return !!token;
+      return true;
+      // return !!token;
       // if (!token) return false;
       // const { nextUrl } = req;
 

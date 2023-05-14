@@ -7,7 +7,6 @@ import Header from "@/components/Login/Header";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { api } from "@/services/Axios";
 
 const Login: NextPage = () => {
   const { query } = useRouter();
