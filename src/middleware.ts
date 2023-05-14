@@ -1,15 +1,16 @@
 import { withAuth } from "next-auth/middleware";
+import { getToken } from "next-auth/jwt";
 import { PATH } from "@/constants/PATH";
 
-export default withAuth(async function middleware(req) {}, {
+export default withAuth({
   pages: {
     signIn: "/login",
     error: "/login",
   },
   callbacks: {
-    async authorized({ req, token }) {
-      if (!token) return false;
-      return true;
+    async authorized({ req }) {
+      const token = await getToken({ req, secret: process.env.JWT_SECRET });
+      return !!token;
       // const { nextUrl } = req;
 
       // const resolvePath = PATH.find(
