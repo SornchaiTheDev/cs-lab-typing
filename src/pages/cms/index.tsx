@@ -3,7 +3,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import Layout from "@/Layout";
 import { GetServerSideProps } from "next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { authOptions } from "@/services/authOptions";
 import { getServerSession } from "next-auth/next";
 
 interface Menus {
