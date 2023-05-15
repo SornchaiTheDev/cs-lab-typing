@@ -1,51 +1,72 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { GetStaticProps } from "next";
 import CourseLayout from "@/Layout/CourseLayout";
 import { Icon } from "@iconify/react";
 import Badge from "@/components/Common/Badge";
-
-interface Props {
-  course: {
-    id: string;
-    name: string;
-  };
-}
+import { trpc } from "@/helpers/trpc";
+import Skeleton from "@/components/Common/Skeleton";
+import { useCourseStore } from "@/store";
 
 const instructors = ["SornchaiTheDev", "SaacSOS"];
 
 const TA = ["Jgogo01", "Teerut26"];
 
-function InCourse({ course }: Props) {
+function InCourse() {
   const router = useRouter();
 
+  const { courseId } = router.query;
+  const course = trpc.courses.getCourseById.useQuery({
+    id: parseInt(courseId as string),
+  });
+
   return (
-    <CourseLayout title="Fundamental Programming Concept">
+    <CourseLayout isLoading={course.isLoading} title={course.data?.name!}>
       <div className="w-1/2 p-4 text-sand-12">
         <h4 className="text-2xl">Course Information</h4>
         <h5 className="mt-4 mb-2 font-bold">Enrolled Student</h5>
-        <div className="flex items-center px-1 w-fit">
-          <Icon icon="solar:user-hand-up-line-duotone" className="text-lg" />
-          <h6 className="text-sand-12">
-            <span className="font-bold">148</span> students
-          </h6>
-        </div>
+        {course.isLoading ? (
+          <Skeleton width={"10rem"} height={"2rem"} />
+        ) : (
+          <div className="flex items-center px-1 w-fit">
+            <Icon icon="solar:user-hand-up-line-duotone" className="text-lg" />
+            <h6 className="text-sand-12">
+              <span className="font-bold">148</span> students
+            </h6>
+          </div>
+        )}
         <h5 className="mt-4 mb-2 font-bold">Course Number</h5>
-        <h4 className="text-lg">CS112</h4>
+        {course.isLoading ? (
+          <Skeleton width={"10rem"} height={"1.5rem"} />
+        ) : (
+          <h4 className="text-lg">{course.data?.number}</h4>
+        )}
         <h5 className="mt-4 mb-2 font-bold">Course Name</h5>
-        <h4 className="text-lg">Fundamental Programming Concept</h4>
+        {course.isLoading ? (
+          <Skeleton width={"10rem"} height={"1.5rem"} />
+        ) : (
+          <h4 className="text-lg">{course.data?.name!}</h4>
+        )}
         <h5 className="mt-4 mb-2 font-bold">Note</h5>
-        <h4 className="text-lg">Fundamental Programming Concept</h4>
+        {course.isLoading ? (
+          <Skeleton width={"10rem"} height={"1.5rem"} />
+        ) : (
+          <h4 className="text-lg">{course.data?.note!}</h4>
+        )}
         <h5 className="mt-4 mb-2 font-bold">Comment</h5>
-        <h4 className="text-lg">This is a comment.</h4>
+        {course.isLoading ? (
+          <Skeleton width={"100%"} height={"8rem"} />
+        ) : (
+          <p>{course.data?.comments! === "" ? "-" : course.data?.comments!}</p>
+        )}
         <h5 className="mt-4 mb-2 font-bold">Author (s)</h5>
         <div className="flex flex-wrap gap-2">
-          {instructors.map((instructor) => (
+          {course.data?.authors.map(({ full_name }) => (
             <div
-              key={instructor}
+              key={full_name}
               className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
             >
-              <h5>{instructor}</h5>
+              <h5>{full_name}</h5>
             </div>
           ))}
         </div>
@@ -61,21 +82,3 @@ function InCourse({ course }: Props) {
 }
 
 export default InCourse;
-
-export const getStaticProps: GetStaticProps<Props> = () => {
-  return {
-    props: {
-      course: {
-        id: "01418112",
-        name: "Fundamental Programming Concept",
-      },
-    },
-  };
-};
-
-export const getStaticPaths = () => {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-};

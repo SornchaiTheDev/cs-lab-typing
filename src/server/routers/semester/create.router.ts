@@ -18,7 +18,7 @@ export const createSemesterRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { startDate, term, year } = input;
       try {
-        await ctx.prisma.semester.create({
+        await ctx.prisma.semesters.create({
           data: {
             startDate,
             term,

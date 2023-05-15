@@ -13,7 +13,7 @@ export const deleteSemesterRouter = router({
       const year = yearAndTerm.split("/")[0];
       const term = yearAndTerm.split("/")[1];
 
-      await ctx.prisma.semester.delete({
+      await ctx.prisma.semesters.delete({
         where: {
           year_term: {
             year,

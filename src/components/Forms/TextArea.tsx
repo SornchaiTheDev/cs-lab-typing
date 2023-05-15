@@ -1,5 +1,6 @@
 import React from "react";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import Skeleton from "../Common/Skeleton";
 
 interface Props<T extends FieldValues> {
   title: string;
@@ -10,6 +11,7 @@ interface Props<T extends FieldValues> {
   register: UseFormRegister<T>;
   optional?: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 const TextArea = <T extends FieldValues>(props: Props<T>) => {
@@ -22,6 +24,7 @@ const TextArea = <T extends FieldValues>(props: Props<T>) => {
     label,
     optional,
     disabled,
+    isLoading,
   } = props;
   return (
     <div {...{ className }}>
@@ -36,13 +39,16 @@ const TextArea = <T extends FieldValues>(props: Props<T>) => {
           </h6>
         )}
       </div>
-
-      <textarea
-        disabled={disabled}
-        rows={5}
-        className="w-full p-2 border rounded-lg outline-none bg-sand-1 border-sand-6 caret-sand-12"
-        {...{ ...register(label) }}
-      ></textarea>
+      {isLoading ? (
+        <Skeleton width="100%" height="10rem" />
+      ) : (
+        <textarea
+          disabled={disabled}
+          rows={5}
+          className="w-full p-2 border rounded-lg outline-none bg-sand-1 border-sand-6 caret-sand-12"
+          {...{ ...register(label) }}
+        />
+      )}
     </div>
   );
 };

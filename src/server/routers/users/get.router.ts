@@ -63,4 +63,28 @@ export const getUserRouter = router({
 
       return relation;
     }),
+  getAllUsersInRole: adminProcedure
+    .input(
+      z.object({
+        roles: z.array(
+          z.literal("ADMIN").or(z.literal("TEACHER")).or(z.literal("STUDENT"))
+        ),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { roles } = input;
+      const users = await ctx.prisma.users.findMany({
+        where: {
+          roles: {
+            some: {
+              name: {
+                in: roles,
+              },
+            },
+          },
+          deleted_at: null,
+        },
+      });
+      return users;
+    }),
 });

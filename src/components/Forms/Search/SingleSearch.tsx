@@ -9,6 +9,7 @@ import clsx from "clsx";
 import TextHighlight from "./TextHighlight";
 import { useOnClickOutside } from "usehooks-ts";
 import { Icon } from "@iconify/react";
+import Skeleton from "@/components/Common/Skeleton";
 
 interface Props {
   datas: string[];
@@ -21,6 +22,7 @@ interface Props {
   onChange: (value: string) => void;
   canAddItemNotInList?: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 const SingleSearch = (props: Props) => {
@@ -35,6 +37,7 @@ const SingleSearch = (props: Props) => {
     value,
     onChange,
     disabled,
+    isLoading,
   } = props;
   const [search, setSearch] = useState("");
   const [isFocus, setIsFocus] = useState(false);
@@ -129,52 +132,56 @@ const SingleSearch = (props: Props) => {
           </h6>
         )}
       </div>
-      <div className="relative" ref={selectRef}>
-        <div
-          className={clsx(
-            "relative w-full p-2 border border-sand-6 min-h-[2.5rem] rounded-md bg-sand-1 flex flex-wrap items-center gap-2",
-            isError && "border-tomato-7"
-          )}
-        >
-          {value.length > 0 ? (
-            <button
-              key={value}
-              className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
-              onClick={() => onClear()}
+      {isLoading ? (
+        <Skeleton width="100%" height="2.5rem" />
+      ) : (
+        <div className="relative" ref={selectRef}>
+          <div
+            className={clsx(
+              "relative w-full p-2 border border-sand-6 min-h-[2.5rem] rounded-md bg-sand-1 flex flex-wrap items-center gap-2",
+              isError && "border-tomato-7"
+            )}
+          >
+            {value.length > 0 ? (
+              <button
+                key={value}
+                className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
+                onClick={() => onClear()}
+              >
+                {value} <Icon icon="material-symbols:close-rounded" />
+              </button>
+            ) : (
+              <input
+                disabled={disabled}
+                onFocus={() => setIsFocus(true)}
+                value={search}
+                className="w-full bg-transparent outline-none"
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setSearch(e.target.value)
+                }
+                onKeyDown={handleOnKeyDown}
+              />
+            )}
+          </div>
+
+          {isFocus && !isEmpty && (
+            <ul
+              ref={optionsRef}
+              className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6 z-50"
             >
-              {value} <Icon icon="material-symbols:close-rounded" />
-            </button>
-          ) : (
-            <input
-              disabled={disabled}
-              onFocus={() => setIsFocus(true)}
-              value={search}
-              className="w-full bg-transparent outline-none"
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setSearch(e.target.value)
-              }
-              onKeyDown={handleOnKeyDown}
-            />
+              {filteredDatas.map((data, i) => (
+                <TextHighlight
+                  key={data}
+                  search={value}
+                  text={data}
+                  isSelected={selectedIndex === i}
+                  onClick={() => addItem(data)}
+                />
+              ))}
+            </ul>
           )}
         </div>
-
-        {isFocus && !isEmpty && (
-          <ul
-            ref={optionsRef}
-            className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6 z-50"
-          >
-            {filteredDatas.map((data, i) => (
-              <TextHighlight
-                key={data}
-                search={value}
-                text={data}
-                isSelected={selectedIndex === i}
-                onClick={() => addItem(data)}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
+      )}
     </div>
   );
 };

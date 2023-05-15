@@ -11,7 +11,7 @@ export const getSemestersRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
 
-      const semesters = await ctx.prisma.semester.findMany({
+      const semesters = await ctx.prisma.semesters.findMany({
         skip: (page - 1) * limit,
         take: limit,
       });
@@ -30,7 +30,7 @@ export const getSemestersRouter = router({
       const { yearAndTerm } = input;
       const year = yearAndTerm.split("/")[0];
       const term = yearAndTerm.split("/")[1];
-      const semester = await ctx.prisma.semester.findUnique({
+      const semester = await ctx.prisma.semesters.findUnique({
         where: {
           year_term: {
             year,
@@ -47,7 +47,7 @@ export const getSemestersRouter = router({
       const year = yearAndTerm.split("/")[0];
       const term = yearAndTerm.split("/")[1];
 
-      const semester = await ctx.prisma.semester.findUnique({
+      const semester = await ctx.prisma.semesters.findUnique({
         where: {
           year_term: {
             year,

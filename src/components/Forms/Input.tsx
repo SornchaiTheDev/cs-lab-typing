@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { HTMLInputTypeAttribute } from "react";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import Skeleton from "../Common/Skeleton";
 
 interface Props<T extends FieldValues> {
   title: string;
@@ -13,6 +14,7 @@ interface Props<T extends FieldValues> {
   className?: string;
   optional?: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 const Input = <T extends FieldValues>(props: Props<T>) => {
@@ -27,6 +29,7 @@ const Input = <T extends FieldValues>(props: Props<T>) => {
     className,
     optional,
     disabled,
+    isLoading,
   } = props;
   return (
     <div {...{ className }}>
@@ -41,14 +44,18 @@ const Input = <T extends FieldValues>(props: Props<T>) => {
           </h6>
         )}
       </div>
-      <input
-        disabled={disabled}
-        className={clsx(
-          "w-full p-2 border border-sand-6 rounded-md outline-none bg-sand-1",
-          isError && "border-tomato-7"
-        )}
-        {...{ type, placeholder, ...register(label) }}
-      />
+      {isLoading ? (
+        <Skeleton width="100%" height="2.5rem" />
+      ) : (
+        <input
+          disabled={disabled}
+          className={clsx(
+            "w-full p-2 border border-sand-6 rounded-md outline-none bg-sand-1",
+            isError && "border-tomato-7"
+          )}
+          {...{ type, placeholder, ...register(label) }}
+        />
+      )}
     </div>
   );
 };

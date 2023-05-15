@@ -10,6 +10,7 @@ import { Icon } from "@iconify/react";
 import TextHighlight from "./TextHighlight";
 import { useOnClickOutside } from "usehooks-ts";
 import { createPortal } from "react-dom";
+import Skeleton from "@/components/Common/Skeleton";
 
 interface Props {
   datas: string[];
@@ -22,6 +23,7 @@ interface Props {
   onChange: (value: string[]) => void;
   canAddItemNotInList?: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 const Multiple = (props: Props) => {
@@ -36,6 +38,7 @@ const Multiple = (props: Props) => {
     value = [],
     onChange,
     disabled,
+    isLoading,
   } = props;
 
   const [search, setSearch] = useState("");
@@ -149,54 +152,58 @@ const Multiple = (props: Props) => {
           </h6>
         )}
       </div>
-      <div className="relative" ref={selectRef}>
-        <div
-          ref={inputBox}
-          className={clsx(
-            "w-full p-2 border border-sand-6 min-h-[2.5rem] max-h-[10rem] overflow-auto rounded-md outline-none bg-sand-1 flex flex-wrap items-center gap-2",
-            isError && "border-tomato-7"
-          )}
-        >
-          {value.map((value) => (
-            <button
-              type="button"
-              key={value}
-              className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
-              onClick={() => handleDelete(value)}
-            >
-              {value} <Icon icon="material-symbols:close-rounded" />
-            </button>
-          ))}
-          <div className="relative flex-1">
-            <input
-              disabled={disabled}
-              onFocus={() => setIsFocus(true)}
-              value={search}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setSearch(e.target.value)
-              }
-              onKeyDown={handleOnKeyDown}
-              className="w-full outline-none min-w-[5rem] bg-transparent"
-            />
-          </div>
-        </div>
-        {isFocus && !isEmpty && (
-          <ul
-            ref={optionsRef}
-            className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6 z-50"
+      {isLoading ? (
+        <Skeleton width="100%" height="2.5rem" />
+      ) : (
+        <div className="relative" ref={selectRef}>
+          <div
+            ref={inputBox}
+            className={clsx(
+              "w-full p-2 border border-sand-6 min-h-[2.5rem] max-h-[10rem] overflow-auto rounded-md outline-none bg-sand-1 flex flex-wrap items-center gap-2",
+              isError && "border-tomato-7"
+            )}
           >
-            {filteredDatas.map((data, i) => (
-              <TextHighlight
-                key={data}
-                search={search}
-                text={data}
-                isSelected={selectedIndex === i}
-                onClick={() => addItem(data)}
-              />
+            {value.map((value) => (
+              <button
+                type="button"
+                key={value}
+                className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
+                onClick={() => handleDelete(value)}
+              >
+                {value} <Icon icon="material-symbols:close-rounded" />
+              </button>
             ))}
-          </ul>
-        )}
-      </div>
+            <div className="relative flex-1">
+              <input
+                disabled={disabled}
+                onFocus={() => setIsFocus(true)}
+                value={search}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setSearch(e.target.value)
+                }
+                onKeyDown={handleOnKeyDown}
+                className="w-full outline-none min-w-[5rem] bg-transparent"
+              />
+            </div>
+          </div>
+          {isFocus && !isEmpty && (
+            <ul
+              ref={optionsRef}
+              className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6 z-50"
+            >
+              {filteredDatas.map((data, i) => (
+                <TextHighlight
+                  key={data}
+                  search={search}
+                  text={data}
+                  isSelected={selectedIndex === i}
+                  onClick={() => addItem(data)}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 };

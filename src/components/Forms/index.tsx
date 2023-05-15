@@ -10,6 +10,7 @@ import TextArea from "./TextArea";
 import Button from "@/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
+import Skeleton from "../Common/Skeleton";
 
 interface ConfirmBtn {
   title: string;
@@ -43,18 +44,25 @@ interface Props<T> {
   schema: ZodEffects<ZodObject<any>> | ZodObject<any>;
   fields: EachField<T>[];
   confirmBtn?: ConfirmBtn;
+  isLoading?: boolean;
 }
 
-function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
+function Forms<T>({
+  onSubmit,
+  schema,
+  fields,
+  confirmBtn,
+  isLoading,
+}: Props<T>) {
   const {
     watch,
     control,
     register,
     handleSubmit,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isValid, isDirty, isSubmitting },
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: Object.fromEntries(
+    values: Object.fromEntries(
       fields.map((field) => [field.label, field.value ?? ""])
     ) as z.infer<typeof schema>,
   });
@@ -64,6 +72,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
       case "text":
         return (
           <Input
+            isLoading={isLoading}
             key={field.label as string}
             register={register}
             label={field.label as string}
@@ -71,7 +80,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             optional={field.optional}
             isError={!!errors[field.label]}
             error={errors[field.label]?.message as string}
-            disabled={field.disabled}
+            disabled={field.disabled || isSubmitting}
           />
         );
       case "select":
@@ -82,6 +91,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             name={field.label as string}
             render={({ field: { onChange, value } }) => (
               <Select
+                isLoading={isLoading}
                 options={field.options ?? []}
                 title={field.title}
                 value={value}
@@ -89,7 +99,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
-                disabled={field.disabled}
+                disabled={field.disabled || isSubmitting}
               />
             )}
           />
@@ -103,6 +113,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             name={field.label as string}
             render={({ field: { onChange, value } }) => (
               <SingleSearch
+                isLoading={isLoading}
                 datas={field.options ?? []}
                 title={field.title}
                 value={value ?? []}
@@ -111,7 +122,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
                 canAddItemNotInList={field.canAddItemNotInList}
-                disabled={field.disabled}
+                disabled={field.disabled || isSubmitting}
               />
             )}
           />
@@ -124,15 +135,16 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
             name={field.label as string}
             render={({ field: { onChange, value } }) => (
               <MultipleSearch
+                isLoading={isLoading}
                 datas={field.options ?? []}
                 title={field.title}
-                value={value ?? []}
+                value={[...value]}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
                 canAddItemNotInList={field.canAddItemNotInList}
-                disabled={field.disabled}
+                disabled={field.disabled || isSubmitting}
               />
             )}
           />
@@ -140,22 +152,24 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
       case "checkbox":
         return (
           <Checkbox
+            isLoading={isLoading}
             key={field.label as string}
             label={field.label as string}
             register={register}
             title={field.title}
-            disabled={field.disabled}
+            disabled={field.disabled || isSubmitting}
           />
         );
       case "textarea":
         return (
           <TextArea
+            isLoading={isLoading}
             key={field.label as string}
             label={field.label as string}
             title={field.title}
             register={register}
             optional={field.optional}
-            disabled={field.disabled}
+            disabled={field.disabled || isSubmitting}
           />
         );
 
@@ -197,7 +211,7 @@ function Forms<T>({ onSubmit, schema, fields, confirmBtn }: Props<T>) {
       })}
       {confirmBtn && (
         <Button
-          disabled={!isValid || !isDirty}
+          disabled={!isValid || !isDirty || isSubmitting}
           isLoading={confirmBtn.isLoading}
           icon={confirmBtn.icon}
           className={clsx(

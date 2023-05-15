@@ -42,7 +42,7 @@ function Logger() {
     to: new Date(today.setHours(23, 59, 59, 999)),
   });
 
-  const authLogs = trpc.logger.getAuthLog.useQuery({
+  const authLogs = trpc.loggers.getAuthLog.useQuery({
     limit: 50,
     page: 1,
     date: dateRange,

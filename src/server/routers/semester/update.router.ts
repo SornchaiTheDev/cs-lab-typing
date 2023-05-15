@@ -18,7 +18,7 @@ export const updateSemestersRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id, startDate, term, year } = input;
       try {
-        await ctx.prisma.semester.update({
+        await ctx.prisma.semesters.update({
           where: {
             id,
           },

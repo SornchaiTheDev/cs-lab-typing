@@ -5,7 +5,6 @@ import { Icon } from "@iconify/react";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import Forms from "@/components/Forms";
-import DeleteAffect from "@/components/DeleteAffect";
 import Modal from "@/components/Common/Modal";
 import Button from "@/components/Common/Button";
 import { trpc } from "@/helpers/trpc";
@@ -29,24 +28,24 @@ function Semesters() {
     state.setSelectedObj,
   ]);
 
-  const semesters = trpc.semester.getSemesters.useQuery({ page: 1, limit: 50 });
-  const addSemesterMutation = trpc.semester.createSemester.useMutation({
-    onSuccess() {
+  const semesters = trpc.semesters.getSemesters.useQuery({
+    page: 1,
+    limit: 50,
+  });
+  const addSemesterMutation = trpc.semesters.createSemester.useMutation();
+
+  const addSemester = async (formData: TSemesterSchema) => {
+    const { startDate, term, year } = formData;
+    try {
+      await addSemesterMutation.mutateAsync({ startDate, term, year });
       toast.custom((t) => (
         <Toast {...t} msg="Added users successfully" type="success" />
       ));
       semesters.refetch();
       setIsModalOpen(false);
-    },
-    onError(err) {
+    } catch (err: any) {
       toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
-    },
-  });
-
-  const addSemester = (formData: TSemesterSchema) => {
-    const { startDate, term, year } = formData;
-    console.log(formData);
-    addSemesterMutation.mutate({ startDate, term, year });
+    }
   };
 
   const columns = useMemo<ColumnDef<SemesterRow, string>[]>(

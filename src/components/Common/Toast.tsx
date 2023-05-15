@@ -52,6 +52,14 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
       msg =
         "This semester is already added. If you want to edit, Use Edit button";
       break;
+    case "DUPLICATED_COURSE":
+      msg =
+        "This course is already added. If you want to edit, Use Edit button";
+      break;
+    case "EDIT_DUPLICATED_COURSE":
+      msg =
+        "The changes you made conflit with other courses. Please check the course number and name";
+      break;
     case "SOMETHING_WENT_WRONG":
       msg = "Something went wrong";
       break;

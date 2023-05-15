@@ -33,7 +33,7 @@ function DeleteAffect({ type }: Props) {
     };
 
     const fetchSemesterData = async () => {
-      const data = await ctx.semester.getSemesterObjectRelation.fetch({
+      const data = await ctx.semesters.getSemesterObjectRelation.fetch({
         yearAndTerm: selectedObject!.selected,
       });
       setFetchData(data);
@@ -62,14 +62,14 @@ function DeleteAffect({ type }: Props) {
       ));
     },
   });
-  const deleteSemester = trpc.semester.deleteSemester.useMutation({
+  const deleteSemester = trpc.semesters.deleteSemester.useMutation({
     onSuccess() {
       toast.custom((t) => (
         <Toast {...t} msg="Delete Semester successfully" type="success" />
       ));
       setSelectedObject(null);
       setConfirmMsg("");
-      ctx.semester.invalidate();
+      ctx.semesters.invalidate();
     },
     onError() {
       toast.custom((t) => (

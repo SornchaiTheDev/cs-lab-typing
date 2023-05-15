@@ -5,58 +5,91 @@ import { AddCourseSchema, TAddCourse } from "@/forms/CourseSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/Common/Button";
 import DeleteAffect from "@/components/DeleteAffect";
-import { generatePerson } from "@/helpers";
+import { generatePerson, trpc } from "@/helpers";
 import Forms from "@/components/Forms";
+import { useCourseStore } from "@/store";
+import Toast from "@/components/Common/Toast";
+import toast from "react-hot-toast";
 
-interface Props {
-  course: {
-    id: string;
-    name: string;
-  };
-}
-
-function Settings({ course }: Props) {
+function Settings() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const router = useRouter();
+  const { courseId } = router.query;
+  const {
+    data: course,
+    isLoading,
+    refetch,
+  } = trpc.courses.getCourseById.useQuery({
+    id: parseInt(courseId as string),
+  });
 
-  const addCourse = (formData: TAddCourse) => {
-    const { number, name, authors, note, comments } = formData;
+  const authorUser = trpc.users.getAllUsersInRole.useQuery({
+    roles: ["ADMIN", "TEACHER"],
+  });
+
+  const editCourseMutation = trpc.courses.updateCourse.useMutation();
+  const editCourse = async (formData: TAddCourse) => {
+    try {
+      if (course) {
+        await editCourseMutation.mutateAsync({ ...formData, id: course?.id });
+        toast.custom((t) => (
+          <Toast {...t} msg="Edit course successfully" type="success" />
+        ));
+        refetch();
+      }
+    } catch (err: any) {
+      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+    }
   };
 
   return (
-    <CourseLayout title="Fundamental Programming Concept">
+    <CourseLayout title={course?.name!} isLoading={isLoading}>
       <div className="w-1/2 p-4">
         <div className="w-full">
           <h4 className="text-xl">General</h4>
           <hr className="my-2" />
 
           <Forms
+            isLoading={isLoading}
             confirmBtn={{
               title: "Edit Course",
               icon: "solar:pen-2-line-duotone",
-              className: "w-1/3 py-2",
             }}
             schema={AddCourseSchema}
-            onSubmit={addCourse}
+            onSubmit={editCourse}
             fields={[
-              { label: "number", title: "Number", type: "text" },
+              {
+                label: "number",
+                title: "Number",
+                type: "text",
+                value: course?.number,
+              },
               {
                 label: "name",
                 title: "Name",
                 type: "text",
+                value: course?.name,
               },
               {
                 label: "authors",
                 title: "Authors",
                 type: "multiple-search",
-                options: generatePerson(100),
+                options: authorUser.data?.map((user) => user.full_name) ?? [],
+                value: course?.authors.map((author) => author.full_name),
               },
-              { label: "note", title: "Note", type: "text", optional: true },
+              {
+                label: "note",
+                title: "Note",
+                type: "text",
+                value: course?.note ?? "",
+                optional: true,
+              },
               {
                 label: "comments",
                 title: "Comments",
                 type: "textarea",
                 optional: true,
+                value: course?.comments ?? "",
               },
             ]}
           />

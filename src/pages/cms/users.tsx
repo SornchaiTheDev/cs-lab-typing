@@ -103,9 +103,14 @@ function Admin({ title, pattern }: Props) {
 
   const [isShow, setIsShow] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mutate } = trpc.users.addUser.useMutation({
-    onSuccess() {
+  const { mutateAsync } = trpc.users.addUser.useMutation();
+
+  const handleAddUser = async () => {
+    setIsSubmitting(true);
+    try {
+      await mutateAsync({ users: value.split("\n") });
       toast.custom((t) => (
         <Toast {...t} msg="Added users successfully" type="success" />
       ));
@@ -113,15 +118,11 @@ function Admin({ title, pattern }: Props) {
       setValue("");
       setIsShow(false);
       setIsError(false);
-    },
-    onError(err) {
+    } catch (err: any) {
       setIsError(true);
       toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
-    },
-  });
-  type SelectedUser = {
-    email: string;
-    type: "KUStudent" | "NonKUStudent" | "Teacher" | "Admin";
+    }
+    setIsSubmitting(false);
   };
 
   const handleFileUpload = useCallback((acceptedFiles: File[]) => {
@@ -201,7 +202,8 @@ function Admin({ title, pattern }: Props) {
         </div>
 
         <Button
-          onClick={() => mutate({ users: value.split("\n") })}
+          onClick={handleAddUser}
+          disabled={isSubmitting}
           icon="solar:user-plus-rounded-line-duotone"
           className="shadow text-sand-1 active:bg-sand-11 bg-sand-12 disabled:bg-sand-8 disabled:text-sand-1"
         >

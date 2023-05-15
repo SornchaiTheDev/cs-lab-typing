@@ -8,12 +8,14 @@ import { useRouter } from "next/router";
 import { replaceSlugwithQueryPath } from "@/helpers";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
+import Skeleton from "@/components/Common/Skeleton";
 
 interface Props {
   children?: React.ReactNode;
   title: string;
+  isLoading?: boolean;
 }
-function Layout({ children, title }: Props) {
+function Layout({ children, title, isLoading }: Props) {
   const { data } = useSession();
   const profileImage = data?.user?.image;
 
@@ -52,9 +54,13 @@ function Layout({ children, title }: Props) {
                   </Link>
                 ))}
             </div>
-            <h2 className="text-4xl font-bold capitalize text-sand-12">
-              {title}
-            </h2>
+            {isLoading ? (
+              <Skeleton width="20rem" height="3rem" />
+            ) : (
+              <h2 className="text-4xl font-bold capitalize text-sand-12">
+                {title}
+              </h2>
+            )}
           </div>
           <div>
             <Popover.Root>

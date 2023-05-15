@@ -15,17 +15,17 @@ const EditSemester = ({ onClose }: { onClose: () => void }) => {
     state.selectedObj,
     state.setSelectedObj,
   ]);
-  const semester = trpc.semester.getSemesterByYearAndTerm.useQuery({
+  const semester = trpc.semesters.getSemesterByYearAndTerm.useQuery({
     yearAndTerm: selectedObj?.selected!,
   });
   const ctx = trpc.useContext();
-  const updateSemester = trpc.semester.updateSemester.useMutation({
+  const updateSemester = trpc.semesters.updateSemester.useMutation({
     onSuccess: () => {
       toast.custom((t) => (
         <Toast {...t} msg="Edit users successfully" type="success" />
       ));
       setSelectedObj(null);
-      ctx.semester.invalidate();
+      ctx.semesters.invalidate();
     },
     onError: (err) => {
       toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
