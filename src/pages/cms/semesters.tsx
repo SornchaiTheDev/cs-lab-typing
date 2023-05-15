@@ -91,7 +91,7 @@ function Semesters() {
 
   return (
     <>
-      {selectedObj && <EditSemester onClose={() => {}} />}
+      {selectedObj && <EditSemester />}
       <Modal
         title="Add Semester"
         isOpen={isModalOpen}

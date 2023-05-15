@@ -68,5 +68,6 @@ model courses {
   comments   String?
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
+  deleted_at DateTime?
   authors    users[]   @relation("course_author")
 }

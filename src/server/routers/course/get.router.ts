@@ -13,6 +13,9 @@ export const getCourseRouter = router({
       const { page, limit } = input;
 
       const semesters = await ctx.prisma.courses.findMany({
+        where: {
+          deleted_at: null,
+        },
         skip: (page - 1) * limit,
         take: limit,
       });
@@ -37,5 +40,42 @@ export const getCourseRouter = router({
         return null;
       }
       return course;
+    }),
+  getCourseObjectRelation: adminProcedure
+    .input(z.object({ name: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { name } = input;
+
+      const semester = await ctx.prisma.courses.findUnique({
+        where: {
+          name,
+        },
+      });
+
+      const relation = {
+        summary: [
+          { name: "Courses", amount: 1 },
+          { name: "Semester", amount: 1 },
+          { name: "Users", amount: 2 },
+          { name: "Sections", amount: 10 },
+        ],
+        object: [
+          { name: "Courses", data: [name] },
+          {
+            name: "Semester",
+            data: ["2566/F"],
+          },
+          {
+            name: "Sections",
+            data: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+          },
+          {
+            name: "Users",
+            data: ["Sornchai Somsakul", "Sornchai Laksanapeeti"],
+          },
+        ],
+      };
+
+      return relation;
     }),
 });

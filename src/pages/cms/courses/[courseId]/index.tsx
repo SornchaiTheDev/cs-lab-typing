@@ -6,7 +6,6 @@ import { Icon } from "@iconify/react";
 import Badge from "@/components/Common/Badge";
 import { trpc } from "@/helpers/trpc";
 import Skeleton from "@/components/Common/Skeleton";
-import { useCourseStore } from "@/store";
 
 const instructors = ["SornchaiTheDev", "SaacSOS"];
 

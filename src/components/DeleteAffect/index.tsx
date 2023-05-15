@@ -5,6 +5,7 @@ import { useDeleteAffectStore } from "@/store";
 import { trpc } from "@/helpers";
 import toast from "react-hot-toast";
 import Toast from "../Common/Toast";
+import { useRouter } from "next/router";
 
 interface Props {
   type: "course" | "section" | "task" | "lab" | "user" | "semester";
@@ -24,6 +25,8 @@ function DeleteAffect({ type }: Props) {
 
   const ctx = trpc.useContext();
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchUserData = async () => {
       const data = await ctx.users.getUserObjectRelation.fetch({
@@ -39,6 +42,13 @@ function DeleteAffect({ type }: Props) {
       setFetchData(data);
     };
 
+    const fetchCourseData = async () => {
+      const data = await ctx.courses.getCourseObjectRelation.fetch({
+        name: selectedObject!.selected,
+      });
+      setFetchData(data);
+    };
+
     if (type === "user") {
       fetchUserData();
     }
@@ -46,45 +56,83 @@ function DeleteAffect({ type }: Props) {
     if (type === "semester") {
       fetchSemesterData();
     }
+
+    if (type === "course") {
+      fetchCourseData();
+    }
   }, [type, selectedObject, ctx]);
-  const deleteUser = trpc.users.deleteUser.useMutation({
-    onSuccess() {
+
+  const deleteUser = trpc.users.deleteUser.useMutation();
+  const handleDeleteUser = async () => {
+    if (!selectedObject) return;
+    try {
+      await deleteUser.mutateAsync({
+        email: selectedObject.selected as string,
+      });
+
       toast.custom((t) => (
         <Toast {...t} msg="Delete User successfully" type="success" />
       ));
       setSelectedObject(null);
       setConfirmMsg("");
       ctx.users.invalidate();
-    },
-    onError() {
+    } catch (err) {
       toast.custom((t) => (
         <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
       ));
-    },
-  });
-  const deleteSemester = trpc.semesters.deleteSemester.useMutation({
-    onSuccess() {
+    }
+  };
+
+  const deleteSemester = trpc.semesters.deleteSemester.useMutation();
+  const handleDeleteSemester = async () => {
+    if (!selectedObject) return;
+    try {
+      await deleteSemester.mutateAsync({
+        yearAndTerm: selectedObject.selected as string,
+      });
+
       toast.custom((t) => (
         <Toast {...t} msg="Delete Semester successfully" type="success" />
       ));
       setSelectedObject(null);
       setConfirmMsg("");
       ctx.semesters.invalidate();
-    },
-    onError() {
+    } catch (err) {
       toast.custom((t) => (
         <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
       ));
-    },
-  });
+    }
+  };
+
+  const deleteCourse = trpc.courses.deleteCourse.useMutation();
+  const handleDeleteCourse = async () => {
+    if (!selectedObject) return;
+    try {
+      await deleteCourse.mutateAsync({
+        name: selectedObject.selected,
+      });
+
+      toast.custom((t) => (
+        <Toast {...t} msg="Delete Course successfully" type="success" />
+      ));
+      setSelectedObject(null);
+      router.replace("/cms/courses");
+    } catch (err) {
+      toast.custom((t) => (
+        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
+      ));
+    }
+  };
+
   const handleDelete = () => {
-    if (selectedObject) {
-      if (type === "user") {
-        deleteUser.mutate({ email: selectedObject.selected });
-      }
-      if (type === "semester") {
-        deleteSemester.mutate({ yearAndTerm: selectedObject.selected });
-      }
+    if (type === "user") {
+      handleDeleteUser();
+    }
+    if (type === "semester") {
+      handleDeleteSemester();
+    }
+    if (type === "course") {
+      handleDeleteCourse();
     }
   };
 
@@ -102,9 +150,9 @@ function DeleteAffect({ type }: Props) {
       }
       isOpen={!!selectedObject}
       onClose={() => setSelectedObject(null)}
-      className="md:w-[40rem] max-h-[90%]"
+      className="md:w-[40rem] max-h-[90%] flex flex-col"
     >
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-auto">
         <div className="overflow-auto whitespace-nowrap">
           <h3 className="mt-2 text-lg font-bold">Summary</h3>
           <ul className="list-disc list-inside">

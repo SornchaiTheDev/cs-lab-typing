@@ -10,7 +10,7 @@ import Button from "@/components/Common/Button";
 import { SemesterSchema, TSemesterSchema } from "@/forms/SemesterSchema";
 import Skeleton from "@/components/Common/Skeleton";
 
-const EditSemester = ({ onClose }: { onClose: () => void }) => {
+const EditSemester = () => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
