@@ -36,12 +36,6 @@ const withAuth = async (req: NextApiRequest, res: NextApiResponse) => {
                 user.password!
               );
 
-              await api.post("/auth-logger", {
-                type: samePassword ? "LOGIN" : "FAILED-LOGIN",
-                email: user.email,
-                ip: req.headers!["x-forwarded-for"] ?? "localhost",
-              });
-
               if (samePassword) {
                 return {
                   id: user.student_id,
@@ -51,6 +45,11 @@ const withAuth = async (req: NextApiRequest, res: NextApiResponse) => {
                   image: "/assets/profile-placeholder.png",
                 };
               }
+              await api.post("/auth-logger", {
+                type: "FAILED-LOGIN",
+                email: user.email,
+                ip: req.headers!["x-forwarded-for"] ?? "localhost",
+              });
             }
             throw new Error("wrong-credential");
           }
@@ -80,11 +79,6 @@ const withAuth = async (req: NextApiRequest, res: NextApiResponse) => {
                 });
 
                 if (user?.deleted_at === null) {
-                  await api.post("/auth-logger", {
-                    type: "LOGIN",
-                    email: user.email,
-                    ip: req.headers!["x-forwarded-for"] ?? "localhost",
-                  });
                   return true;
                 }
                 throw new Error("not-found");
@@ -128,6 +122,24 @@ const withAuth = async (req: NextApiRequest, res: NextApiResponse) => {
           session.email = token.email;
         }
         return session;
+      },
+    },
+    events: {
+      async signIn(message) {
+        const { user } = message;
+        await api.post("/auth-logger", {
+          type: "LOGIN",
+          email: user.email,
+          ip: req.headers!["x-forwarded-for"] ?? "localhost",
+        });
+      },
+      async signOut(message) {
+        const { token } = message;
+        await api.post("/auth-logger", {
+          type: "LOGOUT",
+          email: token.email,
+          ip: req.headers!["x-forwarded-for"] ?? "localhost",
+        });
       },
     },
   };

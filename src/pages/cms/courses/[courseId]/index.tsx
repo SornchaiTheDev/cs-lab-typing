@@ -7,10 +7,6 @@ import Badge from "@/components/Common/Badge";
 import { trpc } from "@/helpers/trpc";
 import Skeleton from "@/components/Common/Skeleton";
 
-const instructors = ["SornchaiTheDev", "SaacSOS"];
-
-const TA = ["Jgogo01", "Teerut26"];
-
 function InCourse() {
   const router = useRouter();
 
@@ -21,7 +17,7 @@ function InCourse() {
 
   return (
     <CourseLayout isLoading={course.isLoading} title={course.data?.name!}>
-      <div className="w-1/2 p-4 text-sand-12">
+      <div className="p-4 md:w-1/2 text-sand-12">
         <h4 className="text-2xl">Course Information</h4>
         <h5 className="mt-4 mb-2 font-bold">Enrolled Student</h5>
         {course.isLoading ? (
@@ -67,12 +63,6 @@ function InCourse() {
             >
               <h5>{full_name}</h5>
             </div>
-          ))}
-        </div>
-        <h5 className="mt-4 mb-2 font-bold">Instructor (s)</h5>
-        <div className="flex flex-wrap gap-2">
-          {instructors.map((instructor) => (
-            <Badge key={instructor}>{instructor}</Badge>
           ))}
         </div>
       </div>

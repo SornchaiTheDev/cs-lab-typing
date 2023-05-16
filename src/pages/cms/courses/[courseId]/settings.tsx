@@ -49,7 +49,7 @@ function Settings() {
       {selectedObj && <DeleteAffect type="course" />}
 
       <CourseLayout title={course?.name!} isLoading={isLoading}>
-        <div className="w-1/2 p-4">
+        <div className="p-4 md:w-1/2">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
             <hr className="my-2" />
@@ -107,7 +107,7 @@ function Settings() {
                 setSelectedObj({ selected: course?.name!, type: "course" })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="shadow bg-red-9 text-sand-1 active:bg-red-11"
+              className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-1/3"
             >
               Delete Course
             </Button>

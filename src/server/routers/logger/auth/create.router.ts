@@ -20,6 +20,14 @@ export const createAuthLogRouter = router({
       const { email, type, ip } = input;
 
       try {
+        await ctx.prisma.users.update({
+          where: {
+            email,
+          },
+          data: {
+            last_logined: new Date(),
+          },
+        });
         await ctx.prisma.auth_logger.create({
           data: {
             ip_address: ip ?? "localhost",

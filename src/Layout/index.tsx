@@ -9,6 +9,7 @@ import { replaceSlugwithQueryPath } from "@/helpers";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
 import Skeleton from "@/components/Common/Skeleton";
+import { api } from "@/services/Axios";
 
 interface Props {
   children?: React.ReactNode;
@@ -36,9 +37,13 @@ function Layout({ children, title, isLoading }: Props) {
 
   const role = data ? (JSON.parse(data?.roles as string) as string[]) : [];
   const showRole = role.filter((role) => role != "STUDENT")[0];
+
+  const handleSignOut = async () => {
+    signOut();
+  };
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="container flex flex-col flex-1 max-w-6xl px-2 py-4 mx-auto lg:px-0 roboto">
+      <div className="container flex flex-col flex-1 max-w-6xl p-4 mx-auto lg:p-0 roboto">
         <div className="flex justify-between mt-10">
           <div>
             {!isBasePath && <BackArrow />}
@@ -109,7 +114,7 @@ function Layout({ children, title, isLoading }: Props) {
                   </button>
                   <div>
                     <button
-                      onClick={() => signOut()}
+                      onClick={handleSignOut}
                       className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:text-sand-12 hover:bg-sand-4"
                     >
                       Sign Out
