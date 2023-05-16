@@ -6,7 +6,7 @@ import clsx from "clsx";
 import TimePickerRange from "@/components/TimePickerRange";
 import { Icon } from "@iconify/react";
 import RangePicker from "@/components/Forms/DatePicker/RangePicker";
-import { trpc } from "@/helpers/trpc";
+import { trpc } from "@/helpers";
 import { DateRange } from "react-day-picker";
 import dayjs from "dayjs";
 

@@ -9,6 +9,7 @@ export const AddSectionSchema = z.object({
   instructors: z
     .array(z.string())
     .min(1, { message: "Instructors cannot be empty" }),
+  tas: z.array(z.string()).optional(),
   note: z.string().optional(),
 });
 

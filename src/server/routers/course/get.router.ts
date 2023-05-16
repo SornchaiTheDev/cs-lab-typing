@@ -46,32 +46,80 @@ export const getCourseRouter = router({
     .query(async ({ ctx, input }) => {
       const { name } = input;
 
-      const semester = await ctx.prisma.courses.findUnique({
+      const course = await ctx.prisma.courses.findUnique({
         where: {
           name,
         },
+        include: {
+          sections: {
+            include: {
+              students: true,
+              instructors: true,
+              tas: true,
+              semester: true,
+            },
+          },
+          authors: true,
+        },
       });
+
+      const usersInSections =
+        course?.sections
+          .map((section) => {
+            return [
+              ...section.instructors.map((instructor) => instructor.full_name),
+              ...section.students.map((student) => student.full_name),
+              ...section.tas.map((ta) => ta.full_name),
+            ];
+          })
+          .flat() ?? [];
+
+      const semestersInSections =
+        course?.sections.map(
+          (section) => `${section.semester.year}/${section.semester.term}`
+        ) ?? [];
+
+      const arrayOfSemesters = Array.from(new Set(semestersInSections));
+
+      const usersInAuthors =
+        course?.authors.map((author) => author.full_name) ?? [];
+
+      const mergeAllUsers = Array.from(
+        new Set([...usersInSections, ...usersInAuthors])
+      );
+
+      const sections = course?.sections;
 
       const relation = {
         summary: [
           { name: "Courses", amount: 1 },
-          { name: "Semester", amount: 1 },
-          { name: "Users", amount: 2 },
-          { name: "Sections", amount: 10 },
+          { name: "Semesters", amount: arrayOfSemesters.length },
+          { name: "Users", amount: mergeAllUsers.length },
+          { name: "Sections", amount: sections?.length },
+          { name: "Lab in this course", amount: sections?.length },
+          { name: "Submissions", amount: sections?.length },
         ],
         object: [
           { name: "Courses", data: [name] },
           {
-            name: "Semester",
-            data: ["2566/F"],
-          },
-          {
-            name: "Sections",
-            data: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+            name: "Semesters",
+            data: arrayOfSemesters,
           },
           {
             name: "Users",
-            data: ["Sornchai Somsakul", "Sornchai Laksanapeeti"],
+            data: mergeAllUsers,
+          },
+          {
+            name: "Sections",
+            data: sections?.map((section) => section.name) ?? [],
+          },
+          {
+            name: "Lab in this course",
+            data: sections?.map((section) => section.name) ?? [],
+          },
+          {
+            name: "Submissions",
+            data: sections?.map((section) => section.name) ?? [],
           },
         ],
       };

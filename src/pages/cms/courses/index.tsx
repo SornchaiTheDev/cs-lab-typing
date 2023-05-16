@@ -6,10 +6,11 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/router";
-import { trpc } from "@/helpers/trpc";
+import { trpc } from "@/helpers";
 import toast from "react-hot-toast";
 import Toast from "@/components/Common/Toast";
 import Skeleton from "@/components/Common/Skeleton";
+import { TRPCClientError } from "@trpc/client";
 
 function Courses() {
   const router = useRouter();
@@ -36,8 +37,11 @@ function Courses() {
           query: { ...router.query, courseId: course.id },
         });
       }
-    } catch (err: any) {
-      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        const errMsg = err.message;
+        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+      }
     }
   };
 

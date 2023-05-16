@@ -4,7 +4,7 @@ import { GetStaticProps } from "next";
 import CourseLayout from "@/Layout/CourseLayout";
 import { Icon } from "@iconify/react";
 import Badge from "@/components/Common/Badge";
-import { trpc } from "@/helpers/trpc";
+import { trpc } from "@/helpers";
 import Skeleton from "@/components/Common/Skeleton";
 
 function InCourse() {
@@ -30,12 +30,7 @@ function InCourse() {
             </h6>
           </div>
         )}
-        <h5 className="mt-4 mb-2 font-bold">Course Number</h5>
-        {course.isLoading ? (
-          <Skeleton width={"10rem"} height={"1.5rem"} />
-        ) : (
-          <h4 className="text-lg">{course.data?.number}</h4>
-        )}
+
         <h5 className="mt-4 mb-2 font-bold">Course Name</h5>
         {course.isLoading ? (
           <Skeleton width={"10rem"} height={"1.5rem"} />
@@ -57,12 +52,7 @@ function InCourse() {
         <h5 className="mt-4 mb-2 font-bold">Author (s)</h5>
         <div className="flex flex-wrap gap-2">
           {course.data?.authors.map(({ full_name }) => (
-            <div
-              key={full_name}
-              className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
-            >
-              <h5>{full_name}</h5>
-            </div>
+            <Badge key={full_name}>{full_name}</Badge>
           ))}
         </div>
       </div>

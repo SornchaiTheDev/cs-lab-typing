@@ -52,11 +52,11 @@ export const getUserRouter = router({
       });
 
       const relation = {
-        summary: [{ name: "Role", amount: user?.roles.length }],
+        summary: [{ name: "Role", amount: user?.roles.length ?? 0 }],
         object: [
           {
             name: "Role",
-            data: user?.roles.map((role) => role.name),
+            data: user?.roles.map((role) => role.name) ?? [],
           },
         ],
       };
@@ -84,6 +84,35 @@ export const getUserRouter = router({
           },
           deleted_at: null,
         },
+      });
+      return users;
+    }),
+  getUserByNameAndRole: adminProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        roles: z.array(
+          z.literal("ADMIN").or(z.literal("TEACHER")).or(z.literal("STUDENT"))
+        ),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { name, roles } = input;
+      const users = await ctx.prisma.users.findMany({
+        where: {
+          full_name: {
+            contains: name,
+          },
+          roles: {
+            some: {
+              name: {
+                in: roles,
+              },
+            },
+          },
+          deleted_at: null,
+        },
+        take: 20,
       });
       return users;
     }),

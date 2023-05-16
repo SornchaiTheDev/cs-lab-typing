@@ -11,9 +11,9 @@ interface Props {
   type: "course" | "section" | "task" | "lab" | "user" | "semester";
 }
 
-interface fetchUserDataProps {
-  summary: { name: string; amount: number | undefined }[];
-  object: { name: string; data: string[] | undefined }[];
+interface fetchDataProps {
+  summary: { name: string; amount: number }[];
+  object: { name: string; data: (string | undefined)[] }[];
 }
 function DeleteAffect({ type }: Props) {
   const [selectedObject, setSelectedObject] = useDeleteAffectStore((state) => [
@@ -21,7 +21,7 @@ function DeleteAffect({ type }: Props) {
     state.setSelectedObj,
   ]);
   const [confirmMsg, setConfirmMsg] = useState<string>("");
-  const [fetchData, setFetchData] = useState<fetchUserDataProps | null>(null);
+  const [fetchData, setFetchData] = useState<fetchDataProps | null>(null);
 
   const ctx = trpc.useContext();
 
@@ -49,6 +49,13 @@ function DeleteAffect({ type }: Props) {
       setFetchData(data);
     };
 
+    const fetchSectionData = async () => {
+      const data = await ctx.sections.getSectionObjectRelation.fetch({
+        name: selectedObject!.selected,
+      });
+      setFetchData(data);
+    };
+
     if (type === "user") {
       fetchUserData();
     }
@@ -59,6 +66,10 @@ function DeleteAffect({ type }: Props) {
 
     if (type === "course") {
       fetchCourseData();
+    }
+
+    if (type === "section") {
+      fetchSectionData();
     }
   }, [type, selectedObject, ctx]);
 
@@ -123,6 +134,28 @@ function DeleteAffect({ type }: Props) {
       ));
     }
   };
+  const deleteSection = trpc.sections.deleteSection.useMutation();
+  const handleDeleteSection = async () => {
+    if (!selectedObject) return;
+    try {
+      await deleteSection.mutateAsync({
+        name: selectedObject.selected,
+      });
+
+      toast.custom((t) => (
+        <Toast {...t} msg="Delete Section successfully" type="success" />
+      ));
+      setSelectedObject(null);
+      router.replace({
+        pathname: "/cms/courses/[courseId]/sections",
+        query: { courseId: router.query.courseId },
+      });
+    } catch (err) {
+      toast.custom((t) => (
+        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
+      ));
+    }
+  };
 
   const handleDelete = () => {
     if (type === "user") {
@@ -133,6 +166,9 @@ function DeleteAffect({ type }: Props) {
     }
     if (type === "course") {
       handleDeleteCourse();
+    }
+    if (type === "section") {
+      handleDeleteSection();
     }
   };
 

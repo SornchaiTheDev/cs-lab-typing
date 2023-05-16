@@ -1,19 +1,11 @@
+import { AddCourseSchema } from "@/forms/CourseSchema";
 import { adminProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const updateCoursesRouter = router({
   updateCourse: adminProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        number: z.string(),
-        name: z.string(),
-        authors: z.array(z.string()),
-        note: z.string().nullable(),
-        comments: z.string().nullable(),
-      })
-    )
+    .input(AddCourseSchema.and(z.object({ id: z.number() })))
     .mutation(async ({ ctx, input }) => {
       const { id, number, name, authors, note, comments } = input;
       try {

@@ -68,4 +68,12 @@ export const getSemestersRouter = router({
 
       return relation;
     }),
+  getAllSemesters: adminProcedure.query(async ({ ctx }) => {
+    const semesters = await ctx.prisma.semesters.findMany({
+      orderBy: {
+        year: "desc",
+      },
+    });
+    return semesters.map((semester) => `${semester.year}/${semester.term}`);
+  }),
 });

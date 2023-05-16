@@ -38,9 +38,6 @@ function Layout({ children, title, isLoading }: Props) {
   const role = data ? (JSON.parse(data?.roles as string) as string[]) : [];
   const showRole = role.filter((role) => role != "STUDENT")[0];
 
-  const handleSignOut = async () => {
-    signOut();
-  };
   return (
     <div className="flex flex-col min-h-screen">
       <div className="container flex flex-col flex-1 max-w-6xl p-4 mx-auto lg:p-0 roboto">
@@ -114,7 +111,7 @@ function Layout({ children, title, isLoading }: Props) {
                   </button>
                   <div>
                     <button
-                      onClick={handleSignOut}
+                      onClick={() => signOut()}
                       className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:text-sand-12 hover:bg-sand-4"
                     >
                       Sign Out

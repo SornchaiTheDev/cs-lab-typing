@@ -64,3 +64,7 @@ export const isAllUserValid = (users: string[]) => {
     })
     .every((isValid) => isValid);
 };
+
+export const isAllUserHaveValidEmail = (users: string[]) => {
+  return users.every((user) => z.string().email().safeParse(user).success);
+};

@@ -1,20 +1,11 @@
+import { SemesterSchema } from "@/forms/SemesterSchema";
 import { adminProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const updateSemestersRouter = router({
   updateSemester: adminProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        startDate: z.date(),
-        term: z
-          .literal("First")
-          .or(z.literal("Second"))
-          .or(z.literal("Summer")),
-        year: z.string(),
-      })
-    )
+    .input(SemesterSchema.and(z.object({ id: z.number() })))
     .mutation(async ({ ctx, input }) => {
       const { id, startDate, term, year } = input;
       try {

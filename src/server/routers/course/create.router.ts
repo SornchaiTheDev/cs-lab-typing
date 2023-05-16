@@ -1,3 +1,4 @@
+import { AddCourseSchema } from "@/forms/CourseSchema";
 import { adminProcedure, router } from "@/server/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
@@ -5,15 +6,7 @@ import { z } from "zod";
 
 export const createCourseRouter = router({
   createCourse: adminProcedure
-    .input(
-      z.object({
-        number: z.string(),
-        name: z.string(),
-        authors: z.array(z.string()),
-        note: z.string().nullable(),
-        comments: z.string().nullable(),
-      })
-    )
+    .input(AddCourseSchema)
     .mutation(async ({ ctx, input }) => {
       const { number, name, authors, note, comments } = input;
       let course;

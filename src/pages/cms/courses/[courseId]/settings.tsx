@@ -9,6 +9,7 @@ import Forms from "@/components/Forms";
 import Toast from "@/components/Common/Toast";
 import toast from "react-hot-toast";
 import { useDeleteAffectStore } from "@/store";
+import { TRPCClientError } from "@trpc/client";
 
 function Settings() {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -32,15 +33,19 @@ function Settings() {
   const editCourseMutation = trpc.courses.updateCourse.useMutation();
   const editCourse = async (formData: TAddCourse) => {
     try {
-      if (course) {
-        await editCourseMutation.mutateAsync({ ...formData, id: course?.id });
-        toast.custom((t) => (
-          <Toast {...t} msg="Edit course successfully" type="success" />
-        ));
-        refetch();
+      await editCourseMutation.mutateAsync({
+        ...formData,
+        id: parseInt(courseId as string),
+      });
+      toast.custom((t) => (
+        <Toast {...t} msg="Edit course successfully" type="success" />
+      ));
+      refetch();
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        const errMsg = err.message;
+        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
       }
-    } catch (err: any) {
-      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
     }
   };
 

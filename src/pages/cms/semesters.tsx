@@ -7,12 +7,13 @@ import { useMemo, useState } from "react";
 import Forms from "@/components/Forms";
 import Modal from "@/components/Common/Modal";
 import Button from "@/components/Common/Button";
-import { trpc } from "@/helpers/trpc";
+import { trpc } from "@/helpers";
 import toast from "react-hot-toast";
 import Toast from "@/components/Common/Toast";
 import dayjs from "dayjs";
 import EditSemester from "@/features/Semesters/EditSemester";
 import { useDeleteAffectStore } from "@/store";
+import { TRPCClientError } from "@trpc/client";
 
 interface SemesterRow {
   id: string;
@@ -43,8 +44,11 @@ function Semesters() {
       ));
       semesters.refetch();
       setIsModalOpen(false);
-    } catch (err: any) {
-      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        const errorMsg = err.message;
+        toast.custom((t) => <Toast {...t} msg={errorMsg} type="error" />);
+      }
     }
   };
 

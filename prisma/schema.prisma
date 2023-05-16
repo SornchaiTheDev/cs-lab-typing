@@ -19,12 +19,17 @@ model users {
   email        String        @unique
   password     String?
   last_logined DateTime?
+  roles        roles[]       @relation("user_role")
+  auth_loggers auth_logger[]
+  authors      courses[]     @relation("course_author")
+  students     sections[]    @relation("section_student")
+  instructors  sections[]    @relation("section_instructor")
+  TAs          sections[]    @relation("section_ta")
   created_at   DateTime      @default(now())
   updated_at   DateTime?     @updatedAt
   deleted_at   DateTime?
-  roles        roles[]       @relation("user_role")
-  auth_loggers auth_logger[]
-  courses      courses[]     @relation("course_author")
+
+  sectionsId Int?
 }
 
 model roles {
@@ -49,24 +54,42 @@ model auth_logger {
 }
 
 model semesters {
-  id         Int       @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   year       String
   term       String
   startDate  DateTime
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
+  sections   sections[]
 
   @@unique([year, term])
 }
 
 model courses {
-  id         Int       @id @default(autoincrement())
-  number     String    @unique
-  name       String    @unique
+  id         Int        @id @default(autoincrement())
+  number     String     @unique
+  name       String     @unique
   note       String?
   comments   String?
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
   deleted_at DateTime?
-  authors    users[]   @relation("course_author")
+  authors    users[]    @relation("course_author")
+  sections   sections[]
+}
+
+model sections {
+  id          Int       @id @default(autoincrement())
+  semester    semesters @relation(fields: [semester_id], references: [id])
+  semester_id Int
+  course      courses   @relation(fields: [course_id], references: [id])
+  course_id   Int
+  name        String    @unique
+  instructors users[]   @relation("section_instructor")
+  students    users[]   @relation("section_student")
+  tas         users[]   @relation("section_ta")
+  note        String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+  deleted_at  DateTime?
 }

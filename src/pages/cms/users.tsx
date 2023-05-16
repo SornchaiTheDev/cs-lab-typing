@@ -21,6 +21,7 @@ import { getUserType } from "@/helpers/getUserType";
 import EditTeacher from "@/features/Users/EditTeacher";
 import { useDeleteAffectStore } from "@/store/deleteAffect";
 import { useDropzone } from "react-dropzone";
+import { TRPCClientError } from "@trpc/client";
 
 dayjs.extend(relativeTime);
 
@@ -118,9 +119,12 @@ function Admin({ title, pattern }: Props) {
       setValue("");
       setIsShow(false);
       setIsError(false);
-    } catch (err: any) {
-      setIsError(true);
-      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        const errMsg = err.message;
+        setIsError(true);
+        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+      }
     }
     setIsSubmitting(false);
   };
