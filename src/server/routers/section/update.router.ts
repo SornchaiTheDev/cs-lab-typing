@@ -1,5 +1,4 @@
 import { AddSectionSchema } from "@/forms/SectionSchema";
-import { SemesterSchema } from "@/forms/SemesterSchema";
 import { adminProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
