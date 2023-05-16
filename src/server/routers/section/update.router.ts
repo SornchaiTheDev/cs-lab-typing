@@ -34,7 +34,7 @@ export const updateSectionsRouter = router({
               })),
             },
             tas: {
-              connect: tas.map((ta) => ({ full_name: ta })),
+              connect: tas ? tas.map((ta) => ({ full_name: ta })) : [],
             },
           },
         });
