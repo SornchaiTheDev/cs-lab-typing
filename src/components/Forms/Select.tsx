@@ -51,7 +51,7 @@ function Select({
         break;
       case "Enter":
         e.preventDefault();
-        onChange(options[selectedIndex]);
+        onChange(options[selectedIndex] as string);
         setIsShow(false);
         break;
     }
@@ -75,14 +75,14 @@ function Select({
     <>
       <div {...{ className }}>
         <div className="flex justify-between">
-          <h4 className="block mb-2 font-semibold text-sand-12">
+          <h4 className="mb-2 block font-semibold text-sand-12">
             {title}{" "}
             {optional && (
               <span className="text-sm text-sand-11">(optional)</span>
             )}
           </h4>
           {isError && (
-            <h6 className="block mb-2 text-sm font-semibold text-tomato-9">
+            <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
               {error}
             </h6>
           )}
@@ -95,7 +95,7 @@ function Select({
             tabIndex={0}
             ref={selectRef}
             className={clsx(
-              "w-full border border-sand-6 rounded-md outline-none bg-sand-1 relative min-h-[2.5rem]",
+              "relative min-h-[2.5rem] w-full rounded-md border border-sand-6 bg-sand-1 outline-none",
               isError && "border-tomato-7"
             )}
             onClick={() => {
@@ -109,13 +109,13 @@ function Select({
                   ? "solar:alt-arrow-up-line-duotone"
                   : "solar:alt-arrow-down-line-duotone"
               }
-              className="absolute right-0 -translate-x-1/2 -translate-y-1/2 top-1/2"
+              className="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2"
             />
-            <h6 className="p-2 select-none">{value}</h6>
+            <h6 className="select-none p-2">{value}</h6>
             {isShow && (
               <ul
                 ref={optionRef}
-                className="absolute z-20 flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg top-12 border-sand-6"
+                className="absolute top-12 z-20 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
               >
                 {options.map((data, i) => (
                   <li
@@ -125,8 +125,8 @@ function Select({
                     }}
                     key={data}
                     className={clsx(
-                      "p-2 rounded-lg cursor-pointer hover:bg-sand-2 text-sand-11",
-                      selectedIndex === i && "bg-sand-4 selected text-sand-12"
+                      "cursor-pointer rounded-lg p-2 text-sand-11 hover:bg-sand-2",
+                      selectedIndex === i && "selected bg-sand-4 text-sand-12"
                     )}
                   >
                     {data}

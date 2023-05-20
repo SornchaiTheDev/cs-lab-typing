@@ -123,7 +123,7 @@ function CommandPallete() {
         break;
       case "Enter":
         e.preventDefault();
-        executeCommand(filteredCommands[selectedIndex]);
+        executeCommand(filteredCommands[selectedIndex] as Command);
         break;
     }
   };

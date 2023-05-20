@@ -15,7 +15,7 @@ interface Props {
 function Settings({ course }: Props) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const editLab = (formData: TAddLabSchema) => {
+  const editLab = async (formData: TAddLabSchema) => {
     const { name, isDisabled, tags } = formData;
   };
 
