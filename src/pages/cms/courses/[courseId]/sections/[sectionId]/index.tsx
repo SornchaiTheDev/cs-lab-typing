@@ -119,7 +119,7 @@ function Sections() {
         data={students ?? []}
         isLoading={section.isLoading}
         columns={columns}
-        className="w-1/2 mx-4 mb-2"
+        className="mx-4 mb-2 md:w-1/2"
       >
         <AddUser sectionId={parseInt(sectionId as string)} />
       </Table>

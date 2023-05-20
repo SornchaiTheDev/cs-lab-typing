@@ -32,8 +32,8 @@ export const middleware = t.middleware;
 
 const isAdmin = middleware(async (opts) => {
   const { ctx } = opts;
-
-  if (!ctx.session?.roles.includes("ADMIN")) {
+  console.log(ctx.session);
+  if (!ctx.session || !ctx.session?.roles.includes("ADMIN")) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return opts.next({

@@ -97,42 +97,48 @@ function Sections() {
         </ModalWithButton>
       </div>
       <div className="grid grid-cols-12 gap-6 mt-4">
-        {sections.isLoading ? (
-          <Skeleton width={"10rem"} height={"2rem"} />
-        ) : (
-          sections.data!.map(({ name, note, id, students }) => (
-            <Link
-              key={id}
-              href={{
-                pathname: "sections/[sectionId]",
-                query: { ...router.query, sectionId: id },
-              }}
-              shallow={true}
-              className="relative col-span-12 md:col-span-4 overflow-hidden border flex flex-col justify-end border-sand-6 h-[12rem] rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
-            >
-              <div className="flex flex-col gap-2 p-2">
-                <div className="px-2 text-white rounded-lg bg-lime-9 w-fit">
-                  {name}
-                </div>
-                <div>
-                  <div className="absolute flex items-center px-1 rounded-lg w-fit bg-sand-7 right-2 top-2">
-                    <Icon
-                      icon="solar:user-hand-up-line-duotone"
-                      className="text-lg"
-                    />
-                    <h6 className="text-sand-12">
-                      <span className="font-bold">{students.length}</span>{" "}
-                      student{students.length > 1 ? "s" : ""}
-                    </h6>
+        {sections.isLoading
+          ? new Array(6)
+              .fill(0)
+              .map((_, i) => (
+                <Skeleton
+                  key={i}
+                  height={"12rem"}
+                  className="col-span-12 md:col-span-4"
+                />
+              ))
+          : sections.data!.map(({ name, note, id, students }) => (
+              <Link
+                key={id}
+                href={{
+                  pathname: "sections/[sectionId]",
+                  query: { ...router.query, sectionId: id },
+                }}
+                shallow={true}
+                className="relative col-span-12 md:col-span-4 overflow-hidden border flex flex-col justify-end border-sand-6 h-[12rem] rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
+              >
+                <div className="flex flex-col gap-2 p-2">
+                  <div className="px-2 text-white rounded-lg bg-lime-9 w-fit">
+                    {name}
                   </div>
-                  <div className="min-h-[1.5rem]">
-                    <h6 className="text-sand-10">{note}</h6>
+                  <div>
+                    <div className="absolute flex items-center px-1 rounded-lg w-fit bg-sand-7 right-2 top-2">
+                      <Icon
+                        icon="solar:user-hand-up-line-duotone"
+                        className="text-lg"
+                      />
+                      <h6 className="text-sand-12">
+                        <span className="font-bold">{students.length}</span>{" "}
+                        student{students.length > 1 ? "s" : ""}
+                      </h6>
+                    </div>
+                    <div className="min-h-[1.5rem]">
+                      <h6 className="text-sand-10">{note}</h6>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))
-        )}
+              </Link>
+            ))}
       </div>
     </CourseLayout>
   );

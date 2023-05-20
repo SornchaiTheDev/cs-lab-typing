@@ -42,7 +42,7 @@ function Layout({ children, title, isLoading }: Props) {
     <div className="flex flex-col min-h-screen">
       <div className="container flex flex-col flex-1 max-w-6xl p-4 mx-auto lg:p-0 roboto">
         <div className="flex justify-between mt-10">
-          <div>
+          <div className="flex-1">
             {!isBasePath && <BackArrow />}
             <div className="flex gap-2">
               {!isBasePath &&
@@ -59,7 +59,7 @@ function Layout({ children, title, isLoading }: Props) {
             {isLoading ? (
               <Skeleton width="20rem" height="3rem" />
             ) : (
-              <h2 className="text-4xl font-bold capitalize text-sand-12">
+              <h2 className="text-2xl font-bold capitalize md:text-4xl text-sand-12">
                 {title}
               </h2>
             )}

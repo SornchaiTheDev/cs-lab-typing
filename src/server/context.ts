@@ -3,21 +3,31 @@ import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { prisma } from "./prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/services/authOptions";
+import { Session } from "next-auth";
 
-/**
- * Creates context for an incoming request
- * @link https://trpc.io/docs/context
- */
+interface CreateInnerContextOptions extends Partial<CreateNextContextOptions> {
+  session: Session | null;
+}
+
+export async function createInnerContext(opts?: CreateInnerContextOptions) {
+  return {
+    prisma,
+    session: opts?.session,
+  };
+}
 export async function createContext(opts: CreateNextContextOptions) {
   const req = opts?.req;
   const res = opts?.res;
-  const session = req && res && (await getServerSession(req, res, authOptions));
+  const session = await getServerSession(req, res, authOptions);
 
-  const ip = opts.req.headers["x-real-ip"] as string;
+  console.log(opts.req.cookies)
+
+  const innerContext = await createInnerContext({ session });
+
   return {
-    session,
-    ip,
-    prisma,
+    ...innerContext,
+    req,
+    res,
   };
 }
 

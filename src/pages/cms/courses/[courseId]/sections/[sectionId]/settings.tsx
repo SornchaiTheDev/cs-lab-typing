@@ -2,9 +2,7 @@ import Button from "@/components/Common/Button";
 import DeleteAffect from "@/components/DeleteAffect";
 import SectionLayout from "@/Layout/SectionLayout";
 import { AddSectionSchema, TAddSection } from "@/forms/SectionSchema";
-import { generatePerson } from "@/helpers";
 import Forms from "@/components/Forms";
-import { useState } from "react";
 import { trpc } from "@/helpers";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -64,7 +62,7 @@ function Settings() {
       {selectedObj && <DeleteAffect type="section" />}
 
       <SectionLayout title={section.data?.name!} isLoading={section.isLoading}>
-        <div className="w-1/2 p-4">
+        <div className="p-4 md:w-1/2">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
             <hr className="my-2" />

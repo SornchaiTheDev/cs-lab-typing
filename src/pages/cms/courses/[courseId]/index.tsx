@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import { GetStaticProps } from "next";
+import type { GetServerSideProps } from "next";
 import CourseLayout from "@/Layout/CourseLayout";
 import { Icon } from "@iconify/react";
 import Badge from "@/components/Common/Badge";
 import { trpc } from "@/helpers";
 import Skeleton from "@/components/Common/Skeleton";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { appRouter } from "@/server/routers/_app";
+import { transformer } from "@/helpers";
+import { prisma } from "@/server/prisma";
 
 function InCourse() {
   const router = useRouter();
@@ -61,3 +64,32 @@ function InCourse() {
 }
 
 export default InCourse;
+// TODO : MAKE THIS WORK
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  // const helpers = createServerSideHelpers({
+  //   router: appRouter,
+  //   ctx: await createInnerContext(),
+  //   transformer,
+  // });
+  const { courseId } = query;
+  const id = parseInt(courseId as string);
+  if (isNaN(id)) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const course = await prisma.courses.findUnique({
+    where: { id },
+  });
+
+  if (!course) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
