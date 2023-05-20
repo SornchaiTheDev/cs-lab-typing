@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import Layout from "~/Layout";
 import Table from "~/components/Common/Table";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
 import TimePickerRange from "~/components/TimePickerRange";
 import { Icon } from "@iconify/react";
 import RangePicker from "~/components/Forms/DatePicker/RangePicker";
 import { trpc } from "~/helpers";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import dayjs from "dayjs";
 
 interface LoggerRow {
@@ -19,10 +19,10 @@ interface LoggerRow {
 
 const Type = ({ type }: { type: string }) => {
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex w-full justify-center">
       <button
         className={clsx(
-          "px-2 text-sm font-medium rounded-md",
+          "rounded-md px-2 text-sm font-medium",
           type === "LOGIN" && "bg-lime-3 text-lime-9",
           type === "LOGOUT" && "bg-amber-3 text-amber-9",
           type === "FAILED-LOGIN" && "bg-red-3 text-red-9"
@@ -48,12 +48,12 @@ function Logger() {
     date: dateRange,
   });
 
-  const columns = useMemo<ColumnDef<LoggerRow, any>[]>(
+  const columns = useMemo<ColumnDef<LoggerRow, string | { email: string }>[]>(
     () => [
       {
         header: "Type",
         accessorKey: "type",
-        cell: (props) => <Type type={props.getValue()} />,
+        cell: (props) => <Type type={props.getValue() as string} />,
         size: 40,
       },
       {
@@ -63,7 +63,9 @@ function Logger() {
       {
         header: "Email / Username",
         accessorKey: "user",
-        cell: (props) => <span>{props.getValue().email}</span>,
+        cell: (props) => (
+          <span>{props.getValue() as { email: string }["email"]}</span>
+        ),
       },
       {
         header: "IP Address",
@@ -76,7 +78,9 @@ function Logger() {
   const exportCSV = () => {
     let csvString = "Type,Date,Email / Username,IP Address\n";
     authLogs.data?.forEach((log) => {
-      csvString += `${log.type},${log.date},${log.user.email},${log.ip_address}\n`;
+      csvString += `${log.type},${log.date.toDateString()},${log.user.email},${
+        log.ip_address
+      }\n`;
     });
 
     const startDate = dayjs(dateRange.from);
@@ -106,7 +110,7 @@ function Logger() {
         <div className="flex justify-end p-2 ">
           <button
             onClick={exportCSV}
-            className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+            className="flex items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV

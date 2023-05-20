@@ -2,7 +2,6 @@ import { SemesterSchema } from "~/forms/SemesterSchema";
 import { adminProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 
 export const createSemesterRouter = router({
   createSemester: adminProcedure

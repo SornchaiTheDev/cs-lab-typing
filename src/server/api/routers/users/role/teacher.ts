@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const addTeacher = async (prisma: PrismaClient, user: string) => {
@@ -13,9 +13,9 @@ export const addTeacher = async (prisma: PrismaClient, user: string) => {
         full_name,
       },
       create: {
-        student_id: email,
-        email,
-        full_name,
+        student_id: email as string,
+        email: email as string,
+        full_name: full_name as string,
         roles: {
           connect: [
             {

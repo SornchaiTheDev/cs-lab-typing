@@ -1,8 +1,8 @@
 import SemesterLayout from "~/Layout/SemesterLayout";
 import Table from "~/components/Common/Table";
-import { TSemesterSchema, SemesterSchema } from "~/forms/SemesterSchema";
+import { type TSemesterSchema, SemesterSchema } from "~/forms/SemesterSchema";
 import { Icon } from "@iconify/react";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import Forms from "~/components/Forms";
 import Modal from "~/components/Common/Modal";
@@ -19,6 +19,12 @@ interface SemesterRow {
   id: string;
   year: string;
   startDate: Date;
+}
+
+interface cellProps {
+  row: {
+    getValue: (title: string) => string | number;
+  };
 }
 
 function Semesters() {
@@ -42,7 +48,7 @@ function Semesters() {
       toast.custom((t) => (
         <Toast {...t} msg="Added users successfully" type="success" />
       ));
-      semesters.refetch();
+      await semesters.refetch();
       setIsModalOpen(false);
     } catch (err) {
       if (err instanceof TRPCClientError) {
@@ -73,7 +79,7 @@ function Semesters() {
         id: "actions",
         header: "Edit",
         size: 50,
-        cell: (props) => (
+        cell: (props: cellProps) => (
           <button
             onClick={() =>
               setSelectedObj({
@@ -83,7 +89,7 @@ function Semesters() {
                 type: "semester",
               })
             }
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -99,7 +105,7 @@ function Semesters() {
       <Modal
         title="Add Semester"
         isOpen={isModalOpen}
-        className="w-[95%] md:w-[40rem] flex flex-col gap-4"
+        className="flex w-[95%] flex-col gap-4 md:w-[40rem]"
         onClose={() => setIsModalOpen(false)}
       >
         <Forms
@@ -140,7 +146,7 @@ function Semesters() {
             <Button
               onClick={() => setIsModalOpen(true)}
               icon="solar:calendar-line-duotone"
-              className="shadow text-sand-1 active:bg-sand-11 bg-sand-12"
+              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add Semester
             </Button>

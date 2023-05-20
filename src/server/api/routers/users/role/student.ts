@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const addStudent = async (prisma: PrismaClient, user: string) => {
@@ -7,9 +7,9 @@ export const addStudent = async (prisma: PrismaClient, user: string) => {
   try {
     await prisma.users.create({
       data: {
-        student_id,
-        email,
-        full_name,
+        student_id: student_id as string,
+        email: email as string,
+        full_name: full_name as string,
         roles: {
           connect: {
             name: "STUDENT",

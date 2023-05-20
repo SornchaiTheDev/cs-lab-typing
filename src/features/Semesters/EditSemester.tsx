@@ -16,7 +16,7 @@ const EditSemester = () => {
     state.setSelectedObj,
   ]);
   const semester = trpc.semesters.getSemesterByYearAndTerm.useQuery({
-    yearAndTerm: selectedObj?.selected!,
+    yearAndTerm: selectedObj?.selected as string,
   });
   const ctx = trpc.useContext();
   const updateSemester = trpc.semesters.updateSemester.useMutation({
@@ -35,7 +35,7 @@ const EditSemester = () => {
   const editUser = async (formData: TSemesterSchema) => {
     const { startDate, term, year } = formData;
     updateSemester.mutate({
-      id: semester.data?.id!,
+      id: semester.data?.id as number,
       startDate,
       term,
       year,
@@ -56,7 +56,7 @@ const EditSemester = () => {
           className="md:w-[40rem]"
         >
           {semester.isLoading ? (
-            <div className="flex flex-col gap-2 my-4">
+            <div className="my-4 flex flex-col gap-2">
               <Skeleton width={"4rem"} height={"1.5rem"} />
               <Skeleton width={"100%"} height={"2.5rem"} />
               <Skeleton width={"4rem"} height={"1.5rem"} />
@@ -100,7 +100,7 @@ const EditSemester = () => {
               <hr className="my-2" />
               <Button
                 onClick={() => setIsDelete(true)}
-                className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
+                className="w-full bg-red-9 font-bold text-sand-2 hover:bg-red-10"
                 icon="solar:trash-bin-trash-line-duotone"
               >
                 Delete Semester

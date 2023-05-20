@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Button from "~/components/Common/Button";
-import { TTeacherSchema, TeacherSchema } from "~/forms/TeacherSchema";
+import { type TTeacherSchema, TeacherSchema } from "~/forms/TeacherSchema";
 import Skeleton from "~/components/Common/Skeleton";
 
 const EditTeacher = () => {
@@ -16,7 +16,7 @@ const EditTeacher = () => {
     state.setSelectedObj,
   ]);
   const user = trpc.users.getUserByEmail.useQuery({
-    email: selectedObj?.selected!,
+    email: selectedObj?.selected as string,
   });
   const ctx = trpc.useContext();
   const updateUser = trpc.users.updateTeacher.useMutation({
@@ -55,7 +55,7 @@ const EditTeacher = () => {
           className="md:w-[40rem]"
         >
           {user.isLoading ? (
-            <div className="flex flex-col gap-2 my-4">
+            <div className="my-4 flex flex-col gap-2">
               <Skeleton width={"4rem"} height={"1.5rem"} />
               <Skeleton width={"100%"} height={"2rem"} />
               <Skeleton width={"4rem"} height={"1.5rem"} />
@@ -102,7 +102,7 @@ const EditTeacher = () => {
               <hr className="my-2" />
               <Button
                 onClick={() => setIsDelete(true)}
-                className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
+                className="w-full bg-red-9 font-bold text-sand-2 hover:bg-red-10"
                 icon="solar:trash-bin-trash-line-duotone"
               >
                 Delete User

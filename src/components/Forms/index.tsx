@@ -1,16 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import Input from "./Input";
 import Select from "./Select";
 import SingleSearch from "./Search/SingleSearch";
 import MultipleSearch from "./Search/MultipleSearch";
 import Checkbox from "./Checkbox";
-import { ZodEffects, ZodObject, string, z } from "zod";
+import type { z, ZodEffects, ZodObject } from "zod";
 import TextArea from "./TextArea";
 import Button from "~/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
-import Skeleton from "../Common/Skeleton";
 
 interface ConfirmBtn {
   title: string;
@@ -40,7 +40,7 @@ type EachField<T> = {
 };
 
 interface Props<T> {
-  onSubmit: (formData: T) => void;
+  onSubmit: (formData: T) => Promise<void>;
   schema: ZodEffects<ZodObject<any>> | ZodObject<any>;
   fields: EachField<T>[];
   confirmBtn?: ConfirmBtn;
@@ -94,7 +94,7 @@ function Forms<T>({
                 isLoading={isLoading}
                 options={field.options ?? []}
                 title={field.title}
-                value={value}
+                value={value as string}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
@@ -116,7 +116,7 @@ function Forms<T>({
                 isLoading={isLoading}
                 datas={field.options ?? []}
                 title={field.title}
-                value={value ?? []}
+                value={(value as string) ?? ""}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
@@ -138,7 +138,7 @@ function Forms<T>({
                 isLoading={isLoading}
                 datas={field.options ?? []}
                 title={field.title}
-                value={[...value]}
+                value={[...(value as string)]}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
@@ -182,7 +182,7 @@ function Forms<T>({
             render={({ field: { onChange, value } }) => (
               <SinglePicker
                 title="Start Date"
-                value={value}
+                value={value as Date}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
@@ -195,7 +195,13 @@ function Forms<T>({
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit as SubmitHandler<{ [x: string]: any }>)}
+      onSubmit={
+        void handleSubmit(
+          onSubmit as SubmitHandler<{
+            [x: string]: string | number | string[] | Date;
+          }>
+        )
+      }
       className="flex flex-col gap-2"
     >
       {fields.map((field) => {
@@ -203,7 +209,7 @@ function Forms<T>({
         if (
           field.children &&
           field.conditional &&
-          field.conditional(watch(field.label as string))
+          field.conditional(watch(field.label as string) as string)
         ) {
           renderItem.push(render(field.children));
         }
@@ -215,8 +221,8 @@ function Forms<T>({
           isLoading={confirmBtn.isLoading}
           icon={confirmBtn.icon}
           className={clsx(
-            "shadow bg-sand-12 text-sand-1 active:bg-sand-11",
-            confirmBtn.className ?? "py-2 w-full mt-4"
+            "bg-sand-12 text-sand-1 shadow active:bg-sand-11",
+            confirmBtn.className ?? "mt-4 w-full py-2"
           )}
         >
           {confirmBtn.title}

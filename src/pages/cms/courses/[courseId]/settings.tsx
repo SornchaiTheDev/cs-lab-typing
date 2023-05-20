@@ -1,7 +1,6 @@
 import CourseLayout from "~/Layout/CourseLayout";
-import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { AddCourseSchema, TAddCourse } from "~/forms/CourseSchema";
+import { AddCourseSchema, type TAddCourse } from "~/forms/CourseSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import { trpc } from "~/helpers";
@@ -40,7 +39,7 @@ function Settings() {
       toast.custom((t) => (
         <Toast {...t} msg="Edit course successfully" type="success" />
       ));
-      refetch();
+      await refetch();
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
@@ -53,7 +52,7 @@ function Settings() {
     <>
       {selectedObj && <DeleteAffect type="course" />}
 
-      <CourseLayout title={course?.name!} isLoading={isLoading}>
+      <CourseLayout title={course?.name as string} isLoading={isLoading}>
         <div className="p-4 md:w-1/2">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
@@ -109,10 +108,13 @@ function Settings() {
             <hr className="my-2" />
             <Button
               onClick={() =>
-                setSelectedObj({ selected: course?.name!, type: "course" })
+                setSelectedObj({
+                  selected: course?.name as string,
+                  type: "course",
+                })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-1/3"
+              className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-1/3"
             >
               Delete Course
             </Button>

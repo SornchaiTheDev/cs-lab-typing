@@ -48,7 +48,7 @@ function Settings() {
       toast.custom((t) => (
         <Toast {...t} msg="Edit section successfully" type="success" />
       ));
-      ctx.sections.invalidate();
+      await ctx.sections.invalidate();
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
@@ -61,7 +61,10 @@ function Settings() {
     <>
       {selectedObj && <DeleteAffect type="section" />}
 
-      <SectionLayout title={section.data?.name!} isLoading={section.isLoading}>
+      <SectionLayout
+        title={section.data?.name as string}
+        isLoading={section.isLoading}
+      >
         <div className="p-4 md:w-1/2">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
@@ -77,8 +80,9 @@ function Settings() {
                   type: "select",
                   options: getAllSemester.data,
                   value:
-                    `${section.data?.semester.year}/${section.data?.semester.term}` ??
-                    "",
+                    `${section.data?.semester.year as string}/${
+                      section.data?.semester.term as string
+                    }` ?? "",
                 },
                 {
                   label: "name",
@@ -121,12 +125,12 @@ function Settings() {
             <Button
               onClick={() =>
                 setSelectedObj({
-                  selected: section.data?.name!,
+                  selected: section.data?.name as string,
                   type: "section",
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="shadow bg-red-9 text-sand-1 active:bg-red-11"
+              className="bg-red-9 text-sand-1 shadow active:bg-red-11"
             >
               Delete Section
             </Button>

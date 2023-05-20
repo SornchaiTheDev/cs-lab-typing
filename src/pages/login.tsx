@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 const Login: NextPage = () => {
   const { query } = useRouter();
 
-  const catchError = async (error: string) => {
+  const catchError = (error: string) => {
     if (error) {
       if (error === "not-authorize") {
         toast("กรุณาเข้าสู่ระบบด้วย @ku.th !", {

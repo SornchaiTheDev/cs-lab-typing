@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ModalWithButton from "~/components/Common/ModalWithButton";
-import { AddSectionSchema, TAddSection } from "~/forms/SectionSchema";
+import { AddSectionSchema, type TAddSection } from "~/forms/SectionSchema";
 import Forms from "~/components/Forms";
 import { trpc } from "~/helpers";
 import Toast from "~/components/Common/Toast";
@@ -30,7 +30,7 @@ function Sections() {
         toast.custom((t) => (
           <Toast {...t} msg="Added Section successfully" type="success" />
         ));
-        router.push({
+        await router.push({
           pathname: router.pathname + "/[sectionId]",
           query: { ...router.query, sectionId: section.id },
         });
@@ -55,7 +55,7 @@ function Sections() {
     limit: 10,
   });
   return (
-    <CourseLayout title={course.data?.name!} isLoading={course.isLoading}>
+    <CourseLayout title={course.data?.name as string} isLoading={course.isLoading}>
       <div className="my-4">
         <ModalWithButton
           title="Add Section"

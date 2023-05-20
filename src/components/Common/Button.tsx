@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import clsx from "clsx";
 
 interface Props {
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   children?: React.ReactNode;
   icon?: string;
   className?: string;
@@ -22,7 +22,7 @@ function Button({
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        "flex items-center min-h-[2.5rem] gap-4 p-2 rounded-lg  justify-center disabled:bg-sand-6 disabled:cursor-not-allowed disabled:text-sand-8",
+        "flex min-h-[2.5rem] items-center justify-center gap-4 rounded-lg  p-2 disabled:cursor-not-allowed disabled:bg-sand-6 disabled:text-sand-8",
         className
       )}
     >

@@ -18,10 +18,10 @@ function Settings({ course }: Props) {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const editTask = (formData: TAddTask) => {
+  const editTask = async (formData: TAddTask) => {
     const { isPrivate, language, name, owner, type, note, tags } = formData;
     // TODO add Task
-    router.push({
+    await router.push({
       pathname: router.pathname + "/[taskID]",
       query: { taskID: "1" },
     });
@@ -90,7 +90,7 @@ function Settings({ course }: Props) {
           <Button
             onClick={() => setIsDeleteOpen(true)}
             icon="solar:trash-bin-minimalistic-line-duotone"
-            className="shadow bg-red-9 text-sand-1 active:bg-red-11"
+            className="bg-red-9 text-sand-1 shadow active:bg-red-11"
           >
             Delete Task
           </Button>

@@ -2,7 +2,7 @@ import LabLayout from "~/Layout/LabLayout";
 import ModalWithButton from "~/components/Common/ModalWithButton";
 import Table from "~/components/Common/Table";
 import { Icon } from "@iconify/react";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 
 interface AssignmentRow {
@@ -35,12 +35,14 @@ function Lab() {
         cell: (props) => (
           <div className="flex justify-center w-full gap-3">
             <button
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
               onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
               className="text-xl rounded-xl text-sand-12"
             >
               <Icon icon="solar:pen-2-line-duotone" />
             </button>
             <button
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
               onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
               className="text-xl rounded-xl text-sand-12"
             >

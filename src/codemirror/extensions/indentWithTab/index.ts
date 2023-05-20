@@ -17,16 +17,16 @@ function changeBySelectedLine(
 ) {
   let atLine = -1;
   return state.changeByRange((range) => {
-    let changes: ChangeSet[] = [];
+    const changes: ChangeSet[] = [];
     for (let pos = range.from; pos <= range.to; ) {
-      let line = state.doc.lineAt(pos);
+      const line = state.doc.lineAt(pos);
       if (line.number > atLine && (range.empty || range.to > line.from)) {
         f(line, changes, range);
         atLine = line.number;
       }
       pos = line.to + 1;
     }
-    let changeSet = state.changes(changes);
+    const changeSet = state.changes(changes);
     return {
       changes,
       range: EditorSelection.range(
@@ -53,11 +53,11 @@ export const indentWithTabLess: StateCommand = ({ state, dispatch }) => {
   dispatch(
     state.update(
       changeBySelectedLine(state, (line: Line, changes: ChangeSpec[]) => {
-        let space = /^\s*/.exec(line.text)![0];
+        const space = /^\s*/.exec(line.text)![0];
         if (!space) return;
-        let col = countColumn(space, state.tabSize),
-          keep = 0;
-        let insert = indentString(
+        const col = countColumn(space, state.tabSize);
+        let keep = 0;
+        const insert = indentString(
           state,
           Math.max(0, col - state.facet(EditorState.tabSize))
         );

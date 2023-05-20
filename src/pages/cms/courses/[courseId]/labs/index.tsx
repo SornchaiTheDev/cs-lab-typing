@@ -1,9 +1,9 @@
 import CourseLayout from "~/Layout/CourseLayout";
 import ModalWithButton from "~/components/Common/ModalWithButton";
 import Table from "~/components/Common/Table";
-import { AddLabSchema, TAddLabSchema } from "~/forms/LabSchema";
+import { AddLabSchema, type TAddLabSchema } from "~/forms/LabSchema";
 import { Icon } from "@iconify/react";
-import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -19,9 +19,9 @@ function Labs() {
   const columnHelper = createColumnHelper<LabsRow>();
   const router = useRouter();
 
-  const addLab = (formData: TAddLabSchema) => {
+  const addLab = async (formData: TAddLabSchema) => {
     const { isDisabled, name, tags } = formData;
-    router.push({
+    await router.push({
       pathname: router.pathname + "/[labId]",
       query: { ...router.query, labId: 1 },
     });
@@ -56,6 +56,7 @@ function Labs() {
         header: "Delete",
         cell: (props) => (
           <button
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
             className="text-xl rounded-xl text-sand-12"
           >

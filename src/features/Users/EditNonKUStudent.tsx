@@ -1,6 +1,6 @@
 import Toast from "~/components/Common/Toast";
 import DeleteAffect from "~/components/DeleteAffect";
-import { NonKUStudent, TNonKUStudent } from "~/forms/NonKUSchema";
+import { NonKUStudent, type TNonKUStudent } from "~/forms/NonKUSchema";
 import { trpc } from "~/helpers";
 import { useDeleteAffectStore } from "~/store";
 import React, { useState } from "react";
@@ -15,7 +15,7 @@ const EditNonKUStudent = () => {
     state.setSelectedObj,
   ]);
   const user = trpc.users.getUserByEmail.useQuery({
-    email: selectedObj?.selected!,
+    email: selectedObj?.selected as string,
   });
   const ctx = trpc.useContext();
   const updateUser = trpc.users.updateNonKUStudent.useMutation({

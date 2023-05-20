@@ -1,18 +1,18 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
 
 export const addNonKUStudent = async (prisma: PrismaClient, user: string) => {
   const [username, password, email, full_name] = user.split(",");
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password as string, 10);
   try {
     await prisma.users.create({
       data: {
-        student_id: username,
+        student_id: username as string,
         password: passwordHash,
-        email,
-        full_name,
+        email: email as string,
+        full_name: full_name as string,
         roles: {
           connect: {
             name: "STUDENT",

@@ -52,11 +52,12 @@ function Admin({ title, pattern }: Props) {
       }),
       columnHelper.accessor("created_at", {
         header: "Created At",
-        cell: (props: any) => dayjs(props.getValue()).toNow(true),
+        cell: (props: { getValue: () => Date }) =>
+          dayjs(props.getValue()).toNow(true),
       }),
       columnHelper.accessor("last_logined", {
         header: "Last Logined",
-        cell: (props: any) => {
+        cell: (props: { getValue: () => Date | null }) => {
           if (props.getValue()) {
             return dayjs(props.getValue()).toNow(true);
           }
@@ -75,7 +76,7 @@ function Admin({ title, pattern }: Props) {
                 type: getUserType(props.row.original),
               })
             }
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -115,7 +116,7 @@ function Admin({ title, pattern }: Props) {
       toast.custom((t) => (
         <Toast {...t} msg="Added users successfully" type="success" />
       ));
-      users.refetch();
+      await users.refetch();
       setValue("");
       setIsShow(false);
       setIsError(false);
@@ -164,7 +165,7 @@ function Admin({ title, pattern }: Props) {
         isOpen={isShow}
         onClose={onClose}
         title="Add/Edit User"
-        className="md:w-[40rem] flex flex-col gap-4"
+        className="flex flex-col gap-4 md:w-[40rem]"
       >
         <div>
           <Codemirror
@@ -174,21 +175,21 @@ function Admin({ title, pattern }: Props) {
             onChange={(value) => setValue(value)}
             height="20rem"
             className={clsx(
-              "overflow-hidden text-sm border rounded-md",
+              "overflow-hidden rounded-md border text-sm",
               isError ? "border-red-500" : "border-sand-6"
             )}
           />
         </div>
         <div className="flex items-center justify-center gap-2 ">
-          <div className="w-full h-[0.5px] bg-sand-9"></div>
+          <div className="h-[0.5px] w-full bg-sand-9"></div>
           <h4>or</h4>
-          <div className="w-full h-[0.5px] bg-sand-9"></div>
+          <div className="h-[0.5px] w-full bg-sand-9"></div>
         </div>
 
         <div
           {...getRootProps()}
           className={clsx(
-            "flex justify-center p-4 border-2 border-dashed rounded-lg cursor-pointer",
+            "flex cursor-pointer justify-center rounded-lg border-2 border-dashed p-4",
 
             isDragReject
               ? "border-red-9 text-red-9"
@@ -209,7 +210,7 @@ function Admin({ title, pattern }: Props) {
           onClick={handleAddUser}
           disabled={isSubmitting}
           icon="solar:user-plus-rounded-line-duotone"
-          className="shadow text-sand-1 active:bg-sand-11 bg-sand-12 disabled:bg-sand-8 disabled:text-sand-1"
+          className="bg-sand-12 text-sand-1 shadow active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
         >
           Add User
         </Button>
@@ -225,7 +226,7 @@ function Admin({ title, pattern }: Props) {
             <Button
               onClick={() => setIsShow(true)}
               icon="solar:user-plus-rounded-line-duotone"
-              className="m-2 shadow text-sand-1 active:bg-sand-11 bg-sand-12"
+              className="m-2 bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add User
             </Button>

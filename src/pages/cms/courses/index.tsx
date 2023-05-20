@@ -32,7 +32,7 @@ function Courses() {
         toast.custom((t) => (
           <Toast {...t} msg="Added course successfully" type="success" />
         ));
-        router.push({
+        await router.push({
           pathname: router.pathname + "/[courseId]",
           query: { ...router.query, courseId: course.id },
         });
@@ -95,7 +95,7 @@ function Courses() {
                   className="col-span-12 md:col-span-4"
                 />
               ))
-          : allCourses.data!.map(({ id, name, note, number }, i) => (
+          : allCourses.data?.map(({ id, name, note, number }) => (
               <Link
                 key={id}
                 href={{

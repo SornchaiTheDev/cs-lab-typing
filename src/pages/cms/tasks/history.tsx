@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import TaskLayout from "~/Layout/TaskLayout";
 import Table from "~/components/Common/Table";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
 import RangePicker from "~/components/Forms/DatePicker/RangePicker";
 import TimePickerRange from "~/components/TimePickerRange";

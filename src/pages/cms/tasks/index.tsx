@@ -2,9 +2,9 @@ import TaskLayout from "~/Layout/TaskLayout";
 import ModalWithButton from "~/components/Common/ModalWithButton";
 import Forms from "~/components/Forms";
 import Table from "~/components/Common/Table";
-import { AddTaskSchema, TAddTask } from "~/forms/TaskSchema";
+import { AddTaskSchema, type TAddTask } from "~/forms/TaskSchema";
 import { generatePerson } from "~/helpers";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { useRouter } from "next/router";
 
@@ -20,10 +20,10 @@ interface TaskRow {
 
 function Tasks() {
   const router = useRouter();
-  const addTask = (formData: TAddTask) => {
+  const addTask = async (formData: TAddTask) => {
     const { isPrivate, language, name, owner, type, note, tags } = formData;
     // TODO add Task
-    router.push({
+    await router.push({
       pathname: router.pathname + "/[taskID]",
       query: { taskID: "1" },
     });
@@ -74,13 +74,13 @@ function Tasks() {
           },
         ]}
         columns={columns}
-        className="flex-1 mt-6"
+        className="mt-6 flex-1"
       >
         <div className="p-4">
           <ModalWithButton
             title="Add Task"
             icon="solar:programming-line-duotone"
-            className="w-[90%] md:w-[36rem] max-w-[40rem]"
+            className="w-[90%] max-w-[40rem] md:w-[36rem]"
           >
             <Forms
               confirmBtn={{

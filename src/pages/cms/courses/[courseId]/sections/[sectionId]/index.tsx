@@ -33,16 +33,18 @@ function Sections() {
         id: "actions",
         header: "Delete",
         size: 50,
-        cell: (props) => (
+        cell: (_props) => (
           <button
             onClick={
-              () => {}
+              () => {
+                console.log("click");
+              }
               // setSelectedObj({
               //   selected: props.row.getValue("email"),
               //   type: getUserType(props.row.original),
               // })
             }
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -67,24 +69,29 @@ function Sections() {
   const TAs = section.data?.tas ?? [];
 
   return (
-    <SectionLayout title={section.data?.name!} isLoading={section.isLoading}>
+    <SectionLayout
+      title={section.data?.name as string}
+      isLoading={section.isLoading}
+    >
       <div className="p-4">
         <h4 className="text-2xl">Section Information</h4>
 
-        <h5 className="mt-4 mb-2 font-bold">Semester</h5>
+        <h5 className="mb-2 mt-4 font-bold">Semester</h5>
         {section.isLoading ? (
           <Skeleton width={"10rem"} height={"2rem"} />
         ) : (
-          <h4 className="text-lg">{`${section.data?.semester.year}/${section.data?.semester.term}`}</h4>
+          <h4 className="text-lg">{`${section.data?.semester.year as string}/${
+            section.data?.semester.term as string
+          }`}</h4>
         )}
-        <h5 className="mt-4 mb-2 font-bold">Note</h5>
+        <h5 className="mb-2 mt-4 font-bold">Note</h5>
         {section.isLoading ? (
           <Skeleton width={"10rem"} height={"2rem"} />
         ) : (
           <h4 className="text-lg">{section.data?.note}</h4>
         )}
 
-        <h5 className="mt-4 mb-2 font-bold">Instructor(s)</h5>
+        <h5 className="mb-2 mt-4 font-bold">Instructor(s)</h5>
         <div className="flex gap-2">
           {section.isLoading ? (
             <>
@@ -97,7 +104,7 @@ function Sections() {
             ))
           )}
         </div>
-        <h5 className="mt-4 mb-2 font-bold">TA(s)</h5>
+        <h5 className="mb-2 mt-4 font-bold">TA(s)</h5>
         <div className="flex gap-2">
           {section.isLoading ? (
             <>
@@ -113,7 +120,7 @@ function Sections() {
             ))
           )}
         </div>
-        <h5 className="mt-4 mb-2 font-bold">Students ({studentLength})</h5>
+        <h5 className="mb-2 mt-4 font-bold">Students ({studentLength})</h5>
       </div>
       <Table
         data={students ?? []}
