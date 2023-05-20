@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+}
+
+model users {
+  id           Int           @id @default(autoincrement())
+  student_id   String        @unique
+  full_name    String        @unique
+  email        String        @unique
+  password     String?
+  last_logined DateTime?
+  roles        roles[]       @relation("user_role")
+  auth_loggers auth_logger[]
+  authors      courses[]     @relation("course_author")
+  students     sections[]    @relation("section_student")
+  instructors  sections[]    @relation("section_instructor")
+  TAs          sections[]    @relation("section_ta")
+  created_at   DateTime      @default(now())
+  updated_at   DateTime?     @updatedAt
+  deleted_at   DateTime?
+
+  sectionsId Int?
+}
+
+model roles {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  users      users[]   @relation("user_role")
+}
+
+model auth_logger {
+  id         Int       @id @default(autoincrement())
+  type       String
+  date       DateTime  @default(now())
+  user       users     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  ip_address String
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
+model semesters {
+  id         Int        @id @default(autoincrement())
+  year       String
+  term       String
+  startDate  DateTime
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
+  sections   sections[]
+
+  @@unique([year, term])
+}
+
+model courses {
+  id         Int        @id @default(autoincrement())
+  number     String     @unique
+  name       String     @unique
+  note       String?
+  comments   String?
+  created_at DateTime   @default(now())
+  updated_at DateTime?  @updatedAt
+  deleted_at DateTime?
+  authors    users[]    @relation("course_author")
+  sections   sections[]
+}
+
+model sections {
+  id          Int       @id @default(autoincrement())
+  semester    semesters @relation(fields: [semester_id], references: [id])
+  semester_id Int
+  course      courses   @relation(fields: [course_id], references: [id])
+  course_id   Int
+  name        String    @unique
+  instructors users[]   @relation("section_instructor")
+  students    users[]   @relation("section_student")
+  tas         users[]   @relation("section_ta")
+  note        String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+  deleted_at  DateTime?
+}
