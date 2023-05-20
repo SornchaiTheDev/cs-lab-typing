@@ -62,9 +62,9 @@ function Logger() {
       },
       {
         header: "Email / Username",
-        accessorKey: "user",
+        accessorKey: "user.email",
         cell: (props) => (
-          <span>{props.getValue() as { email: string }["email"]}</span>
+          <span>{props.getValue() as string}</span>
         ),
       },
       {

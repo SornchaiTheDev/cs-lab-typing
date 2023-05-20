@@ -1,6 +1,6 @@
 import Modal from "../Common/Modal";
 import Button from "../Common/Button";
-import { ChangeEvent, useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import { useDeleteAffectStore } from "~/store";
 import { trpc } from "~/helpers";
 import toast from "react-hot-toast";
@@ -8,13 +8,21 @@ import Toast from "../Common/Toast";
 import { useRouter } from "next/router";
 
 interface Props {
-  type: "course" | "section" | "task" | "lab" | "user" | "semester";
+  type:
+    | "course"
+    | "section"
+    | "task"
+    | "lab-outside"
+    | "lab-inside"
+    | "user"
+    | "semester";
 }
 
 interface fetchDataProps {
   summary: { name: string; amount: number }[];
   object: { name: string; data: (string | undefined)[] }[];
 }
+
 function DeleteAffect({ type }: Props) {
   const [selectedObject, setSelectedObject] = useDeleteAffectStore((state) => [
     state.selectedObj,
@@ -30,28 +38,35 @@ function DeleteAffect({ type }: Props) {
   useEffect(() => {
     const fetchUserData = async () => {
       const data = await ctx.users.getUserObjectRelation.fetch({
-        email: selectedObject!.selected,
+        email: selectedObject?.selected as string,
       });
       setFetchData(data);
     };
 
     const fetchSemesterData = async () => {
       const data = await ctx.semesters.getSemesterObjectRelation.fetch({
-        yearAndTerm: selectedObject!.selected,
+        yearAndTerm: selectedObject?.selected as string,
       });
       setFetchData(data);
     };
 
     const fetchCourseData = async () => {
       const data = await ctx.courses.getCourseObjectRelation.fetch({
-        name: selectedObject!.selected,
+        name: selectedObject?.selected as string,
       });
       setFetchData(data);
     };
 
     const fetchSectionData = async () => {
       const data = await ctx.sections.getSectionObjectRelation.fetch({
-        name: selectedObject!.selected,
+        name: selectedObject?.selected as string,
+      });
+      setFetchData(data);
+    };
+
+    const fetchLabData = async () => {
+      const data = await ctx.labs.getLabObjectRelation.fetch({
+        name: selectedObject?.selected as string,
       });
       setFetchData(data);
     };
@@ -70,6 +85,10 @@ function DeleteAffect({ type }: Props) {
 
     if (type === "section") {
       fetchSectionData();
+    }
+
+    if (type.startsWith("lab")) {
+      fetchLabData();
     }
   }, [type, selectedObject, ctx]);
 
@@ -157,6 +176,33 @@ function DeleteAffect({ type }: Props) {
     }
   };
 
+  const deleteLab = trpc.labs.deleteLab.useMutation();
+  const handleDeleteLab = async () => {
+    if (!selectedObject) return;
+    try {
+      await deleteLab.mutateAsync({
+        name: selectedObject.selected,
+      });
+      toast.custom((t) => (
+        <Toast {...t} msg="Delete Lab successfully" type="success" />
+      ));
+      if (type === "lab-outside") {
+        await ctx.labs.invalidate();
+      } else {
+        await router.replace({
+          pathname: "/cms/courses/[courseId]/labs",
+          query: { courseId: router.query.courseId },
+        });
+      }
+
+      setSelectedObject(null);
+    } catch (err) {
+      toast.custom((t) => (
+        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
+      ));
+    }
+  };
+
   const handleDelete = () => {
     if (type === "user") {
       handleDeleteUser();
@@ -169,6 +215,9 @@ function DeleteAffect({ type }: Props) {
     }
     if (type === "section") {
       handleDeleteSection();
+    }
+    if (type.startsWith("lab")) {
+      handleDeleteLab();
     }
   };
 
@@ -186,12 +235,12 @@ function DeleteAffect({ type }: Props) {
       }
       isOpen={!!selectedObject}
       onClose={() => setSelectedObject(null)}
-      className="md:w-[40rem] max-h-[90%] flex flex-col"
+      className="flex max-h-[90%] flex-col md:w-[40rem]"
     >
       <div className="flex-1 overflow-auto">
         <div className="overflow-auto whitespace-nowrap">
           <h3 className="mt-2 text-lg font-bold">Summary</h3>
-          <ul className="list-disc list-inside">
+          <ul className="list-inside list-disc">
             {fetchData?.summary.map(({ name, amount }) => (
               <li key={name}>
                 {name} : {amount}
@@ -200,13 +249,13 @@ function DeleteAffect({ type }: Props) {
           </ul>
           <h3 className="mt-2 text-lg font-bold">Objects</h3>
 
-          <ul className="list-disc list-inside">
+          <ul className="list-inside list-disc">
             {fetchData?.object.map(({ name, data }) => {
               if (data) {
                 return (
                   <li key={name}>
                     {name}
-                    <ul className="pl-8 list-disc list-inside">
+                    <ul className="list-inside list-disc pl-8">
                       {data.map((item) => (
                         <li key={item}>{item}</li>
                       ))}
@@ -219,20 +268,20 @@ function DeleteAffect({ type }: Props) {
           </ul>
         </div>
       </div>
-      <div className="flex flex-col gap-2 mt-4">
+      <div className="mt-4 flex flex-col gap-2">
         <input
           value={confirmMsg}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setConfirmMsg(e.target.value)
           }
-          className="w-full p-2 border rounded-md outline-none border-sand-6 bg-sand-1"
+          className="w-full rounded-md border border-sand-6 bg-sand-1 p-2 outline-none"
           placeholder={`Type "${selectedObject?.selected}" to confirm`}
         />
 
         <Button
           disabled={confirmMsg !== selectedObject?.selected}
           onClick={handleDelete}
-          className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
+          className="w-full bg-red-9 font-bold text-sand-2 hover:bg-red-10"
         >
           Delete
         </Button>

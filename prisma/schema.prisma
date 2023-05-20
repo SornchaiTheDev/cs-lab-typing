@@ -72,6 +72,7 @@ model courses {
   name       String     @unique
   note       String?
   comments   String?
+  labs       labs[]
   created_at DateTime   @default(now())
   updated_at DateTime?  @updatedAt
   deleted_at DateTime?
@@ -93,4 +94,25 @@ model sections {
   created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
   deleted_at  DateTime?
+}
+
+model labs {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  tags       tags[]    @relation("lab_tag")
+  course     courses   @relation(fields: [courseId], references: [id])
+  courseId   Int
+  isDisabled Boolean
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
+model tags {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  labs       labs[]    @relation("lab_tag")
 }

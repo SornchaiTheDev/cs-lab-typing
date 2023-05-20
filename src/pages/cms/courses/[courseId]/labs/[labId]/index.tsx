@@ -4,6 +4,8 @@ import Table from "~/components/Common/Table";
 import { Icon } from "@iconify/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
+import { useRouter } from "next/router";
+import { trpc } from "~/helpers";
 
 interface AssignmentRow {
   id: string;
@@ -14,6 +16,13 @@ interface AssignmentRow {
 
 function Lab() {
   const columnHelper = createColumnHelper<AssignmentRow>();
+
+  const router = useRouter();
+
+  const { courseId } = router.query;
+  const course = trpc.courses.getCourseById.useQuery({
+    id: parseInt(courseId as string),
+  });
 
   const columns = useMemo<ColumnDef<AssignmentRow, string[]>[]>(
     () => [
@@ -33,18 +42,18 @@ function Lab() {
         id: "actions",
         header: "Edit/Delete",
         cell: (props) => (
-          <div className="flex justify-center w-full gap-3">
+          <div className="flex w-full justify-center gap-3">
             <button
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
-              className="text-xl rounded-xl text-sand-12"
+              className="rounded-xl text-xl text-sand-12"
             >
               <Icon icon="solar:pen-2-line-duotone" />
             </button>
             <button
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               onClick={() => {} /*setSelected(props.row.getValue("username"))*/}
-              className="text-xl rounded-xl text-sand-12"
+              className="rounded-xl text-xl text-sand-12"
             >
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
             </button>
@@ -57,7 +66,7 @@ function Lab() {
   );
 
   return (
-    <LabLayout title="Test">
+    <LabLayout title={course.data?.name as string} isLoading={course.isLoading}>
       <Table
         data={[
           {

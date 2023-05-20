@@ -1,9 +1,7 @@
-import { toast } from "react-hot-toast";
 import type { Toast } from "react-hot-toast";
-import clsx from "clsx";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 type ToastProps = {
   type: ToastType;
@@ -52,6 +50,10 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
       msg =
         "This semester is already added. If you want to edit, Use Edit button";
       break;
+    case "DUPLICATED_LAB":
+      msg =
+        "This lab is already added. If you want to edit, go to the lab setting page";
+      break;
     case "DUPLICATED_COURSE":
       msg =
         "This course is already added. If you want to edit, Use Edit button";
@@ -76,10 +78,10 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
       animate={{ translateY: [20, 0], opacity: [0, 1] }}
       onHoverStart={() => setIsPause(true)}
       onHoverEnd={() => setIsPause(false)}
-      className="w-full max-w-sm p-4 bg-white overflow-hidden items-center rounded-lg shadow-sm min-h-[4rem] flex gap-4 border border-sand-6 relative"
+      className="relative flex min-h-[4rem] w-full max-w-sm items-center gap-4 overflow-hidden rounded-lg border border-sand-6 bg-white p-4 shadow-sm"
     >
-      <div className="flex flex-col h-full">
-        <Icon icon={icon} className="w-8 h-8" style={{ color }} />
+      <div className="flex h-full flex-col">
+        <Icon icon={icon} className="h-8 w-8" style={{ color }} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -91,7 +93,7 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
         ref={progressRef}
         animate={{ width: isPause ? progressRef.current?.offsetWidth : "0%" }}
         transition={{ duration: duration / 1000 }}
-        className="absolute bottom-0 left-0 w-full h-1"
+        className="absolute bottom-0 left-0 h-1 w-full"
         style={{ background: color }}
       ></motion.div>
     </motion.div>

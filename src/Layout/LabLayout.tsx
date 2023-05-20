@@ -5,10 +5,11 @@ import HorizontalMenu from "~/components/Common/HorizontalMenu";
 interface Props {
   title: string;
   children?: ReactNode;
+  isLoading?: boolean;
 }
-function LabLayout({ title, children }: Props) {
+function LabLayout({ title, children, isLoading }: Props) {
   return (
-    <Layout {...{ title }}>
+    <Layout {...{ title, isLoading }}>
       <HorizontalMenu
         menus={[
           {

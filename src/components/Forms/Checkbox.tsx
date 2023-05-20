@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import type { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import Skeleton from "../Common/Skeleton";
 

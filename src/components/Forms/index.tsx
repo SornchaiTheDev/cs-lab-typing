@@ -35,7 +35,7 @@ type EachField<T> = {
   canAddItemNotInList?: boolean;
   conditional?: (data: string) => boolean;
   children?: EachField<T>;
-  value?: string | string[] | Date;
+  value?: string | string[] | Date | boolean;
   disabled?: boolean;
 };
 
@@ -196,7 +196,7 @@ function Forms<T>({
   return (
     <form
       onSubmit={
-        void handleSubmit(
+        handleSubmit(
           onSubmit as SubmitHandler<{
             [x: string]: string | number | string[] | Date;
           }>
