@@ -5,10 +5,9 @@ import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import { trpc } from "~/helpers";
 import Forms from "~/components/Forms";
-import Toast from "~/components/Common/Toast";
-import toast from "react-hot-toast";
 import { useDeleteAffectStore } from "~/store";
 import { TRPCClientError } from "@trpc/client";
+import { callToast } from "~/services/callToast";
 
 function Settings() {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -36,14 +35,12 @@ function Settings() {
         ...formData,
         id: parseInt(courseId as string),
       });
-      toast.custom((t) => (
-        <Toast {...t} msg="Edit course successfully" type="success" />
-      ));
+      callToast({ msg: "Edit course successfully", type: "success" });
       await refetch();
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
   };

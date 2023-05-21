@@ -1,14 +1,13 @@
-import Toast from "~/components/Common/Toast";
 import DeleteAffect from "~/components/DeleteAffect";
 import { trpc } from "~/helpers";
 import { useDeleteAffectStore } from "~/store";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
 import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Button from "~/components/Common/Button";
 import { type TTeacherSchema, TeacherSchema } from "~/forms/TeacherSchema";
 import Skeleton from "~/components/Common/Skeleton";
+import { callToast } from "~/services/callToast";
 
 const EditTeacher = () => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -21,14 +20,12 @@ const EditTeacher = () => {
   const ctx = trpc.useContext();
   const updateUser = trpc.users.updateTeacher.useMutation({
     onSuccess: () => {
-      toast.custom((t) => (
-        <Toast {...t} msg="Edit users successfully" type="success" />
-      ));
+      callToast({ msg: "Edit users successfully", type: "success" });
       setSelectedObj(null);
       ctx.users.invalidate();
     },
     onError: (err) => {
-      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+      callToast({ msg: err.message, type: "error" });
     },
   });
 
@@ -90,7 +87,7 @@ const EditTeacher = () => {
                     title: "Roles",
                     type: "multiple-search",
                     options: ["STUDENT", "TEACHER", "ADMIN"],
-                    value: user.data?.roles.map((role) => role.name),
+                    value: user.data?.roles,
                   },
                 ]}
                 confirmBtn={{

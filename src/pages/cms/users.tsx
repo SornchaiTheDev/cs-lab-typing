@@ -12,8 +12,6 @@ import Codemirror from "~/codemirror";
 import { addUserTheme } from "~/codemirror/theme";
 import { trpc } from "~/helpers";
 import type { users as Users } from "@prisma/client";
-import { toast } from "react-hot-toast";
-import Toast from "~/components/Common/Toast";
 import clsx from "clsx";
 import EditKUStudent from "~/features/Users/EditKUStudent";
 import EditNonKUStudent from "~/features/Users/EditNonKUStudent";
@@ -22,18 +20,11 @@ import EditTeacher from "~/features/Users/EditTeacher";
 import { useDeleteAffectStore } from "~/store/deleteAffect";
 import { useDropzone } from "react-dropzone";
 import { TRPCClientError } from "@trpc/client";
+import { callToast } from "~/services/callToast";
 
 dayjs.extend(relativeTime);
 
-type Role = "admin" | "teacher" | "student";
-
-interface Props {
-  title: string;
-  role: Role;
-  pattern: string;
-}
-
-function Admin({ title, pattern }: Props) {
+function Admin() {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -113,9 +104,8 @@ function Admin({ title, pattern }: Props) {
     setIsSubmitting(true);
     try {
       await mutateAsync({ users: value.split("\n") });
-      toast.custom((t) => (
-        <Toast {...t} msg="Added users successfully" type="success" />
-      ));
+      callToast({ msg: "Added users successfully", type: "success" });
+
       await users.refetch();
       setValue("");
       setIsShow(false);
@@ -124,7 +114,7 @@ function Admin({ title, pattern }: Props) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
         setIsError(true);
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
     setIsSubmitting(false);

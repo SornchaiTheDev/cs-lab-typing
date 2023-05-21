@@ -1,6 +1,6 @@
 import { adminProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
-export const getSemestersRouter = router({
+export const getSemesterRouter = router({
   getSemesters: adminProcedure
     .input(
       z.object({

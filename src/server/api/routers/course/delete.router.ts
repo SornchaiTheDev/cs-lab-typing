@@ -11,12 +11,9 @@ export const deleteCourseRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { name } = input;
 
-      await ctx.prisma.courses.update({
+      await ctx.prisma.courses.delete({
         where: {
           name,
-        },
-        data: {
-          deleted_at: new Date(),
         },
       });
       return "Success";

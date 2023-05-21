@@ -1,21 +1,13 @@
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import SectionLayout from "~/Layout/SectionLayout";
-import { AddSectionSchema, TAddSection } from "~/forms/SectionSchema";
+import { AddSectionSchema, type TAddSection } from "~/forms/SectionSchema";
 import Forms from "~/components/Forms";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import toast from "react-hot-toast";
-import Toast from "~/components/Common/Toast";
 import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
-
-interface Props {
-  course: {
-    id: string;
-    name: string;
-  };
-}
+import { callToast } from "~/services/callToast";
 
 function Settings() {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -45,14 +37,13 @@ function Settings() {
         ...formData,
         id: parseInt(sectionId as string),
       });
-      toast.custom((t) => (
-        <Toast {...t} msg="Edit section successfully" type="success" />
-      ));
+      callToast({ msg: "Edit section successfully", type: "success" });
+
       await ctx.sections.invalidate();
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
   };

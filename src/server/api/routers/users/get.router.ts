@@ -32,9 +32,6 @@ export const getUserRouter = router({
         where: {
           email,
         },
-        include: {
-          roles: true,
-        },
       });
       return user;
     }),
@@ -46,9 +43,6 @@ export const getUserRouter = router({
         where: {
           email,
         },
-        include: {
-          roles: true,
-        },
       });
 
       const relation = {
@@ -56,7 +50,7 @@ export const getUserRouter = router({
         object: [
           {
             name: "Role",
-            data: user?.roles.map((role) => role.name) ?? [],
+            data: user?.roles ?? [],
           },
         ],
       };
@@ -76,11 +70,7 @@ export const getUserRouter = router({
       const users = await ctx.prisma.users.findMany({
         where: {
           roles: {
-            some: {
-              name: {
-                in: roles,
-              },
-            },
+            hasSome: roles,
           },
           deleted_at: null,
         },
@@ -104,11 +94,7 @@ export const getUserRouter = router({
             contains: name,
           },
           roles: {
-            some: {
-              name: {
-                in: roles,
-              },
-            },
+            hasSome: roles,
           },
           deleted_at: null,
         },

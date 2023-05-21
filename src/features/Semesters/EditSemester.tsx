@@ -1,14 +1,13 @@
-import Toast from "~/components/Common/Toast";
 import DeleteAffect from "~/components/DeleteAffect";
 import { trpc } from "~/helpers";
 import { useDeleteAffectStore } from "~/store";
 import React, { useState } from "react";
-import toast from "react-hot-toast";
 import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Button from "~/components/Common/Button";
-import { SemesterSchema, TSemesterSchema } from "~/forms/SemesterSchema";
+import { SemesterSchema, type TSemesterSchema } from "~/forms/SemesterSchema";
 import Skeleton from "~/components/Common/Skeleton";
+import { callToast } from "~/services/callToast";
 
 const EditSemester = () => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -21,14 +20,19 @@ const EditSemester = () => {
   const ctx = trpc.useContext();
   const updateSemester = trpc.semesters.updateSemester.useMutation({
     onSuccess: () => {
-      toast.custom((t) => (
-        <Toast {...t} msg="Edit users successfully" type="success" />
-      ));
+      callToast({
+        msg: "Edit users successfully",
+        type: "success",
+      });
+
       setSelectedObj(null);
       ctx.semesters.invalidate();
     },
     onError: (err) => {
-      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+      callToast({
+        msg: err.message,
+        type: "error",
+      });
     },
   });
 

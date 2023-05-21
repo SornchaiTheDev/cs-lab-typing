@@ -7,10 +7,9 @@ import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/router";
 import { trpc } from "~/helpers";
-import toast from "react-hot-toast";
-import Toast from "~/components/Common/Toast";
 import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
+import { callToast } from "~/services/callToast";
 
 function Courses() {
   const router = useRouter();
@@ -29,9 +28,11 @@ function Courses() {
     try {
       const course = await addCourseMutation.mutateAsync(formData);
       if (course) {
-        toast.custom((t) => (
-          <Toast {...t} msg="Added course successfully" type="success" />
-        ));
+        callToast({
+          msg: "Added course successfully",
+          type: "success",
+        });
+
         await router.push({
           pathname: router.pathname + "/[courseId]",
           query: { ...router.query, courseId: course.id },
@@ -40,7 +41,7 @@ function Courses() {
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
   };
@@ -119,7 +120,9 @@ function Courses() {
                         <span className="font-bold">148</span> students
                       </h6>
                     </div>
-                    <h6 className="text-sand-10">{note}</h6>
+                    <h6 className="text-sand-10">
+                      {note?.length === 0 ? "-" : note}
+                    </h6>
                   </div>
                 </div>
               </Link>

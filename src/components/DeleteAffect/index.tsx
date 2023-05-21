@@ -3,15 +3,15 @@ import Button from "../Common/Button";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { useDeleteAffectStore } from "~/store";
 import { trpc } from "~/helpers";
-import toast from "react-hot-toast";
-import Toast from "../Common/Toast";
 import { useRouter } from "next/router";
+import { callToast } from "~/services/callToast";
 
 interface Props {
   type:
     | "course"
     | "section"
-    | "task"
+    | "task-outside"
+    | "task-inside"
     | "lab-outside"
     | "lab-inside"
     | "user"
@@ -71,6 +71,13 @@ function DeleteAffect({ type }: Props) {
       setFetchData(data);
     };
 
+    const fetchTaskData = async () => {
+      const data = await ctx.tasks.getTaskObjectRelation.fetch({
+        name: selectedObject?.selected as string,
+      });
+      setFetchData(data);
+    };
+
     if (type === "user") {
       fetchUserData();
     }
@@ -90,6 +97,10 @@ function DeleteAffect({ type }: Props) {
     if (type.startsWith("lab")) {
       fetchLabData();
     }
+
+    if (type.startsWith("task")) {
+      fetchTaskData();
+    }
   }, [type, selectedObject, ctx]);
 
   const deleteUser = trpc.users.deleteUser.useMutation();
@@ -100,16 +111,18 @@ function DeleteAffect({ type }: Props) {
         email: selectedObject.selected as string,
       });
 
-      toast.custom((t) => (
-        <Toast {...t} msg="Delete User successfully" type="success" />
-      ));
+      callToast({
+        msg: "Delete User successfully",
+        type: "success",
+      });
       setSelectedObject(null);
       setConfirmMsg("");
       ctx.users.invalidate();
     } catch (err) {
-      toast.custom((t) => (
-        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
-      ));
+      callToast({
+        msg: "SOMETHING_WENT_WRONG",
+        type: "success",
+      });
     }
   };
 
@@ -121,16 +134,12 @@ function DeleteAffect({ type }: Props) {
         yearAndTerm: selectedObject.selected as string,
       });
 
-      toast.custom((t) => (
-        <Toast {...t} msg="Delete Semester successfully" type="success" />
-      ));
+      callToast({ msg: "Delete Semester successfully", type: "success" });
       setSelectedObject(null);
       setConfirmMsg("");
       ctx.semesters.invalidate();
     } catch (err) {
-      toast.custom((t) => (
-        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
-      ));
+      callToast({ msg: "SOMETHING_WENT_WRONG", type: "success" });
     }
   };
 
@@ -142,15 +151,11 @@ function DeleteAffect({ type }: Props) {
         name: selectedObject.selected,
       });
 
-      toast.custom((t) => (
-        <Toast {...t} msg="Delete Course successfully" type="success" />
-      ));
+      callToast({ msg: "Delete Course successfully", type: "success" });
       setSelectedObject(null);
       router.replace("/cms/courses");
     } catch (err) {
-      toast.custom((t) => (
-        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
-      ));
+      callToast({ msg: "SOMETHING_WENT_WRONG", type: "error" });
     }
   };
   const deleteSection = trpc.sections.deleteSection.useMutation();
@@ -161,18 +166,14 @@ function DeleteAffect({ type }: Props) {
         name: selectedObject.selected,
       });
 
-      toast.custom((t) => (
-        <Toast {...t} msg="Delete Section successfully" type="success" />
-      ));
+      callToast({ msg: "Delete Section successfully", type: "success" });
       setSelectedObject(null);
       router.replace({
         pathname: "/cms/courses/[courseId]/sections",
         query: { courseId: router.query.courseId },
       });
     } catch (err) {
-      toast.custom((t) => (
-        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
-      ));
+      callToast({ msg: "SOMETHING_WENT_WRONG", type: "error" });
     }
   };
 
@@ -183,9 +184,8 @@ function DeleteAffect({ type }: Props) {
       await deleteLab.mutateAsync({
         name: selectedObject.selected,
       });
-      toast.custom((t) => (
-        <Toast {...t} msg="Delete Lab successfully" type="success" />
-      ));
+
+      callToast({ msg: "Delete Lab successfully", type: "success" });
       if (type === "lab-outside") {
         await ctx.labs.invalidate();
       } else {
@@ -197,9 +197,30 @@ function DeleteAffect({ type }: Props) {
 
       setSelectedObject(null);
     } catch (err) {
-      toast.custom((t) => (
-        <Toast {...t} msg="SOMETHING_WENT_WRONG" type="success" />
-      ));
+      callToast({ msg: "SOMETHING_WENT_WRONG", type: "error" });
+    }
+  };
+
+  const deleteTask = trpc.tasks.deleteTask.useMutation();
+  const handleDeleteTask = async () => {
+    if (!selectedObject) return;
+    try {
+      await deleteTask.mutateAsync({
+        name: selectedObject.selected,
+      });
+
+      if (type === "task-outside") {
+        await ctx.tasks.invalidate();
+      } else {
+        await router.replace({
+          pathname: "/cms/tasks",
+        });
+      }
+
+      callToast({ msg: "Delete Task successfully", type: "success" });
+      setSelectedObject(null);
+    } catch (err) {
+      callToast({ msg: "SOMETHING_WENT_WRONG", type: "error" });
     }
   };
 
@@ -218,6 +239,9 @@ function DeleteAffect({ type }: Props) {
     }
     if (type.startsWith("lab")) {
       handleDeleteLab();
+    }
+    if (type.startsWith("task")) {
+      handleDeleteTask();
     }
   };
 

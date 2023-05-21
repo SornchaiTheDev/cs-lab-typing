@@ -3,7 +3,7 @@ import { z } from "zod";
 export const AddTaskSchema = z
   .object({
     name: z.string().nonempty({ message: "Name cannot be empty" }),
-    type: z.string().nonempty({ message: "Type cannot be empty" }).default(""),
+    type: z.literal("Lesson").or(z.literal("Problem")).or(z.literal("Typing")),
     language: z.string().default(""),
     owner: z
       .string()

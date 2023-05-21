@@ -13,6 +13,12 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
+enum roles {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
 model users {
   id           Int           @id @default(autoincrement())
   student_id   String        @unique
@@ -20,7 +26,7 @@ model users {
   email        String        @unique
   password     String?
   last_logined DateTime?
-  roles        roles[]       @relation("user_role")
+  roles        roles[]
   auth_loggers auth_logger[]
   authors      courses[]     @relation("course_author")
   students     sections[]    @relation("section_student")
@@ -29,17 +35,8 @@ model users {
   created_at   DateTime      @default(now())
   updated_at   DateTime?     @updatedAt
   deleted_at   DateTime?
-
-  sectionsId Int?
-}
-
-model roles {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
-  users      users[]   @relation("user_role")
+  sectionsId   Int?
+  tasks        tasks[]
 }
 
 model auth_logger {
@@ -115,4 +112,26 @@ model tags {
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
   labs       labs[]    @relation("lab_tag")
+  tasks      tasks[]   @relation("task_tag")
+}
+
+model tasks {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  type       task_type
+  language   String?
+  tags       tags[]    @relation("task_tag")
+  owner      users     @relation(fields: [usersId], references: [id])
+  usersId    Int
+  isPrivate  Boolean
+  note       String?
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
+enum task_type {
+  Lesson
+  Problem
+  Typing
 }

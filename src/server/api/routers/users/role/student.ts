@@ -11,9 +11,7 @@ export const addStudent = async (prisma: PrismaClient, user: string) => {
         email: email as string,
         full_name: full_name as string,
         roles: {
-          connect: {
-            name: "STUDENT",
-          },
+          set: ["STUDENT"],
         },
       },
     });

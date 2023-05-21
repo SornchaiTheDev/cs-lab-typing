@@ -33,8 +33,8 @@ function Layout({ children, title, isLoading }: Props) {
         .join("/")}`,
     }));
 
-  const role = data ? (JSON.parse(data.user?.roles as string) as string[]) : [];
-  const showRole = role.filter((role) => role != "STUDENT")[0];
+  const role = data ? (data.user?.roles.split(",") as string[]) : [];
+  const showRole = role[0];
 
   return (
     <div className="flex min-h-screen flex-col">

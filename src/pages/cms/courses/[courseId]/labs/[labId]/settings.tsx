@@ -1,22 +1,20 @@
 import LabLayout from "~/Layout/LabLayout";
-import React, { useState } from "react";
-import { AddLabSchema, TAddLabSchema } from "~/forms/LabSchema";
+import { AddLabSchema, type TAddLabSchema } from "~/forms/LabSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import Forms from "~/components/Forms";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import toast from "react-hot-toast";
-import Toast from "~/components/Common/Toast";
 import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
+import { callToast } from "~/services/callToast";
 
 function Settings() {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
   ]);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
   const router = useRouter();
 
   const { courseId, labId } = router.query;
@@ -37,15 +35,17 @@ function Settings() {
         id: parseInt(labId as string),
       });
       if (_lab) {
-        toast.custom((t) => (
-          <Toast {...t} msg="Updated lab successfully" type="success" />
-        ));
+        callToast({
+          msg: "Updated lab successfully",
+          type: "success",
+        });
+
         await lab.refetch();
       }
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
   };

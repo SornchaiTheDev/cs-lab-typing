@@ -57,9 +57,6 @@ export const authOptions: NextAuthOptions = {
             where: {
               student_id: credentials.username,
             },
-            include: {
-              roles: true,
-            },
           });
 
           if (user) {
@@ -128,11 +125,8 @@ export const authOptions: NextAuthOptions = {
           where: {
             email: user.email as string,
           },
-          include: {
-            roles: true,
-          },
         });
-        token.roles = JSON.stringify(fetchUser?.roles.map((role) => role.name));
+        token.roles = fetchUser?.roles.join(",") ?? "";
         token.full_name = fetchUser?.full_name as string;
         token.image = user.image ?? "/assets/profile-placeholder.png";
       }

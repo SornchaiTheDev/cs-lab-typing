@@ -1,11 +1,19 @@
 import TaskLayout from "~/Layout/TaskLayout";
-import ModalWithButton from "~/components/Common/ModalWithButton";
+import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Table from "~/components/Common/Table";
 import { AddTaskSchema, type TAddTask } from "~/forms/TaskSchema";
-import { generatePerson } from "~/helpers";
-import type { ColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
+import { trpc } from "~/helpers";
+import type { tags, users } from "@prisma/client";
+import { useDeleteAffectStore } from "~/store";
+import { Icon } from "@iconify/react";
+import DeleteAffect from "~/components/DeleteAffect";
+import Button from "~/components/Common/Button";
+import { TRPCClientError } from "@trpc/client";
+import { callToast } from "~/services/callToast";
+import Link from "next/link";
 import { useRouter } from "next/router";
 
 interface TaskRow {
@@ -20,20 +28,54 @@ interface TaskRow {
 
 function Tasks() {
   const router = useRouter();
+  const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
+    state.selectedObj,
+    state.setSelectedObj,
+  ]);
+
+  const [isShow, setIsShow] = useState(false);
+
+  const columnHelper = createColumnHelper<TaskRow>();
+
+  const allTasks = trpc.tasks.getTask.useQuery({ page: 1, limit: 50 });
+
+  const addTaskMutation = trpc.tasks.addTask.useMutation();
   const addTask = async (formData: TAddTask) => {
-    const { isPrivate, language, name, owner, type, note, tags } = formData;
-    // TODO add Task
-    await router.push({
-      pathname: router.pathname + "/[taskID]",
-      query: { taskID: "1" },
-    });
+    try {
+      await addTaskMutation.mutateAsync(formData);
+      await allTasks.refetch();
+      setIsShow(false);
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        const errMsg = err.message;
+        callToast({ msg: errMsg, type: "error" });
+      }
+    }
   };
 
-  const columns = useMemo<ColumnDef<TaskRow, string>[]>(
+  const ownerUser = trpc.users.getAllUsersInRole.useQuery({
+    roles: ["ADMIN", "TEACHER"],
+  });
+
+  const tags = trpc.tags.getTags.useQuery();
+
+  const columns = useMemo<ColumnDef<TaskRow, string | tags[] | users>[]>(
     () => [
       {
         header: "Name",
         accessorKey: "name",
+        cell: (props) => {
+          return (
+            <Link
+              href={{
+                pathname: router.pathname + "/[taskId]",
+                query: { ...router.query, taskId: props.row.original.id },
+              }}
+            >
+              {props.getValue() as string}
+            </Link>
+          );
+        },
       },
       {
         header: "Type",
@@ -42,10 +84,18 @@ function Tasks() {
       {
         header: "Tags",
         accessorKey: "tags",
+        cell: (props) => {
+          const tags = props.getValue() as tags[];
+          return tags.map(({ name }) => name);
+        },
       },
       {
         header: "Language",
         accessorKey: "language",
+        cell: (props) => {
+          const language = props.getValue() as string;
+          return language.length === 0 ? "-" : language;
+        },
       },
       {
         header: "Submission Count",
@@ -54,87 +104,115 @@ function Tasks() {
       {
         header: "Owner",
         accessorKey: "owner",
+        cell: (props) => {
+          const owner = props.getValue() as users;
+          return owner.full_name;
+        },
       },
-    ],
-    []
-  );
-
-  return (
-    <TaskLayout title="Tasks">
-      <Table
-        data={[
-          {
-            id: "1",
-            name: "สร้างรถยนต์ไร้คนขับ",
-            tags: ["C++", "CS113"],
-            type: "Problem",
-            language: "C++",
-            owner: "SornchaiTheDev",
-            submission_count: 10,
-          },
-        ]}
-        columns={columns}
-        className="mt-6 flex-1"
-      >
-        <div className="p-4">
-          <ModalWithButton
-            title="Add Task"
-            icon="solar:programming-line-duotone"
-            className="w-[90%] max-w-[40rem] md:w-[36rem]"
+      columnHelper.display({
+        id: "actions",
+        header: "Delete",
+        cell: (props) => (
+          <button
+            onClick={() => {
+              setSelectedObj({
+                selected: props.row.original.name,
+                type: "lab",
+              });
+            }}
+            className="rounded-xl text-xl text-sand-12"
           >
-            <Forms
-              confirmBtn={{
-                title: "Add Task",
-                icon: "solar:programming-line-duotone",
-              }}
-              schema={AddTaskSchema}
-              onSubmit={addTask}
-              fields={[
-                {
-                  label: "name",
-                  title: "Name",
-                  type: "text",
-                },
-                {
-                  label: "type",
-                  title: "Type",
-                  options: ["Lesson", "Problem", "Typing"],
-                  type: "select",
-                  conditional: (data) =>
-                    data !== undefined && data !== "Typing",
-                  children: {
-                    label: "language",
-                    title: "Language",
-                    type: "select",
-                    options: ["C++", "Python", "Java", "C#", "C"],
-                  },
-                },
-                {
-                  label: "tags",
-                  title: "Tags",
-                  type: "multiple-search",
-                  options: ["C++", "Python", "Java", "C#", "C"],
-                  optional: true,
-                  canAddItemNotInList: true,
-                },
-                {
-                  label: "owner",
-                  title: "Owner",
-                  type: "single-search",
-                  options: generatePerson(10),
-                },
-                {
-                  label: "isPrivate",
-                  title: "Private",
-                  type: "checkbox",
-                },
-                { label: "note", title: "Note", type: "text", optional: true },
-              ]}
-            />
-          </ModalWithButton>
-        </div>
-      </Table>
-    </TaskLayout>
+            <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
+          </button>
+        ),
+        size: 50,
+      }),
+    ],
+    [columnHelper, setSelectedObj]
+  );
+  return (
+    <>
+      {selectedObj && <DeleteAffect type="task-outside" />}
+      <Modal
+        isOpen={isShow}
+        onClose={() => setIsShow(false)}
+        title="Add Lab"
+        className="flex flex-col gap-4 md:w-[40rem]"
+      >
+        <Forms
+          confirmBtn={{
+            title: "Add Task",
+            icon: "solar:programming-line-duotone",
+          }}
+          schema={AddTaskSchema}
+          onSubmit={addTask}
+          fields={[
+            {
+              label: "name",
+              title: "Name",
+              type: "text",
+            },
+            {
+              label: "type",
+              title: "Type",
+              options: ["Lesson", "Problem", "Typing"],
+              type: "select",
+              conditional: (data) => data !== undefined && data !== "Typing",
+              children: {
+                label: "language",
+                title: "Language",
+                type: "select",
+                options: ["C++", "Python", "Java", "C#", "C"],
+              },
+            },
+            {
+              label: "tags",
+              title: "Tags",
+              type: "multiple-search",
+              options: tags.data?.map(({ name }) => name) ?? [],
+              optional: true,
+              canAddItemNotInList: true,
+              value: [],
+            },
+            {
+              label: "owner",
+              title: "Owner",
+              type: "single-search",
+              options: ownerUser.data?.map(({ full_name }) => full_name) ?? [],
+            },
+            {
+              label: "isPrivate",
+              title: "Private",
+              type: "checkbox",
+              value: false,
+            },
+            {
+              label: "note",
+              title: "Note",
+              type: "text",
+              optional: true,
+            },
+          ]}
+        />
+      </Modal>
+      <TaskLayout title="Tasks">
+        <Table
+          data={allTasks.data ?? []}
+          columns={columns}
+          className="mt-6 flex-1"
+        >
+          <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
+            <Button
+              onClick={() => setIsShow(true)}
+              icon="solar:programming-line-duotone"
+              className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
+            >
+              Add Task
+            </Button>
+          </div>
+        </Table>
+      </TaskLayout>
+    </>
   );
 }
 

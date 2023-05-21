@@ -3,7 +3,7 @@ import { adminProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-export const updateSemestersRouter = router({
+export const updateSemesterRouter = router({
   updateSemester: adminProcedure
     .input(SemesterSchema.and(z.object({ id: z.number() })))
     .mutation(async ({ ctx, input }) => {

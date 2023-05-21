@@ -1,5 +1,4 @@
 import CourseLayout from "~/Layout/CourseLayout";
-import ModalWithButton from "~/components/Common/ModalWithButton";
 import Table from "~/components/Common/Table";
 import { AddLabSchema, type TAddLabSchema } from "~/forms/LabSchema";
 import { Icon } from "@iconify/react";
@@ -9,14 +8,13 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Forms from "~/components/Forms";
 import { trpc } from "~/helpers";
-import toast from "react-hot-toast";
-import Toast from "~/components/Common/Toast";
 import { TRPCClientError } from "@trpc/client";
 import type { labs } from "@prisma/client";
 import { useDeleteAffectStore } from "~/store";
 import DeleteAffect from "~/components/DeleteAffect";
 import Modal from "~/components/Common/Modal";
 import Button from "~/components/Common/Button";
+import { callToast } from "~/services/callToast";
 interface LabsRow {
   id: string;
   name: string;
@@ -53,15 +51,17 @@ function Labs() {
       });
       if (lab) {
         await allLabs.refetch();
-        toast.custom((t) => (
-          <Toast {...t} msg="Added lab successfully" type="success" />
-        ));
+        callToast({
+          msg: "Added lab successfully",
+          type: "success",
+        });
+
         setIsShow(false);
       }
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
   };

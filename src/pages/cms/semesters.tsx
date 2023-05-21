@@ -8,12 +8,11 @@ import Forms from "~/components/Forms";
 import Modal from "~/components/Common/Modal";
 import Button from "~/components/Common/Button";
 import { trpc } from "~/helpers";
-import toast from "react-hot-toast";
-import Toast from "~/components/Common/Toast";
 import dayjs from "dayjs";
 import EditSemester from "~/features/Semesters/EditSemester";
 import { useDeleteAffectStore } from "~/store";
 import { TRPCClientError } from "@trpc/client";
+import { callToast } from "~/services/callToast";
 
 interface SemesterRow {
   id: string;
@@ -45,15 +44,19 @@ function Semesters() {
     const { startDate, term, year } = formData;
     try {
       await addSemesterMutation.mutateAsync({ startDate, term, year });
-      toast.custom((t) => (
-        <Toast {...t} msg="Added users successfully" type="success" />
-      ));
+      callToast({
+        msg: "Added users successfully",
+        type: "success",
+      });
       await semesters.refetch();
       setIsModalOpen(false);
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errorMsg = err.message;
-        toast.custom((t) => <Toast {...t} msg={errorMsg} type="error" />);
+        callToast({
+          msg: errorMsg,
+          type: "error",
+        });
       }
     }
   };

@@ -2,13 +2,12 @@ import Codemirror from "~/codemirror";
 import { addUserTheme } from "~/codemirror/theme";
 import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
-import Toast from "~/components/Common/Toast";
 import { trpc } from "~/helpers";
 import { TRPCClientError } from "@trpc/client";
 import clsx from "clsx";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import toast from "react-hot-toast";
+import { callToast } from "~/services/callToast";
 
 interface Props {
   sectionId: number;
@@ -30,20 +29,18 @@ function AddUser({ sectionId }: Props) {
         emails: value.split("\n"),
         sectionId,
       });
-      toast.custom((t) => (
-        <Toast
-          {...t}
-          msg="Added Users to this section successfully"
-          type="success"
-        />
-      ));
+      callToast({
+        msg: "Added Users to this section successfully",
+        type: "success",
+      });
+
       setIsShow(false);
       ctx.sections.invalidate();
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
         setIsError(true);
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
     setIsSubmitting(false);
@@ -75,7 +72,7 @@ function AddUser({ sectionId }: Props) {
       <Button
         onClick={() => setIsShow(true)}
         icon="solar:user-plus-rounded-line-duotone"
-        className="m-2 shadow text-sand-1 active:bg-sand-11 bg-sand-12"
+        className="m-2 bg-sand-12 text-sand-1 shadow active:bg-sand-11"
       >
         Add Student
       </Button>
@@ -84,7 +81,7 @@ function AddUser({ sectionId }: Props) {
         isOpen={isShow}
         onClose={() => setIsShow(false)}
         title="Add Student"
-        className="md:w-[40rem] flex flex-col gap-4"
+        className="flex flex-col gap-4 md:w-[40rem]"
       >
         <div>
           <Codemirror
@@ -94,21 +91,21 @@ function AddUser({ sectionId }: Props) {
             onChange={(value) => setValue(value)}
             height="20rem"
             className={clsx(
-              "overflow-hidden text-sm border rounded-md",
+              "overflow-hidden rounded-md border text-sm",
               isError ? "border-red-500" : "border-sand-6"
             )}
           />
         </div>
         <div className="flex items-center justify-center gap-2 ">
-          <div className="w-full h-[0.5px] bg-sand-9"></div>
+          <div className="h-[0.5px] w-full bg-sand-9"></div>
           <h4>or</h4>
-          <div className="w-full h-[0.5px] bg-sand-9"></div>
+          <div className="h-[0.5px] w-full bg-sand-9"></div>
         </div>
 
         <div
           {...getRootProps()}
           className={clsx(
-            "flex justify-center p-4 border-2 border-dashed rounded-lg cursor-pointer",
+            "flex cursor-pointer justify-center rounded-lg border-2 border-dashed p-4",
 
             isDragReject
               ? "border-red-9 text-red-9"
@@ -129,7 +126,7 @@ function AddUser({ sectionId }: Props) {
           onClick={handleAddStudent}
           disabled={isSubmitting}
           icon="solar:user-plus-rounded-line-duotone"
-          className="shadow text-sand-1 active:bg-sand-11 bg-sand-12 disabled:bg-sand-8 disabled:text-sand-1"
+          className="bg-sand-12 text-sand-1 shadow active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
         >
           Add User
         </Button>

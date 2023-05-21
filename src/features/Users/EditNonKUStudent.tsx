@@ -1,13 +1,12 @@
-import Toast from "~/components/Common/Toast";
 import DeleteAffect from "~/components/DeleteAffect";
 import { NonKUStudent, type TNonKUStudent } from "~/forms/NonKUSchema";
 import { trpc } from "~/helpers";
 import { useDeleteAffectStore } from "~/store";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
 import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Button from "~/components/Common/Button";
+import { callToast } from "~/services/callToast";
 
 const EditNonKUStudent = () => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -20,15 +19,12 @@ const EditNonKUStudent = () => {
   const ctx = trpc.useContext();
   const updateUser = trpc.users.updateNonKUStudent.useMutation({
     onSuccess: () => {
-      toast.custom((t) => (
-        <Toast {...t} msg="Edit users successfully" type="success" />
-      ));
-
+      callToast({ msg: "Edit users successfully", type: "success" });
       setSelectedObj(null);
       ctx.users.invalidate();
     },
     onError: (err) => {
-      toast.custom((t) => <Toast {...t} msg={err.message} type="error" />);
+      callToast({ msg: err.message, type: "error" });
     },
   });
 
@@ -56,18 +52,18 @@ const EditNonKUStudent = () => {
           className="md:w-[40rem]"
         >
           {user.isLoading ? (
-            <div className="flex flex-col gap-2 my-4">
-              <div className="w-20 h-6 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-full h-8 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-24 h-6 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-full h-8 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-24 h-6 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-full h-8 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="h-6 rounded-lg w-28 bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-full h-8 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="h-6 rounded-lg w-36 bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-full h-8 rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
-              <div className="w-full mt-4 rounded-lg h-14 bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse"></div>
+            <div className="my-4 flex flex-col gap-2">
+              <div className="h-6 w-20 animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-8 w-full animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-6 w-24 animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-8 w-full animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-6 w-24 animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-8 w-full animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-6 w-28 animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-8 w-full animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-6 w-36 animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-8 w-full animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="mt-4 h-14 w-full animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4"></div>
             </div>
           ) : (
             <>
@@ -104,7 +100,7 @@ const EditNonKUStudent = () => {
                     title: "Roles",
                     type: "multiple-search",
                     options: ["STUDENT", "TEACHER", "ADMIN"],
-                    value: user.data?.roles.map((role) => role.name),
+                    value: user.data?.roles,
                   },
                 ]}
                 confirmBtn={{
@@ -116,7 +112,7 @@ const EditNonKUStudent = () => {
               <hr className="my-2" />
               <Button
                 onClick={() => setIsDelete(true)}
-                className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
+                className="w-full bg-red-9 font-bold text-sand-2 hover:bg-red-10"
                 icon="solar:trash-bin-trash-line-duotone"
               >
                 Delete User

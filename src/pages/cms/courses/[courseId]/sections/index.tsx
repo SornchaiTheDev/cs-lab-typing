@@ -6,10 +6,9 @@ import ModalWithButton from "~/components/Common/ModalWithButton";
 import { AddSectionSchema, type TAddSection } from "~/forms/SectionSchema";
 import Forms from "~/components/Forms";
 import { trpc } from "~/helpers";
-import Toast from "~/components/Common/Toast";
-import toast from "react-hot-toast";
 import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
+import { callToast } from "~/services/callToast";
 
 function Sections() {
   const router = useRouter();
@@ -27,9 +26,8 @@ function Sections() {
         courseId: parseInt(courseId as string),
       });
       if (section) {
-        toast.custom((t) => (
-          <Toast {...t} msg="Added Section successfully" type="success" />
-        ));
+        callToast({ msg: "Added Section successfully", type: "success" });
+
         await router.push({
           pathname: router.pathname + "/[sectionId]",
           query: { ...router.query, sectionId: section.id },
@@ -38,7 +36,7 @@ function Sections() {
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
-        toast.custom((t) => <Toast {...t} msg={errMsg} type="error" />);
+        callToast({ msg: errMsg, type: "error" });
       }
     }
   };
@@ -55,12 +53,15 @@ function Sections() {
     limit: 10,
   });
   return (
-    <CourseLayout title={course.data?.name as string} isLoading={course.isLoading}>
+    <CourseLayout
+      title={course.data?.name as string}
+      isLoading={course.isLoading}
+    >
       <div className="my-4">
         <ModalWithButton
           title="Add Section"
           icon="solar:add-circle-line-duotone"
-          className="md:w-[40rem] max-h-[90%] /overflow-y-auto"
+          className="/overflow-y-auto max-h-[90%] md:w-[40rem]"
         >
           <Forms
             confirmBtn={{
@@ -96,7 +97,7 @@ function Sections() {
           />
         </ModalWithButton>
       </div>
-      <div className="grid grid-cols-12 gap-6 mt-4">
+      <div className="mt-4 grid grid-cols-12 gap-6">
         {sections.isLoading
           ? new Array(6)
               .fill(0)
@@ -107,7 +108,7 @@ function Sections() {
                   className="col-span-12 md:col-span-4"
                 />
               ))
-          : sections.data!.map(({ name, note, id, students }) => (
+          : sections.data?.map(({ name, note, id, students }) => (
               <Link
                 key={id}
                 href={{
@@ -115,14 +116,14 @@ function Sections() {
                   query: { ...router.query, sectionId: id },
                 }}
                 shallow={true}
-                className="relative col-span-12 md:col-span-4 overflow-hidden border flex flex-col justify-end border-sand-6 h-[12rem] rounded-lg bg-sand-4 hover:bg-sand-5 shadow-lg"
+                className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
               >
                 <div className="flex flex-col gap-2 p-2">
-                  <div className="px-2 text-white rounded-lg bg-lime-9 w-fit">
+                  <div className="w-fit rounded-lg bg-lime-9 px-2 text-white">
                     {name}
                   </div>
                   <div>
-                    <div className="absolute flex items-center px-1 rounded-lg w-fit bg-sand-7 right-2 top-2">
+                    <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
                       <Icon
                         icon="solar:user-hand-up-line-duotone"
                         className="text-lg"
@@ -133,7 +134,9 @@ function Sections() {
                       </h6>
                     </div>
                     <div className="min-h-[1.5rem]">
-                      <h6 className="text-sand-10">{note}</h6>
+                      <h6 className="text-sand-10">
+                        {note?.length === 0 ? "-" : note}
+                      </h6>
                     </div>
                   </div>
                 </div>

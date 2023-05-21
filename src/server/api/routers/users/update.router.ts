@@ -1,6 +1,7 @@
 import { router, adminProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import type { roles } from "@prisma/client";
 
 export const updateUserRouter = router({
   updateKUStudent: adminProcedure
@@ -23,7 +24,7 @@ export const updateUserRouter = router({
           full_name,
           student_id,
           roles: {
-            set: roles.map((role) => ({ name: role.toUpperCase() })),
+            set: roles.map((role) => role.toUpperCase()) as roles[],
           },
         },
       });
@@ -52,7 +53,7 @@ export const updateUserRouter = router({
             password: await bcrypt.hash(password, 10),
           }),
           roles: {
-            set: roles.map((role: string) => ({ name: role.toUpperCase() })),
+            set: roles.map((role) => role.toUpperCase()) as roles[],
           },
         },
       });
@@ -75,7 +76,7 @@ export const updateUserRouter = router({
         data: {
           full_name,
           roles: {
-            set: roles.map((role) => ({ name: role.toUpperCase() })),
+            set: roles.map((role) => role.toUpperCase()) as roles[],
           },
         },
       });

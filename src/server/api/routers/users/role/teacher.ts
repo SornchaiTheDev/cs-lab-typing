@@ -17,14 +17,7 @@ export const addTeacher = async (prisma: PrismaClient, user: string) => {
         email: email as string,
         full_name: full_name as string,
         roles: {
-          connect: [
-            {
-              name: "STUDENT",
-            },
-            {
-              name: "TEACHER",
-            },
-          ],
+          set: ["STUDENT", "TEACHER"],
         },
       },
     });
@@ -48,9 +41,6 @@ export const getStudentObjectRelation = async (
   const user = await prisma.users.findUnique({
     where: {
       email,
-    },
-    include: {
-      roles: true,
     },
   });
 

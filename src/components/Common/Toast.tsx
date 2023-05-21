@@ -1,17 +1,14 @@
-import type { Toast } from "react-hot-toast";
+import { toast, type Toast } from "react-hot-toast";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 
-type ToastProps = {
-  type: ToastType;
+interface ToastProps extends Toast {
   msg: string;
   description?: string;
-} & Toast;
+}
 
-type ToastType = "success" | "loading" | "error" | "info";
-
-const iconType = (type: ToastType) => {
+const iconType = (type: Toast["type"]) => {
   let icon = "",
     color = "";
   if (type === "success") {
@@ -26,14 +23,14 @@ const iconType = (type: ToastType) => {
     icon = "line-md:loading-twotone-loop";
     color = "#1b1b18";
   }
-  if (type === "info") {
+  if (type === "blank") {
     icon = "solar:info-circle-line-duotone";
     color = "#0091ff";
   }
   return { icon, color };
 };
 
-function Toast({ msg, type, description, duration = 0 }: ToastProps) {
+function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
   const { icon, color } = iconType(type);
   const progressRef = useRef<HTMLDivElement>(null);
   const [isPause, setIsPause] = useState(false);
@@ -53,6 +50,10 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
     case "DUPLICATED_LAB":
       msg =
         "This lab is already added. If you want to edit, go to the lab setting page";
+      break;
+    case "DUPLICATED_TASK":
+      msg =
+        "This task is already added. If you want to edit, go to the task setting page";
       break;
     case "DUPLICATED_COURSE":
       msg =
@@ -80,6 +81,12 @@ function Toast({ msg, type, description, duration = 0 }: ToastProps) {
       onHoverEnd={() => setIsPause(false)}
       className="relative flex min-h-[4rem] w-full max-w-sm items-center gap-4 overflow-hidden rounded-lg border border-sand-6 bg-white p-4 shadow-sm"
     >
+      <button
+        className="absolute right-2 top-2"
+        onClick={() => toast.dismiss(id)}
+      >
+        <Icon icon="material-symbols:close-rounded" className="h-5 w-5" />
+      </button>
       <div className="flex h-full flex-col">
         <Icon icon={icon} className="h-8 w-8" style={{ color }} />
       </div>

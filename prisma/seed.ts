@@ -3,23 +3,18 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const role = await prisma.roles.createMany({
-    data: [{ name: "ADMIN" }, { name: "TEACHER" }, { name: "STUDENT" }],
-  });
-
   const adminUser = await prisma.users.create({
     data: {
       student_id: "sornchai.som@ku.th",
       full_name: "Sornchai Somsakul",
       email: "sornchai.som@ku.th",
       roles: {
-        connect: [{ name: "ADMIN" }, { name: "STUDENT" }],
+        set: ["ADMIN"],
       },
     },
   });
 
   console.log("Finished creating roles and admin user");
-  console.log(role);
   console.log(adminUser);
 }
 

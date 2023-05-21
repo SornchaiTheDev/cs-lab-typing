@@ -11,12 +11,9 @@ export const deleteSectionsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { name } = input;
 
-      await ctx.prisma.sections.update({
+      await ctx.prisma.sections.delete({
         where: {
           name,
-        },
-        data: {
-          deleted_at: new Date(),
         },
       });
       return "Success";

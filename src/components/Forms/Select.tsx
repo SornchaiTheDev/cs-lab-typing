@@ -57,6 +57,8 @@ function Select({
     }
   };
 
+  const isEmpty = options.length === 0;
+
   useEffect(() => {
     const optionsList = optionRef.current;
     const selectedOption = optionsList?.querySelector(
@@ -117,21 +119,27 @@ function Select({
                 ref={optionRef}
                 className="absolute top-12 z-20 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
               >
-                {options.map((data, i) => (
-                  <li
-                    onClick={() => {
-                      onChange(data);
-                      setSelectedIndex(i);
-                    }}
-                    key={data}
-                    className={clsx(
-                      "cursor-pointer rounded-lg p-2 text-sand-11 hover:bg-sand-2",
-                      selectedIndex === i && "selected bg-sand-4 text-sand-12"
-                    )}
-                  >
-                    {data}
-                  </li>
-                ))}
+                {!isEmpty ? (
+                  options.map((data, i) => (
+                    <li
+                      onClick={() => {
+                        onChange(data);
+                        setSelectedIndex(i);
+                      }}
+                      key={data}
+                      className={clsx(
+                        "cursor-pointer rounded-lg p-2 text-sand-11 hover:bg-sand-2",
+                        selectedIndex === i && "selected bg-sand-4 text-sand-12"
+                      )}
+                    >
+                      {data}
+                    </li>
+                  ))
+                ) : (
+                  <span className="cursor-not-allowed py-1 text-sand-6">
+                    No Data
+                  </span>
+                )}
               </ul>
             )}
           </div>
