@@ -18,10 +18,7 @@ export const updateTaskRouter = router({
           data: {
             name,
             tags: {
-              connectOrCreate: tags?.map((tag) => ({
-                where: { name: tag },
-                create: { name: tag },
-              })),
+              set: tags?.map((tag) => ({ name: tag })),
             },
             isPrivate,
             language,

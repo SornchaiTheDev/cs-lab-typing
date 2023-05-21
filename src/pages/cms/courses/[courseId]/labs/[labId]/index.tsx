@@ -19,9 +19,10 @@ function Lab() {
 
   const router = useRouter();
 
-  const { courseId } = router.query;
-  const course = trpc.courses.getCourseById.useQuery({
-    id: parseInt(courseId as string),
+  const { labId } = router.query;
+
+  const lab = trpc.labs.getLabById.useQuery({
+    id: parseInt(labId as string),
   });
 
   const columns = useMemo<ColumnDef<AssignmentRow, string[]>[]>(
@@ -66,7 +67,7 @@ function Lab() {
   );
 
   return (
-    <LabLayout title={course.data?.name as string} isLoading={course.isLoading}>
+    <LabLayout title={lab.data?.name as string} isLoading={lab.isLoading}>
       <Table
         data={[
           {

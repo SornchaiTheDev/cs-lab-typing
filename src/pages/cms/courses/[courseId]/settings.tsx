@@ -35,6 +35,7 @@ function Settings() {
         ...formData,
         id: parseInt(courseId as string),
       });
+
       callToast({ msg: "Edit course successfully", type: "success" });
       await refetch();
     } catch (err) {

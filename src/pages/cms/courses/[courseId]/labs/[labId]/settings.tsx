@@ -18,30 +18,28 @@ function Settings() {
   const router = useRouter();
 
   const { courseId, labId } = router.query;
-  const course = trpc.courses.getCourseById.useQuery({
-    id: parseInt(courseId as string),
-  });
 
   const lab = trpc.labs.getLabById.useQuery({
     id: parseInt(labId as string),
   });
 
+  const tags = trpc.tags.getTags.useQuery();
+
   const editLabMutation = trpc.labs.updateLab.useMutation();
   const editLab = async (formData: TAddLabSchema) => {
     try {
-      const _lab = await editLabMutation.mutateAsync({
+      await editLabMutation.mutateAsync({
         ...formData,
         courseId: parseInt(courseId as string),
         id: parseInt(labId as string),
       });
-      if (_lab) {
-        callToast({
-          msg: "Updated lab successfully",
-          type: "success",
-        });
 
-        await lab.refetch();
-      }
+      await lab.refetch();
+      await tags.refetch();
+      callToast({
+        msg: "Updated lab successfully",
+        type: "success",
+      });
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
@@ -50,15 +48,10 @@ function Settings() {
     }
   };
 
-  const tags = trpc.tags.getTags.useQuery();
-
   return (
     <>
       {selectedObj && <DeleteAffect type="lab-inside" />}
-      <LabLayout
-        title={course.data?.name as string}
-        isLoading={course.isLoading}
-      >
+      <LabLayout title={lab.data?.name as string} isLoading={lab.isLoading}>
         <div className="w-1/2 p-4">
           <div className="w-full">
             <h4 className="text-xl">General</h4>

@@ -27,10 +27,13 @@ function Settings({ course }: Props) {
   const editTaskMutation = trpc.tasks.updateTask.useMutation();
   const editTask = async (formData: TAddTask) => {
     try {
-      editTaskMutation.mutateAsync({
+      await editTaskMutation.mutateAsync({
         ...formData,
         id: taskId,
       });
+      await task.refetch();
+      await tags.refetch()
+      callToast({ msg: "Updated task successfully", type: "success" });
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
@@ -42,6 +45,8 @@ function Settings({ course }: Props) {
   const authorUser = trpc.users.getAllUsersInRole.useQuery({
     roles: ["ADMIN", "TEACHER"],
   });
+
+  const tags = trpc.tags.getTags.useQuery();
 
   return (
     <>
@@ -89,7 +94,7 @@ function Settings({ course }: Props) {
                   label: "tags",
                   title: "Tags",
                   type: "multiple-search",
-                  options: ["C++", "Python", "Java", "C#", "C"],
+                  options: tags.data?.map(({name}) => name) ?? [],
                   optional: true,
                   canAddItemNotInList: true,
                   value: task.data?.tags.map(({ name }) => name) ?? [],

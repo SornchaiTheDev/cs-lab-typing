@@ -9,19 +9,16 @@ export const updateLabRouter = router({
     .input(AddLabSchema.and(z.object({ courseId: z.number(), id: z.number() })))
     .mutation(async ({ ctx, input }) => {
       const { isDisabled, name, tags, courseId, id } = input;
-      let lab;
+
       try {
-        lab = await ctx.prisma.labs.update({
+        await ctx.prisma.labs.update({
           where: {
             id,
           },
           data: {
             name,
             tags: {
-              connectOrCreate: tags.map((tag) => ({
-                where: { name: tag },
-                create: { name: tag },
-              })),
+              set: tags.map((tag) => ({ name: tag })),
             },
             isDisabled,
             course: {
@@ -42,7 +39,5 @@ export const updateLabRouter = router({
           }
         }
       }
-
-      return lab;
     }),
 });
