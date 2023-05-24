@@ -100,13 +100,13 @@ function Layout({ children, title, isLoading }: Props) {
                     <h5 className="text-sand-10">{data?.user?.email}</h5>
                   </div>
                   <hr />
-                  <button
+                  {/* <button
                     onClick={() => setIsDarkMode(!isDarkMode)}
                     className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                   >
                     Theme
                     <Icon icon="solar:sun-2-line-duotone" className="text-xl" />
-                  </button>
+                  </button> */}
                   <div>
                     <button
                       onClick={() => signOut()}

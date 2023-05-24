@@ -9,10 +9,7 @@ import Skeleton from "~/components/Common/Skeleton";
 function MyCourse() {
   const router = useRouter();
 
-  const allCourses = trpc.courses.getCoursePagination.useQuery({
-    page: 1,
-    limit: 10,
-  });
+  const allCourses = trpc.courses.getUserCourses.useQuery();
 
   return (
     <FrontLayout title="My Courses">

@@ -14,8 +14,9 @@ function Sections() {
   const router = useRouter();
 
   const { courseId } = router.query;
+  const courseIdAsNumber = parseInt(courseId as string);
   const course = trpc.courses.getCourseById.useQuery({
-    id: parseInt(courseId as string),
+    id: courseIdAsNumber,
   });
 
   const addSectionMutation = trpc.sections.createSection.useMutation();
@@ -51,6 +52,7 @@ function Sections() {
   const sections = trpc.sections.getSectionPagination.useQuery({
     page: 1,
     limit: 10,
+    courseId: courseIdAsNumber,
   });
   return (
     <CourseLayout

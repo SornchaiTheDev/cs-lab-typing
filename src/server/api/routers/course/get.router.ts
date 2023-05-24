@@ -1,5 +1,6 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { adminProcedure, router, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const getCourseRouter = router({
   getCoursePagination: adminProcedure
@@ -129,4 +130,28 @@ export const getCourseRouter = router({
 
       return relation;
     }),
+  getUserCourses: publicProcedure.query(async ({ ctx, input }) => {
+    const { session } = ctx;
+    const email = session?.user?.email;
+    if (email) {
+      const courses = await ctx.prisma.courses.findMany({
+        where: {
+          sections: {
+            some: {
+              students: {
+                some: {
+                  email,
+                },
+              },
+            },
+          },
+        },
+      });
+      return courses;
+    }
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You don't have permission!",
+    });
+  }),
 });

@@ -29,14 +29,16 @@ export const getSectionsRouter = router({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
+        courseId: z.number(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit } = input;
+      const { page, limit, courseId } = input;
 
       const semesters = await ctx.prisma.sections.findMany({
         where: {
           deleted_at: null,
+          course_id: courseId,
         },
         skip: (page - 1) * limit,
         take: limit,
