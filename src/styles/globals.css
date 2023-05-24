@@ -39,3 +39,26 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #1b1b18; /* Use the recommended darker shade of sand from Radix UI */
 }
+
+.caret {
+  animation-name: flash;
+  animation-iteration-count: infinite;
+  animation-duration: 1s;
+  transition: 0.12s;
+}
+
+.caret {
+  position: absolute;
+  display: inline;
+}
+
+@keyframes flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

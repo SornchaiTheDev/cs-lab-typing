@@ -4,37 +4,49 @@ import * as Popover from "@radix-ui/react-popover";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import router from "next/router";
+import { useRouter } from "next/router";
 import { replaceSlugwithQueryPath } from "~/helpers";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
 import { NextSeo } from "next-seo";
 
+interface BreadCrumb {
+  label: string;
+  path: string;
+}
 interface Props {
   children?: React.ReactNode;
   title: string;
   isLoading?: boolean;
   customBackPath?: string;
+  breadcrumbs?: BreadCrumb[];
 }
-function FrontLayout({ children, title, isLoading, customBackPath }: Props) {
+function FrontLayout({
+  children,
+  title,
+  isLoading,
+  customBackPath,
+  breadcrumbs = [],
+}: Props) {
+  const router = useRouter();
   const { data } = useSession();
   const profileImage = data?.user?.image;
   const [isDarkMode, setIsDarkMode] = useState(false);
-  
 
   const isBasePath = router.pathname === "/cms" || router.pathname === "/";
 
-  const breadcrumbs = router.pathname
-    .split("/")
-    .slice(1)
-    .map((segment, index, segments) => ({
-      label: replaceSlugwithQueryPath(segment, router.query),
-      path: `/${segments
-        .map((seg) => replaceSlugwithQueryPath(seg, router.query))
-        .slice(0, index + 1)
-        .join("/")}`,
-    }));
+  // const breadcrumbs = router.pathname
+  //   .split("/")
+  //   .slice(1)
+  //   .map((segment, index, segments) => ({
+  //     label: replaceSlugwithQueryPath(segment, router.query),
+  //     path: `/${segments
+  //       .map((seg) => replaceSlugwithQueryPath(seg, router.query))
+  //       .slice(0, index + 1)
+  //       .join("/")}`,
+  //   }));
+
 
   const role = data ? (data.user?.roles.split(",") as string[]) : [];
   const showRole = role[0];
@@ -59,7 +71,7 @@ function FrontLayout({ children, title, isLoading, customBackPath }: Props) {
               )}
               <div className="flex gap-2">
                 {!isBasePath &&
-                  breadcrumbs.slice(0, -1).map(({ label, path }) => (
+                  breadcrumbs.map(({ label, path }) => (
                     <Link
                       key={path}
                       href={path}
@@ -115,7 +127,7 @@ function FrontLayout({ children, title, isLoading, customBackPath }: Props) {
                       <h5 className="text-sand-10">{data?.user?.email}</h5>
                     </div>
                     <hr />
-                    <button
+                    {/* <button
                       onClick={() => setIsDarkMode(!isDarkMode)}
                       className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                     >
@@ -124,7 +136,7 @@ function FrontLayout({ children, title, isLoading, customBackPath }: Props) {
                         icon="solar:sun-2-line-duotone"
                         className="text-xl"
                       />
-                    </button>
+                    </button> */}
                     <div>
                       <button
                         onClick={() => signOut()}

@@ -1,14 +1,15 @@
 import type { Url } from "next/dist/shared/lib/router/router";
 import Link from "next/link";
-import React from "react";
+import { ReactNode } from "react";
 
 interface Props {
   badges?: string[];
   title: string;
   href: Url;
+  children?: ReactNode;
 }
 
-function Card({ title, badges, href }: Props) {
+function Card({ title, badges, href, children }: Props) {
   return (
     <Link
       href={href}
@@ -27,6 +28,7 @@ function Card({ title, badges, href }: Props) {
         </div>
         <div>
           <h4 className="text-xl font-medium text-sand-12">{title}</h4>
+          {children}
         </div>
       </div>
     </Link>
