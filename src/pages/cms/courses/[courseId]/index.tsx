@@ -30,10 +30,13 @@ function InCourse() {
         {course.isLoading ? (
           <Skeleton width={"10rem"} height={"2rem"} />
         ) : (
-          <div className="flex w-fit items-center px-1">
+          <div className="flex w-fit items-center px-1 gap-1">
             <Icon icon="solar:user-hand-up-line-duotone" className="text-lg" />
             <h6 className="text-sand-12">
-              <span className="font-bold">148</span> students
+              <span className="font-bold">
+                {course.data?.sections[0]?._count.students ?? 0}
+              </span>{" "}
+              students
             </h6>
           </div>
         )}

@@ -17,6 +17,7 @@ import { getDuration } from "./utils/getDuration";
 import { calculateTypingSpeed } from "./utils/calculateWPM";
 import { calculateErrorPercentage } from "./utils/calculateErrorPercentage";
 import { Icon } from "@iconify/react";
+import Stats from "./Stats";
 
 ChartJS.register(
   CategoryScale,
@@ -41,7 +42,7 @@ function EndedGame() {
     state.stats,
     state.setStatus,
   ]);
-  const { correctChar, errorChar, startTime, endTime } = stats;
+
   const options = {
     responsive: true,
     plugins: {},
@@ -89,16 +90,6 @@ function EndedGame() {
     ],
     [columnHelper]
   );
-  const { minutes, seconds } = getDuration(startTime as Date, endTime as Date);
-  const { rawWpm, adjWpm } = calculateTypingSpeed(
-    correctChar,
-    errorChar,
-    minutes
-  );
-
-  const Accuracy = calculateAccuracy(correctChar, errorChar);
-
-  const errorPercentage = calculateErrorPercentage(correctChar, errorChar);
 
   return (
     <div className="container mx-auto flex max-w-4xl flex-1 flex-col gap-4">
@@ -110,31 +101,7 @@ function EndedGame() {
           <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
           <h6>Restart the test</h6>
         </button>
-        <div className="flex justify-center gap-4 text-sand-12">
-          <div>
-            <h6 className="text-sm">Raw Speed</h6>
-            <h2 className="text-4xl font-bold">{rawWpm}</h2>
-          </div>
-          <div>
-            <h6 className="text-sm">Adjusted Speed</h6>
-            <h2 className="text-4xl font-bold">{adjWpm}</h2>
-          </div>
-          <div>
-            <h6 className="text-sm">Accuracy</h6>
-            <h2 className="text-4xl font-bold">{Accuracy}%</h2>
-          </div>
-          <div>
-            <h6 className="text-sm">Error %</h6>
-            <h2 className="text-4xl font-bold">{errorPercentage}%</h2>
-          </div>
-          <div>
-            <h6 className="text-sm">Duration</h6>
-            <h2 className="text-4xl font-bold">
-              {seconds.toFixed(2)}
-              <span>s</span>
-            </h2>
-          </div>
-        </div>
+        <Stats />
         <div className="w-full flex-1">
           <Line options={options} data={data} />
         </div>

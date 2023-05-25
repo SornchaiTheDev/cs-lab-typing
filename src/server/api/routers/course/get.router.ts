@@ -13,17 +13,29 @@ export const getCourseRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
 
-      const semesters = await ctx.prisma.courses.findMany({
+      const courses = await ctx.prisma.courses.findMany({
         where: {
           deleted_at: null,
         },
         skip: (page - 1) * limit,
         take: limit,
+        include: {
+          sections: {
+            select: {
+              _count: {
+                select: {
+                  students: true,
+                },
+              },
+            },
+          },
+        },
       });
-      if (!semesters) {
+      if (!courses) {
         return [];
       }
-      return semesters;
+
+      return courses;
     }),
   getCourseById: adminProcedure
     .input(z.object({ id: z.number() }))
@@ -36,6 +48,15 @@ export const getCourseRouter = router({
         },
         include: {
           authors: true,
+          sections: {
+            select: {
+              _count: {
+                select: {
+                  students: true,
+                },
+              },
+            },
+          },
         },
       });
       if (!course) {

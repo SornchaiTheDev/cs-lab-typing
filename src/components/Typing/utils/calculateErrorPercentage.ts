@@ -1,9 +1,8 @@
 export function calculateErrorPercentage(
-  correctChars: number,
+  totalChars: number,
   wrongChars: number
 ) {
   // Calculate the total number of typed characters
-  const totalChars = correctChars + wrongChars;
 
   // Calculate the error percentage
   const errorPercentage = (wrongChars / totalChars) * 100;

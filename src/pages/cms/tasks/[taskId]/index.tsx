@@ -1,6 +1,6 @@
 import InsideTaskLayout from "~/Layout/InsideTaskLayout";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import Button from "~/components/Common/Button";
@@ -23,6 +23,7 @@ function TypingTask() {
     try {
       await saveTask.mutateAsync({ id: taskId, body: text });
       callToast({ msg: "Save task successfully", type: "success" });
+      task.refetch();
     } catch (err) {
       if (err instanceof TRPCClientError) {
         callToast({ msg: err.message, type: "error" });
@@ -31,11 +32,24 @@ function TypingTask() {
   };
 
   const handleTryOut = async () => {
-    await router.push({
-      pathname: router.pathname + "/tryout",
-      query: router.query,
-    });
+    if (text != task.data?.body) {
+      callToast({
+        msg: "Please save you work before Try it out",
+        type: "error",
+      });
+    } else {
+      await router.push({
+        pathname: router.pathname + "/tryout",
+        query: router.query,
+      });
+    }
   };
+
+  useEffect(() => {
+    if (task.data?.body) {
+      setText(task.data?.body);
+    }
+  }, [task.data?.body]);
 
   return (
     <InsideTaskLayout title="Typing Task" isLoading={task.isLoading}>
@@ -62,14 +76,17 @@ function TypingTask() {
           <Badge>{task.data?.owner.full_name}</Badge>
         )}
       </div>
-      <div className="my-2 flex-1">
-        <textarea
-          placeholder="Type here..."
-          autoFocus
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="mt-4 min-h-[10rem] w-full rounded-md border-2 border-dashed border-sand-6 bg-transparent text-sand-12 outline-none focus:border-sand-10 focus:ring-transparent"
-        />
+      <div className="my-2 mt-4 flex-1">
+        {task.isLoading ? (
+          <Skeleton width={"50%"} height={"10rem"} />
+        ) : (
+          <textarea
+            placeholder="Type here..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="min-h-[10rem] w-1/2 rounded-md border-2 border-dashed border-sand-6 bg-transparent text-sand-12 outline-none focus:border-sand-10 focus:ring-transparent"
+          />
+        )}
         <div className="mt-4 flex gap-2">
           <Button
             onClick={handleTryOut}

@@ -7,9 +7,10 @@ export function calculateTypingSpeed(
   const rawWpm = (totalCharacters / 5 / timeInMinutes).toFixed(2);
 
   // Calculate Net Words Per Minute (NWPM)
-  const adjWpm = ((totalCharacters - totalErrors) / 5 / timeInMinutes).toFixed(
-    2
-  );
+  const adjWpm = Math.max(
+    (totalCharacters - totalErrors) / 5 / timeInMinutes,
+    0
+  ).toFixed(2);
 
   return { rawWpm, adjWpm };
 }
