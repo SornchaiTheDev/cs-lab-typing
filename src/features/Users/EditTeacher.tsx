@@ -15,7 +15,7 @@ const EditTeacher = () => {
     state.setSelectedObj,
   ]);
   const user = trpc.users.getUserByEmail.useQuery({
-    email: selectedObj?.selected as string,
+    email: selectedObj?.selected.display as string,
   });
   const ctx = trpc.useContext();
   const updateUser = trpc.users.updateTeacher.useMutation({

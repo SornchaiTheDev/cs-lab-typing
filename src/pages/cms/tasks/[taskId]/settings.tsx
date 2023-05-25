@@ -8,14 +8,10 @@ import { trpc } from "~/helpers";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import { useDeleteAffectStore } from "~/store";
-interface Props {
-  course: {
-    id: string;
-    name: string;
-  };
-}
+import { useSession } from "next-auth/react";
 
-function Settings({ course }: Props) {
+function Settings() {
+  const { data: session } = useSession();
   const router = useRouter();
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
@@ -25,6 +21,13 @@ function Settings({ course }: Props) {
   const taskId = parseInt(router.query.taskId as string);
   const task = trpc.tasks.getTaskById.useQuery({ id: taskId });
   const editTaskMutation = trpc.tasks.updateTask.useMutation();
+
+  const isTeacher = session?.user?.roles.includes("TEACHER");
+  const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
+  const isOwner = task.data?.owner.full_name === session?.user?.full_name;
+  const canEdit = isTeacher && isOwner;
+  const canDelete = isOwner || isAdmin;
+
   const editTask = async (formData: TAddTask) => {
     try {
       await editTaskMutation.mutateAsync({
@@ -32,7 +35,7 @@ function Settings({ course }: Props) {
         id: taskId,
       });
       await task.refetch();
-      await tags.refetch()
+      await tags.refetch();
       callToast({ msg: "Updated task successfully", type: "success" });
     } catch (err) {
       if (err instanceof TRPCClientError) {
@@ -46,6 +49,22 @@ function Settings({ course }: Props) {
     roles: ["ADMIN", "TEACHER"],
   });
 
+  const handleDelete = () => {
+    if (!canDelete) {
+      return void callToast({
+        msg: "You cannot delete other user task!",
+        type: "error",
+      });
+    }
+    setSelectedObj({
+      selected: {
+        display: task.data?.name as string,
+        id: task.data?.id as number,
+      },
+      type: "task",
+    });
+  };
+
   const tags = trpc.tags.getTags.useQuery();
 
   return (
@@ -54,6 +73,7 @@ function Settings({ course }: Props) {
       <InsideTaskLayout
         title={task.data?.name as string}
         isLoading={task.isLoading}
+        canAccessToSettings={isOwner || isAdmin}
       >
         <div className="w-1/2 p-4">
           <div className="w-full">
@@ -74,12 +94,14 @@ function Settings({ course }: Props) {
                   title: "Name",
                   type: "text",
                   value: task.data?.name ?? "",
+                  disabled: !isOwner && !isAdmin,
                 },
                 {
                   label: "type",
                   title: "Type",
                   options: ["Lesson", "Problem", "Typing"],
                   type: "select",
+                  disabled: !isOwner,
                   conditional: (data) =>
                     data !== undefined && data !== "Typing",
                   children: {
@@ -94,10 +116,11 @@ function Settings({ course }: Props) {
                   label: "tags",
                   title: "Tags",
                   type: "multiple-search",
-                  options: tags.data?.map(({name}) => name) ?? [],
+                  options: tags.data?.map(({ name }) => name) ?? [],
                   optional: true,
                   canAddItemNotInList: true,
                   value: task.data?.tags.map(({ name }) => name) ?? [],
+                  disabled: !isOwner && !isAdmin,
                 },
                 {
                   label: "owner",
@@ -106,11 +129,13 @@ function Settings({ course }: Props) {
                   options:
                     authorUser.data?.map(({ full_name }) => full_name) ?? [],
                   value: task.data?.owner.full_name,
+                  disabled: !isOwner,
                 },
                 {
                   label: "isPrivate",
                   title: "Private",
                   type: "checkbox",
+                  disabled: !canEdit,
                   value: task.data?.isPrivate ?? false,
                 },
                 {
@@ -119,28 +144,24 @@ function Settings({ course }: Props) {
                   type: "text",
                   optional: true,
                   value: task.data?.note ?? "",
+                  disabled: !isOwner && !isAdmin,
                 },
               ]}
             />
           </div>
-          <div className="mt-10">
-            <h4 className="text-xl text-red-9">Danger Zone</h4>
-            <hr className="my-2" />
-            <Button
-              onClick={() =>
-                setSelectedObj({
-                  selected: task.data?.name as string,
-                  type: "task",
-                })
-              }
-              icon="solar:trash-bin-minimalistic-line-duotone"
-              className="bg-red-9 text-sand-1 shadow active:bg-red-11"
-            >
-              Delete Task
-            </Button>
-
-            {/* <DeleteAffect type="task" selected="Q KEY" /> */}
-          </div>
+          {canDelete && (
+            <div className="mt-10">
+              <h4 className="text-xl text-red-9">Danger Zone</h4>
+              <hr className="my-2" />
+              <Button
+                onClick={handleDelete}
+                icon="solar:trash-bin-minimalistic-line-duotone"
+                className="bg-red-9 text-sand-1 shadow active:bg-red-11"
+              >
+                Delete Task
+              </Button>
+            </div>
+          )}
         </div>
       </InsideTaskLayout>
     </>

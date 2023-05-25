@@ -116,7 +116,10 @@ function Settings() {
             <Button
               onClick={() =>
                 setSelectedObj({
-                  selected: section.data?.name as string,
+                  selected: {
+                    display: section.data?.name as string,
+                    id: section.data?.id as number,
+                  },
                   type: "section",
                 })
               }

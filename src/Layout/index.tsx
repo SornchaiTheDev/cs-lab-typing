@@ -79,7 +79,7 @@ function Layout({ children, title, isLoading }: Props) {
               </Popover.Trigger>
               <Popover.Portal>
                 <Popover.Content
-                  className="flex flex-col gap-2 rounded-lg bg-sand-3 pb-2 shadow-md"
+                  className="flex flex-col gap-2 rounded-lg bg-sand-3 pb-2 shadow-md min-w-[12rem]"
                   sideOffset={5}
                   align="end"
                 >

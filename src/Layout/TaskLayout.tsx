@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import Layout from ".";
 import HorizontalMenu from "~/components/Common/HorizontalMenu";
 
@@ -12,13 +12,7 @@ function TaskLayout({ title, children }: Props) {
     <Layout {...{ title }}>
       <HorizontalMenu
         basePath="/cms/tasks"
-        menus={[
-          { name: "All Tasks", path: "" },
-          {
-            name: "History",
-            path: "history",
-          },
-        ]}
+        menus={[{ name: "All Tasks", path: "" }]}
       />
       {children}
     </Layout>

@@ -1,14 +1,15 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { teacherProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { AddTaskSchema } from "~/forms/TaskSchema";
 
 export const updateTaskRouter = router({
-  updateTask: adminProcedure
+  updateTask: teacherProcedure
     .input(AddTaskSchema.and(z.object({ id: z.number() })))
     .mutation(async ({ ctx, input }) => {
       const { isPrivate, language, owner, type, note, name, tags, id } = input;
+      const actionUser = ctx.user.full_name;
       let task;
       try {
         task = await ctx.prisma.tasks.update({
@@ -18,7 +19,14 @@ export const updateTaskRouter = router({
           data: {
             name,
             tags: {
-              set: tags?.map((tag) => ({ name: tag })),
+              connectOrCreate: tags?.map((tag) => ({
+                where: {
+                  name: tag,
+                },
+                create: {
+                  name: tag,
+                },
+              })),
             },
             isPrivate,
             language,
@@ -29,11 +37,21 @@ export const updateTaskRouter = router({
             },
             type,
             note,
-            // course: {
-            //   connect: {
-            //     id: courseId,
-            //   },
-            // },
+          },
+        });
+        await ctx.prisma.task_history.create({
+          data: {
+            action: "Update task info",
+            user: {
+              connect: {
+                full_name: actionUser,
+              },
+            },
+            tasks: {
+              connect: {
+                id: task.id,
+              },
+            },
           },
         });
       } catch (e) {
@@ -50,17 +68,33 @@ export const updateTaskRouter = router({
 
       return task;
     }),
-  setTaskBody: adminProcedure
+  setTaskBody: teacherProcedure
     .input(z.object({ id: z.number(), body: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const actionUser = ctx.user.full_name;
       const { id, body } = input;
       try {
-        await ctx.prisma.tasks.update({
+        const task = await ctx.prisma.tasks.update({
           where: {
             id,
           },
           data: {
             body,
+          },
+        });
+        await ctx.prisma.task_history.create({
+          data: {
+            action: "Edit task body",
+            user: {
+              connect: {
+                full_name: actionUser,
+              },
+            },
+            tasks: {
+              connect: {
+                id: task.id,
+              },
+            },
           },
         });
       } catch (err) {

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { replaceSlugwithQueryPath } from "~/helpers";
+import { getHighestRole, replaceSlugwithQueryPath } from "~/helpers";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
@@ -47,9 +47,10 @@ function FrontLayout({
   //       .join("/")}`,
   //   }));
 
+  const role = getHighestRole(
+    data ? (data.user?.roles.split(",") as string[]) : []
+  );
 
-  const role = data ? (data.user?.roles.split(",") as string[]) : [];
-  const showRole = role[0];
   const pageTitle = title
     ? title.charAt(0).toUpperCase() + title.slice(1)
     : "CS-LAB";
@@ -106,7 +107,7 @@ function FrontLayout({
                 </Popover.Trigger>
                 <Popover.Portal>
                   <Popover.Content
-                    className="flex flex-col gap-2 rounded-lg bg-sand-3 pb-2 shadow-md"
+                    className="flex min-w-[12rem] flex-col gap-2 rounded-lg bg-sand-3 pb-2 shadow-md"
                     sideOffset={5}
                     align="end"
                   >
@@ -115,10 +116,12 @@ function FrontLayout({
                         <div
                           className={clsx(
                             "mb-2 w-fit rounded p-1",
-                            showRole === "ADMIN" ? "bg-red-9" : "bg-lime-9"
+                            role === "ADMIN" && "bg-red-9",
+                            role === "TEACHER" && "bg-blue-9",
+                            role === "STUDENT" && "bg-lime-9"
                           )}
                         >
-                          <h5 className="text-xs text-white">{showRole}</h5>
+                          <h5 className="text-xs text-white">{role}</h5>
                         </div>
                       </div>
                       <h4 className="text-lg font-medium leading-tight text-sand-12">
@@ -137,15 +140,17 @@ function FrontLayout({
                         className="text-xl"
                       />
                     </button> */}
-                    <div>
-                      <button
-                        onClick={() => router.push("/cms")}
-                        className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
-                      >
-                        CMS
-                        <Icon icon="solar:code-square-line-duotone" />
-                      </button>
-                    </div>
+                    {role !== "STUDENT" && (
+                      <div>
+                        <button
+                          onClick={() => router.push("/cms")}
+                          className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                        >
+                          CMS
+                          <Icon icon="solar:code-square-line-duotone" />
+                        </button>
+                      </div>
+                    )}
                     <div>
                       <button
                         onClick={() => signOut()}

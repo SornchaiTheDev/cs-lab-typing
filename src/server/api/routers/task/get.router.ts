@@ -1,7 +1,7 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 export const getTaskRouter = router({
-  getTask: adminProcedure
+  getTask: teacherProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -16,6 +16,14 @@ export const getTaskRouter = router({
         take: limit,
         where: {
           deleted_at: null,
+          OR: [
+            { isPrivate: false },
+            {
+              owner: {
+                full_name: ctx.user.full_name,
+              },
+            },
+          ],
         },
         include: {
           tags: {
@@ -28,6 +36,7 @@ export const getTaskRouter = router({
               full_name: true,
             },
           },
+          history: true,
         },
       });
       if (!tasks) {
@@ -35,7 +44,7 @@ export const getTaskRouter = router({
       }
       return tasks;
     }),
-  getTaskById: adminProcedure
+  getTaskById: teacherProcedure
     .input(
       z.object({
         id: z.number(),
@@ -51,18 +60,24 @@ export const getTaskRouter = router({
         include: {
           tags: true,
           owner: true,
+          history: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
       return task;
     }),
-  getTaskObjectRelation: adminProcedure
-    .input(z.object({ name: z.string() }))
+
+  getTaskObjectRelation: teacherProcedure
+    .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
 
       const task = await ctx.prisma.tasks.findUnique({
         where: {
-          name,
+          id,
         },
       });
 

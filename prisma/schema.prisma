@@ -20,23 +20,24 @@ enum roles {
 }
 
 model users {
-  id           Int           @id @default(autoincrement())
-  student_id   String        @unique
-  full_name    String        @unique
-  email        String        @unique
+  id           Int            @id @default(autoincrement())
+  student_id   String         @unique
+  full_name    String         @unique
+  email        String         @unique
   password     String?
   last_logined DateTime?
   roles        roles[]
   auth_loggers auth_logger[]
-  authors      courses[]     @relation("course_author")
-  students     sections[]    @relation("section_student")
-  instructors  sections[]    @relation("section_instructor")
-  TAs          sections[]    @relation("section_ta")
-  created_at   DateTime      @default(now())
-  updated_at   DateTime?     @updatedAt
+  authors      courses[]      @relation("course_author")
+  students     sections[]     @relation("section_student")
+  instructors  sections[]     @relation("section_instructor")
+  TAs          sections[]     @relation("section_ta")
+  created_at   DateTime       @default(now())
+  updated_at   DateTime?      @updatedAt
   deleted_at   DateTime?
   sectionsId   Int?
   tasks        tasks[]
+  task_history task_history[]
 }
 
 model auth_logger {
@@ -116,19 +117,30 @@ model tags {
 }
 
 model tasks {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique
+  id         Int            @id @default(autoincrement())
+  name       String
   type       task_type
   language   String?
-  tags       tags[]    @relation("task_tag")
-  owner      users     @relation(fields: [usersId], references: [id])
+  tags       tags[]         @relation("task_tag")
+  owner      users          @relation(fields: [usersId], references: [id])
   usersId    Int
   isPrivate  Boolean
   note       String?
   body       String?
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  created_at DateTime       @default(now())
+  updated_at DateTime?      @updatedAt
   deleted_at DateTime?
+  history    task_history[]
+}
+
+model task_history {
+  id         Int      @id @default(autoincrement())
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    Int
+  action     String
+  created_at DateTime @default(now())
+  tasks      tasks    @relation(fields: [tasksId], references: [id])
+  tasksId    Int
 }
 
 enum task_type {

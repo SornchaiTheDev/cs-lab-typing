@@ -1,14 +1,15 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 
 export const deleteTaskRouter = router({
-  deleteTask: adminProcedure
-    .input(z.object({ name: z.string() }))
+  deleteTask: teacherProcedure
+    .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
+
       const task = await ctx.prisma.tasks.delete({
         where: {
-          name,
+          id,
         },
       });
       if (!task) {

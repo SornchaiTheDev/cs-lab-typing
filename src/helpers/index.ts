@@ -12,3 +12,4 @@ export {
   isNonKUStudent,
   isValidTeacher,
 } from "./isValidUser";
+export { getHighestRole } from "./getHighestRole";

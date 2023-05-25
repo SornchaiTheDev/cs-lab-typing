@@ -15,7 +15,7 @@ const EditSemester = () => {
     state.setSelectedObj,
   ]);
   const semester = trpc.semesters.getSemesterByYearAndTerm.useQuery({
-    yearAndTerm: selectedObj?.selected as string,
+    yearAndTerm: selectedObj?.selected.display as string,
   });
   const ctx = trpc.useContext();
   const updateSemester = trpc.semesters.updateSemester.useMutation({

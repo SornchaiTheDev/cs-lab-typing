@@ -38,42 +38,42 @@ function DeleteAffect({ type }: Props) {
   useEffect(() => {
     const fetchUserData = async () => {
       const data = await ctx.users.getUserObjectRelation.fetch({
-        email: selectedObject?.selected as string,
+        email: selectedObject?.selected.display as string,
       });
       setFetchData(data);
     };
 
     const fetchSemesterData = async () => {
       const data = await ctx.semesters.getSemesterObjectRelation.fetch({
-        yearAndTerm: selectedObject?.selected as string,
+        yearAndTerm: selectedObject?.selected.display as string,
       });
       setFetchData(data);
     };
 
     const fetchCourseData = async () => {
       const data = await ctx.courses.getCourseObjectRelation.fetch({
-        name: selectedObject?.selected as string,
+        name: selectedObject?.selected.display as string,
       });
       setFetchData(data);
     };
 
     const fetchSectionData = async () => {
       const data = await ctx.sections.getSectionObjectRelation.fetch({
-        name: selectedObject?.selected as string,
+        name: selectedObject?.selected.display as string,
       });
       setFetchData(data);
     };
 
     const fetchLabData = async () => {
       const data = await ctx.labs.getLabObjectRelation.fetch({
-        name: selectedObject?.selected as string,
+        name: selectedObject?.selected.display as string,
       });
       setFetchData(data);
     };
 
     const fetchTaskData = async () => {
       const data = await ctx.tasks.getTaskObjectRelation.fetch({
-        name: selectedObject?.selected as string,
+        id: selectedObject?.selected.id as number,
       });
       setFetchData(data);
     };
@@ -108,7 +108,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteUser.mutateAsync({
-        email: selectedObject.selected as string,
+        email: selectedObject.selected.display as string,
       });
 
       callToast({
@@ -131,7 +131,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteSemester.mutateAsync({
-        yearAndTerm: selectedObject.selected as string,
+        yearAndTerm: selectedObject.selected.display as string,
       });
 
       callToast({ msg: "Delete Semester successfully", type: "success" });
@@ -148,7 +148,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteCourse.mutateAsync({
-        name: selectedObject.selected,
+        name: selectedObject.selected.display,
       });
 
       callToast({ msg: "Delete Course successfully", type: "success" });
@@ -163,7 +163,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteSection.mutateAsync({
-        name: selectedObject.selected,
+        name: selectedObject.selected.display,
       });
 
       callToast({ msg: "Delete Section successfully", type: "success" });
@@ -182,7 +182,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteLab.mutateAsync({
-        name: selectedObject.selected,
+        name: selectedObject.selected.display,
       });
 
       callToast({ msg: "Delete Lab successfully", type: "success" });
@@ -206,7 +206,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteTask.mutateAsync({
-        name: selectedObject.selected,
+        id: selectedObject.selected.id,
       });
 
       if (type === "task-outside") {
@@ -252,7 +252,7 @@ function DeleteAffect({ type }: Props) {
         <>
           Are you sure to delete {type}{" "}
           <span className="text-lg font-bold">
-            &ldquo;{selectedObject?.selected}&rdquo;
+            &ldquo;{selectedObject?.selected.display}&rdquo;
           </span>
           ? All of these following related items will be deleted
         </>
@@ -299,11 +299,11 @@ function DeleteAffect({ type }: Props) {
             setConfirmMsg(e.target.value)
           }
           className="w-full rounded-md border border-sand-6 bg-sand-1 p-2 outline-none"
-          placeholder={`Type "${selectedObject?.selected}" to confirm`}
+          placeholder={`Type "${selectedObject?.selected.display}" to confirm`}
         />
 
         <Button
-          disabled={confirmMsg !== selectedObject?.selected}
+          disabled={confirmMsg !== selectedObject?.selected.display}
           onClick={handleDelete}
           className="w-full bg-red-9 font-bold text-sand-2 hover:bg-red-10"
         >

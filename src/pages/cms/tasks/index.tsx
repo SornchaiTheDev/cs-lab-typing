@@ -15,9 +15,10 @@ import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 interface TaskRow {
-  id: string;
+  id: number;
   name: string;
   type: string;
   tags: string[];
@@ -27,6 +28,7 @@ interface TaskRow {
 }
 
 function Tasks() {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
@@ -116,7 +118,10 @@ function Tasks() {
           <button
             onClick={() => {
               setSelectedObj({
-                selected: props.row.original.name,
+                selected: {
+                  display: props.row.original.name,
+                  id: props.row.original.id,
+                },
                 type: "lab",
               });
             }}
@@ -128,8 +133,11 @@ function Tasks() {
         size: 50,
       }),
     ],
-    [columnHelper, setSelectedObj]
+    [columnHelper, setSelectedObj, router.pathname, router.query]
   );
+
+  const isTeacher = session?.user?.roles.includes("TEACHER");
+
   return (
     <>
       {selectedObj && <DeleteAffect type="task-outside" />}
@@ -201,15 +209,17 @@ function Tasks() {
           columns={columns}
           className="mt-6 flex-1"
         >
-          <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-            <Button
-              onClick={() => setIsShow(true)}
-              icon="solar:programming-line-duotone"
-              className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
-            >
-              Add Task
-            </Button>
-          </div>
+          {isTeacher && (
+            <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
+              <Button
+                onClick={() => setIsShow(true)}
+                icon="solar:programming-line-duotone"
+                className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
+              >
+                Add Task
+              </Button>
+            </div>
+          )}
         </Table>
       </TaskLayout>
     </>

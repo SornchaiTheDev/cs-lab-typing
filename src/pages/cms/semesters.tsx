@@ -86,9 +86,12 @@ function Semesters() {
           <button
             onClick={() =>
               setSelectedObj({
-                selected: `${props.row.getValue("year")}/${props.row.getValue(
-                  "term"
-                )}`,
+                selected: {
+                  display: `${props.row.getValue("year")}/${props.row.getValue(
+                    "term"
+                  )}`,
+                  id: props.row.getValue("id") as number,
+                },
                 type: "semester",
               })
             }

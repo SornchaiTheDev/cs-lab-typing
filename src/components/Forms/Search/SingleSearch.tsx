@@ -2,7 +2,7 @@ import {
   useState,
   useRef,
   type KeyboardEvent,
-  ChangeEvent,
+  type ChangeEvent,
   useEffect,
 } from "react";
 import clsx from "clsx";
@@ -122,12 +122,12 @@ const SingleSearch = (props: Props) => {
   return (
     <div {...{ className }}>
       <div className="flex justify-between">
-        <h4 className="block mb-2 font-semibold text-sand-12">
+        <h4 className="mb-2 block font-semibold text-sand-12">
           {title}{" "}
           {optional && <span className="text-sm text-sand-11">(optional)</span>}
         </h4>
         {isError && (
-          <h6 className="block mb-2 text-sm font-semibold text-tomato-9">
+          <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
             {error}
           </h6>
         )}
@@ -138,18 +138,25 @@ const SingleSearch = (props: Props) => {
         <div className="relative" ref={selectRef}>
           <div
             className={clsx(
-              "relative w-full p-2 border border-sand-6 min-h-[2.5rem] rounded-md bg-sand-1 flex flex-wrap items-center gap-2",
+              "relative flex min-h-[2.5rem] w-full flex-wrap items-center gap-2 rounded-md border border-sand-6 bg-sand-1 p-2",
               isError && "border-tomato-7"
             )}
           >
             {value.length > 0 ? (
-              <button
+              <div
                 key={value}
-                className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md bg-sand-12"
-                onClick={() => onClear()}
+                className="flex select-none items-center rounded-md bg-sand-12 px-2 py-1 text-sm font-semibold text-white"
               >
-                {value} <Icon icon="material-symbols:close-rounded" />
-              </button>
+                {value}{" "}
+                {!disabled && (
+                  <button
+                    onClick={() => !disabled && onClear()}
+                    disabled={disabled}
+                  >
+                    <Icon icon="material-symbols:close-rounded" />
+                  </button>
+                )}
+              </div>
             ) : (
               <input
                 disabled={disabled}
@@ -167,7 +174,7 @@ const SingleSearch = (props: Props) => {
           {isFocus && !isEmpty && (
             <ul
               ref={optionsRef}
-              className="mt-2 absolute flex flex-col w-full max-h-[14rem] overflow-y-auto shadow gap-2 p-2 break-words bg-white border rounded-lg border-sand-6 z-50"
+              className="absolute z-50 mt-2 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
             >
               {filteredDatas.map((data, i) => (
                 <TextHighlight

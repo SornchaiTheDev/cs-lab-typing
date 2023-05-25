@@ -16,7 +16,7 @@ import Modal from "~/components/Common/Modal";
 import Button from "~/components/Common/Button";
 import { callToast } from "~/services/callToast";
 interface LabsRow {
-  id: string;
+  id: number;
   name: string;
   tags: string[];
 }
@@ -104,7 +104,10 @@ function Labs() {
           <button
             onClick={() => {
               setSelectedObj({
-                selected: props.row.original.name,
+                selected: {
+                  display: props.row.original.name,
+                  id: props.row.original.id,
+                },
                 type: "lab",
               });
             }}

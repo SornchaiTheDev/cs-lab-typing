@@ -33,9 +33,23 @@ const isAdmin = t.middleware(async (opts) => {
   }
   return next({
     ctx: {
-      user: ctx.session,
+      user: ctx.session.user,
     },
   });
 });
 
+const isTeacherAbove = t.middleware(async (opts) => {
+  const { ctx, next } = opts;
+
+  if (!ctx.session || !ctx.session?.user?.roles.includes("TEACHER")) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      user: ctx.session.user,
+    },
+  });
+});
+
+export const teacherProcedure = publicProcedure.use(isTeacherAbove);
 export const adminProcedure = publicProcedure.use(isAdmin);

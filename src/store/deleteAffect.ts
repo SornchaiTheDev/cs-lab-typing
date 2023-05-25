@@ -1,9 +1,14 @@
 import { create } from "zustand";
 
-type selectedObj = {
-  selected: string;
+interface selectedItem {
+  display: string;
+  id: number;
+}
+
+interface selectedObj {
+  selected: selectedItem;
   type: string;
-};
+}
 
 interface deleteAffectStore {
   selectedObj: selectedObj | null;

@@ -63,7 +63,10 @@ function Admin() {
           <button
             onClick={() =>
               setSelectedObj({
-                selected: props.row.getValue("email"),
+                selected: {
+                  display : props.row.getValue("email"),
+                  id : props.row.getValue("id")
+                },
                 type: getUserType(props.row.original),
               })
             }
