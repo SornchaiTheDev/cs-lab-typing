@@ -20,7 +20,10 @@ function TypingTask() {
   return (
     <FrontLayout
       title="Task A"
-      customBackPath="/"
+      customBackPath={`/courses/${replaceSlugwithQueryPath(
+        "[courseId]",
+        router.query
+      )}/labs/`}
       breadcrumbs={[
         { label: "My Course", path: "/" },
         {

@@ -11,7 +11,10 @@ function Labs() {
   return (
     <FrontLayout
       title="Lab001"
-      customBackPath="/"
+      customBackPath={`/courses/${replaceSlugwithQueryPath(
+        "[courseId]",
+        router.query
+      )}`}
       breadcrumbs={[
         { label: "My Course", path: "/" },
         {
