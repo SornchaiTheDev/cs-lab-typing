@@ -1,8 +1,8 @@
-import { router, adminProcedure } from "~/server/api/trpc";
+import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 
 export const deleteUserRouter = router({
-  deleteUser: adminProcedure
+  deleteUser: teacherProcedure
     .input(
       z.object({
         email: z.string(),

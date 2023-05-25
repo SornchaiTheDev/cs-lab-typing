@@ -1,10 +1,10 @@
-import { router, adminProcedure } from "~/server/api/trpc";
+import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import type { roles } from "@prisma/client";
 
 export const updateUserRouter = router({
-  updateKUStudent: adminProcedure
+  updateKUStudent: teacherProcedure
     .input(
       z.object({
         email: z.string().email(),
@@ -29,7 +29,7 @@ export const updateUserRouter = router({
         },
       });
     }),
-  updateNonKUStudent: adminProcedure
+  updateNonKUStudent: teacherProcedure
     .input(
       z.object({
         email: z.string().email(),
@@ -58,7 +58,7 @@ export const updateUserRouter = router({
         },
       });
     }),
-  updateTeacher: adminProcedure
+  updateTeacher: teacherProcedure
     .input(
       z.object({
         email: z.string().email(),

@@ -6,13 +6,17 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/router";
-import { trpc } from "~/helpers";
+import { getHighestRole, trpc } from "~/helpers";
 import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
+import { useSession } from "next-auth/react";
 
 function Courses() {
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const role = getHighestRole(session?.user?.roles.split(",") ?? []);
 
   const allCourses = trpc.courses.getCoursePagination.useQuery({
     page: 1,
@@ -48,43 +52,45 @@ function Courses() {
 
   return (
     <Layout title="courses">
-      <div className="mb-4">
-        <ModalWithButton
-          title="Add Course"
-          icon="solar:add-circle-line-duotone"
-          className="max-h-[90%] overflow-y-auto md:w-[40rem]"
-        >
-          <Forms
-            confirmBtn={{
-              title: "Add Course",
-              icon: "solar:add-circle-line-duotone",
-            }}
-            schema={AddCourseSchema}
-            onSubmit={addCourse}
-            fields={[
-              { label: "number", title: "Number", type: "text" },
-              {
-                label: "name",
-                title: "Name",
-                type: "text",
-              },
-              {
-                label: "authors",
-                title: "Authors",
-                type: "multiple-search",
-                options: authorUser.data?.map((user) => user.full_name) ?? [],
-              },
-              { label: "note", title: "Note", type: "text", optional: true },
-              {
-                label: "comments",
-                title: "Comments",
-                type: "textarea",
-                optional: true,
-              },
-            ]}
-          />
-        </ModalWithButton>
-      </div>
+      {role === "ADMIN" && (
+        <div className="mb-4">
+          <ModalWithButton
+            title="Add Course"
+            icon="solar:add-circle-line-duotone"
+            className="max-h-[90%] overflow-y-auto md:w-[40rem]"
+          >
+            <Forms
+              confirmBtn={{
+                title: "Add Course",
+                icon: "solar:add-circle-line-duotone",
+              }}
+              schema={AddCourseSchema}
+              onSubmit={addCourse}
+              fields={[
+                { label: "number", title: "Number", type: "text" },
+                {
+                  label: "name",
+                  title: "Name",
+                  type: "text",
+                },
+                {
+                  label: "authors",
+                  title: "Authors",
+                  type: "multiple-search",
+                  options: authorUser.data?.map((user) => user.full_name) ?? [],
+                },
+                { label: "note", title: "Note", type: "text", optional: true },
+                {
+                  label: "comments",
+                  title: "Comments",
+                  type: "textarea",
+                  optional: true,
+                },
+              ]}
+            />
+          </ModalWithButton>
+        </div>
+      )}
       <div className="grid grid-cols-12 gap-6">
         {allCourses.isLoading
           ? new Array(6)

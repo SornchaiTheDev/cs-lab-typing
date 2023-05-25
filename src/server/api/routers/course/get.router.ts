@@ -1,9 +1,18 @@
-import { adminProcedure, router, publicProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  router,
+  publicProcedure,
+  teacherProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { getHighestRole } from "~/helpers";
+import { getAdminCourses } from "./roles/getAdminCourses";
+import { getTeacherCourses } from "./roles/getTeacherCourses";
+import { getStudentCourses } from "./roles/getStudentCourses";
 
 export const getCourseRouter = router({
-  getCoursePagination: adminProcedure
+  getCoursePagination: teacherProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -12,32 +21,27 @@ export const getCourseRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
+      console.log(ctx.user.roles.split(","));
 
-      const courses = await ctx.prisma.courses.findMany({
-        where: {
-          deleted_at: null,
-        },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          sections: {
-            select: {
-              _count: {
-                select: {
-                  students: true,
-                },
-              },
-            },
-          },
-        },
-      });
+      const role = getHighestRole(ctx.user.roles.split(",") as string[]);
+      const full_name = ctx.user.full_name;
+      let courses = null;
+
+      if (role === "ADMIN") {
+        courses = await getAdminCourses(ctx.prisma, page, limit);
+      } else if (role === "TEACHER") {
+        courses = await getTeacherCourses(ctx.prisma, page, limit, full_name);
+      } else {
+        courses = await getStudentCourses(ctx.prisma, page, limit, full_name);
+      }
+
       if (!courses) {
         return [];
       }
 
       return courses;
     }),
-  getCourseById: adminProcedure
+  getCourseById: teacherProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
@@ -151,9 +155,10 @@ export const getCourseRouter = router({
 
       return relation;
     }),
-  getUserCourses: publicProcedure.query(async ({ ctx, input }) => {
+  getUserCourses: publicProcedure.query(async ({ ctx }) => {
     const { session } = ctx;
     const email = session?.user?.email;
+
     if (email) {
       const courses = await ctx.prisma.courses.findMany({
         where: {

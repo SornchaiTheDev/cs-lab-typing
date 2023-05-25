@@ -1,8 +1,8 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 
 export const getUserRouter = router({
-  getUserPagination: adminProcedure
+  getUserPagination: teacherProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -24,7 +24,7 @@ export const getUserRouter = router({
       }
       return users;
     }),
-  getUserByEmail: adminProcedure
+  getUserByEmail: teacherProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
       const { email } = input;
@@ -35,7 +35,7 @@ export const getUserRouter = router({
       });
       return user;
     }),
-  getUserObjectRelation: adminProcedure
+  getUserObjectRelation: teacherProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
       const { email } = input;
@@ -57,7 +57,7 @@ export const getUserRouter = router({
 
       return relation;
     }),
-  getAllUsersInRole: adminProcedure
+  getAllUsersInRole: teacherProcedure
     .input(
       z.object({
         roles: z.array(
@@ -77,7 +77,7 @@ export const getUserRouter = router({
       });
       return users;
     }),
-  getUserByNameAndRole: adminProcedure
+  getUserByNameAndRole: teacherProcedure
     .input(
       z.object({
         name: z.string(),
