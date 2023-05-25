@@ -14,7 +14,7 @@ import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useTypingStore } from "~/store";
 import { calculateAccuracy } from "./utils/calculateAccuracy";
 import { getDuration } from "./utils/getDuration";
-import { calculateWPM } from "./utils/calculateWPM";
+import { calculateTypingSpeed } from "./utils/calculateWPM";
 import { calculateErrorPercentage } from "./utils/calculateErrorPercentage";
 import { Icon } from "@iconify/react";
 
@@ -89,8 +89,12 @@ function EndedGame() {
     ],
     [columnHelper]
   );
-  const duration = getDuration(startTime as Date, endTime as Date);
-  const WPM = calculateWPM(correctChar, errorChar, duration);
+  const { minutes, seconds } = getDuration(startTime as Date, endTime as Date);
+  const { rawWpm, adjWpm } = calculateTypingSpeed(
+    correctChar,
+    errorChar,
+    minutes
+  );
 
   const Accuracy = calculateAccuracy(correctChar, errorChar);
 
@@ -101,18 +105,35 @@ function EndedGame() {
       <div className="flex flex-col items-center gap-4">
         <button
           onClick={() => setStatus("NotStarted")}
-          className="flex flex-col items-center rounded-md p-2 hover:bg-sand-3 outline-none focus:ring-2 ring-offset-2 ring-sand-6"
+          className="flex flex-col items-center rounded-md p-2 outline-none ring-sand-6 ring-offset-2 hover:bg-sand-3 focus:ring-2"
         >
           <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
           <h6>Restart the test</h6>
         </button>
-        <div className="flex justify-center gap-2 text-sand-12">
-          <h6>WPM</h6>
-          <h2 className="text-6xl font-bold">{WPM}</h2>
-          <h6>Accuracy</h6>
-          <h2 className="text-6xl font-bold">{Accuracy}%</h2>
-          <h6>Error %</h6>
-          <h2 className="text-6xl font-bold">{errorPercentage}%</h2>
+        <div className="flex justify-center gap-4 text-sand-12">
+          <div>
+            <h6 className="text-sm">Raw Speed</h6>
+            <h2 className="text-4xl font-bold">{rawWpm}</h2>
+          </div>
+          <div>
+            <h6 className="text-sm">Adjusted Speed</h6>
+            <h2 className="text-4xl font-bold">{adjWpm}</h2>
+          </div>
+          <div>
+            <h6 className="text-sm">Accuracy</h6>
+            <h2 className="text-4xl font-bold">{Accuracy}%</h2>
+          </div>
+          <div>
+            <h6 className="text-sm">Error %</h6>
+            <h2 className="text-4xl font-bold">{errorPercentage}%</h2>
+          </div>
+          <div>
+            <h6 className="text-sm">Duration</h6>
+            <h2 className="text-4xl font-bold">
+              {seconds.toFixed(2)}
+              <span>s</span>
+            </h2>
+          </div>
         </div>
         <div className="w-full flex-1">
           <Line options={options} data={data} />

@@ -29,11 +29,9 @@ function Button({
       {isLoading ? (
         <Icon icon="line-md:loading-twotone-loop" className="text-xl" />
       ) : (
-        <>
-          {!!icon && <Icon icon={icon} className="text-xl" />}
-          {children}
-        </>
+        !!icon && <Icon icon={icon} className="text-xl" />
       )}
+      {children}
     </button>
   );
 }

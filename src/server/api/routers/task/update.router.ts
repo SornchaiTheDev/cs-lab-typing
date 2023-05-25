@@ -50,4 +50,24 @@ export const updateTaskRouter = router({
 
       return task;
     }),
+  setTaskBody: adminProcedure
+    .input(z.object({ id: z.number(), body: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id, body } = input;
+      try {
+        await ctx.prisma.tasks.update({
+          where: {
+            id,
+          },
+          data: {
+            body,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
 });

@@ -12,11 +12,11 @@ function TypingTask() {
     state.setText,
     state.status,
   ]);
-  useEffect(() => {
-    setText(
-      "This offer is only for fancy fresh fruit to be used as gifts. Try these and candy to suit the young lady. They are dandy. You can feel safe. Sales are easy and final. They go fast. After at least four days you can order daily or on Friday."
-    );
-  }, [setText]);
+  // useEffect(() => {
+  //   setText(
+
+  //   );
+  // }, [setText]);
   return (
     <FrontLayout
       title="Task A"
@@ -40,7 +40,11 @@ function TypingTask() {
       ]}
     >
       <div className="flex flex-1 flex-col">
-        {status !== "Ended" ? <TypingGame /> : <EndedGame />}
+        {status !== "Ended" ? (
+          <TypingGame text="Her error is a sign that this thing or that has upset her. Does she care? Is it a hard part? She has to get used to the letters that she has to print. Is this order upset? Is she tired? Then she needs a short rest. Is it the rate? She need not raise her rate too high. Has she a good touch?" />
+        ) : (
+          <EndedGame />
+        )}
       </div>
     </FrontLayout>
   );

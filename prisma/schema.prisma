@@ -125,6 +125,7 @@ model tasks {
   usersId    Int
   isPrivate  Boolean
   note       String?
+  body       String?
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?

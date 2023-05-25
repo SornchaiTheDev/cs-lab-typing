@@ -5,13 +5,21 @@
 */
 
 import clsx from "clsx";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import useTypingGame from "react-typing-game-hook";
 import { useTypingStore } from "~/store";
 
-function TypingGame() {
-  const [text, stats, setStats, setStatus] = useTypingStore((state) => [
-    state.text,
+interface Props {
+  text: string;
+}
+function TypingGame({ text }: Props) {
+  const [stats, setStats, setStatus] = useTypingStore((state) => [
     state.stats,
     state.setStats,
     state.setStatus,
@@ -66,13 +74,19 @@ function TypingGame() {
   }, [currIndex, letterElements]);
 
   //handle key presses
-  const handleKeyDown = (letter: string, control: boolean) => {
+  const handleKeyDown = (
+    letter: string,
+    control: boolean,
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
     if (letter === "Escape") {
       resetTyping();
     } else if (letter === "Backspace") {
       deleteTyping(control);
     } else if (letter.length === 1) {
       insertTyping(letter);
+    } else if (letter === "Tab") {
+      event.preventDefault();
     }
   };
 
@@ -89,12 +103,13 @@ function TypingGame() {
       <input
         className="absolute opacity-0"
         ref={typingElement}
-        onKeyDown={(e) => handleKeyDown(e.key, e.ctrlKey)}
+        onKeyDown={(e) => handleKeyDown(e.key, e.ctrlKey, e)}
       />
       <div className="mt-12 flex flex-col items-center gap-6 ">
         <div
           onClick={() => typingElement.current?.focus()}
           className={`relative font-serif text-4xl outline-none`}
+          tabIndex={0}
         >
           <div
             ref={letterElements}
