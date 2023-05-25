@@ -139,11 +139,20 @@ function FrontLayout({
                     </button> */}
                     <div>
                       <button
+                        onClick={() => router.push("/cms")}
+                        className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                      >
+                        CMS
+                        <Icon icon="solar:code-square-line-duotone" />
+                      </button>
+                    </div>
+                    <div>
+                      <button
                         onClick={() => signOut()}
                         className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                       >
                         Sign Out
-                        <Icon icon="solar:login-2-line-duotone" />
+                        <Icon icon="solar:exit-line-duotone" />
                       </button>
                     </div>
 
