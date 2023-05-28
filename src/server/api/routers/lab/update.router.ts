@@ -1,16 +1,18 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { router, teacherProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { AddLabSchema } from "~/forms/LabSchema";
 import { Prisma } from "@prisma/client";
+import { createNotExistTags } from "~/server/utils/createNotExistTags";
 
 export const updateLabRouter = router({
-  updateLab: adminProcedure
+  updateLab: teacherProcedure
     .input(AddLabSchema.and(z.object({ courseId: z.number(), id: z.number() })))
     .mutation(async ({ ctx, input }) => {
       const { isDisabled, name, tags, courseId, id } = input;
 
       try {
+        await createNotExistTags(ctx.prisma, tags);
         await ctx.prisma.labs.update({
           where: {
             id,

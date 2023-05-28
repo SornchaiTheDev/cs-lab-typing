@@ -15,6 +15,7 @@ import DeleteAffect from "~/components/DeleteAffect";
 import Modal from "~/components/Common/Modal";
 import Button from "~/components/Common/Button";
 import { callToast } from "~/services/callToast";
+import { useSession } from "next-auth/react";
 interface LabsRow {
   id: number;
   name: string;
@@ -22,6 +23,7 @@ interface LabsRow {
 }
 
 function Labs() {
+  const { data: session } = useSession();
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -35,6 +37,8 @@ function Labs() {
   const course = trpc.courses.getCourseById.useQuery({
     id: parseInt(courseId as string),
   });
+
+  const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
   const allLabs = trpc.labs.getLabPagination.useQuery({
     page: 1,
@@ -167,15 +171,17 @@ function Labs() {
         isLoading={course.isLoading}
       >
         <Table className="mt-6" data={allLabs.data ?? []} columns={columns}>
-          <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-            <Button
-              onClick={() => setIsShow(true)}
-              icon="solar:checklist-minimalistic-line-duotone"
-              className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
-            >
-              Add Lab
-            </Button>
-          </div>
+          {isTeacher && (
+            <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
+              <Button
+                onClick={() => setIsShow(true)}
+                icon="solar:checklist-minimalistic-line-duotone"
+                className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
+              >
+                Add Lab
+              </Button>
+            </div>
+          )}
         </Table>
       </CourseLayout>
     </>

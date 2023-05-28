@@ -1,7 +1,7 @@
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { authedProcedure, teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 export const getTaskRouter = router({
-  getTask: teacherProcedure
+  getTask: authedProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -44,7 +44,7 @@ export const getTaskRouter = router({
       }
       return tasks;
     }),
-  getTaskById: teacherProcedure
+  getTaskById: authedProcedure
     .input(
       z.object({
         id: z.number(),

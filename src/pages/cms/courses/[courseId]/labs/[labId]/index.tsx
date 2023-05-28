@@ -6,6 +6,7 @@ import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "~/helpers";
+import { useSession } from "next-auth/react";
 
 interface AssignmentRow {
   id: string;
@@ -15,11 +16,15 @@ interface AssignmentRow {
 }
 
 function Lab() {
+  const { data: session } = useSession();
+
   const columnHelper = createColumnHelper<AssignmentRow>();
 
   const router = useRouter();
 
   const { labId } = router.query;
+
+  const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
   const lab = trpc.labs.getLabById.useQuery({
     id: parseInt(labId as string),
@@ -80,12 +85,14 @@ function Lab() {
         columns={columns}
         className="mt-6"
       >
-        <div className="p-4">
-          <ModalWithButton
-            title="Add Task"
-            icon="solar:programming-line-duotone"
-          ></ModalWithButton>
-        </div>
+        {isTeacher && (
+          <div className="p-4">
+            <ModalWithButton
+              title="Add Task"
+              icon="solar:programming-line-duotone"
+            ></ModalWithButton>
+          </div>
+        )}
       </Table>
     </LabLayout>
   );

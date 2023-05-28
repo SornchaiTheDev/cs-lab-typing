@@ -1,37 +1,60 @@
+import { useRef, forwardRef, ForwardedRef, useState } from "react";
 import type { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import Skeleton from "../Common/Skeleton";
+import { motion } from "framer-motion";
+import clsx from "clsx";
 
 interface CheckboxProps<T extends FieldValues> {
   title: string;
   label: Path<T>;
-  register: UseFormRegister<T>;
+  value: boolean;
+  onChange: (value: boolean) => void;
   disabled?: boolean;
   isLoading?: boolean;
 }
 
 const Checkbox = <T extends FieldValues>({
-  label,
-  register,
   title,
   disabled,
   isLoading,
+  onChange,
+  value,
 }: CheckboxProps<T>) => {
+  const [isActive, setIsActive] = useState(value);
+
+  const handleOnClick = () => {
+    if (disabled) return;
+    onChange(!isActive);
+    setIsActive(!isActive);
+  };
+
   return (
-    <div className="flex items-center">
+    <button
+      type="button"
+      onClick={handleOnClick}
+      className="flex flex-col gap-2 w-fit"
+    >
+      <label htmlFor={title} className="font-medium text-sand-12">
+        {title}
+      </label>
+
       {isLoading ? (
         <Skeleton width="100%" height="1.5rem" />
       ) : (
-        <input
-          disabled={disabled}
-          {...{ ...register(label) }}
-          type="checkbox"
-          className="w-4 h-4 rounded-sm outline-none text-sand-12 border-sand-9 ring-sand-10 focus:ring-sand-12 checked:bg-sand-12 bg-sand-1 accent-sand-12"
-        />
+        <div
+          className={clsx(
+            "relative h-6 w-12 rounded-xl p-1",
+            isActive ? "bg-sand-11" : "bg-sand-6"
+          )}
+        >
+          <motion.div
+            initial={isActive ? { right: 4, left: "auto" } : { right: "auto", left: 4 }}
+            animate={isActive ? { right: 4, left: "auto" } : { right: "auto", left: 4 }}
+            className="absolute h-4 w-4 rounded-full bg-sand-1"
+          ></motion.div>
+        </div>
       )}
-      <label htmlFor={title} className="ml-2 font-medium text-sand-12">
-        {title}
-      </label>
-    </div>
+    </button>
   );
 };
 

@@ -20,24 +20,27 @@ enum roles {
 }
 
 model users {
-  id           Int            @id @default(autoincrement())
-  student_id   String         @unique
-  full_name    String         @unique
-  email        String         @unique
-  password     String?
-  last_logined DateTime?
-  roles        roles[]
-  auth_loggers auth_logger[]
-  authors      courses[]      @relation("course_author")
-  students     sections[]     @relation("section_student")
-  instructors  sections[]     @relation("section_instructor")
-  TAs          sections[]     @relation("section_ta")
-  created_at   DateTime       @default(now())
-  updated_at   DateTime?      @updatedAt
-  deleted_at   DateTime?
-  sectionsId   Int?
-  tasks        tasks[]
-  task_history task_history[]
+  id               Int               @id @default(autoincrement())
+  student_id       String            @unique
+  full_name        String            @unique
+  email            String            @unique
+  password         String?
+  last_logined     DateTime?
+  roles            roles[]
+  auth_loggers     auth_logger[]
+  authors          courses[]         @relation("course_author")
+  students         sections[]        @relation("section_student")
+  instructors      sections[]        @relation("section_instructor")
+  TAs              sections[]        @relation("section_ta")
+  created_sections sections[]
+  created_at       DateTime          @default(now())
+  updated_at       DateTime?         @updatedAt
+  deleted_at       DateTime?
+  sectionsId       Int?
+  tasks            tasks[]
+  task_history     task_history[]
+  section_history  section_history[]
+  lab_history      lab_history[]
 }
 
 model auth_logger {
@@ -79,31 +82,56 @@ model courses {
 }
 
 model sections {
-  id          Int       @id @default(autoincrement())
-  semester    semesters @relation(fields: [semester_id], references: [id])
-  semester_id Int
-  course      courses   @relation(fields: [course_id], references: [id])
-  course_id   Int
-  name        String    @unique
-  instructors users[]   @relation("section_instructor")
-  students    users[]   @relation("section_student")
-  tas         users[]   @relation("section_ta")
-  note        String?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime? @updatedAt
-  deleted_at  DateTime?
+  id            Int               @id @default(autoincrement())
+  semester      semesters         @relation(fields: [semester_id], references: [id])
+  semester_id   Int
+  course        courses           @relation(fields: [course_id], references: [id])
+  course_id     Int
+  name          String            @unique
+  instructors   users[]           @relation("section_instructor")
+  students      users[]           @relation("section_student")
+  tas           users[]           @relation("section_ta")
+  note          String?
+  active        Boolean
+  created_by    users             @relation(fields: [created_by_id], references: [id])
+  created_by_id Int
+  created_at    DateTime          @default(now())
+  updated_at    DateTime?         @updatedAt
+  deleted_at    DateTime?
+  history       section_history[]
+}
+
+model section_history {
+  id         Int      @id @default(autoincrement())
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    Int
+  action     String
+  created_at DateTime @default(now())
+  section    sections @relation(fields: [sectionId], references: [id])
+  sectionId  Int
 }
 
 model labs {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique
-  tags       tags[]    @relation("lab_tag")
-  course     courses   @relation(fields: [courseId], references: [id])
+  id         Int           @id @default(autoincrement())
+  name       String        @unique
+  tags       tags[]        @relation("lab_tag")
+  course     courses       @relation(fields: [courseId], references: [id])
   courseId   Int
   isDisabled Boolean
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
+  history    lab_history[]
+  created_at DateTime      @default(now())
+  updated_at DateTime?     @updatedAt
   deleted_at DateTime?
+}
+
+model lab_history {
+  id         Int      @id @default(autoincrement())
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    Int
+  action     String
+  created_at DateTime @default(now())
+  lab        labs     @relation(fields: [labId], references: [id])
+  labId      Int
 }
 
 model tags {

@@ -1,93 +1,57 @@
 import { useMemo } from "react";
-import SectionLayout from "~/Layout/SectionLayout";
 import Table from "~/components/Common/Table";
-import { ColumnDef } from "@tanstack/react-table";
-import clsx from "clsx";
-import RangePicker from "~/components/Forms/DatePicker/RangePicker";
-import TimePickerRange from "~/components/TimePickerRange";
-import { Icon } from "@iconify/react";
+import { trpc } from "~/helpers";
+import { useRouter } from "next/router";
+import { createColumnHelper } from "@tanstack/react-table";
+import SectionLayout from "~/Layout/SectionLayout";
 
-interface LoggerRow {
-  date: string;
-  username: string;
+interface HistoryRow {
   action: string;
+  created_at: string;
+  user: {
+    full_name: string;
+  };
 }
 
-const Type = ({ type }: { type: string }) => {
-  return (
-    <div className="flex justify-center w-full">
-      <button
-        className={clsx(
-          "px-2 text-sm font-medium rounded-md",
-          type === "LOGIN" && "bg-lime-3 text-lime-9",
-          type === "LOGOUT" && "bg-amber-3 text-amber-9",
-          type === "FAILED-LOGIN" && "bg-red-3 text-red-9"
-        )}
-      >
-        {type}
-      </button>
-    </div>
-  );
-};
+function TaskHistory() {
+  const router = useRouter();
+  const sectionId = parseInt(router.query.sectionId as string);
 
-function History() {
-  const data: LoggerRow[] = useMemo(
-    () => [
-      {
-        date: "2022-09-16 12:31:22+07:00",
-        username: "lalita.b@ku.th",
-        action: "Create Course",
-      },
-    ],
-    []
-  );
+  const section = trpc.sections.getSectionById.useQuery({ id: sectionId });
 
-  const columns = useMemo<ColumnDef<LoggerRow, string>[]>(
+  const columnHelper = createColumnHelper<HistoryRow>();
+
+  const columns = useMemo(
     () => [
       {
         header: "Date/Time",
-        accessorKey: "date",
+        accessorKey: "created_at",
       },
-      {
+      columnHelper.accessor("user", {
         header: "Username",
-        accessorKey: "username",
-      },
+        cell: (props) => props.getValue().full_name,
+      }),
       {
         header: "Action",
         accessorKey: "action",
       },
     ],
-    []
+    [columnHelper]
   );
 
-  const exportCSV = () => {
-    //TODO
-  };
-
   return (
-    <SectionLayout title="12 (F 15 - 17)">
+    <SectionLayout
+      title={section.data?.name as string}
+      isLoading={section.isLoading}
+    >
       <Table
-        data={data}
+        data={section.data?.history ?? []}
         columns={columns}
-        defaultSortingState={{ id: "date", desc: true }}
-        className="mt-6"
-      >
-        <div className="flex justify-end p-2 ">
-          <button
-            onClick={exportCSV}
-            className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
-          >
-            <Icon icon="solar:document-text-line-duotone" />
-            Export as CSV
-          </button>
-        </div>
-        <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          {/* <RangePicker onChange={(range) => {}} />
-          <TimePickerRange onApply={(startTime, endTime) => {}} /> */}
-        </div>
-      </Table>
+        defaultSortingState={{ id: "created_at", desc: true }}
+        className="mt-4"
+      />
     </SectionLayout>
   );
 }
 
-export default History;
+export default TaskHistory;

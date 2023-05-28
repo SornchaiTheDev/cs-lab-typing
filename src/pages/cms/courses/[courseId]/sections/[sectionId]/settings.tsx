@@ -103,6 +103,13 @@ function Settings() {
                   type: "text",
                   value: section.data?.note ?? "",
                 },
+                {
+                  label: "active",
+                  title: "Active",
+                  type: "checkbox",
+                  optional: true,
+                  value: section.data?.active ?? false,
+                },
               ]}
               confirmBtn={{
                 title: "Edit Section",

@@ -9,13 +9,42 @@ async function main() {
       full_name: "Sornchai Somsakul",
       email: "sornchai.som@ku.th",
       roles: {
-        set: ["ADMIN"],
+        set: ["ADMIN", "STUDENT"],
       },
     },
   });
 
-  console.log("Finished creating roles and admin user");
+  const course = await prisma.courses.create({
+    data: {
+      number: "CPE314",
+      name: "Computer Architecture",
+      note: "Computer Architecture Course",
+      sections: {
+        create: {
+          name: "CPE314-1",
+          note: "Computer Architecture Section 1",
+          semester: {
+            create: {
+              year: "2566",
+              term: "F",
+              startDate: new Date("2021-08-01"),
+            },
+          },
+          created_by: {
+            connect: {
+              full_name: "Sornchai Somsakul",
+            },
+          },
+          active: true,
+        },
+      },
+    },
+  });
+
+  console.log("Finished creating admin user");
   console.log(adminUser);
+  console.log("Finished creating Course and Section");
+  console.log(course);
 }
 
 main()

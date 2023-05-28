@@ -7,16 +7,17 @@ export const updateSectionsRouter = router({
   updateSection: adminProcedure
     .input(AddSectionSchema.and(z.object({ id: z.number() })))
     .mutation(async ({ ctx, input }) => {
-      const { id, instructors, name, semester, tas, note } = input;
+      const { id, instructors, name, semester, tas, note, active } = input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
-
+      const requester = ctx.user.full_name;
       try {
         await ctx.prisma.sections.update({
           where: {
             id,
           },
           data: {
+            active,
             name,
             note,
             semester: {
@@ -28,12 +29,22 @@ export const updateSectionsRouter = router({
               },
             },
             instructors: {
-              connect: instructors.map((instructor) => ({
+              set: instructors.map((instructor) => ({
                 full_name: instructor,
               })),
             },
             tas: {
-              connect: tas ? tas.map((ta) => ({ full_name: ta })) : [],
+              set: tas ? tas.map((ta) => ({ full_name: ta })) : [],
+            },
+            history: {
+              create: {
+                action: "Update section",
+                user: {
+                  connect: {
+                    full_name: requester,
+                  },
+                },
+              },
             },
           },
         });

@@ -95,6 +95,13 @@ function Sections() {
                 value: [],
               },
               { label: "note", title: "Note", type: "text", optional: true },
+              {
+                label: "active",
+                title: "Active",
+                type: "checkbox",
+                optional: true,
+                value: true,
+              },
             ]}
           />
         </ModalWithButton>
@@ -110,7 +117,7 @@ function Sections() {
                   className="col-span-12 md:col-span-4"
                 />
               ))
-          : sections.data?.map(({ name, note, id, students }) => (
+          : sections.data?.map(({ name, note, id, _count }) => (
               <Link
                 key={id}
                 href={{
@@ -131,8 +138,8 @@ function Sections() {
                         className="text-lg"
                       />
                       <h6 className="text-sand-12">
-                        <span className="font-bold">{students.length}</span>{" "}
-                        student{students.length > 1 ? "s" : ""}
+                        <span className="font-bold">{_count.students}</span>{" "}
+                        student{_count.students > 1 ? "s" : ""}
                       </h6>
                     </div>
                     <div className="min-h-[1.5rem]">

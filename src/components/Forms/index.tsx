@@ -11,6 +11,7 @@ import TextArea from "./TextArea";
 import Button from "~/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
+import Switch from "../Common/Switch";
 
 interface ConfirmBtn {
   title: string;
@@ -149,15 +150,24 @@ function Forms<T>({
             )}
           />
         );
+      // handleOnClick
       case "checkbox":
         return (
-          <Checkbox
-            isLoading={isLoading}
+          <Controller
             key={field.label as string}
-            label={field.label as string}
-            register={register}
-            title={field.title}
-            disabled={field.disabled || isSubmitting}
+            control={control}
+            name={field.label as string}
+            render={({ field: { onChange, value } }) => (
+              <Checkbox
+                isLoading={isLoading}
+                key={field.label as string}
+                label={field.label as string}
+                title={field.title}
+                value={value ?? false}
+                onChange={onChange}
+                disabled={field.disabled || isSubmitting}
+              />
+            )}
           />
         );
       case "textarea":
@@ -195,13 +205,11 @@ function Forms<T>({
 
   return (
     <form
-      onSubmit={
-        handleSubmit(
-          onSubmit as SubmitHandler<{
-            [x: string]: string | number | string[] | Date;
-          }>
-        )
-      }
+      onSubmit={handleSubmit(
+        onSubmit as SubmitHandler<{
+          [x: string]: string | number | string[] | Date;
+        }>
+      )}
       className="flex flex-col gap-2"
     >
       {fields.map((field) => {

@@ -1,4 +1,4 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { adminProcedure, teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 export const getSemesterRouter = router({
   getSemesters: adminProcedure
@@ -68,7 +68,7 @@ export const getSemesterRouter = router({
 
       return relation;
     }),
-  getAllSemesters: adminProcedure.query(async ({ ctx }) => {
+  getAllSemesters: teacherProcedure.query(async ({ ctx }) => {
     const semesters = await ctx.prisma.semesters.findMany({
       orderBy: {
         year: "desc",

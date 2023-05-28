@@ -1,8 +1,8 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 
 export const getLabRouter = router({
-  getLabPagination: adminProcedure
+  getLabPagination: teacherProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -33,7 +33,7 @@ export const getLabRouter = router({
       }
       return labs;
     }),
-  getLabById: adminProcedure
+  getLabById: teacherProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
@@ -49,7 +49,7 @@ export const getLabRouter = router({
 
       return lab;
     }),
-  getLabObjectRelation: adminProcedure
+  getLabObjectRelation: teacherProcedure
     .input(z.object({ name: z.string() }))
     .query(async ({ ctx, input }) => {
       const { name } = input;

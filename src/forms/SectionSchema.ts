@@ -11,6 +11,7 @@ export const AddSectionSchema = z.object({
     .min(1, { message: "Instructors cannot be empty" }),
   tas: z.array(z.string()).optional(),
   note: z.string().optional(),
+  active: z.boolean().default(true),
 });
 
 export type TAddSection = z.infer<typeof AddSectionSchema>;

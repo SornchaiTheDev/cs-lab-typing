@@ -1,7 +1,6 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import Layout from ".";
 import HorizontalMenu from "~/components/Common/HorizontalMenu";
-
 interface Props {
   title: string;
   children?: ReactNode;

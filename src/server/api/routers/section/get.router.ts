@@ -1,9 +1,28 @@
-import { generatePerson } from "~/helpers";
-import { adminProcedure, router } from "~/server/api/trpc";
+import { generatePerson, getHighestRole } from "~/helpers";
+import {
+  adminProcedure,
+  authedProcedure,
+  router,
+  teacherProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
+import { getAllSections } from "./roles/getAllSections";
+import { getTeacherRelatedSections } from "./roles/getTeacherRelatedSections";
+import type { Prisma } from "@prisma/client";
+import { getStudentRelatedSections } from "./roles/getStudentRelatedSections";
+
+type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
+  include: {
+    _count: {
+      select: {
+        students: true;
+      };
+    };
+  };
+}>;
 
 export const getSectionsRouter = router({
-  getSectionById: adminProcedure
+  getSectionById: authedProcedure
     .input(
       z.object({
         id: z.number(),
@@ -20,11 +39,16 @@ export const getSectionsRouter = router({
           tas: true,
           instructors: true,
           students: true,
+          history: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
       return section;
     }),
-  getSectionPagination: adminProcedure
+  getSectionPagination: teacherProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -34,22 +58,35 @@ export const getSectionsRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { page, limit, courseId } = input;
+      const role = getHighestRole(
+        (ctx.user.roles.split(",") as string[]) ?? []
+      );
+      const full_name = ctx.user.full_name;
+      let sections: sectionsIncludedStudentLength[] = [];
+      if (role === "ADMIN") {
+        sections = await getAllSections(ctx.prisma, courseId, page, limit);
+      } else if (role === "TEACHER") {
+        sections = await getTeacherRelatedSections(
+          ctx.prisma,
+          courseId,
+          page,
+          limit,
+          full_name
+        );
+      } else {
+        sections = await getStudentRelatedSections(
+          ctx.prisma,
+          courseId,
+          page,
+          limit,
+          full_name
+        );
+      }
 
-      const semesters = await ctx.prisma.sections.findMany({
-        where: {
-          deleted_at: null,
-          course_id: courseId,
-        },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          students: true,
-        },
-      });
-      if (!semesters) {
+      if (!sections) {
         return [];
       }
-      return semesters;
+      return sections;
     }),
   getSectionObjectRelation: adminProcedure
     .input(z.object({ name: z.string() }))

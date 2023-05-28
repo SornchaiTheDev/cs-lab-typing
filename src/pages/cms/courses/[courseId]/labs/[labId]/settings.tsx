@@ -8,8 +8,12 @@ import { useRouter } from "next/router";
 import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
 import { callToast } from "~/services/callToast";
+import { useSession } from "next-auth/react";
 
 function Settings() {
+  const { data: session } = useSession();
+  const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
+
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -80,6 +84,7 @@ function Settings() {
                   label: "isDisabled",
                   title: "Disabled",
                   type: "checkbox",
+                  disabled: !isTeacher,
                   value: lab.data?.isDisabled,
                 },
               ]}

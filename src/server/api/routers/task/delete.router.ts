@@ -12,6 +12,22 @@ export const deleteTaskRouter = router({
           id,
         },
       });
+
+      await ctx.prisma.task_history.create({
+        data: {
+          action: "Delete task",
+          user: {
+            connect: {
+              full_name: ctx.user.full_name,
+            },
+          },
+          tasks: {
+            connect: {
+              id: task.id,
+            },
+          },
+        },
+      });
       if (!task) {
         return null;
       }

@@ -72,6 +72,9 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
     case "SAME_YEAR_AND_TERM":
       msg = "There are already has same year and term";
       break;
+    case "UNAUTHORIZED":
+      msg = "You don't have permission to do that";
+      break;
   }
 
   return (

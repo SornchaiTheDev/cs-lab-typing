@@ -1,21 +1,24 @@
 import { AddSectionSchema } from "~/forms/SectionSchema";
 import { isArrayUnique, isAllUserHaveValidEmail } from "~/helpers";
-import { adminProcedure, router } from "~/server/api/trpc";
+import { teacherProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const createSectionsRouter = router({
-  createSection: adminProcedure
+  createSection: teacherProcedure
     .input(AddSectionSchema.and(z.object({ courseId: z.number() })))
     .mutation(async ({ ctx, input }) => {
-      const { instructors, name, semester, note, tas, courseId } = input;
+      const { instructors, name, semester, note, tas, courseId, active } =
+        input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
+      const requester = ctx.user.full_name;
       let section;
       try {
         section = await ctx.prisma.sections.create({
           data: {
+            active,
             name,
             note,
             semester: {
@@ -39,6 +42,21 @@ export const createSectionsRouter = router({
                 id: courseId,
               },
             },
+            created_by: {
+              connect: {
+                full_name: ctx.user.full_name,
+              },
+            },
+            history: {
+              create: {
+                action: "Create a section",
+                user: {
+                  connect: {
+                    full_name: ctx.user.full_name,
+                  },
+                },
+              },
+            },
           },
         });
       } catch (e) {
@@ -54,10 +72,12 @@ export const createSectionsRouter = router({
       }
       return section;
     }),
-  addUsersToSection: adminProcedure
+  addUsersToSection: teacherProcedure
     .input(z.object({ emails: z.array(z.string()), sectionId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { emails, sectionId } = input;
+      const requester = ctx.user.full_name;
+
       if (!isArrayUnique(emails)) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -76,6 +96,16 @@ export const createSectionsRouter = router({
                 connect: emails.map((email) => ({
                   email,
                 })),
+              },
+              history: {
+                create: {
+                  action: "Add students to section",
+                  user: {
+                    connect: {
+                      full_name: requester,
+                    },
+                  },
+                },
               },
             },
           });

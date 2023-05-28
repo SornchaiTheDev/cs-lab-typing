@@ -1,11 +1,11 @@
-import { router, adminProcedure } from "~/server/api/trpc";
+import { router, teacherProcedure } from "~/server/api/trpc";
 import { AddLabSchema } from "~/forms/LabSchema";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const createLabRouter = router({
-  createLab: adminProcedure
+  createLab: teacherProcedure
     .input(AddLabSchema.and(z.object({ courseId: z.number() })))
     .mutation(async ({ ctx, input }) => {
       const { isDisabled, name, tags, courseId } = input;
@@ -24,6 +24,16 @@ export const createLabRouter = router({
             course: {
               connect: {
                 id: courseId,
+              },
+            },
+            history: {
+              create: {
+                action: "Create a lab",
+                user: {
+                  connect: {
+                    full_name: ctx.user.full_name,
+                  },
+                },
               },
             },
           },

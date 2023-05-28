@@ -3,13 +3,21 @@ import { useRouter } from "next/router";
 import { AddCourseSchema, type TAddCourse } from "~/forms/CourseSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
-import { trpc } from "~/helpers";
+import { getHighestRole, trpc } from "~/helpers";
 import Forms from "~/components/Forms";
 import { useDeleteAffectStore } from "~/store";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
+import { useSession } from "next-auth/react";
 
 function Settings() {
+  const { data: session } = useSession();
+  const role = getHighestRole(
+    (session?.user?.roles.split(",") as string[]) ?? []
+  );
+
+  const isAdmin = role === "ADMIN";
+
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -101,25 +109,27 @@ function Settings() {
               ]}
             />
           </div>
-          <div className="mt-10">
-            <h4 className="text-xl text-red-9">Danger Zone</h4>
-            <hr className="my-2" />
-            <Button
-              onClick={() =>
-                setSelectedObj({
-                  selected: {
-                    display: course?.name as string,
-                    id: course?.id as number,
-                  },
-                  type: "course",
-                })
-              }
-              icon="solar:trash-bin-minimalistic-line-duotone"
-              className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-1/3"
-            >
-              Delete Course
-            </Button>
-          </div>
+          {isAdmin && (
+            <div className="mt-10">
+              <h4 className="text-xl text-red-9">Danger Zone</h4>
+              <hr className="my-2" />
+              <Button
+                onClick={() =>
+                  setSelectedObj({
+                    selected: {
+                      display: course?.name as string,
+                      id: course?.id as number,
+                    },
+                    type: "course",
+                  })
+                }
+                icon="solar:trash-bin-minimalistic-line-duotone"
+                className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-1/3"
+              >
+                Delete Course
+              </Button>
+            </div>
+          )}
         </div>
       </CourseLayout>
     </>

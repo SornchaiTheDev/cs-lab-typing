@@ -30,19 +30,14 @@ export const createTaskRouter = router({
               },
             },
             type,
-          },
-        });
-        await ctx.prisma.task_history.create({
-          data: {
-            action: "Create a task",
-            user: {
-              connect: {
-                full_name: owner,
-              },
-            },
-            tasks: {
-              connect: {
-                id: task.id,
+            history: {
+              create: {
+                action: "Create a task",
+                user: {
+                  connect: {
+                    full_name: owner,
+                  },
+                },
               },
             },
           },
