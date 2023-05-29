@@ -118,9 +118,22 @@ model labs {
   course     courses       @relation(fields: [courseId], references: [id])
   courseId   Int
   isDisabled Boolean
+  tasks      lab_task[]
   history    lab_history[]
   created_at DateTime      @default(now())
   updated_at DateTime?     @updatedAt
+  deleted_at DateTime?
+}
+
+model lab_task {
+  id         Int       @id @default(autoincrement())
+  order      Int
+  lab        labs      @relation(fields: [lab_id], references: [id])
+  lab_id     Int
+  task       tasks     @relation(fields: [task_id], references: [id])
+  task_id    Int
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
   deleted_at DateTime?
 }
 
@@ -145,20 +158,22 @@ model tags {
 }
 
 model tasks {
-  id         Int            @id @default(autoincrement())
-  name       String
-  type       task_type
-  language   String?
-  tags       tags[]         @relation("task_tag")
-  owner      users          @relation(fields: [usersId], references: [id])
-  usersId    Int
-  isPrivate  Boolean
-  note       String?
-  body       String?
-  created_at DateTime       @default(now())
-  updated_at DateTime?      @updatedAt
-  deleted_at DateTime?
-  history    task_history[]
+  id               Int            @id @default(autoincrement())
+  name             String
+  type             task_type
+  language         String?
+  tags             tags[]         @relation("task_tag")
+  owner            users          @relation(fields: [usersId], references: [id])
+  usersId          Int
+  isPrivate        Boolean
+  note             String?
+  body             String?
+  labs             lab_task[]
+  submission_count Int            @default(0)
+  created_at       DateTime       @default(now())
+  updated_at       DateTime?      @updatedAt
+  deleted_at       DateTime?
+  history          task_history[]
 }
 
 model task_history {

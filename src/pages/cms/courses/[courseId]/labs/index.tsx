@@ -28,6 +28,7 @@ function Labs() {
     state.selectedObj,
     state.setSelectedObj,
   ]);
+
   const [isShow, setIsShow] = useState(false);
 
   const columnHelper = createColumnHelper<LabsRow>();

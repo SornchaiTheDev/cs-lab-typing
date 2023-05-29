@@ -28,6 +28,16 @@ export const updateLabRouter = router({
                 id: courseId,
               },
             },
+            history: {
+              create: {
+                action: "Edit lab settings",
+                user: {
+                  connect: {
+                    full_name: ctx.user.full_name,
+                  },
+                },
+              },
+            },
           },
         });
       } catch (e) {
@@ -40,6 +50,54 @@ export const updateLabRouter = router({
             });
           }
         }
+      }
+    }),
+  updateTaskOrder: teacherProcedure
+    .input(
+      z.object({
+        labId: z.number(),
+        tasks: z.array(z.object({ id: z.number(), order: z.number() })),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { labId, tasks } = input;
+      const requester = ctx.user.full_name;
+
+      try {
+        await ctx.prisma.labs.update({
+          where: {
+            id: labId,
+          },
+          data: {
+            tasks: {
+              updateMany: tasks.map((task) => ({
+                where: {
+                  id: {
+                    equals: task.id,
+                  },
+                },
+                data: {
+                  order: task.order,
+                },
+              })),
+            },
+            history: {
+              create: {
+                action: "Edit task order",
+                user: {
+                  connect: {
+                    full_name: requester,
+                  },
+                },
+              },
+            },
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
     }),
 });

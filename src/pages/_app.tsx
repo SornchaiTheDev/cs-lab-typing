@@ -8,6 +8,8 @@ import "~/styles/globals.css";
 import "react-day-picker/dist/style.css";
 import "~/styles/datepicker.css";
 import { Toaster } from "react-hot-toast";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -17,7 +19,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <Analytics />
       <Toaster position="top-right" />
-      <Component {...pageProps} />
+      <DndProvider backend={HTML5Backend}>
+        <Component {...pageProps} />
+      </DndProvider>
     </SessionProvider>
   );
 };

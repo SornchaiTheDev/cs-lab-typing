@@ -44,6 +44,21 @@ export const getLabRouter = router({
         },
         include: {
           tags: true,
+          tasks: {
+            orderBy: {
+              order: "asc",
+            },
+            select: {
+              id: true,
+              order: true,
+              task: true,
+            },
+          },
+          history: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
 

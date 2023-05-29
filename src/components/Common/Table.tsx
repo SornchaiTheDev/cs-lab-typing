@@ -1,13 +1,55 @@
-import { useState, ReactNode, useMemo } from "react";
+import { useState, type ReactNode, useMemo, useEffect } from "react";
 import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { ColumnSort, SortingState } from "@tanstack/react-table";
+import type { ColumnSort, Row, SortingState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { Icon } from "@iconify/react";
+import { useDrag, useDrop } from "react-dnd";
+
+interface DragAndDropProps {
+  row: Row<any>;
+  reorderRow: (draggedRowIndex: number, targetRowIndex: number) => void;
+}
+const DraggableRow = ({ row, reorderRow }: DragAndDropProps) => {
+  const [, dropRef] = useDrop({
+    accept: "row",
+    drop: (draggedRow: Row<any>) => reorderRow(draggedRow.index, row.index),
+  });
+
+  const [{ isDragging }, dragRef, previewRef] = useDrag({
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: () => row,
+    type: "row",
+  });
+
+  return (
+    <tr
+      ref={previewRef}
+      className="text-center hover:bg-sand-4"
+      style={{ opacity: isDragging ? 0.5 : 1 }}
+    >
+      <td ref={dropRef}>
+        <button
+          ref={dragRef}
+          className="text-xl text-sand-10 active:text-sand-12"
+        >
+          <Icon icon="ic:baseline-drag-indicator" />
+        </button>
+      </td>
+      {row.getVisibleCells().map((cell) => (
+        <td key={cell.id} className="p-3">
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </td>
+      ))}
+    </tr>
+  );
+};
 
 interface Props {
   data: any[];
@@ -16,7 +58,10 @@ interface Props {
   defaultSortingState?: ColumnSort | undefined;
   children?: ReactNode;
   isLoading?: boolean;
+  draggabled?: boolean;
+  onDrag?: (data : any[]) => void;
 }
+
 function Table({
   data,
   columns,
@@ -24,25 +69,44 @@ function Table({
   defaultSortingState,
   children,
   isLoading,
+  draggabled,
+  onDrag,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>(
     defaultSortingState ? [defaultSortingState] : []
   );
 
-  const tableData = useMemo(
-    () => (isLoading ? Array(8).fill({}) : data),
-    [isLoading, data]
-  );
+  const [tableData, setTableData] = useState<typeof data>([]);
+
+  const reorderRow = (draggedRowIndex: number, targetRowIndex: number) => {
+    tableData.splice(
+      targetRowIndex,
+      0,
+      tableData.splice(draggedRowIndex, 1)[0]
+    );
+    setTableData([...tableData]);
+    onDrag && onDrag([...tableData]);
+  };
+
+  useEffect(() => {
+    if (isLoading) {
+      setTableData(Array(8).fill({}));
+    } else {
+      setTableData(data);
+    }
+  }, [isLoading, data]);
+
   const tableColumns = useMemo(
     () =>
       isLoading
         ? columns.map((column) => ({
             ...column,
             cell: (
-              <div className="w-full h-4 rounded from-sand-6 to-sand-4 bg-gradient-to-r animate-pulse"></div>
+              <div className="h-4 w-full animate-pulse rounded bg-gradient-to-r from-sand-6 to-sand-4"></div>
             ),
           }))
         : columns,
+
     [isLoading, columns]
   );
 
@@ -53,6 +117,7 @@ function Table({
       sorting,
     },
     onSortingChange: setSorting,
+    getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
@@ -60,7 +125,7 @@ function Table({
   return (
     <div
       className={clsx(
-        "flex-1 border bg-sand-1 text-sand-12 rounded-xl border-sand-6 overflow-hidden",
+        "flex-1 overflow-hidden rounded-xl border border-sand-6 bg-sand-1 text-sand-12",
         className
       )}
     >
@@ -70,15 +135,17 @@ function Table({
           <thead className="bg-sand-3">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
+                {draggabled && <th style={{ width: 20 }} />}
+
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="p-3 w-fit"
+                    className="w-fit p-3"
                     style={{ width: header.getSize() }}
                   >
                     {header.isPlaceholder ? null : (
                       <button
-                        className="flex items-center justify-center w-full gap-2"
+                        className="flex w-full items-center justify-center gap-2"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(
@@ -107,15 +174,29 @@ function Table({
             ))}
           </thead>
           <tbody className="divide-y">
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="text-center hover:bg-sand-4">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-3">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {table.getRowModel().rows.map((row) => {
+              if (draggabled)
+                return (
+                  <DraggableRow
+                    key={row.id}
+                    row={row}
+                    reorderRow={reorderRow}
+                  />
+                );
+
+              return (
+                <tr key={row.id} className="text-center hover:bg-sand-4">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="p-3">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
           <tfoot>
             {table.getFooterGroups().map((footerGroup) => (

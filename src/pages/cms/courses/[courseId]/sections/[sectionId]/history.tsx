@@ -13,7 +13,7 @@ interface HistoryRow {
   };
 }
 
-function TaskHistory() {
+function SectionHistory() {
   const router = useRouter();
   const sectionId = parseInt(router.query.sectionId as string);
 
@@ -54,4 +54,4 @@ function TaskHistory() {
   );
 }
 
-export default TaskHistory;
+export default SectionHistory;
