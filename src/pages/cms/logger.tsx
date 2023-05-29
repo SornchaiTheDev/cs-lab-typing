@@ -59,13 +59,15 @@ function Logger() {
       {
         header: "Date",
         accessorKey: "date",
+        cell: (props) =>
+          dayjs(props.getValue() as unknown as Date).format(
+            "DD/MM/YYYY HH:mm:ss"
+          ),
       },
       {
         header: "Email / Username",
         accessorKey: "user.email",
-        cell: (props) => (
-          <span>{props.getValue() as string}</span>
-        ),
+        cell: (props) => <span>{props.getValue() as string}</span>,
       },
       {
         header: "IP Address",
@@ -78,9 +80,9 @@ function Logger() {
   const exportCSV = () => {
     let csvString = "Type,Date,Email / Username,IP Address\n";
     authLogs.data?.forEach((log) => {
-      csvString += `${log.type},${log.date.toDateString()},${log.user.email},${
-        log.ip_address
-      }\n`;
+      csvString += `${log.type},${dayjs(log.date).format(
+        "DD/MM/YYYY HH:mm:ss"
+      )},${log.user.email},${log.ip_address}\n`;
     });
 
     const startDate = dayjs(dateRange.from);

@@ -4,6 +4,7 @@ import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import { createColumnHelper } from "@tanstack/react-table";
 import SectionLayout from "~/Layout/SectionLayout";
+import dayjs from "dayjs";
 
 interface HistoryRow {
   action: string;
@@ -26,6 +27,10 @@ function SectionHistory() {
       {
         header: "Date/Time",
         accessorKey: "created_at",
+        cell: (props) =>
+          dayjs(props.getValue() as unknown as Date).format(
+            "DD/MM/YYYY HH:mm:ss"
+          ),
       },
       columnHelper.accessor("user", {
         header: "Username",
