@@ -11,6 +11,7 @@ import type { Prisma } from "@prisma/client";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import Button from "~/components/Common/Button";
+import Link from "next/link";
 
 type LabTask = Prisma.lab_taskGetPayload<{
   select: {
@@ -38,6 +39,7 @@ function Lab() {
 
   useEffect(() => {
     if (lab.data?.tasks) {
+      console.log(lab.data?.tasks)
       setTableData(lab.data?.tasks);
     }
   }, [lab.data?.tasks]);
@@ -64,11 +66,23 @@ function Lab() {
     [deleteTask, lab, labId]
   );
 
-  const columns = useMemo<ColumnDef<LabTask, string | string[]>[]>(
+  const columns = useMemo<ColumnDef<LabTask, string>[]>(
     () => [
       {
         header: "Task",
-        accessorKey: "task.name",
+        accessorKey: "task",
+        cell: (props) => {
+          return (
+            <Link
+              href={{
+                pathname: "/cms/tasks/[taskId]",
+                query: { taskId: props.row.original.task.id },
+              }}
+            >
+              {props.row.original.task.name as string}
+            </Link>
+          );
+        },
       },
       {
         header: "Submission Count",

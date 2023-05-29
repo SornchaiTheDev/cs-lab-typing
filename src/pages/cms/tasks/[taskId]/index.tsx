@@ -86,18 +86,18 @@ function TypingTask() {
 
   return (
     <InsideTaskLayout
-      title="Typing Task"
+      title={task.data?.name ?? ""}
       isLoading={task.isLoading}
       canAccessToSettings={isOwner || isAdmin}
     >
       <div className="mt-4 flex justify-between">
         <div>
           <h4 className="mt-4 text-2xl">Task Information</h4>
-          <h5 className="mb-2 mt-4 font-bold">Course Name</h5>
+          <h5 className="mb-2 mt-4 font-bold">Task type</h5>
           {task.isLoading ? (
             <Skeleton width={"10rem"} height={"1.5rem"} />
           ) : (
-            <h4 className="text-lg">{task.data?.name as string}</h4>
+            <h4 className="text-lg">{task.data?.type as string}</h4>
           )}
           <h5 className="mb-2 mt-4 font-bold">Note</h5>
           {task.isLoading ? (

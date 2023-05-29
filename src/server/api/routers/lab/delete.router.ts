@@ -47,7 +47,7 @@ export const deleteLabRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;
       const requester = ctx.user.full_name;
-      
+
       try {
         await ctx.prisma.labs.update({
           where: {
@@ -55,7 +55,7 @@ export const deleteLabRouter = router({
           },
           data: {
             tasks: {
-              disconnect: {
+              delete: {
                 id: taskId,
               },
             },
