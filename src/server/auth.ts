@@ -120,16 +120,18 @@ export const authOptions: NextAuthOptions = {
       return baseUrl;
     },
     async jwt({ token, user }) {
+      const fetchUser = await prisma.users.findUnique({
+        where: {
+          email: token.email as string,
+        },
+      });
+      token.roles = fetchUser?.roles.join(",") ?? "";
+      token.full_name = fetchUser?.full_name as string;
+
       if (user) {
-        const fetchUser = await prisma.users.findUnique({
-          where: {
-            email: user.email as string,
-          },
-        });
-        token.roles = fetchUser?.roles.join(",") ?? "";
-        token.full_name = fetchUser?.full_name as string;
         token.image = user.image ?? "/assets/profile-placeholder.png";
       }
+
       return token;
     },
     async session({ session, token }) {

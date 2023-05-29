@@ -70,6 +70,40 @@ export const getTaskRouter = router({
       return task;
     }),
 
+  searchTasks: authedProcedure
+    .input(
+      z.object({
+        query: z.string(),
+        page: z.number().default(1),
+        limit: z.number().default(10),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { query, page, limit } = input;
+      const tasks = await ctx.prisma.tasks.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: {
+          deleted_at: null,
+          OR: [
+            { isPrivate: false },
+            {
+              owner: {
+                full_name: ctx.user.full_name,
+              },
+            },
+            {
+              name: {
+                contains: query,
+              },
+            },
+          ],
+        },
+      });
+
+      return tasks;
+    }),
+
   getTaskObjectRelation: teacherProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {

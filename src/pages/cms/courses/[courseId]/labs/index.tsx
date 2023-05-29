@@ -124,7 +124,7 @@ function Labs() {
         size: 50,
       }),
     ],
-    [columnHelper]
+    [columnHelper,router,setSelectedObj]
   );
 
   return (
