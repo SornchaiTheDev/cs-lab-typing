@@ -1,12 +1,19 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+import clsx from "clsx";
 
 interface Props {
   children: ReactNode;
+  color?: string;
 }
 
-function Badge({ children }: Props) {
+function Badge({ children, color }: Props) {
   return (
-    <div className="flex items-center px-2 py-1 text-sm font-semibold text-white rounded-md w-fit bg-sand-12">
+    <div
+      className={clsx(
+        "flex w-fit items-center rounded-md px-2 py-1 text-sm font-semibold text-white",
+        color ? color : "bg-sand-12"
+      )}
+    >
       <h5>{children}</h5>
     </div>
   );

@@ -1,5 +1,6 @@
 import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import type { tasks } from "@prisma/client";
 
 export const getLabRouter = router({
   getLabPagination: teacherProcedure
@@ -44,16 +45,7 @@ export const getLabRouter = router({
         },
         include: {
           tags: true,
-          tasks: {
-            orderBy: {
-              order: "asc",
-            },
-            select: {
-              id: true,
-              order: true,
-              task: true,
-            },
-          },
+          tasks: true,
           history: {
             include: {
               user: true,
@@ -62,7 +54,16 @@ export const getLabRouter = router({
         },
       });
 
-      return lab;
+      if (lab) {
+        const sortedTaskLab = lab.tasks_order.map((id) => {
+          const task = lab?.tasks.find((task) => task.id === id) as tasks;
+          return task;
+        });
+
+        return { ...lab, tasks: sortedTaskLab };
+      }
+
+      return null;
     }),
   getLabObjectRelation: teacherProcedure
     .input(z.object({ name: z.string() }))

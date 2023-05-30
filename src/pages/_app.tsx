@@ -17,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      {/* <CommandPallete /> */}
       <Analytics />
       <Toaster position="top-right" />
       <DndProvider backend={HTML5Backend}>

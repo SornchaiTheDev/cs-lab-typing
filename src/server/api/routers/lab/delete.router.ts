@@ -49,15 +49,34 @@ export const deleteLabRouter = router({
       const requester = ctx.user.full_name;
 
       try {
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: labId,
+          },
+          include: {
+            tasks: true,
+          },
+        });
+        if (!lab) {
+          throw new Error("Lab not found");
+        }
+
+        const filteredTasks = lab.tasks
+          .filter((task) => task.id !== taskId)
+          .map((task) => task.id);
+
         await ctx.prisma.labs.update({
           where: {
             id: labId,
           },
           data: {
             tasks: {
-              delete: {
+              disconnect: {
                 id: taskId,
               },
+            },
+            tasks_order: {
+              set: filteredTasks,
             },
             history: {
               create: {

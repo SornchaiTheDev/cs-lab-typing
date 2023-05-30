@@ -13,3 +13,4 @@ export {
   isValidTeacher,
 } from "./isValidUser";
 export { getHighestRole } from "./getHighestRole";
+export { convertToThousand } from "./convertToThousand";

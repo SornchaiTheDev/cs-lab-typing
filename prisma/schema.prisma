@@ -33,14 +33,14 @@ model users {
   instructors      sections[]        @relation("section_instructor")
   TAs              sections[]        @relation("section_ta")
   created_sections sections[]
-  created_at       DateTime          @default(now())
-  updated_at       DateTime?         @updatedAt
-  deleted_at       DateTime?
   sectionsId       Int?
   tasks            tasks[]
   task_history     task_history[]
   section_history  section_history[]
   lab_history      lab_history[]
+  created_at       DateTime          @default(now())
+  updated_at       DateTime?         @updatedAt
+  deleted_at       DateTime?
 }
 
 model auth_logger {
@@ -112,29 +112,18 @@ model section_history {
 }
 
 model labs {
-  id         Int           @id @default(autoincrement())
-  name       String        @unique
-  tags       tags[]        @relation("lab_tag")
-  course     courses       @relation(fields: [courseId], references: [id])
-  courseId   Int
-  isDisabled Boolean
-  tasks      lab_task[]
-  history    lab_history[]
-  created_at DateTime      @default(now())
-  updated_at DateTime?     @updatedAt
-  deleted_at DateTime?
-}
-
-model lab_task {
-  id         Int       @id @default(autoincrement())
-  order      Int
-  lab        labs      @relation(fields: [lab_id], references: [id])
-  lab_id     Int
-  task       tasks     @relation(fields: [task_id], references: [id])
-  task_id    Int
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  tags        tags[]        @relation("lab_tag")
+  course      courses       @relation(fields: [courseId], references: [id])
+  courseId    Int
+  isDisabled  Boolean
+  tasks_order Int[]
+  tasks       tasks[]       @relation("lab_task")
+  history     lab_history[]
+  created_at  DateTime      @default(now())
+  updated_at  DateTime?     @updatedAt
+  deleted_at  DateTime?
 }
 
 model lab_history {
@@ -168,7 +157,7 @@ model tasks {
   isPrivate        Boolean
   note             String?
   body             String?
-  labs             lab_task[]
+  labs             labs[]         @relation("lab_task")
   submission_count Int            @default(0)
   created_at       DateTime       @default(now())
   updated_at       DateTime?      @updatedAt
