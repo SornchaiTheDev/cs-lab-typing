@@ -1,4 +1,4 @@
-import { router, adminProcedure } from "~/server/api/trpc";
+import { router, adminProcedure, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
@@ -41,5 +41,28 @@ export const deleteSectionsRouter = router({
         });
       }
       return "Success";
+    }),
+  deleteStudent: teacherProcedure
+    .input(
+      z.object({
+        student_id: z.string(),
+        sectionId: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { sectionId, student_id } = input;
+
+      await ctx.prisma.sections.update({
+        where: {
+          id: sectionId,
+        },
+        data: {
+          students: {
+            disconnect: {
+              student_id,
+            },
+          },
+        },
+      });
     }),
 });

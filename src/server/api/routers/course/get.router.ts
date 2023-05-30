@@ -164,11 +164,29 @@ export const getCourseRouter = router({
         where: {
           sections: {
             some: {
-              students: {
-                some: {
-                  email,
+              OR: [
+                {
+                  students: {
+                    some: {
+                      email,
+                    },
+                  },
                 },
-              },
+                {
+                  instructors: {
+                    some: {
+                      email,
+                    },
+                  },
+                },
+                {
+                  tas: {
+                    some: {
+                      email,
+                    },
+                  },
+                },
+              ],
             },
           },
         },

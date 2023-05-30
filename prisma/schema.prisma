@@ -60,9 +60,10 @@ model semesters {
   year       String
   term       String
   startDate  DateTime
+  sections   sections[]
   created_at DateTime   @default(now())
   updated_at DateTime?  @updatedAt
-  sections   sections[]
+  deleted_at DateTime?
 
   @@unique([year, term])
 }

@@ -1,10 +1,10 @@
 import { AddSectionSchema } from "~/forms/SectionSchema";
-import { adminProcedure, router } from "~/server/api/trpc";
+import { adminProcedure, router, teacherProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const updateSectionsRouter = router({
-  updateSection: adminProcedure
+  updateSection: teacherProcedure
     .input(AddSectionSchema.and(z.object({ id: z.number() })))
     .mutation(async ({ ctx, input }) => {
       const { id, instructors, name, semester, tas, note, active } = input;

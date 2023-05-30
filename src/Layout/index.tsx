@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { replaceSlugwithQueryPath } from "~/helpers";
+import { getHighestRole, replaceSlugwithQueryPath } from "~/helpers";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
@@ -33,8 +33,9 @@ function Layout({ children, title, isLoading }: Props) {
         .join("/")}`,
     }));
 
-  const role = data ? (data.user?.roles.split(",") as string[]) : [];
-  const showRole = role[0];
+  const role = getHighestRole(
+    data ? (data.user?.roles.split(",") as string[]) : []
+  );
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -69,7 +70,7 @@ function Layout({ children, title, isLoading }: Props) {
                   {profileImage && (
                     <Image
                       src={profileImage}
-                      alt="Sornchai Somsakul - Profile Image"
+                      alt={`${data.user?.full_name} - Profile Image`}
                       width={40}
                       height={40}
                       className="rounded-full"
@@ -79,7 +80,7 @@ function Layout({ children, title, isLoading }: Props) {
               </Popover.Trigger>
               <Popover.Portal>
                 <Popover.Content
-                  className="flex flex-col gap-2 rounded-lg bg-sand-3 pb-2 shadow-md min-w-[12rem]"
+                  className="flex min-w-[12rem] flex-col gap-2 rounded-lg bg-sand-3 pb-2 shadow-md"
                   sideOffset={5}
                   align="end"
                 >
@@ -88,10 +89,12 @@ function Layout({ children, title, isLoading }: Props) {
                       <div
                         className={clsx(
                           "mb-2 w-fit rounded p-1",
-                          showRole === "ADMIN" ? "bg-red-9" : "bg-lime-9"
+                          role === "ADMIN" && "bg-red-9",
+                          role === "TEACHER" && "bg-blue-9",
+                          role === "STUDENT" && "bg-lime-9"
                         )}
                       >
-                        <h5 className="text-xs text-white">{showRole}</h5>
+                        <h5 className="text-xs text-white">{role}</h5>
                       </div>
                     </div>
                     <h4 className="text-lg font-medium leading-tight text-sand-12">
@@ -107,6 +110,13 @@ function Layout({ children, title, isLoading }: Props) {
                     Theme
                     <Icon icon="solar:sun-2-line-duotone" className="text-xl" />
                   </button> */}
+                  <button
+                    onClick={() => router.push("/")}
+                    className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                  >
+                    Home
+                    <Icon icon="solar:home-2-line-duotone" />
+                  </button>
                   <div>
                     <button
                       onClick={() => signOut()}

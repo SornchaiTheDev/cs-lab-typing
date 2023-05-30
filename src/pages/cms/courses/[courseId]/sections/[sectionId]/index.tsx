@@ -1,25 +1,48 @@
 import SectionLayout from "~/Layout/SectionLayout";
 import Table from "~/components/Common/Table";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import { useMemo, useEffect, useState } from "react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useMemo, useCallback } from "react";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import { roles, users } from "@prisma/client";
+import type { users } from "@prisma/client";
 import Skeleton from "~/components/Common/Skeleton";
 import AddUser from "~/features/Users/AddUserToSection";
-import toast from "react-hot-toast";
-import Toast from "~/components/Common/Toast";
 import { Icon } from "@iconify/react";
 import Badge from "~/components/Common/Badge";
-
-type StudentRow = {
-  id: string;
-  name: string;
-};
+import { callToast } from "~/services/callToast";
+import { TRPCClientError } from "@trpc/client";
 
 function Sections() {
   const router = useRouter();
   const columnHelper = createColumnHelper<users>();
+
+  const { sectionId } = router.query;
+  const sectionIdInt = parseInt(sectionId as string);
+  const section = trpc.sections.getSectionById.useQuery({
+    id: sectionIdInt,
+  });
+
+  const deleteStudent = trpc.sections.deleteStudent.useMutation();
+  const deleteSelectRow = useCallback(
+    async (id: string) => {
+      try {
+        await deleteStudent.mutateAsync({
+          sectionId: sectionIdInt,
+          student_id: id,
+        });
+        await section.refetch();
+        callToast({
+          msg: "Delete Students from Section successfully",
+          type: "success",
+        });
+      } catch (err) {
+        if (err instanceof TRPCClientError) {
+          callToast({ msg: err.message, type: "error" });
+        }
+      }
+    },
+    [deleteStudent, sectionIdInt, section]
+  );
 
   const columns = useMemo(
     () => [
@@ -33,31 +56,18 @@ function Sections() {
         id: "actions",
         header: "Delete",
         size: 50,
-        cell: (_props) => (
+        cell: (props) => (
           <button
-            onClick={
-              () => {
-                console.log("click");
-              }
-              // setSelectedObj({
-              //   selected: props.row.getValue("email"),
-              //   type: getUserType(props.row.original),
-              // })
-            }
+            onClick={() => deleteSelectRow(props.row.original.student_id)}
             className="rounded-xl text-xl text-sand-12"
           >
-            <Icon icon="solar:pen-2-line-duotone" />
+            <Icon icon="solar:trash-bin-trash-line-duotone" />
           </button>
         ),
       }),
     ],
-    [columnHelper]
+    [columnHelper, deleteSelectRow]
   );
-
-  const { sectionId } = router.query;
-  const section = trpc.sections.getSectionById.useQuery({
-    id: parseInt(sectionId as string),
-  });
 
   const instructors =
     section.data?.instructors.map((user) => user.full_name) ?? [];

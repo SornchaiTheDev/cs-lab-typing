@@ -97,7 +97,7 @@ function FrontLayout({
                     {profileImage && (
                       <Image
                         src={profileImage}
-                        alt="Sornchai Somsakul - Profile Image"
+                        alt={`${data.user?.full_name} - Profile Image`}
                         width={40}
                         height={40}
                         className="rounded-full"

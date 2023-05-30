@@ -12,6 +12,9 @@ export const getSemesterRouter = router({
       const { page, limit } = input;
 
       const semesters = await ctx.prisma.semesters.findMany({
+        where: {
+          deleted_at: null,
+        },
         skip: (page - 1) * limit,
         take: limit,
       });
@@ -70,6 +73,9 @@ export const getSemesterRouter = router({
     }),
   getAllSemesters: teacherProcedure.query(async ({ ctx }) => {
     const semesters = await ctx.prisma.semesters.findMany({
+      where: {
+        deleted_at: null,
+      },
       orderBy: {
         year: "desc",
       },
