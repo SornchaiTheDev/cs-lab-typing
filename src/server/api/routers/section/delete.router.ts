@@ -62,6 +62,16 @@ export const deleteSectionsRouter = router({
               student_id,
             },
           },
+          history: {
+            create: {
+              action: "Delete student from this section",
+              user: {
+                connect: {
+                  full_name: ctx.user.full_name,
+                },
+              },
+            },
+          },
         },
       });
     }),

@@ -32,7 +32,7 @@ function Sections() {
         });
         await section.refetch();
         callToast({
-          msg: "Delete Students from Section successfully",
+          msg: "Delete Student from Section successfully",
           type: "success",
         });
       } catch (err) {

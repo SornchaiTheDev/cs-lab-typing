@@ -66,6 +66,10 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       await addTask.mutateAsync({ labId, taskId });
       tasks.refetch();
       await ctx.labs.invalidate();
+      callToast({
+        msg: "Add Task to Lab successfully",
+        type: "success",
+      });
     } catch (err) {
       if (err instanceof TRPCClientError) {
         callToast({
@@ -82,6 +86,10 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       await removeTask.mutateAsync({ labId, taskId });
       tasks.refetch();
       await ctx.labs.invalidate();
+      callToast({
+        msg: "Delete Task from Lab successfully",
+        type: "success",
+      });
     } catch (err) {
       if (err instanceof TRPCClientError) {
         callToast({
