@@ -9,7 +9,13 @@ function Course() {
   const { sectionId } = router.query;
   const sectionIdInt = parseInt(sectionId as string);
 
-  const labs = trpc.front.getLabs.useQuery({ sectionId: sectionIdInt });
+  const labs = trpc.front.getLabs.useQuery(
+    { sectionId: sectionIdInt },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <FrontLayout

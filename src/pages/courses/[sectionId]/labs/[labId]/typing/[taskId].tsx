@@ -21,11 +21,17 @@ function TypingTask() {
     setStatus("NotStarted");
   }, [setStatus]);
 
-  const task = trpc.front.getTaskById.useQuery({
-    taskId: taskIdInt,
-    labId: labIdInt,
-    sectionId: sectionIdInt,
-  });
+  const task = trpc.front.getTaskById.useQuery(
+    {
+      taskId: taskIdInt,
+      labId: labIdInt,
+      sectionId: sectionIdInt,
+    },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <FrontLayout
@@ -42,6 +48,7 @@ function TypingTask() {
             "[sectionId]",
             router.query
           )}`,
+          isLoading: task.isLoading,
         },
         {
           label: task.data?.lab?.name ?? "",
@@ -49,6 +56,7 @@ function TypingTask() {
             "[sectionId]",
             router.query
           )}/labs/${replaceSlugwithQueryPath("[labId]", router.query)}`,
+          isLoading: task.isLoading,
         },
       ]}
     >

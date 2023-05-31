@@ -14,6 +14,7 @@ import { NextSeo } from "next-seo";
 interface BreadCrumb {
   label: string;
   path: string;
+  isLoading?: boolean;
 }
 interface Props {
   children?: React.ReactNode;
@@ -72,15 +73,19 @@ function FrontLayout({
               )}
               <div className="flex gap-2">
                 {!isBasePath &&
-                  breadcrumbs.map(({ label, path }) => (
-                    <Link
-                      key={path}
-                      href={path}
-                      className="block text-xl text-sand-11 hover:text-sand-12"
-                    >
-                      {label} /
-                    </Link>
-                  ))}
+                  breadcrumbs.map(({ label, path, isLoading }) => {
+                    if (isLoading)
+                      return <Skeleton width="10rem" height="2rem" />;
+                    return (
+                      <Link
+                        key={path}
+                        href={path}
+                        className="block text-xl text-sand-11 hover:text-sand-12"
+                      >
+                        {label} /
+                      </Link>
+                    );
+                  })}
               </div>
               {isLoading ? (
                 <Skeleton width="20rem" height="3rem" />

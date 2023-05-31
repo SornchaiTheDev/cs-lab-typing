@@ -1,4 +1,4 @@
-import { tasks } from "@prisma/client";
+import type { labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, authedProcedure } from "~/server/api/trpc";
@@ -10,27 +10,32 @@ export const getFrontRouter = router({
     try {
       const sections = ctx.prisma.sections.findMany({
         where: {
-          OR: [
+          AND: [
+            { deleted_at: null },
             {
-              students: {
-                some: {
-                  full_name,
+              OR: [
+                {
+                  students: {
+                    some: {
+                      full_name,
+                    },
+                  },
                 },
-              },
-            },
-            {
-              instructors: {
-                some: {
-                  full_name,
+                {
+                  instructors: {
+                    some: {
+                      full_name,
+                    },
+                  },
                 },
-              },
-            },
-            {
-              tas: {
-                some: {
-                  full_name,
+                {
+                  tas: {
+                    some: {
+                      full_name,
+                    },
+                  },
                 },
-              },
+              ],
             },
           ],
         },
@@ -58,7 +63,7 @@ export const getFrontRouter = router({
     .query(async ({ ctx, input }) => {
       const { sectionId } = input;
       try {
-        const labs = ctx.prisma.sections.findUnique({
+        const labs = await ctx.prisma.sections.findUnique({
           where: {
             id: sectionId,
           },
@@ -68,10 +73,18 @@ export const getFrontRouter = router({
                 name: true,
               },
             },
+            labs_order: true,
             labs: true,
           },
         });
-        return labs;
+
+        if (labs) {
+          const sortedLab = labs.labs_order.map((id) => {
+            const lab = labs?.labs.find((lab) => lab.id === id) as labs;
+            return lab;
+          });
+          return { ...labs, labs: sortedLab };
+        }
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

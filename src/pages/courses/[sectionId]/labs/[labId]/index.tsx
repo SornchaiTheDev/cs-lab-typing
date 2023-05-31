@@ -10,9 +10,15 @@ function Labs() {
   const { labId } = router.query;
   const labIdInt = parseInt(labId as string);
 
-  const tasks = trpc.front.getTasks.useQuery({
-    labId: labIdInt,
-  });
+  const tasks = trpc.front.getTasks.useQuery(
+    {
+      labId: labIdInt,
+    },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <FrontLayout
@@ -30,6 +36,7 @@ function Labs() {
             "[sectionId]",
             router.query
           )}`,
+          isLoading: tasks.isLoading,
         },
       ]}
     >
