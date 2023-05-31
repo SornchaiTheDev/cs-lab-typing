@@ -89,6 +89,8 @@ model sections {
   course        courses           @relation(fields: [course_id], references: [id])
   course_id     Int
   name          String            @unique
+  labs_order     Int[]
+  labs          labs[]            @relation("section_lab")
   instructors   users[]           @relation("section_instructor")
   students      users[]           @relation("section_student")
   tas           users[]           @relation("section_ta")
@@ -122,6 +124,7 @@ model labs {
   tasks_order Int[]
   tasks       tasks[]       @relation("lab_task")
   history     lab_history[]
+  sections    sections[]    @relation("section_lab")
   created_at  DateTime      @default(now())
   updated_at  DateTime?     @updatedAt
   deleted_at  DateTime?

@@ -22,6 +22,7 @@ export const getLabRouter = router({
         skip: (page - 1) * limit,
         take: limit,
         include: {
+          sections: true,
           tags: {
             select: {
               name: true,

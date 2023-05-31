@@ -8,7 +8,7 @@ import {
 import { z } from "zod";
 import { getAllSections } from "./roles/getAllSections";
 import { getTeacherRelatedSections } from "./roles/getTeacherRelatedSections";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, labs } from "@prisma/client";
 import { getStudentRelatedSections } from "./roles/getStudentRelatedSections";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
@@ -39,6 +39,7 @@ export const getSectionsRouter = router({
           tas: true,
           instructors: true,
           students: true,
+          labs: true,
           history: {
             include: {
               user: true,
@@ -46,6 +47,14 @@ export const getSectionsRouter = router({
           },
         },
       });
+      if (section) {
+        const sortedLabOrder = section.labs_order.map((id) => {
+          const lab = section?.labs.find((lab) => lab.id === id) as labs;
+          return lab;
+        });
+
+        return { ...section, labs: sortedLabOrder };
+      }
       return section;
     }),
   getSectionPagination: teacherProcedure

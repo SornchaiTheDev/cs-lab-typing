@@ -3,6 +3,7 @@ import CourseLayout from "./CourseLayout";
 import { useRouter } from "next/router";
 import Layout from ".";
 import HorizontalMenu from "~/components/Common/HorizontalMenu";
+import useRole from "~/hooks/useRole";
 
 interface Props {
   title: string;
@@ -11,23 +12,29 @@ interface Props {
 }
 
 function SectionLayout({ title, children, isLoading }: Props) {
+  const { isTeacher } = useRole();
+
+  const menus = [
+    { name: "Overview", path: "" },
+    { name: "Logs", path: "logs" },
+    {
+      name: "History",
+      path: "history",
+    },
+    {
+      name: "Settings",
+      path: "settings",
+    },
+  ];
+
+  const teacherMenus = [...menus];
+
+  teacherMenus.splice(1, 0, { name: "LAB SET", path: "labset" });
   return (
     <Layout {...{ title }} isLoading={isLoading}>
       <HorizontalMenu
         basePath="/cms/courses/[courseId]/sections/[sectionId]"
-        menus={[
-          { name: "Overview", path: "" },
-          { name: "LAB SET", path: "labset" },
-          { name: "Logs", path: "logs" },
-          {
-            name: "History",
-            path: "history",
-          },
-          {
-            name: "Settings",
-            path: "settings",
-          },
-        ]}
+        menus={isTeacher ? teacherMenus : menus}
       />
       {children}
     </Layout>
