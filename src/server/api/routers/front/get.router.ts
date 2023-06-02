@@ -121,6 +121,7 @@ export const getFrontRouter = router({
     .input(z.object({ labId: z.number() }))
     .query(async ({ ctx, input }) => {
       const { labId } = input;
+      const full_name = ctx.user.full_name;
       try {
         const lab = await ctx.prisma.labs.findUnique({
           where: {
@@ -135,12 +136,23 @@ export const getFrontRouter = router({
             name: true,
             tasks_order: true,
             tasks: true,
+            submissions: {
+              where: {
+                user: {
+                  full_name,
+                },
+              },
+            },
           },
         });
         if (lab) {
           const sortedTaskLab = lab.tasks_order.map((id) => {
             const task = lab?.tasks.find((task) => task.id === id) as tasks;
-            return task;
+            const status =
+              lab.submissions.find(
+                (submission) => submission.task_id === task.id
+              )?.status ?? "NOT_SUBMITTED";
+            return { ...task, status };
           });
 
           return {

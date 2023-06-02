@@ -1,4 +1,4 @@
-import { submission_type } from "@prisma/client";
+import type { submission_type } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, authedProcedure } from "~/server/api/trpc";

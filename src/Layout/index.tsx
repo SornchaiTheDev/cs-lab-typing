@@ -78,14 +78,13 @@ function Layout({ children, title, isLoading }: Props) {
             <div>
               <Popover.Root>
                 <Popover.Trigger asChild>
-                  <button>
+                  <button className="min-h-[40px] min-w-[40px] overflow-hidden rounded-full bg-sand-6">
                     {profileImage && (
                       <Image
                         src={profileImage}
                         alt={`${data.user?.full_name} - Profile Image`}
                         width={40}
                         height={40}
-                        className="rounded-full"
                       />
                     )}
                   </button>

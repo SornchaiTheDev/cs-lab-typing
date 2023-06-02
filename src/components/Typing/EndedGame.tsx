@@ -55,15 +55,15 @@ function EndedGame() {
     taskId: taskIdInt,
   });
 
-  // const highestSpeed = useMemo(() => {
-  //   if (typingHistories.data) {
-  //     const highestSpeed = typingHistories.data.reduce((prev, current) => {
-  //       return prev.adjusted_speed > current.adjusted_speed ? prev : current;
-  //     });
-  //     return highestSpeed.adjusted_speed;
-  //   }
-  //   return 0;
-  // }, [typingHistories.data]);
+  const highestSpeed = useMemo(() => {
+    if (typingHistories.data) {
+      const highestSpeed = typingHistories.data.reduce((prev, current) => {
+        return prev.adjusted_speed > current.adjusted_speed ? prev : current;
+      });
+      return highestSpeed.adjusted_speed;
+    }
+    return 0;
+  }, [typingHistories.data]);
 
   const columns = useMemo(
     () => [
@@ -71,12 +71,12 @@ function EndedGame() {
         id: "round",
         size: 10,
         cell: (props) => {
-          // if (props.row.original.adjusted_speed === highestSpeed)
-          //   return (
-          //     <div className="w-fit rounded-full bg-yellow-3 p-2 text-xl text-yellow-10">
-          //       <Icon icon="ph:trophy-duotone" />
-          //     </div>
-          //   );
+          if (props.row.original.adjusted_speed === highestSpeed)
+            return (
+              <div className="w-fit rounded-full bg-yellow-3 p-2 text-xl text-yellow-10">
+                <Icon icon="ph:trophy-duotone" />
+              </div>
+            );
           return null;
         },
       }),
