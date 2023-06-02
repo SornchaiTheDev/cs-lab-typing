@@ -112,29 +112,33 @@ function EndedGame() {
 
   const submitTyping = trpc.front.submitTyping.useMutation();
 
-  const saveTypingScore = async () => {
-    const { errorChar, startedAt, endedAt, totalChars } = stats;
-    const { minutes } = getDuration(startedAt as Date, endedAt as Date);
-    const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-      totalChars,
-      errorChar,
-      minutes
-    );
-    const percentError = calculateErrorPercentage(totalChars, errorChar);
-    await submitTyping.mutateAsync({
-      sectionId: sectionIdInt,
-      labId: labIdInt,
-      taskId: taskIdInt,
-      rawSpeed,
-      adjustedSpeed,
-      percentError,
-      startedAt: startedAt as Date,
-      endedAt: endedAt as Date,
-    });
-    await typingHistories.refetch();
-  };
-
   useEffect(() => {
+    const saveTypingScore = async () => {
+      if(!stats) return;
+      if(!labIdInt) return;
+      if(!sectionIdInt) return;
+      if(!taskIdInt) return;
+
+      const { errorChar, startedAt, endedAt, totalChars } = stats;
+      const { minutes } = getDuration(startedAt as Date, endedAt as Date);
+      const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
+        totalChars,
+        errorChar,
+        minutes
+      );
+      const percentError = calculateErrorPercentage(totalChars, errorChar);
+      await submitTyping.mutateAsync({
+        sectionId: sectionIdInt,
+        labId: labIdInt,
+        taskId: taskIdInt,
+        rawSpeed,
+        adjustedSpeed,
+        percentError,
+        startedAt: startedAt as Date,
+        endedAt: endedAt as Date,
+      });
+      await typingHistories.refetch();
+    };
     saveTypingScore();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

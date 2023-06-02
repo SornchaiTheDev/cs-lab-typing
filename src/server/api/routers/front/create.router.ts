@@ -1,3 +1,4 @@
+import { submission_type } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, authedProcedure } from "~/server/api/trpc";
@@ -33,6 +34,12 @@ export const createFrontRouter = router({
           full_name,
         },
       });
+
+      let status : submission_type = "FAILED";
+      if (percentError <= 3) {
+        status = "PASSED";
+      }
+
       if (user) {
         await ctx.prisma.users.update({
           where: {
@@ -65,7 +72,7 @@ export const createFrontRouter = router({
                       id: labId,
                     },
                   },
-                  status: "PASSED",
+                  status: status,
                   task_type: "Typing",
                   typing_histories: {
                     create: {
@@ -78,7 +85,7 @@ export const createFrontRouter = router({
                   },
                 },
                 update: {
-                  status: "PASSED",
+                  status: status,
                   task_type: "Typing",
                   typing_histories: {
                     create: {
