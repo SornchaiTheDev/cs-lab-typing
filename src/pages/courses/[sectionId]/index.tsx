@@ -15,7 +15,7 @@ function Course() {
       refetchOnWindowFocus: false,
     }
   );
-
+  console.log(labs.data);
   return (
     <FrontLayout
       title={labs.data?.course.name ?? ""}
@@ -24,7 +24,7 @@ function Course() {
       breadcrumbs={[{ label: "My Course", path: "/" }]}
     >
       <div className="my-10 grid grid-cols-12 gap-6">
-        {labs.data?.labs.map(({ id, name }) => (
+        {labs.data?.labs.map(({ id, name, tasksStatus }) => (
           <Card
             key={id}
             href={{
@@ -33,7 +33,7 @@ function Course() {
             }}
             title={name}
           >
-            <ProgressIndicator />
+            <ProgressIndicator tasksStatus={tasksStatus} />
           </Card>
         ))}
       </div>

@@ -44,9 +44,10 @@ function EndedGame() {
   const columnHelper = createColumnHelper<typing_histories>();
 
   const router = useRouter();
-  const { sectionId, taskId } = router.query;
+  const { sectionId, labId, taskId } = router.query;
 
   const sectionIdInt = parseInt(sectionId as string);
+  const labIdInt = parseInt(labId as string);
   const taskIdInt = parseInt(taskId as string);
 
   const typingHistories = trpc.front.getTypingHistory.useQuery({
@@ -54,15 +55,15 @@ function EndedGame() {
     taskId: taskIdInt,
   });
 
-  const highestSpeed = useMemo(() => {
-    if (typingHistories.data) {
-      const highestSpeed = typingHistories.data.reduce((prev, current) => {
-        return prev.adjusted_speed > current.adjusted_speed ? prev : current;
-      });
-      return highestSpeed.adjusted_speed;
-    }
-    return 0;
-  }, [typingHistories.data]);
+  // const highestSpeed = useMemo(() => {
+  //   if (typingHistories.data) {
+  //     const highestSpeed = typingHistories.data.reduce((prev, current) => {
+  //       return prev.adjusted_speed > current.adjusted_speed ? prev : current;
+  //     });
+  //     return highestSpeed.adjusted_speed;
+  //   }
+  //   return 0;
+  // }, [typingHistories.data]);
 
   const columns = useMemo(
     () => [
@@ -70,12 +71,12 @@ function EndedGame() {
         id: "round",
         size: 10,
         cell: (props) => {
-          if (props.row.original.adjusted_speed === highestSpeed)
-            return (
-              <div className="w-fit rounded-full bg-yellow-3 p-2 text-xl text-yellow-10">
-                <Icon icon="ph:trophy-duotone" />
-              </div>
-            );
+          // if (props.row.original.adjusted_speed === highestSpeed)
+          //   return (
+          //     <div className="w-fit rounded-full bg-yellow-3 p-2 text-xl text-yellow-10">
+          //       <Icon icon="ph:trophy-duotone" />
+          //     </div>
+          //   );
           return null;
         },
       }),
@@ -122,6 +123,7 @@ function EndedGame() {
     const percentError = calculateErrorPercentage(totalChars, errorChar);
     await submitTyping.mutateAsync({
       sectionId: sectionIdInt,
+      labId: labIdInt,
       taskId: taskIdInt,
       rawSpeed,
       adjustedSpeed,

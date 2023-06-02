@@ -62,6 +62,8 @@ export const getFrontRouter = router({
     .input(z.object({ sectionId: z.number() }))
     .query(async ({ ctx, input }) => {
       const { sectionId } = input;
+      const full_name = ctx.user.full_name;
+
       try {
         const labs = await ctx.prisma.sections.findUnique({
           where: {
@@ -74,7 +76,18 @@ export const getFrontRouter = router({
               },
             },
             labs_order: true,
-            labs: true,
+            labs: {
+              include: {
+                tasks: true,
+              },
+            },
+            submissions: {
+              where: {
+                user: {
+                  full_name,
+                },
+              },
+            },
           },
         });
 
@@ -83,7 +96,19 @@ export const getFrontRouter = router({
             const lab = labs?.labs.find((lab) => lab.id === id) as labs;
             return lab;
           });
-          return { ...labs, labs: sortedLab };
+
+          const labsAddedSubmissions = sortedLab.map((lab) => {
+            const tasksStatus = lab.tasks_order.map((taskId) => {
+              const submission = labs.submissions.find(
+                (submission) => submission.task_id === taskId
+              );
+
+              return submission?.status ?? "NOT_SUBMITTED";
+            });
+
+            return { ...lab, tasksStatus: tasksStatus };
+          });
+          return { ...labs, labs: labsAddedSubmissions };
         }
       } catch (err) {
         throw new TRPCError({

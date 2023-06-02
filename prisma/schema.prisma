@@ -127,6 +127,7 @@ model labs {
   tasks       tasks[]         @relation("lab_task")
   history     lab_histories[]
   sections    sections[]      @relation("section_lab")
+  submissions submissions[]
   created_at  DateTime        @default(now())
   updated_at  DateTime?       @updatedAt
   deleted_at  DateTime?
@@ -183,8 +184,9 @@ model task_histories {
 }
 
 enum submission_type {
-  Passed
-  Failed
+  NOT_SUBMITTED
+  PASSED
+  FAILED
 }
 
 model submissions {
@@ -193,6 +195,8 @@ model submissions {
   user_id          Int
   task             tasks              @relation(fields: [task_id], references: [id])
   task_id          Int
+  lab              labs               @relation(fields: [lab_id], references: [id])
+  lab_id           Int
   section          sections           @relation(fields: [section_id], references: [id])
   section_id       Int
   status           submission_type
@@ -201,20 +205,20 @@ model submissions {
   created_at       DateTime           @default(now())
   updated_at       DateTime?          @updatedAt
 
-  @@unique([user_id, task_id, section_id])
+  @@unique([user_id, task_id, section_id, lab_id])
 }
 
 model typing_histories {
-  id            Int         @id @default(autoincrement())
-  submission    submissions @relation(fields: [submission_id], references: [id])
-  submission_id Int
+  id             Int         @id @default(autoincrement())
+  submission     submissions @relation(fields: [submission_id], references: [id])
+  submission_id  Int
   raw_speed      Float
   adjusted_speed Float
   percent_error  Float
   started_at     DateTime
   ended_at       DateTime
-  created_at     DateTime  @default(now())
-  updated_at     DateTime? @updatedAt
+  created_at     DateTime    @default(now())
+  updated_at     DateTime?   @updatedAt
 }
 
 enum task_type {

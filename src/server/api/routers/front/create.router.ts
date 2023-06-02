@@ -7,6 +7,7 @@ export const createFrontRouter = router({
     .input(
       z.object({
         sectionId: z.number(),
+        labId: z.number(),
         taskId: z.number(),
         rawSpeed: z.number(),
         adjustedSpeed: z.number(),
@@ -18,6 +19,7 @@ export const createFrontRouter = router({
     .mutation(async ({ ctx, input }) => {
       const {
         sectionId,
+        labId,
         taskId,
         rawSpeed,
         adjustedSpeed,
@@ -40,10 +42,11 @@ export const createFrontRouter = router({
             submissions: {
               upsert: {
                 where: {
-                  user_id_task_id_section_id: {
+                  user_id_task_id_section_id_lab_id: {
                     user_id: user.id,
                     section_id: sectionId,
                     task_id: taskId,
+                    lab_id: labId,
                   },
                 },
                 create: {
@@ -57,7 +60,12 @@ export const createFrontRouter = router({
                       id: sectionId,
                     },
                   },
-                  status: "Passed",
+                  lab: {
+                    connect: {
+                      id: labId,
+                    },
+                  },
+                  status: "PASSED",
                   task_type: "Typing",
                   typing_histories: {
                     create: {
@@ -70,7 +78,7 @@ export const createFrontRouter = router({
                   },
                 },
                 update: {
-                  status: "Passed",
+                  status: "PASSED",
                   task_type: "Typing",
                   typing_histories: {
                     create: {
