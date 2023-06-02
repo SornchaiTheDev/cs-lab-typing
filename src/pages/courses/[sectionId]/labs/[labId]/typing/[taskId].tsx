@@ -28,7 +28,6 @@ function TypingTask() {
       sectionId: sectionIdInt,
     },
     {
-      refetchOnMount: false,
       refetchOnWindowFocus: false,
     }
   );

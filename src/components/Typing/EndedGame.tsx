@@ -10,7 +10,7 @@ import {
 } from "chart.js";
 import Table from "../Common/Table";
 import { useEffect, useMemo } from "react";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { useTypingStore } from "~/store";
 import { getDuration } from "./utils/getDuration";
 import { calculateTypingSpeed } from "./utils/calculateWPM";
@@ -19,7 +19,7 @@ import { Icon } from "@iconify/react";
 import Stats from "./Stats";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import { Prisma, typing_histories } from "@prisma/client";
+import type { typing_histories } from "@prisma/client";
 
 ChartJS.register(
   CategoryScale,
@@ -29,15 +29,6 @@ ChartJS.register(
   Title,
   Tooltip
 );
-
-interface HistoryRow {
-  round: number;
-  raw_speed: number;
-  adjusted_speed: number;
-  start_time: Date;
-  end_time: Date;
-  error_percentage: number;
-}
 
 function EndedGame() {
   const [stats, setStatus] = useTypingStore((state) => [
@@ -52,12 +43,41 @@ function EndedGame() {
   };
   const columnHelper = createColumnHelper<typing_histories>();
 
+  const router = useRouter();
+  const { sectionId, taskId } = router.query;
+
+  const sectionIdInt = parseInt(sectionId as string);
+  const taskIdInt = parseInt(taskId as string);
+
+  const typingHistories = trpc.front.getTypingHistory.useQuery({
+    sectionId: sectionIdInt,
+    taskId: taskIdInt,
+  });
+
+  const highestSpeed = useMemo(() => {
+    if (typingHistories.data) {
+      const highestSpeed = typingHistories.data.reduce((prev, current) => {
+        return prev.adjusted_speed > current.adjusted_speed ? prev : current;
+      });
+      return highestSpeed.adjusted_speed;
+    }
+    return 0;
+  }, [typingHistories.data]);
+
   const columns = useMemo(
     () => [
       columnHelper.display({
         id: "round",
-        header: "Round",
-        cell: (props) => props.row.index + 1,
+        size: 10,
+        cell: (props) => {
+          if (props.row.original.adjusted_speed === highestSpeed)
+            return (
+              <div className="w-fit rounded-full bg-yellow-3 p-2 text-xl text-yellow-10">
+                <Icon icon="ph:trophy-duotone" />
+              </div>
+            );
+          return null;
+        },
       }),
       {
         header: "Raw Speed",
@@ -91,10 +111,6 @@ function EndedGame() {
 
   const submitTyping = trpc.front.submitTyping.useMutation();
 
-  const router = useRouter();
-  const { sectionId, taskId } = router.query;
-  const sectionIdInt = parseInt(sectionId as string);
-  const taskIdInt = parseInt(taskId as string);
   const saveTypingScore = async () => {
     const { errorChar, startedAt, endedAt, totalChars } = stats;
     const { minutes } = getDuration(startedAt as Date, endedAt as Date);
@@ -113,7 +129,7 @@ function EndedGame() {
       startedAt: startedAt as Date,
       endedAt: endedAt as Date,
     });
-    await typingHistories.refetch()
+    await typingHistories.refetch();
   };
 
   useEffect(() => {
@@ -121,17 +137,14 @@ function EndedGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const typingHistories = trpc.front.getTypingHistory.useQuery({
-    sectionId: sectionIdInt,
-    taskId: taskIdInt,
-  });
-
   const data = {
     labels: typingHistories.data?.map((_, i) => i + 1),
     datasets: [
       {
         label: "Typing Speed (wpm)",
-        data: typingHistories.data?.map(({ adjusted_speed }) => adjusted_speed) ?? [], // Replace with your actual data
+        data:
+          typingHistories.data?.map(({ adjusted_speed }) => adjusted_speed) ??
+          [], // Replace with your actual data
         backgroundColor: "#e3e3e0", // Background color of the line
         borderColor: "#1b1b18", // Border color of the line
         borderWidth: 2, // Border width of the line

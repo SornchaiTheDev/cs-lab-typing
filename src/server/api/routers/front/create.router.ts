@@ -86,6 +86,16 @@ export const createFrontRouter = router({
             },
           },
         });
+        await ctx.prisma.tasks.update({
+          where: {
+            id: taskId,
+          },
+          data: {
+            submission_count: {
+              increment: 1,
+            },
+          },
+        });
       }
 
       // typing_history: {

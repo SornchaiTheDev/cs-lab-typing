@@ -15,7 +15,6 @@ function Labs() {
       labId: labIdInt,
     },
     {
-      refetchOnMount: false,
       refetchOnWindowFocus: false,
     }
   );

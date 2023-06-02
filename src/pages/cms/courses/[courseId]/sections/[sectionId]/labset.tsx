@@ -190,8 +190,8 @@ function LabSet() {
           return (
             <Link
               href={{
-                pathname: "/cms/tasks/[taskId]",
-                query: { taskId: props.row.original.id },
+                pathname: "/cms/courses/1/labs/[labId]",
+                query: { labId: props.row.original.id },
               }}
             >
               {props.row.original.name as string}

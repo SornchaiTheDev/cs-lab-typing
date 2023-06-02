@@ -193,6 +193,10 @@ export const getFrontRouter = router({
               task_id: taskId,
             },
           },
+          orderBy: {
+            created_at: "desc",
+          },
+          take: 10,
         });
 
         return typingHistories;

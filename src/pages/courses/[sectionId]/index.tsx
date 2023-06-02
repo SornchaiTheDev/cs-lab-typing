@@ -12,7 +12,6 @@ function Course() {
   const labs = trpc.front.getLabs.useQuery(
     { sectionId: sectionIdInt },
     {
-      refetchOnMount: false,
       refetchOnWindowFocus: false,
     }
   );
