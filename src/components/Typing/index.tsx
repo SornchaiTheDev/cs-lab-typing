@@ -5,13 +5,7 @@
 */
 
 import clsx from "clsx";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
+import { useEffect, useMemo, useRef, type KeyboardEvent } from "react";
 import useTypingGame from "react-typing-game-hook";
 import { useTypingStore } from "~/store";
 
@@ -19,8 +13,7 @@ interface Props {
   text: string;
 }
 function TypingGame({ text }: Props) {
-  const [stats, setStats, setStatus] = useTypingStore((state) => [
-    state.stats,
+  const [setStats, setStatus] = useTypingStore((state) => [
     state.setStats,
     state.setStatus,
   ]);
@@ -43,10 +36,10 @@ function TypingGame({ text }: Props) {
   useEffect(() => {
     if (phase === 2 && endTime && startTime) {
       setStatus("Ended");
-      setStats({ endTime: new Date() });
+      setStats({ endedAt: new Date() });
     } else if (phase === 1) {
       setStatus("Started");
-      setStats({ startTime: new Date() });
+      setStats({ startedAt: new Date() });
     }
   }, [phase, startTime, endTime, setStatus, setStats]);
 

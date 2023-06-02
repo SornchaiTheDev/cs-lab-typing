@@ -16,26 +16,60 @@ async function main() {
 
   const course = await prisma.courses.create({
     data: {
-      number: "CPE314",
-      name: "Computer Architecture",
-      note: "Computer Architecture Course",
+      number: "CS112",
+      name: "Fundamental Programming Concepts",
+      note: "Course Note",
       sections: {
         create: {
-          name: "CPE314-1",
-          note: "Computer Architecture Section 1",
+          name: "12 (F 15 - 17)",
+          note: "Section Note",
           semester: {
             create: {
               year: "2566",
-              term: "F",
-              startDate: new Date("2021-08-01"),
+              term: "First",
+              startDate: new Date("2023-07-01"),
             },
           },
           created_by: {
             connect: {
-              full_name: "Sornchai Somsakul",
+              full_name: adminUser.full_name,
+            },
+          },
+          instructors: {
+            connect: {
+              full_name: adminUser.full_name,
             },
           },
           active: true,
+        },
+      },
+    },
+  });
+
+  const simpleTask = await prisma.tasks.create({
+    data: {
+      name: "Simple Task",
+      isPrivate: false,
+      type: "Typing",
+      body: "Lorem Ipsum",
+      owner: {
+        connect: {
+          full_name: adminUser.full_name,
+        },
+      },
+      history: {
+        create: {
+          action: "Create a Task",
+          user: {
+            connect: {
+              full_name: adminUser.full_name,
+            },
+          },
+        },
+      },
+      tags: {
+        create: {
+          name: "Typing",
         },
       },
     },
@@ -45,6 +79,8 @@ async function main() {
   console.log(adminUser);
   console.log("Finished creating Course and Section");
   console.log(course);
+  console.log("Finished Simple Task");
+  console.log(simpleTask);
 }
 
 main()

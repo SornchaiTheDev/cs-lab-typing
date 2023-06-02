@@ -21,20 +21,20 @@ export const getFrontRouter = router({
                     },
                   },
                 },
-                {
-                  instructors: {
-                    some: {
-                      full_name,
-                    },
-                  },
-                },
-                {
-                  tas: {
-                    some: {
-                      full_name,
-                    },
-                  },
-                },
+                // {
+                //   instructors: {
+                //     some: {
+                //       full_name,
+                //     },
+                //   },
+                // },
+                // {
+                //   tas: {
+                //     some: {
+                //       full_name,
+                //     },
+                //   },
+                // },
               ],
             },
           ],
@@ -170,6 +170,32 @@ export const getFrontRouter = router({
           },
         });
         return { task, lab, section };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+  getTypingHistory: authedProcedure
+    .input(z.object({ taskId: z.number(), sectionId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const { sectionId, taskId } = input;
+      const full_name = ctx.user.full_name;
+      try {
+        const typingHistories = await ctx.prisma.typing_histories.findMany({
+          where: {
+            submission: {
+              section_id: sectionId,
+              user: {
+                full_name,
+              },
+              task_id: taskId,
+            },
+          },
+        });
+
+        return typingHistories;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

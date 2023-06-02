@@ -93,7 +93,7 @@ export const createTaskRouter = router({
               },
             },
           });
-          await ctx.prisma.task_history.create({
+          await ctx.prisma.task_histories.create({
             data: {
               action: `Clone from ${owner.full_name}/${name}`,
               user: {

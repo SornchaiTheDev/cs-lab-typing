@@ -124,7 +124,6 @@ function Logger() {
           <TimePickerRange
             date={dateRange}
             onApply={({ from, to }) => {
-              console.log(from, to);
               setDateRange({
                 from,
                 to,

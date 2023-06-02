@@ -7,5 +7,5 @@ export function calculateErrorPercentage(
   // Calculate the error percentage
   const errorPercentage = (wrongChars / totalChars) * 100;
 
-  return errorPercentage.toFixed(2); // Limiting to 2 decimal places
+  return Number(errorPercentage.toFixed(2)); // Limiting to 2 decimal places
 }

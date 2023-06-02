@@ -75,7 +75,7 @@ function FrontLayout({
                 {!isBasePath &&
                   breadcrumbs.map(({ label, path, isLoading }) => {
                     if (isLoading)
-                      return <Skeleton width="10rem" height="2rem" />;
+                      return <Skeleton key={path} width="10rem" height="2rem" />;
                     return (
                       <Link
                         key={path}

@@ -4,13 +4,12 @@ export function calculateTypingSpeed(
   timeInMinutes: number
 ) {
   // Calculate Gross Words Per Minute (GWPM)
-  const rawWpm = (totalCharacters / 5 / timeInMinutes).toFixed(2);
+  const rawSpeed = Number((totalCharacters / 5 / timeInMinutes).toFixed(2));
 
   // Calculate Net Words Per Minute (NWPM)
-  const adjWpm = Math.max(
-    (totalCharacters - totalErrors) / 5 / timeInMinutes,
-    0
-  ).toFixed(2);
+  const adjustedSpeed = Number(
+    Math.max((totalCharacters - totalErrors) / 5 / timeInMinutes, 0).toFixed(2)
+  );
 
-  return { rawWpm, adjWpm };
+  return { rawSpeed, adjustedSpeed };
 }

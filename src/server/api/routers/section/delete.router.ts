@@ -19,7 +19,7 @@ export const deleteSectionsRouter = router({
           },
         });
 
-        await ctx.prisma.section_history.create({
+        await ctx.prisma.section_histories.create({
           data: {
             action: "Delete section",
             user: {

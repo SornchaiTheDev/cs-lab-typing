@@ -20,30 +20,31 @@ enum roles {
 }
 
 model users {
-  id               Int               @id @default(autoincrement())
-  student_id       String            @unique
-  full_name        String            @unique
-  email            String            @unique
-  password         String?
-  last_logined     DateTime?
-  roles            roles[]
-  auth_loggers     auth_logger[]
-  authors          courses[]         @relation("course_author")
-  students         sections[]        @relation("section_student")
-  instructors      sections[]        @relation("section_instructor")
-  TAs              sections[]        @relation("section_ta")
-  created_sections sections[]
-  sectionsId       Int?
-  tasks            tasks[]
-  task_history     task_history[]
-  section_history  section_history[]
-  lab_history      lab_history[]
-  created_at       DateTime          @default(now())
-  updated_at       DateTime?         @updatedAt
-  deleted_at       DateTime?
+  id                Int                 @id @default(autoincrement())
+  student_id        String              @unique
+  full_name         String              @unique
+  email             String              @unique
+  password          String?
+  last_logined      DateTime?
+  roles             roles[]
+  auth_loggers      auth_loggers[]
+  authors           courses[]           @relation("course_author")
+  students          sections[]          @relation("section_student")
+  instructors       sections[]          @relation("section_instructor")
+  TAs               sections[]          @relation("section_ta")
+  created_sections  sections[]
+  sectionsId        Int?
+  created_tasks     tasks[]
+  task_histories    task_histories[]
+  section_histories section_histories[]
+  lab_histories     lab_histories[]
+  submissions       submissions[]
+  created_at        DateTime            @default(now())
+  updated_at        DateTime?           @updatedAt
+  deleted_at        DateTime?
 }
 
-model auth_logger {
+model auth_loggers {
   id         Int       @id @default(autoincrement())
   type       String
   date       DateTime  @default(now())
@@ -83,28 +84,29 @@ model courses {
 }
 
 model sections {
-  id            Int               @id @default(autoincrement())
-  semester      semesters         @relation(fields: [semester_id], references: [id])
+  id            Int                 @id @default(autoincrement())
+  semester      semesters           @relation(fields: [semester_id], references: [id])
   semester_id   Int
-  course        courses           @relation(fields: [course_id], references: [id])
+  course        courses             @relation(fields: [course_id], references: [id])
   course_id     Int
-  name          String            @unique
-  labs_order     Int[]
-  labs          labs[]            @relation("section_lab")
-  instructors   users[]           @relation("section_instructor")
-  students      users[]           @relation("section_student")
-  tas           users[]           @relation("section_ta")
+  name          String              @unique
+  labs_order    Int[]
+  labs          labs[]              @relation("section_lab")
+  instructors   users[]             @relation("section_instructor")
+  students      users[]             @relation("section_student")
+  tas           users[]             @relation("section_ta")
   note          String?
   active        Boolean
-  created_by    users             @relation(fields: [created_by_id], references: [id])
+  submissions   submissions[]
+  created_by    users               @relation(fields: [created_by_id], references: [id])
   created_by_id Int
-  created_at    DateTime          @default(now())
-  updated_at    DateTime?         @updatedAt
+  history       section_histories[]
+  created_at    DateTime            @default(now())
+  updated_at    DateTime?           @updatedAt
   deleted_at    DateTime?
-  history       section_history[]
 }
 
-model section_history {
+model section_histories {
   id         Int      @id @default(autoincrement())
   user       users    @relation(fields: [user_id], references: [id])
   user_id    Int
@@ -115,22 +117,22 @@ model section_history {
 }
 
 model labs {
-  id          Int           @id @default(autoincrement())
-  name        String        @unique
-  tags        tags[]        @relation("lab_tag")
-  course      courses       @relation(fields: [courseId], references: [id])
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  tags        tags[]          @relation("lab_tag")
+  course      courses         @relation(fields: [courseId], references: [id])
   courseId    Int
   isDisabled  Boolean
   tasks_order Int[]
-  tasks       tasks[]       @relation("lab_task")
-  history     lab_history[]
-  sections    sections[]    @relation("section_lab")
-  created_at  DateTime      @default(now())
-  updated_at  DateTime?     @updatedAt
+  tasks       tasks[]         @relation("lab_task")
+  history     lab_histories[]
+  sections    sections[]      @relation("section_lab")
+  created_at  DateTime        @default(now())
+  updated_at  DateTime?       @updatedAt
   deleted_at  DateTime?
 }
 
-model lab_history {
+model lab_histories {
   id         Int      @id @default(autoincrement())
   user       users    @relation(fields: [user_id], references: [id])
   user_id    Int
@@ -151,25 +153,26 @@ model tags {
 }
 
 model tasks {
-  id               Int            @id @default(autoincrement())
+  id               Int              @id @default(autoincrement())
   name             String
   type             task_type
   language         String?
-  tags             tags[]         @relation("task_tag")
-  owner            users          @relation(fields: [usersId], references: [id])
+  tags             tags[]           @relation("task_tag")
+  owner            users            @relation(fields: [usersId], references: [id])
   usersId          Int
   isPrivate        Boolean
   note             String?
   body             String?
-  labs             labs[]         @relation("lab_task")
-  submission_count Int            @default(0)
-  created_at       DateTime       @default(now())
-  updated_at       DateTime?      @updatedAt
+  labs             labs[]           @relation("lab_task")
+  submission_count Int              @default(0)
+  submissions      submissions[]
+  created_at       DateTime         @default(now())
+  updated_at       DateTime?        @updatedAt
   deleted_at       DateTime?
-  history          task_history[]
+  history          task_histories[]
 }
 
-model task_history {
+model task_histories {
   id         Int      @id @default(autoincrement())
   user       users    @relation(fields: [user_id], references: [id])
   user_id    Int
@@ -177,6 +180,41 @@ model task_history {
   created_at DateTime @default(now())
   tasks      tasks    @relation(fields: [tasksId], references: [id])
   tasksId    Int
+}
+
+enum submission_type {
+  Passed
+  Failed
+}
+
+model submissions {
+  id               Int                @id @default(autoincrement())
+  user             users              @relation(fields: [user_id], references: [id])
+  user_id          Int
+  task             tasks              @relation(fields: [task_id], references: [id])
+  task_id          Int
+  section          sections           @relation(fields: [section_id], references: [id])
+  section_id       Int
+  status           submission_type
+  task_type        task_type
+  typing_histories typing_histories[]
+  created_at       DateTime           @default(now())
+  updated_at       DateTime?          @updatedAt
+
+  @@unique([user_id, task_id, section_id])
+}
+
+model typing_histories {
+  id            Int         @id @default(autoincrement())
+  submission    submissions @relation(fields: [submission_id], references: [id])
+  submission_id Int
+  raw_speed      Float
+  adjusted_speed Float
+  percent_error  Float
+  started_at     DateTime
+  ended_at       DateTime
+  created_at     DateTime  @default(now())
+  updated_at     DateTime? @updatedAt
 }
 
 enum task_type {

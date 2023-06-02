@@ -1,12 +1,11 @@
 import { create } from "zustand";
-import { PhaseType } from "react-typing-game-hook";
 
 interface TypingStats {
   correctChar: number;
   errorChar: number;
   totalChars: number;
-  startTime: Date | null;
-  endTime: Date | null;
+  startedAt: Date | null;
+  endedAt: Date | null;
 }
 
 type gamePhase = "NotStarted" | "Started" | "Ended";
@@ -27,8 +26,8 @@ export const useTypingStore = create<TypingStore>((set) => ({
     correctChar: 0,
     errorChar: 0,
     totalChars: 0,
-    startTime: null,
-    endTime: null,
+    startedAt: null,
+    endedAt: null,
   },
   setStats: (stats) =>
     set((state) => ({ stats: { ...state.stats, ...stats } })),

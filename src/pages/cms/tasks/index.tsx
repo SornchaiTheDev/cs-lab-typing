@@ -88,7 +88,8 @@ function Tasks() {
         accessorKey: "tags",
         cell: (props) => {
           const tags = props.getValue() as tags[];
-          return tags.map(({ name }) => name);
+          const isEmpty = tags.length === 0;
+          return isEmpty ? "-" : tags.map(({ name }) => name).join(",");
         },
       },
       {
@@ -96,7 +97,7 @@ function Tasks() {
         accessorKey: "language",
         cell: (props) => {
           const language = props.getValue() as string;
-          return language.length === 0 ? "-" : language;
+          return language === null ? "-" : language;
         },
       },
       {

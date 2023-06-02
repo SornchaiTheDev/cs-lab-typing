@@ -21,7 +21,6 @@ export const getCourseRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
-      console.log(ctx.user.roles.split(","));
 
       const role = getHighestRole(ctx.user.roles.split(",") as string[]);
       const full_name = ctx.user.full_name;

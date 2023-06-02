@@ -15,7 +15,7 @@ export const getAuthLoggerRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit, date } = input;
 
-      const authLogger = await ctx.prisma.auth_logger.findMany({
+      const authLogger = await ctx.prisma.auth_loggers.findMany({
         where: {
           date: {
             lte: date.to,

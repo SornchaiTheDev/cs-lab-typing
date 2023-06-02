@@ -28,7 +28,7 @@ export const createAuthLogRouter = router({
             last_logined: new Date(),
           },
         });
-        await ctx.prisma.auth_logger.create({
+        await ctx.prisma.auth_loggers.create({
           data: {
             ip_address: ip ?? "localhost",
             type,

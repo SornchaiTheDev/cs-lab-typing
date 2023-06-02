@@ -79,7 +79,6 @@ function Labs() {
         header: "Name",
         accessorKey: "name",
         cell: (props) => {
-          console.log(props);
           return (
             <Link
               href={{
@@ -124,7 +123,7 @@ function Labs() {
         size: 50,
       }),
     ],
-    [columnHelper,router,setSelectedObj]
+    [columnHelper, router, setSelectedObj]
   );
 
   return (
