@@ -130,13 +130,13 @@ function Sections() {
             ))
           )}
         </div>
-        <h5 className="mb-2 mt-4 font-bold">Students ({studentLength})</h5>
+        <h5 className="mt-4 font-bold">Students ({studentLength})</h5>
       </div>
       <Table
         data={students ?? []}
         isLoading={section.isLoading}
         columns={columns}
-        className="mx-4 mb-2 md:w-1/2"
+        className="mx-4 md:w-1/2"
       >
         <AddUser sectionId={parseInt(sectionId as string)} />
       </Table>

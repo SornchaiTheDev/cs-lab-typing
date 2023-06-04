@@ -35,7 +35,7 @@ export const createFrontRouter = router({
         },
       });
 
-      let status : submission_type = "FAILED";
+      let status: submission_type = "FAILED";
       if (percentError <= 3) {
         status = "PASSED";
       }
@@ -52,16 +52,11 @@ export const createFrontRouter = router({
                   user_id_task_id_section_id_lab_id: {
                     user_id: user.id,
                     section_id: sectionId,
-                    task_id: taskId,
                     lab_id: labId,
+                    task_id: taskId,
                   },
                 },
                 create: {
-                  task: {
-                    connect: {
-                      id: taskId,
-                    },
-                  },
                   section: {
                     connect: {
                       id: sectionId,
@@ -70,6 +65,11 @@ export const createFrontRouter = router({
                   lab: {
                     connect: {
                       id: labId,
+                    },
+                  },
+                  task: {
+                    connect: {
+                      id: taskId,
                     },
                   },
                   status: status,

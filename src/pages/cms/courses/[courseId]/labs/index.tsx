@@ -170,7 +170,7 @@ function Labs() {
         title={course.data?.name as string}
         isLoading={course.isLoading}
       >
-        <Table className="mt-6" data={allLabs.data ?? []} columns={columns}>
+        <Table data={allLabs.data ?? []} columns={columns}>
           {isTeacher && (
             <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
               <Button

@@ -50,18 +50,18 @@ function TypingGame({ text }: Props) {
   const pos = useMemo(() => {
     if (currIndex !== -1 && letterElements.current) {
       const spanref = letterElements.current.children[
-        currIndex
+        currIndex + 1
       ] as HTMLSpanElement;
       let left, top;
       if (spanref) {
-        left = spanref.offsetLeft + spanref.offsetWidth - 2;
+        left = spanref.offsetLeft;
         top = spanref.offsetTop - 2;
       }
       return { left, top };
     } else {
       return {
-        left: 2,
-        top: 2,
+        left: 0,
+        top: 0,
       };
     }
   }, [currIndex, letterElements]);
@@ -91,45 +91,45 @@ function TypingGame({ text }: Props) {
   useEffect(() => {
     setStats({ correctChar, errorChar, totalChars: text.length });
   }, [correctChar, errorChar, setStats, text]);
+
   return (
     <>
       <input
-        className="absolute opacity-0"
+        className="absolute -top-10 opacity-0"
         ref={typingElement}
         onKeyDown={(e) => handleKeyDown(e.key, e.ctrlKey, e)}
       />
-      <div className="mt-12 flex flex-col items-center gap-6 ">
+      <div
+        className="flex flex-col items-center gap-6"
+        onClick={() => typingElement.current?.focus()}
+      >
         <div
-          onClick={() => typingElement.current?.focus()}
-          className={`relative font-serif text-4xl outline-none`}
+          className={`pointer-events-none relative select-none font-serif text-3xl leading-relaxed tracking-wider text-sand-11 outline-none`}
           tabIndex={0}
+          ref={letterElements}
         >
-          <div
-            ref={letterElements}
-            className="pointer-events-none select-none text-center text-3xl leading-relaxed tracking-wider text-sand-11 outline-none"
-            tabIndex={0}
-          >
-            {text.split("").map((letter, index) => {
-              const state = charsState[index];
-              const color =
-                state === 0
-                  ? "text-sand-8"
-                  : state === 1
-                  ? "text-sand-12"
-                  : "text-red-9";
-              return (
-                <span
-                  key={letter + index}
-                  className={clsx(
-                    color,
-                    state === 2 && letter === " " && "border-b-2 border-b-red-9"
-                  )}
-                >
-                  {letter}
-                </span>
-              );
-            })}
-          </div>
+          {text.split("").map((letter, index) => {
+            const state = charsState[index];
+            const color =
+              state === 0
+                ? "text-sand-8"
+                : state === 1
+                ? "text-sand-12"
+                : "text-red-9";
+
+            return (
+              <span
+                key={letter + index}
+                className={clsx(
+                  color,
+                  state === 2 && letter === " " && "border-b-2 border-b-red-9"
+                )}
+              >
+                {letter === " " ? " " : letter}
+              </span>
+            );
+          })}
+
           {phase !== 2 ? (
             <span
               style={{
@@ -143,7 +143,7 @@ function TypingGame({ text }: Props) {
           ) : null}
         </div>
 
-        <h4 className="text-sand-11">
+        <h4 className="text-sand-11 select-none">
           Press{" "}
           <code className="rounded border-b-2 border-sand-11 bg-sand-6 p-1">
             esc

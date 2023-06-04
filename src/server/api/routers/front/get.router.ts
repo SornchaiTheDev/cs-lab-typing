@@ -231,7 +231,7 @@ export const getFrontRouter = router({
             },
           },
           orderBy: {
-            created_at: "desc",
+            id: "desc",
           },
           take: 10,
         });

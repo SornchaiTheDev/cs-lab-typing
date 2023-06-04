@@ -8,7 +8,7 @@ interface TypingStats {
   endedAt: Date | null;
 }
 
-type gamePhase = "NotStarted" | "Started" | "Ended";
+type gamePhase = "NotStarted" | "Started" | "Ended" | "History";
 
 interface TypingStore {
   text: string;

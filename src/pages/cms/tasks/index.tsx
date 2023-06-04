@@ -112,29 +112,29 @@ function Tasks() {
           return owner.full_name;
         },
       },
-      columnHelper.display({
-        id: "actions",
-        header: "Delete",
-        cell: (props) => (
-          <button
-            onClick={() => {
-              setSelectedObj({
-                selected: {
-                  display: props.row.original.name,
-                  id: props.row.original.id,
-                },
-                type: "lab",
-              });
-            }}
-            className="rounded-xl text-xl text-sand-12"
-          >
-            <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
-          </button>
-        ),
-        size: 50,
-      }),
+      // columnHelper.display({
+      //   id: "actions",
+      //   header: "Delete",
+      //   cell: (props) => (
+      //     <button
+      //       onClick={() => {
+      //         setSelectedObj({
+      //           selected: {
+      //             display: props.row.original.name,
+      //             id: props.row.original.id,
+      //           },
+      //           type: "lab",
+      //         });
+      //       }}
+      //       className="rounded-xl text-xl text-sand-12"
+      //     >
+      //       <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
+      //     </button>
+      //   ),
+      //   size: 50,
+      // }),
     ],
-    [columnHelper, setSelectedObj, router.pathname, router.query]
+    [router.pathname, router.query]
   );
 
   const isTeacher = session?.user?.roles.includes("TEACHER");
