@@ -13,6 +13,7 @@ import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
+import Select from "~/components/Forms/Select";
 
 interface AddLabModalProps {
   onClose: () => void;
@@ -199,6 +200,19 @@ function LabSet() {
           );
         },
       },
+
+      columnHelper.display({
+        id: "status",
+        header: "Status",
+        size: 40,
+        cell: (props) => (
+          <Select
+            options={["Active", "Read-only", "Dsiabled"]}
+            value=""
+            onChange={() => {}}
+          />
+        ),
+      }),
 
       columnHelper.display({
         id: "actions",

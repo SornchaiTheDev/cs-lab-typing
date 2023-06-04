@@ -125,7 +125,7 @@ function Table({
   return (
     <div
       className={clsx(
-        "my-6 flex-1 overflow-y-auto rounded-xl border border-sand-6 bg-sand-1 text-sand-12",
+        "my-6 flex-1 rounded-xl border border-sand-6 bg-sand-1 text-sand-12",
         className
       )}
     >

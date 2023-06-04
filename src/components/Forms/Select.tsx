@@ -9,7 +9,7 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   className?: string;
-  title: string;
+  title?: string;
   error?: string;
   isError?: boolean;
   optional?: boolean;
@@ -77,12 +77,14 @@ function Select({
     <>
       <div {...{ className }}>
         <div className="flex justify-between">
-          <h4 className="mb-2 block font-semibold text-sand-12">
-            {title}{" "}
-            {optional && (
-              <span className="text-sm text-sand-11">(optional)</span>
-            )}
-          </h4>
+          {title && title.length > 0 && (
+            <h4 className="mb-2 block font-semibold text-sand-12">
+              {title}{" "}
+              {optional && (
+                <span className="text-sm text-sand-11">(optional)</span>
+              )}
+            </h4>
+          )}
           {isError && (
             <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
               {error}
@@ -114,37 +116,46 @@ function Select({
               className="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2"
             />
             <h6 className="select-none p-2">{value}</h6>
-            {isShow && (
-              <ul
-                ref={optionRef}
-                className="absolute top-12 z-20 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
-              >
-                {!isEmpty ? (
-                  options.map((data, i) => (
-                    <li
-                      onClick={() => {
-                        onChange(data);
-                        setSelectedIndex(i);
-                      }}
-                      key={data}
-                      className={clsx(
-                        "cursor-pointer rounded-lg p-2 text-sand-11 hover:bg-sand-2",
-                        selectedIndex === i && "selected bg-sand-4 text-sand-12"
-                      )}
-                    >
-                      {data}
-                    </li>
-                  ))
-                ) : (
-                  <span className="cursor-not-allowed py-1 text-sand-6">
-                    No Data
-                  </span>
-                )}
-              </ul>
-            )}
           </div>
         )}
       </div>
+      {isShow && (
+        <ul
+          ref={optionRef}
+          className="absolute z-20 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
+          style={
+            selectRef.current
+              ? {
+                  width: selectRef.current?.offsetWidth,
+                  top:
+                    selectRef.current?.offsetTop +
+                    selectRef.current?.offsetHeight +
+                    4,
+                }
+              : undefined
+          }
+        >
+          {!isEmpty ? (
+            options.map((data, i) => (
+              <li
+                onClick={() => {
+                  onChange(data);
+                  setSelectedIndex(i);
+                }}
+                key={data}
+                className={clsx(
+                  "cursor-pointer rounded-lg p-2 text-sand-11 hover:bg-sand-2",
+                  selectedIndex === i && "selected bg-sand-4 text-sand-12"
+                )}
+              >
+                {data}
+              </li>
+            ))
+          ) : (
+            <span className="cursor-not-allowed py-1 text-sand-6">No Data</span>
+          )}
+        </ul>
+      )}
     </>
   );
 }
