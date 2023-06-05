@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Card from "~/components/Common/Card";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
 import { trpc } from "~/helpers";
+import Badge from "~/components/Common/Badge";
 
 function Course() {
   const router = useRouter();
@@ -24,14 +25,26 @@ function Course() {
       breadcrumbs={[{ label: "My Course", path: "/" }]}
     >
       <div className="my-10 grid grid-cols-12 gap-6">
-        {labs.data?.labs.map(({ id, name, tasksStatus }) => (
+        {labs.data?.labs.map(({ id, name, tasksStatus, status }) => (
           <Card
             key={id}
+            disabled={status === "DISABLED"}
             href={{
               pathname: router.pathname + "/labs/[labId]",
               query: { ...router.query, labId: id },
             }}
             title={name}
+            badges={[
+              {
+                title: status as string,
+                type:
+                  status === "ACTIVE"
+                    ? "success"
+                    : status === "READONLY"
+                    ? "warning"
+                    : "danger",
+              },
+            ]}
           >
             <ProgressIndicator tasksStatus={tasksStatus} />
           </Card>

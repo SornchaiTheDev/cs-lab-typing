@@ -98,6 +98,7 @@ model sections {
   note          String?
   active        Boolean
   submissions   submissions[]
+  labs_status   labs_status[]
   created_by    users               @relation(fields: [created_by_id], references: [id])
   created_by_id Int
   history       section_histories[]
@@ -128,9 +129,29 @@ model labs {
   history     lab_histories[]
   sections    sections[]      @relation("section_lab")
   submissions submissions[]
+  status      labs_status[]
   created_at  DateTime        @default(now())
   updated_at  DateTime?       @updatedAt
   deleted_at  DateTime?
+}
+
+model labs_status {
+  id         Int       @id @default(autoincrement())
+  labs       labs      @relation(fields: [labId], references: [id])
+  labId      Int
+  section    sections  @relation(fields: [sectionId], references: [id])
+  sectionId  Int
+  status     LabStatus @default(ACTIVE)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([labId, sectionId])
+}
+
+enum LabStatus {
+  ACTIVE
+  READONLY
+  DISABLED
 }
 
 model lab_histories {

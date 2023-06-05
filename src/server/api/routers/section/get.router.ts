@@ -8,7 +8,7 @@ import {
 import { z } from "zod";
 import { getAllSections } from "./roles/getAllSections";
 import { getTeacherRelatedSections } from "./roles/getTeacherRelatedSections";
-import type { Prisma, labs } from "@prisma/client";
+import type { Prisma, labs, labs_status } from "@prisma/client";
 import { getStudentRelatedSections } from "./roles/getStudentRelatedSections";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
@@ -45,12 +45,55 @@ export const getSectionsRouter = router({
               user: true,
             },
           },
+          labs_status: true,
         },
       });
       if (section) {
         const sortedLabOrder = section.labs_order.map((id) => {
           const lab = section?.labs.find((lab) => lab.id === id) as labs;
+
           return lab;
+        });
+
+        return { ...section, labs: sortedLabOrder };
+      }
+      return section;
+    }),
+
+  getLabSet: authedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      const section = await ctx.prisma.sections.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          semester: true,
+          tas: true,
+          instructors: true,
+          students: true,
+          labs: true,
+          history: {
+            include: {
+              user: true,
+            },
+          },
+          labs_status: true,
+        },
+      });
+      if (section && section.labs.length > 0) {
+        const sortedLabOrder = section.labs_order.map((id) => {
+          const lab = section?.labs.find((lab) => lab.id === id) as labs;
+          const { status } = section?.labs_status.find(
+            (lab) => lab.labId === id
+          ) as labs_status;
+
+          return { ...lab, status };
         });
 
         return { ...section, labs: sortedLabOrder };

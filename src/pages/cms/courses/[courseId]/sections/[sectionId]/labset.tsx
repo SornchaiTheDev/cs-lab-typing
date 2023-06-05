@@ -8,7 +8,7 @@ import { Icon } from "@iconify/react";
 import { callToast } from "~/services/callToast";
 import { TRPCClientError } from "@trpc/client";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import type { labs, sections } from "@prisma/client";
+import type { LabStatus, labs, labs_status } from "@prisma/client";
 import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
 import clsx from "clsx";
@@ -50,8 +50,8 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
     }
   };
 
-  const removeTask = trpc.sections.removeLab.useMutation();
-  const removeLabFromSection = async (labId: number) => {
+  const removeTask = trpc.sections.deleteLab.useMutation();
+  const deleteLabFromSection = async (labId: number) => {
     try {
       await removeTask.mutateAsync({ sectionId: sectionIdInt, labId });
       await labs.refetch();
@@ -80,7 +80,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
     if (!isAdded) {
       return addLabToSection(labId);
     }
-    removeLabFromSection(labId);
+    deleteLabFromSection(labId);
   };
 
   return (
@@ -150,22 +150,24 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
   );
 };
 
+type LabWithStatus = labs & { status: string };
+
 function LabSet() {
   const router = useRouter();
-  const columnHelper = createColumnHelper<sections>();
+  const columnHelper = createColumnHelper<LabWithStatus>();
 
   const { sectionId } = router.query;
   const sectionIdInt = parseInt(sectionId as string);
-  const section = trpc.sections.getSectionById.useQuery({
+  const section = trpc.sections.getLabSet.useQuery({
     id: sectionIdInt,
   });
 
-  const removeLab = trpc.sections.removeLab.useMutation();
+  const deleteLab = trpc.sections.deleteLab.useMutation();
   const deleteSelectRow = useCallback(
-    async (id: string) => {
+    async (labId: number) => {
       try {
-        await removeLab.mutateAsync({
-          labId: parseInt(id),
+        await deleteLab.mutateAsync({
+          labId,
           sectionId: parseInt(sectionId as string),
         });
         await section.refetch();
@@ -179,10 +181,35 @@ function LabSet() {
         }
       }
     },
-    [removeLab, section, sectionId]
+    [deleteLab, section, sectionId]
   );
 
-  const columns = useMemo<ColumnDef<sections, string>[]>(
+  const changeLabStatus = trpc.sections.updateLabStatus.useMutation();
+  const updateLabStatus = useCallback(
+    async (labId: number, status: LabStatus) => {
+      try {
+        await changeLabStatus.mutateAsync({
+          labId,
+          sectionId: parseInt(sectionId as string),
+          status,
+        });
+        await section.refetch();
+        callToast({
+          msg: "Update Lab Status successfully",
+          type: "success",
+        });
+      } catch (err) {
+        if (err instanceof TRPCClientError) {
+          callToast({ msg: err.message, type: "error" });
+        }
+      }
+    },
+    []
+  );
+
+  console.log(section.data);
+
+  const columns = useMemo<ColumnDef<LabWithStatus, string>[]>(
     () => [
       {
         header: "Lab",
@@ -207,9 +234,11 @@ function LabSet() {
         size: 40,
         cell: (props) => (
           <Select
-            options={["Active", "Read-only", "Dsiabled"]}
-            value=""
-            onChange={() => {}}
+            options={["ACTIVE", "READONLY", "DISABLED"]}
+            value={props.row.original.status}
+            onChange={(status) =>
+              updateLabStatus(props.row.original.id, status as LabStatus)
+            }
           />
         ),
       }),
@@ -219,7 +248,7 @@ function LabSet() {
         header: "Delete",
         cell: (props) => (
           <button
-            onClick={() => deleteSelectRow(props.row.id)}
+            onClick={() => deleteSelectRow(props.row.original.id)}
             className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
@@ -228,7 +257,7 @@ function LabSet() {
         size: 50,
       }),
     ],
-    []
+    [columnHelper, deleteSelectRow]
   );
 
   const [newOrdered, setNewOrdered] = useState<labs[]>([]);

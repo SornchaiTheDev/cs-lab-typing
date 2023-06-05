@@ -75,6 +75,7 @@ export const getFrontRouter = router({
                 name: true,
               },
             },
+            labs_status: true,
             labs_order: true,
             labs: {
               include: {
@@ -97,7 +98,7 @@ export const getFrontRouter = router({
             return lab;
           });
 
-          const labsAddedSubmissions = sortedLab.map((lab) => {
+          const labsAddedSubmissionsAndStatus = sortedLab.map((lab) => {
             const tasksStatus = lab.tasks_order.map((taskId) => {
               const submission = labs.submissions.find(
                 (submission) => submission.task_id === taskId
@@ -106,9 +107,13 @@ export const getFrontRouter = router({
               return submission?.status ?? "NOT_SUBMITTED";
             });
 
-            return { ...lab, tasksStatus: tasksStatus };
+            const labStatus = labs.labs_status.find(
+              (status) => status.labId === lab.id
+            )?.status;
+
+            return { ...lab, tasksStatus: tasksStatus, status: labStatus };
           });
-          return { ...labs, labs: labsAddedSubmissions };
+          return { ...labs, labs: labsAddedSubmissionsAndStatus };
         }
       } catch (err) {
         throw new TRPCError({
@@ -118,9 +123,9 @@ export const getFrontRouter = router({
       }
     }),
   getTasks: authedProcedure
-    .input(z.object({ labId: z.number() }))
+    .input(z.object({ sectionId: z.number(), labId: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { labId } = input;
+      const { labId, sectionId } = input;
       const full_name = ctx.user.full_name;
       try {
         const lab = await ctx.prisma.labs.findUnique({
@@ -133,6 +138,11 @@ export const getFrontRouter = router({
                 name: true,
               },
             },
+            status: {
+              where: {
+                sectionId,
+              },
+            },
             name: true,
             tasks_order: true,
             tasks: true,
@@ -141,11 +151,19 @@ export const getFrontRouter = router({
                 user: {
                   full_name,
                 },
+                section: {
+                  id: sectionId,
+                },
               },
             },
           },
         });
         if (lab) {
+          const labStatus = lab.status.find(
+            (status) => status.sectionId === labId
+          );
+          if (labStatus?.status === "DISABLED") return null;
+
           const sortedTaskLab = lab.tasks_order.map((id) => {
             const task = lab?.tasks.find((task) => task.id === id) as tasks;
             const status =

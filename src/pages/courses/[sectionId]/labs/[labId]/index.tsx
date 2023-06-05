@@ -2,23 +2,32 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import React from "react";
+import React, { useEffect } from "react";
 import FrontLayout from "~/Layout/FrontLayout";
+import Badge from "~/components/Common/Badge";
 import { replaceSlugwithQueryPath, trpc } from "~/helpers";
 
 function Labs() {
   const router = useRouter();
-  const { labId } = router.query;
+  const { sectionId, labId } = router.query;
   const labIdInt = parseInt(labId as string);
+  const sectionIdInt = parseInt(sectionId as string);
 
   const tasks = trpc.front.getTasks.useQuery(
     {
       labId: labIdInt,
+      sectionId: sectionIdInt,
     },
     {
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => {
+    if (tasks.data === null) {
+      router.replace("/404");
+    }
+  }, [tasks.data]);
 
   return (
     <FrontLayout

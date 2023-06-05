@@ -90,56 +90,14 @@ export const updateSectionsRouter = router({
                 },
               },
             },
-          },
-        });
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
-      }
-      return "Success";
-    }),
-  removeLab: teacherProcedure
-    .input(
-      z.object({
-        sectionId: z.number(),
-        labId: z.number(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { labId, sectionId } = input;
-      const requester = ctx.user.full_name;
-      try {
-        const section = await ctx.prisma.sections.findUnique({
-          where: {
-            id: sectionId,
-          },
-        });
-
-        const newOrder = section?.labs_order.filter((lab) => lab !== labId);
-
-        await ctx.prisma.sections.update({
-          where: {
-            id: sectionId,
-          },
-          data: {
-            labs: {
-              disconnect: {
-                id: labId,
-              },
-            },
-            labs_order: {
-              set: newOrder,
-            },
-            history: {
+            labs_status: {
               create: {
-                action: "Remove lab",
-                user: {
+                labs: {
                   connect: {
-                    full_name: requester,
+                    id: labId,
                   },
                 },
+                status: "ACTIVE",
               },
             },
           },
@@ -191,5 +149,37 @@ export const updateSectionsRouter = router({
         });
       }
       return "Success";
+    }),
+  updateLabStatus: teacherProcedure
+    .input(
+      z.object({
+        sectionId: z.number(),
+        labId: z.number(),
+        status: z
+          .literal("ACTIVE")
+          .or(z.literal("READONLY"))
+          .or(z.literal("DISABLED")),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { sectionId, labId, status } = input;
+      try {
+        await ctx.prisma.labs_status.update({
+          where: {
+            labId_sectionId: {
+              labId,
+              sectionId,
+            },
+          },
+          data: {
+            status,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 });

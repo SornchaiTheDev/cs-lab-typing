@@ -7,7 +7,7 @@ import Skeleton from "../Common/Skeleton";
 interface Props {
   options: string[];
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string) => void | Promise<void>;
   className?: string;
   title?: string;
   error?: string;
@@ -32,9 +32,10 @@ function Select({
   const [isShow, setIsShow] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
   const optionRef = useRef<HTMLUListElement>(null);
+  const componentRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  useOnClickOutside(selectRef, () => setIsShow(false));
+  useOnClickOutside(componentRef, () => setIsShow(false));
 
   const handleOnKeyDown = (e: KeyboardEvent) => {
     if (disabled) return;
@@ -74,7 +75,7 @@ function Select({
   }, [selectedIndex, isShow]);
 
   return (
-    <>
+    <div ref={componentRef}>
       <div {...{ className }}>
         <div className="flex justify-between">
           {title && title.length > 0 && (
@@ -141,6 +142,7 @@ function Select({
                 onClick={() => {
                   onChange(data);
                   setSelectedIndex(i);
+                  setIsShow(false);
                 }}
                 key={data}
                 className={clsx(
@@ -156,7 +158,7 @@ function Select({
           )}
         </ul>
       )}
-    </>
+    </div>
   );
 }
 

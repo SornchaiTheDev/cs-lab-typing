@@ -75,4 +75,62 @@ export const deleteSectionsRouter = router({
         },
       });
     }),
+  deleteLab: teacherProcedure
+    .input(
+      z.object({
+        sectionId: z.number(),
+        labId: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { labId, sectionId } = input;
+      const requester = ctx.user.full_name;
+      try {
+        const section = await ctx.prisma.sections.findUnique({
+          where: {
+            id: sectionId,
+          },
+        });
+
+        const newOrder = section?.labs_order.filter((lab) => lab !== labId);
+
+        await ctx.prisma.sections.update({
+          where: {
+            id: sectionId,
+          },
+          data: {
+            labs: {
+              disconnect: {
+                id: labId,
+              },
+            },
+            labs_order: {
+              set: newOrder,
+            },
+            history: {
+              create: {
+                action: "Remove lab",
+                user: {
+                  connect: {
+                    full_name: requester,
+                  },
+                },
+              },
+            },
+            labs_status: {
+              deleteMany: {
+                labId,
+                sectionId,
+              },
+            },
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+      return "Success";
+    }),
 });

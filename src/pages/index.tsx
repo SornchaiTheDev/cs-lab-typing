@@ -4,7 +4,7 @@ import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";
 
 function MyCourse() {
-  const allSections = trpc.front.getSections.useQuery(undefined, {    
+  const allSections = trpc.front.getSections.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
 
@@ -31,7 +31,10 @@ function MyCourse() {
                     query: { courseId: id },
                   }}
                   title={courseName}
-                  badges={[number, name]}
+                  badges={[
+                    { title: number, type: "success" },
+                    { title: name, type: "success" },
+                  ]}
                 />
               );
             })}
