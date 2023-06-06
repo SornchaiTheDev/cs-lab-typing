@@ -26,15 +26,15 @@ function AddUser({ sectionId }: Props) {
       setIsSubmitting(true);
       setIsError(false);
       await addStudent.mutateAsync({
-        emails: value.split("\n"),
+        studentIds: value.split("\n"),
         sectionId,
       });
       callToast({
         msg: "Added Users to this section successfully",
         type: "success",
       });
-
       setIsShow(false);
+      setValue("");
       ctx.sections.invalidate();
     } catch (err) {
       if (err instanceof TRPCClientError) {

@@ -31,7 +31,6 @@ model users {
   authors           courses[]           @relation("course_author")
   students          sections[]          @relation("section_student")
   instructors       sections[]          @relation("section_instructor")
-  TAs               sections[]          @relation("section_ta")
   created_sections  sections[]
   sectionsId        Int?
   created_tasks     tasks[]
@@ -94,7 +93,6 @@ model sections {
   labs          labs[]              @relation("section_lab")
   instructors   users[]             @relation("section_instructor")
   students      users[]             @relation("section_student")
-  tas           users[]             @relation("section_ta")
   note          String?
   active        Boolean
   submissions   submissions[]

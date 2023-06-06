@@ -1,5 +1,5 @@
 import { AddSectionSchema } from "~/forms/SectionSchema";
-import { isArrayUnique, isAllUserHaveValidEmail } from "~/helpers";
+import { isArrayUnique, isAllUserHaveValidStudentId } from "~/helpers";
 import { teacherProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
@@ -9,11 +9,11 @@ export const createSectionsRouter = router({
   createSection: teacherProcedure
     .input(AddSectionSchema.and(z.object({ courseId: z.number() })))
     .mutation(async ({ ctx, input }) => {
-      const { instructors, name, semester, note, tas, courseId, active } =
-        input;
+      const { instructors, name, semester, note, courseId, active } = input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
       const requester = ctx.user.full_name;
+
       let section;
       try {
         section = await ctx.prisma.sections.create({
@@ -34,9 +34,6 @@ export const createSectionsRouter = router({
                 full_name: instructor,
               })),
             },
-            tas: {
-              connect: tas ? tas.map((ta) => ({ full_name: ta })) : [],
-            },
             course: {
               connect: {
                 id: courseId,
@@ -44,7 +41,7 @@ export const createSectionsRouter = router({
             },
             created_by: {
               connect: {
-                full_name: ctx.user.full_name,
+                full_name: requester,
               },
             },
             history: {
@@ -52,7 +49,7 @@ export const createSectionsRouter = router({
                 action: "Create a section",
                 user: {
                   connect: {
-                    full_name: ctx.user.full_name,
+                    full_name: requester,
                   },
                 },
               },
@@ -73,19 +70,41 @@ export const createSectionsRouter = router({
       return section;
     }),
   addUsersToSection: teacherProcedure
-    .input(z.object({ emails: z.array(z.string()), sectionId: z.number() }))
+    .input(z.object({ studentIds: z.array(z.string()), sectionId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const { emails, sectionId } = input;
+      const { studentIds, sectionId } = input;
       const requester = ctx.user.full_name;
 
-      if (!isArrayUnique(emails)) {
+      if (!isArrayUnique(studentIds)) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "DUPLICATED_USER",
         });
       }
 
-      if (isAllUserHaveValidEmail(emails)) {
+      const sectionUsers = await ctx.prisma.sections.findUnique({
+        where: {
+          id: sectionId,
+        },
+        select: {
+          students: {
+            where: {
+              student_id: {
+                in: studentIds,
+              },
+            },
+          },
+        },
+      });
+
+      if (sectionUsers && sectionUsers?.students.length > 0) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "DUPLICATED_USER",
+        });
+      }
+
+      if (isAllUserHaveValidStudentId(studentIds)) {
         try {
           await ctx.prisma.sections.update({
             where: {
@@ -93,8 +112,8 @@ export const createSectionsRouter = router({
             },
             data: {
               students: {
-                connect: emails.map((email) => ({
-                  email,
+                connect: studentIds.map((id) => ({
+                  student_id: id,
                 })),
               },
               history: {

@@ -21,11 +21,9 @@ function Settings() {
   const ctx = trpc.useContext();
   const getAllSemester = trpc.semesters.getAllSemesters.useQuery();
   const authorUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER"],
+    roles: ["ADMIN", "TEACHER", "STUDENT"],
   });
-  const TAUsers = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["STUDENT"],
-  });
+
   const section = trpc.sections.getSectionById.useQuery({
     id: parseInt(sectionId as string),
   });
@@ -89,13 +87,6 @@ function Settings() {
                   value:
                     section.data?.instructors.map((user) => user.full_name) ??
                     [],
-                },
-                {
-                  label: "tas",
-                  title: "TA (s)",
-                  type: "multiple-search",
-                  options: TAUsers.data?.map((user) => user.full_name) ?? [],
-                  value: section.data?.tas.map((user) => user.full_name) ?? [],
                 },
                 {
                   label: "note",

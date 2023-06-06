@@ -68,3 +68,14 @@ export const isAllUserValid = (users: string[]) => {
 export const isAllUserHaveValidEmail = (users: string[]) => {
   return users.every((user) => z.string().email().safeParse(user).success);
 };
+
+export const isAllUserHaveValidStudentId = (studentIds: string[]) => {
+  return studentIds.every(
+    (id) =>
+      z
+        .string()
+        .length(10)
+        .refine((val) => parseInt(val))
+        .safeParse(id).success
+  );
+};

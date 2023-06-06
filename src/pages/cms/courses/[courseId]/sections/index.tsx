@@ -44,11 +44,9 @@ function Sections() {
 
   const getAllSemester = trpc.semesters.getAllSemesters.useQuery();
   const authorUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER"],
+    roles: ["ADMIN", "TEACHER", "STUDENT"],
   });
-  const TAUsers = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["STUDENT"],
-  });
+  
   const sections = trpc.sections.getSectionPagination.useQuery({
     page: 1,
     limit: 10,
@@ -85,14 +83,6 @@ function Sections() {
                 title: "Instructors",
                 type: "multiple-search",
                 options: authorUser.data?.map((user) => user.full_name) ?? [],
-              },
-              {
-                label: "tas",
-                title: "TA (s)",
-                type: "multiple-search",
-                optional: true,
-                options: TAUsers.data?.map((user) => user.full_name) ?? [],
-                value: [],
               },
               { label: "note", title: "Note", type: "text", optional: true },
               {

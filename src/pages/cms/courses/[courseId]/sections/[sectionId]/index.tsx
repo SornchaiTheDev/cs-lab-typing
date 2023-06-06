@@ -114,22 +114,6 @@ function Sections() {
             ))
           )}
         </div>
-        <h5 className="mb-2 mt-4 font-bold">TA(s)</h5>
-        <div className="flex gap-2">
-          {section.isLoading ? (
-            <>
-              <Skeleton width={"10rem"} height={"2rem"} />
-              <Skeleton width={"10rem"} height={"2rem"} />
-              <Skeleton width={"10rem"} height={"2rem"} />
-            </>
-          ) : TAs.length === 0 ? (
-            <span>-</span>
-          ) : (
-            TAs.map(({ full_name }) => (
-              <Badge key={full_name}>{full_name}</Badge>
-            ))
-          )}
-        </div>
         <h5 className="mt-4 font-bold">Students ({studentLength})</h5>
       </div>
       <Table
