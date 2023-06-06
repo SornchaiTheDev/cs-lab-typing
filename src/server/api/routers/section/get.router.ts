@@ -36,7 +36,6 @@ export const getSectionsRouter = router({
         },
         include: {
           semester: true,
-          tas: true,
           instructors: true,
           students: true,
           labs: true,
@@ -74,7 +73,6 @@ export const getSectionsRouter = router({
         },
         include: {
           semester: true,
-          tas: true,
           instructors: true,
           students: true,
           labs: true,
@@ -153,20 +151,17 @@ export const getSectionsRouter = router({
           instructors: true,
           semester: true,
           students: true,
-          tas: true,
           course: true,
         },
       });
 
       const studentAmount = section?.students.length ?? 0;
-      const TAAmount = section?.tas.length ?? 0;
       const instructorAmount = section?.instructors.length ?? 0;
 
-      const userAmount = studentAmount + TAAmount + instructorAmount;
+      const userAmount = studentAmount + instructorAmount;
 
       const allAffectUsers = [
         ...(section?.students ?? []),
-        ...(section?.tas ?? []),
         ...(section?.instructors ?? []),
       ];
 

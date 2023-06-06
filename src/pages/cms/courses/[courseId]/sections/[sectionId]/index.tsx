@@ -76,8 +76,6 @@ function Sections() {
 
   const studentLength = students?.length ?? 0;
 
-  const TAs = section.data?.tas ?? [];
-
   return (
     <SectionLayout
       title={section.data?.name as string}
