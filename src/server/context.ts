@@ -6,11 +6,13 @@ import { getServerAuthSession } from "./auth";
 
 interface CreateInnerContextOptions extends Partial<CreateNextContextOptions> {
   session: Session | null;
+  ip: string | string[];
 }
 
 export const createInnerTRPCContext = (opts?: CreateInnerContextOptions) => {
   return {
     session: opts?.session,
+    ip: opts?.ip,
     prisma,
   };
 };
@@ -20,8 +22,11 @@ export const createContext = async (opts: CreateNextContextOptions) => {
 
   const session = await getServerAuthSession({ req, res });
 
+  const ip = req.headers["x-forwarded-for"] || "localhost";
+
   return createInnerTRPCContext({
     session,
+    ip,
   });
 };
 

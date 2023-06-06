@@ -109,6 +109,22 @@ export const createFrontRouter = router({
             submission_count: {
               increment: 1,
             },
+            lab_loggers: {
+              create: {
+                type: "SUBMIT",
+                ip_address: ctx.ip as string,
+                user: {
+                  connect: {
+                    id: user.id,
+                  },
+                },
+                section: {
+                  connect: {
+                    id: sectionId,
+                  },
+                },
+              },
+            },
           },
         });
       }

@@ -1,28 +1,25 @@
-import { useMemo } from "react";
-import SectionLayout from "~/Layout/SectionLayout";
+import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
 import type { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
-import RangePicker from "~/components/Forms/DatePicker/RangePicker";
 import TimePickerRange from "~/components/TimePickerRange";
 import { Icon } from "@iconify/react";
-
-interface LoggerRow {
-  type: string;
-  date: string;
-  username: string;
-  ip: string;
-}
+import RangePicker from "~/components/Forms/DatePicker/RangePicker";
+import { trpc } from "~/helpers";
+import type { DateRange } from "react-day-picker";
+import dayjs from "dayjs";
+import SectionLayout from "~/Layout/SectionLayout";
+import { useRouter } from "next/router";
+import type { lab_loggers } from "@prisma/client";
 
 const Type = ({ type }: { type: string }) => {
   return (
     <div className="flex justify-center w-full">
       <button
         className={clsx(
-          "px-2 text-sm font-medium rounded-md",
-          type === "LOGIN" && "bg-lime-3 text-lime-9",
-          type === "LOGOUT" && "bg-amber-3 text-amber-9",
-          type === "FAILED-LOGIN" && "bg-red-3 text-red-9"
+          "rounded-md px-2 text-sm font-medium",
+          type === "ACCESS" && "bg-lime-3 text-lime-9",
+          type === "SUBMIT" && "bg-amber-3 text-amber-9"
         )}
       >
         {type}
@@ -31,170 +28,104 @@ const Type = ({ type }: { type: string }) => {
   );
 };
 
-function SectionLog() {
-  const data: LoggerRow[] = useMemo(
-    () => [
-      {
-        type: "LOGIN",
-        date: "2022-09-16 12:31:22+07:00",
-        username: "lalita.b@ku.th",
-        ip: "255.255.255.255",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-16 16:45:33+07:00",
-        username: "john.doe@gmail.com",
-        ip: "192.168.1.1",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-17 08:12:01+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-17 10:21:15+07:00",
-        username: "admin",
-        ip: "172.16.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-17 14:30:59+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-18 09:15:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-18 15:20:45+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-19 11:59:10+07:00",
-        username: "user123",
-        ip: "172.16.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-19 13:08:53+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-19 17:45:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-16 12:31:22+07:00",
-        username: "lalita.b@ku.th",
-        ip: "255.255.255.255",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-16 16:45:33+07:00",
-        username: "john.doe@gmail.com",
-        ip: "192.168.1.1",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-17 08:12:01+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-17 10:21:15+07:00",
-        username: "admin",
-        ip: "172.16.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-17 14:30:59+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-18 09:15:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-18 15:20:45+07:00",
-        username: "jane.smith@yahoo.com",
-        ip: "10.0.0.1",
-      },
-      {
-        type: "FAILED-LOGIN",
-        date: "2022-09-19 11:59:10+07:00",
-        username: "user123",
-        ip: "172.16.0.2",
-      },
-      {
-        type: "LOGIN",
-        date: "2022-09-19 13:08:53+07:00",
-        username: "johndoe@example.com",
-        ip: "10.0.0.2",
-      },
-      {
-        type: "LOGOUT",
-        date: "2022-09-19 17:45:27+07:00",
-        username: "bob.johnson@hotmail.com",
-        ip: "192.168.0.1",
-      },
-    ],
-    []
-  );
+const today = new Date();
 
-  const columns = useMemo<ColumnDef<LoggerRow, string>[]>(
+function Logger() {
+  const router = useRouter();
+  const { sectionId } = router.query;
+  const sectionIdInt = parseInt(sectionId as string);
+
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(today.setHours(0, 0, 0, 0)),
+    to: new Date(today.setHours(23, 59, 59, 999)),
+  });
+
+  const section = trpc.sections.getLabSet.useQuery({
+    id: sectionIdInt,
+  });
+
+  const labLogs = trpc.loggers.getLabLog.useQuery({
+    limit: 50,
+    page: 1,
+    date: dateRange,
+    sectionId: sectionIdInt,
+  });
+
+  const columns = useMemo<ColumnDef<lab_loggers, string>[]>(
     () => [
       {
         header: "Type",
         accessorKey: "type",
-        cell: (props) => <Type type={props.getValue()} />,
+        cell: (props) => <Type type={props.getValue() as string} />,
         size: 40,
       },
       {
         header: "Date",
         accessorKey: "date",
+        cell: (props) =>
+          dayjs(props.getValue() as unknown as Date).format(
+            "DD/MM/YYYY HH:mm:ss"
+          ),
       },
       {
         header: "Email / Username",
-        accessorKey: "username",
+        accessorKey: "user.email",
+        cell: (props) => <span>{props.getValue() as string}</span>,
+      },
+      {
+        header: "TaskId",
+        accessorKey: "taskId",
+        cell: (props) => <span>{props.getValue() as string}</span>,
+      },
+      {
+        header: "SectionId",
+        accessorKey: "sectionId",
+        cell: (props) => <span>{props.getValue() as string}</span>,
       },
       {
         header: "IP Address",
-        accessorKey: "ip",
+        accessorKey: "ip_address",
       },
     ],
     []
   );
 
   const exportCSV = () => {
-    //TODO
+    let csvString = "Type,Date,Email / Username,TaskId,SectionId,IP Address\n";
+    labLogs.data?.forEach((log) => {
+      csvString += `${log.type},${dayjs(log.date).format(
+        "DD/MM/YYYY HH:mm:ss"
+      )},${log.user.email},${log.taskId},${log.sectionId},${log.ip_address}\n`;
+    });
+
+    const startDate = dayjs(dateRange.from);
+    const endDate = dayjs(dateRange.to);
+    const csvBlob = new Blob([csvString], { type: "text/csv" });
+    let fileName = `${startDate.format("DD-MM-YYYY")}-${endDate.format(
+      "DD-MM-YYYY"
+    )}-lab-log.csv`;
+    if (startDate.diff(endDate, "day") === 0) {
+      fileName = `${startDate.format("DD-MM-YYYY")}-lab-log.csv`;
+    }
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(csvBlob);
+    link.download = fileName;
+    link.click();
   };
 
   return (
-    <SectionLayout title="12 (F 15 - 17)">
+    <SectionLayout
+      title={section.data?.name as string}
+      isLoading={section.isLoading}
+    >
       <Table
-        data={data}
+        isLoading={labLogs.isLoading}
+        data={labLogs.data ?? []}
         columns={columns}
         defaultSortingState={{ id: "date", desc: true }}
-        className="mt-6"
       >
-        <div className="flex justify-end p-2">
+        <div className="flex justify-end p-2 ">
           <button
             onClick={exportCSV}
             className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
@@ -204,12 +135,21 @@ function SectionLog() {
           </button>
         </div>
         <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          {/* <RangePicker onChange={(range) => {}} />
-          <TimePickerRange onApply={(startTime, endTime) => {}} /> */}
+          <RangePicker value={dateRange} onChange={setDateRange} />
+
+          <TimePickerRange
+            date={dateRange}
+            onApply={({ from, to }) => {
+              setDateRange({
+                from,
+                to,
+              });
+            }}
+          />
         </div>
       </Table>
     </SectionLayout>
   );
 }
 
-export default SectionLog;
+export default Logger;

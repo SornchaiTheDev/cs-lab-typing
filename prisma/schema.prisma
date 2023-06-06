@@ -28,6 +28,7 @@ model users {
   last_logined      DateTime?
   roles             roles[]
   auth_loggers      auth_loggers[]
+  lab_loggers       lab_loggers[]
   authors           courses[]           @relation("course_author")
   students          sections[]          @relation("section_student")
   instructors       sections[]          @relation("section_instructor")
@@ -44,15 +45,32 @@ model users {
 }
 
 model auth_loggers {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   type       String
+  date       DateTime @default(now())
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    Int
+  ip_address String
+  created_at DateTime @default(now())
+}
+
+enum LabLogger {
+  ACCESS
+  SUBMIT
+}
+
+model lab_loggers {
+  id         Int       @id @default(autoincrement())
+  type       LabLogger
   date       DateTime  @default(now())
   user       users     @relation(fields: [user_id], references: [id])
   user_id    Int
+  task       tasks     @relation(fields: [taskId], references: [id])
+  taskId     Int
+  section    sections  @relation(fields: [sectionId], references: [id])
+  sectionId  Int
   ip_address String
   created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
 }
 
 model semesters {
@@ -97,6 +115,7 @@ model sections {
   active        Boolean
   submissions   submissions[]
   labs_status   labs_status[]
+  lab_loggers   lab_loggers[]
   created_by    users               @relation(fields: [created_by_id], references: [id])
   created_by_id Int
   history       section_histories[]
@@ -184,6 +203,7 @@ model tasks {
   note             String?
   body             String?
   labs             labs[]           @relation("lab_task")
+  lab_loggers      lab_loggers[]
   submission_count Int              @default(0)
   submissions      submissions[]
   created_at       DateTime         @default(now())

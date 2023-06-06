@@ -21,20 +21,13 @@ export const getFrontRouter = router({
                     },
                   },
                 },
-                // {
-                //   instructors: {
-                //     some: {
-                //       full_name,
-                //     },
-                //   },
-                // },
-                // {
-                //   tas: {
-                //     some: {
-                //       full_name,
-                //     },
-                //   },
-                // },
+                {
+                  instructors: {
+                    some: {
+                      full_name,
+                    },
+                  },
+                },
               ],
             },
           ],
@@ -192,6 +185,7 @@ export const getFrontRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { taskId, labId, sectionId } = input;
+      const full_name = ctx.user.full_name;
       try {
         const task = await ctx.prisma.tasks.findUnique({
           where: {
@@ -220,6 +214,28 @@ export const getFrontRouter = router({
             course: {
               select: {
                 name: true,
+              },
+            },
+          },
+        });
+
+        await ctx.prisma.lab_loggers.create({
+          data: {
+            type: "ACCESS",
+            ip_address: ctx.ip as string,
+            user: {
+              connect: {
+                full_name,
+              },
+            },
+            task: {
+              connect: {
+                id: taskId,
+              },
+            },
+            section: {
+              connect: {
+                id: sectionId,
               },
             },
           },

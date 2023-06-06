@@ -1,4 +1,4 @@
-import { useRef, forwardRef, ForwardedRef, useState } from "react";
+import { useRef, forwardRef, ForwardedRef, useState, useEffect } from "react";
 import type { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import Skeleton from "../Common/Skeleton";
 import { motion } from "framer-motion";
@@ -22,6 +22,10 @@ const Checkbox = <T extends FieldValues>({
 }: CheckboxProps<T>) => {
   const [isActive, setIsActive] = useState(value);
 
+  useEffect(() => {
+    setIsActive(value);
+  }, [value]);
+
   const handleOnClick = () => {
     if (disabled) return;
     onChange(!isActive);
@@ -32,7 +36,7 @@ const Checkbox = <T extends FieldValues>({
     <button
       type="button"
       onClick={handleOnClick}
-      className="flex flex-col gap-2 w-fit"
+      className="flex w-fit flex-col gap-2"
     >
       <label htmlFor={title} className="font-medium text-sand-12">
         {title}
@@ -48,8 +52,12 @@ const Checkbox = <T extends FieldValues>({
           )}
         >
           <motion.div
-            initial={isActive ? { right: 4, left: "auto" } : { right: "auto", left: 4 }}
-            animate={isActive ? { right: 4, left: "auto" } : { right: "auto", left: 4 }}
+            initial={
+              isActive ? { right: 4, left: "auto" } : { right: "auto", left: 4 }
+            }
+            animate={
+              isActive ? { right: 4, left: "auto" } : { right: "auto", left: 4 }
+            }
             className="absolute h-4 w-4 rounded-full bg-sand-1"
           ></motion.div>
         </div>

@@ -11,7 +11,6 @@ import TextArea from "./TextArea";
 import Button from "~/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
-import Switch from "../Common/Switch";
 
 interface ConfirmBtn {
   title: string;
@@ -150,7 +149,7 @@ function Forms<T>({
             )}
           />
         );
-      // handleOnClick
+
       case "checkbox":
         return (
           <Controller

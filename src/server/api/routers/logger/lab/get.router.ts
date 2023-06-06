@@ -1,7 +1,8 @@
-import { adminProcedure, router } from "~/server/api/trpc";
+import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-export const getAuthLoggerRouter = router({
-  getAuthLog: adminProcedure
+
+export const getLabLogRouter = router({
+  getLabLog: teacherProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -10,17 +11,19 @@ export const getAuthLoggerRouter = router({
           from: z.union([z.date(), z.undefined()]),
           to: z.union([z.date(), z.undefined()]).optional(),
         }),
+        sectionId: z.number(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, date } = input;
+      const { page, limit, date, sectionId } = input;
 
-      const authLogger = await ctx.prisma.auth_loggers.findMany({
+      const labLoggers = await ctx.prisma.lab_loggers.findMany({
         where: {
           date: {
             lte: date.to,
             gte: date.from,
           },
+          sectionId,
         },
         skip: (page - 1) * limit,
         take: limit,
@@ -34,9 +37,11 @@ export const getAuthLoggerRouter = router({
               student_id: true,
             },
           },
+          sectionId: true,
+          taskId: true,
         },
       });
 
-      return authLogger;
+      return labLoggers;
     }),
 });
