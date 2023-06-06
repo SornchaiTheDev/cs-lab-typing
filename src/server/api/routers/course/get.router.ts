@@ -81,7 +81,6 @@ export const getCourseRouter = router({
             include: {
               students: true,
               instructors: true,
-              tas: true,
               semester: true,
             },
           },
@@ -95,7 +94,6 @@ export const getCourseRouter = router({
             return [
               ...section.instructors.map((instructor) => instructor.full_name),
               ...section.students.map((student) => student.full_name),
-              ...section.tas.map((ta) => ta.full_name),
             ];
           })
           .flat() ?? [];
@@ -173,13 +171,6 @@ export const getCourseRouter = router({
                 },
                 {
                   instructors: {
-                    some: {
-                      email,
-                    },
-                  },
-                },
-                {
-                  tas: {
                     some: {
                       email,
                     },

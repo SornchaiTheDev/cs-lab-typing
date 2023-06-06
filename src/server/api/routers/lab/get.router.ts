@@ -86,7 +86,6 @@ export const getLabRouter = router({
             include: {
               students: true,
               instructors: true,
-              tas: true,
               semester: true,
             },
           },
