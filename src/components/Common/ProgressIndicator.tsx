@@ -6,12 +6,12 @@ interface Props {
 }
 function ProgressIndicator({ tasksStatus }: Props) {
   return (
-    <div className="mt-2 grid grid-cols-12 gap-1">
+    <div className="grid w-full max-w-md grid-cols-12 gap-1">
       {tasksStatus.map((status, i) => (
         <div
           key={i}
           className={clsx(
-            "col-span-2 h-2 rounded-sm ",
+            "col-span-1 h-2 rounded-sm",
             status === "PASSED" && "bg-lime-9",
             status === "FAILED" && "bg-red-9",
             status === "NOT_SUBMITTED" && "bg-sand-9"

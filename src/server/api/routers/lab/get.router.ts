@@ -66,6 +66,50 @@ export const getLabRouter = router({
 
       return null;
     }),
+
+  getLabStatus: teacherProcedure
+    .input(z.object({ sectionId: z.number(), labId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const { sectionId, labId } = input;
+
+      const lab = await ctx.prisma.labs.findUnique({
+        where: {
+          id: labId,
+        },
+        select: {
+          tasks_order: true,
+        },
+      });
+
+      const users = await ctx.prisma.users.findMany({
+        select: {
+          submissions: {
+            where: {
+              lab_id: labId,
+              section_id: sectionId,
+            },
+            select: {
+              task_id: true,
+              status: true,
+            },
+          },
+          full_name: true,
+          student_id: true,
+        },
+      });
+
+      const usersTaskStatus = users.map((user) => {
+        const taskStatus = lab?.tasks_order.map((order) => {
+          const submission = user.submissions.find(
+            (submission) => submission.task_id === order
+          );
+          return submission?.status ?? "NOT_SUBMITTED";
+        });
+        return { ...user, taskStatus };
+      });
+
+      return usersTaskStatus;
+    }),
   getLabObjectRelation: teacherProcedure
     .input(z.object({ name: z.string() }))
     .query(async ({ ctx, input }) => {
