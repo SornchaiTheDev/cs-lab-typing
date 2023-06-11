@@ -67,6 +67,12 @@ function AddUser({ sectionId }: Props) {
       },
     });
 
+  const handleOnClose = () => {
+    setIsShow(false);
+    setValue("");
+    setIsError(false);
+  };
+
   return (
     <>
       <Button
@@ -79,7 +85,7 @@ function AddUser({ sectionId }: Props) {
 
       <Modal
         isOpen={isShow}
-        onClose={() => setIsShow(false)}
+        onClose={handleOnClose}
         title="Add Student"
         className="flex flex-col gap-4 md:w-[40rem]"
       >

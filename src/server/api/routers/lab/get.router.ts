@@ -1,6 +1,6 @@
 import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import type { tasks } from "@prisma/client";
+import type { submission_type, tasks } from "@prisma/client";
 
 export const getLabRouter = router({
   getLabPagination: teacherProcedure
@@ -82,6 +82,13 @@ export const getLabRouter = router({
       });
 
       const users = await ctx.prisma.users.findMany({
+        where: {
+          students: {
+            some: {
+              id: sectionId,
+            },
+          },
+        },
         select: {
           submissions: {
             where: {
@@ -99,16 +106,18 @@ export const getLabRouter = router({
       });
 
       const usersTaskStatus = users.map((user) => {
-        const taskStatus = lab?.tasks_order.map((order) => {
-          const submission = user.submissions.find(
-            (submission) => submission.task_id === order
-          );
-          return submission?.status ?? "NOT_SUBMITTED";
-        });
+        const taskStatus =
+          lab?.tasks_order.map((order) => {
+            const submission = user.submissions.find(
+              (submission) => submission.task_id === order
+            );
+
+            return submission?.status ?? "NOT_SUBMITTED";
+          }) ?? [];
         return { ...user, taskStatus };
       });
-
-      return usersTaskStatus;
+      const taskLength = lab?.tasks_order.length ?? 0;
+      return { usersTaskStatus, taskLength };
     }),
   getLabObjectRelation: teacherProcedure
     .input(z.object({ name: z.string() }))

@@ -88,11 +88,11 @@ function Logger() {
     const startDate = dayjs(dateRange.from);
     const endDate = dayjs(dateRange.to);
     const csvBlob = new Blob([csvString], { type: "text/csv" });
-    let fileName = `${startDate.format("DD-MM-YYYY")}-${endDate.format(
-      "DD-MM-YYYY"
-    )}-auth-log.csv`;
+    let fileName = `${startDate.format("DD_MM_YYYY")}_${endDate.format(
+      "DD_MM_YYYY"
+    )}_auth_log.csv`;
     if (startDate.diff(endDate, "day") === 0) {
-      fileName = `${startDate.format("DD-MM-YYYY")}-auth-log.csv`;
+      fileName = `${startDate.format("DD_MM_YYYY")}_auth_log.csv`;
     }
 
     const link = document.createElement("a");

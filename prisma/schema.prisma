@@ -20,20 +20,19 @@ enum roles {
 }
 
 model users {
-  id                Int                 @id @default(autoincrement())
-  student_id        String              @unique
-  full_name         String              @unique
-  email             String              @unique
-  password          String?
-  last_logined      DateTime?
-  roles             roles[]
-  auth_loggers      auth_loggers[]
-  lab_loggers       lab_loggers[]
-  authors           courses[]           @relation("course_author")
-  students          sections[]          @relation("section_student")
-  instructors       sections[]          @relation("section_instructor")
-  created_sections  sections[]
-  sectionsId        Int?
+  id               Int            @id @default(autoincrement())
+  student_id       String         @unique
+  full_name        String         @unique
+  email            String         @unique
+  password         String?
+  last_logined     DateTime?
+  roles            roles[]
+  auth_loggers     auth_loggers[]
+  lab_loggers      lab_loggers[]
+  authors          courses[]      @relation("course_author")
+  students         sections[]     @relation("section_student")
+  instructors      sections[]     @relation("section_instructor")
+  created_sections sections[]
   created_tasks     tasks[]
   task_histories    task_histories[]
   section_histories section_histories[]

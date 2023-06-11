@@ -31,6 +31,7 @@ function SectionLayout({ title, children, isLoading }: Props) {
 
   teacherMenus.splice(1, 0, { name: "LAB SET", path: "labset" });
   teacherMenus.splice(1, 0, { name: "Status", path: "status" });
+  teacherMenus.splice(1, 0, { name: "Students", path: "students" });
   return (
     <Layout {...{ title }} isLoading={isLoading}>
       <HorizontalMenu

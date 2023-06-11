@@ -5,7 +5,7 @@ import clsx from "clsx";
 import TimePickerRange from "~/components/TimePickerRange";
 import { Icon } from "@iconify/react";
 import RangePicker from "~/components/Forms/DatePicker/RangePicker";
-import { trpc } from "~/helpers";
+import { sanitizeFilename, trpc } from "~/helpers";
 import type { DateRange } from "react-day-picker";
 import dayjs from "dayjs";
 import SectionLayout from "~/Layout/SectionLayout";
@@ -14,7 +14,7 @@ import type { lab_loggers } from "@prisma/client";
 
 const Type = ({ type }: { type: string }) => {
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex w-full justify-center">
       <button
         className={clsx(
           "rounded-md px-2 text-sm font-medium",
@@ -101,11 +101,13 @@ function Logger() {
     const startDate = dayjs(dateRange.from);
     const endDate = dayjs(dateRange.to);
     const csvBlob = new Blob([csvString], { type: "text/csv" });
-    let fileName = `${startDate.format("DD-MM-YYYY")}-${endDate.format(
-      "DD-MM-YYYY"
-    )}-lab-log.csv`;
+    let fileName = `${startDate.format("DD_MM_YYYY")}_${endDate.format(
+      "DD_MM_YYYY"
+    )}_${sanitizeFilename(section.data?.name as string)}_lab_log.csv`;
     if (startDate.diff(endDate, "day") === 0) {
-      fileName = `${startDate.format("DD-MM-YYYY")}-lab-log.csv`;
+      fileName = `${startDate.format("DD_MM_YYYY")}_${sanitizeFilename(
+        section.data?.name as string
+      )}_lab_log.csv`;
     }
 
     const link = document.createElement("a");
@@ -128,7 +130,7 @@ function Logger() {
         <div className="flex justify-end p-2 ">
           <button
             onClick={exportCSV}
-            className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+            className="flex items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV

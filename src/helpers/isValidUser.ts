@@ -70,12 +70,15 @@ export const isAllUserHaveValidEmail = (users: string[]) => {
 };
 
 export const isAllUserHaveValidStudentId = (studentIds: string[]) => {
-  return studentIds.every(
-    (id) =>
-      z
-        .string()
-        .length(10)
-        .refine((val) => parseInt(val))
-        .safeParse(id).success
-  );
+  return studentIds.every((id) => {
+    const isStudent = z
+      .string()
+      .length(10)
+      .refine((val) => parseInt(val))
+      .safeParse(id).success;
+
+    const isTeacher = z.string().email().endsWith("@ku.th").safeParse(id).success;
+
+    return isStudent || isTeacher;
+  });
 };

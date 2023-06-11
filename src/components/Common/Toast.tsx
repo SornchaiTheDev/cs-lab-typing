@@ -67,7 +67,7 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
       msg = "Something went wrong";
       break;
     case "USER_NOT_FOUND":
-      msg = "Cannot find that user";
+      msg = "Cannot find that user. Make sure you already added that user or contact Admin.";
       break;
     case "SAME_YEAR_AND_TERM":
       msg = "There are already has same year and term";
