@@ -83,79 +83,70 @@ export const getCourseRouter = router({
               students: true,
               instructors: true,
               semester: true,
+              labs: true,
+              submissions: true,
             },
           },
           authors: true,
         },
       });
 
-      const usersInSections =
-        course?.sections
-          .map((section) => {
-            return [
-              ...section.instructors.map((instructor) => instructor.full_name),
-              ...section.students.map((student) => student.full_name),
-            ];
-          })
-          .flat() ?? [];
-
-      const semestersInSections =
-        course?.sections.map(
-          (section) => `${section.semester.year}/${section.semester.term}`
-        ) ?? [];
-
-      const arrayOfSemesters = Array.from(new Set(semestersInSections));
-      const semestersLength = arrayOfSemesters.length ?? 0;
-      const usersInAuthors =
-        course?.authors.map((author) => author.full_name) ?? [];
-
-      const mergeAllUsers = Array.from(
-        new Set([...usersInSections, ...usersInAuthors])
-      );
-      const mergeAllUsersLength = mergeAllUsers.length ?? 0;
-
       const sections = course?.sections;
       const sectionsLength = sections?.length ?? 0;
+
+      const labInCourse = sections?.map(({ labs }) => labs.length) ?? [];
+      const labInCourseLength = labInCourse.length;
+      const labInSectionsLength =
+        sections
+          ?.map(({ labs }) => labs.length)
+          .reduce((prev, curr) => prev + curr, 0) ?? 0;
+
+      const submissionsLength =
+        sections
+          ?.map(({ submissions }) => submissions.length)
+          .reduce((prev, curr) => prev + curr, 0) ?? 0;
 
       const relation: Relation = {
         summary: [
           { name: "Courses", amount: 1 },
-          { name: "Semesters", amount: semestersLength },
-          { name: "Users", amount: mergeAllUsersLength },
           { name: "Sections", amount: sectionsLength },
-          { name: "Lab in this course", amount: sectionsLength },
-          { name: "Submissions", amount: sectionsLength },
+          { name: "Lab in course", amount: labInCourseLength },
+          { name: "Lab in sections", amount: labInSectionsLength },
+          { name: "Submissions", amount: submissionsLength },
         ],
         object: [
           { name: "Courses", data: [{ name, data: [] }] },
           {
-            name: "Semesters",
-            data: arrayOfSemesters.map((semester) => ({
-              name: semester,
-              data: [],
-            })),
+            name: "Lab in course",
+            data:
+              sections?.map((section) => ({ name: section.name, data: [] })) ??
+              [],
           },
           {
-            name: "Users",
-            data: mergeAllUsers.map((user) => ({ name: user, data: [] })),
+            name: "Lab in sections",
+            data:
+              sections?.map(({ name, labs }) => ({
+                name,
+                data: labs.map(({ name }) => ({ name, data: [] })),
+              })) ?? [],
           },
           {
             name: "Sections",
             data:
-              sections?.map((section) => ({ name: section.name, data: [] })) ??
-              [],
-          },
-          {
-            name: "Lab in this course",
-            data:
-              sections?.map((section) => ({ name: section.name, data: [] })) ??
-              [],
-          },
-          {
-            name: "Submissions",
-            data:
-              sections?.map((section) => ({ name: section.name, data: [] })) ??
-              [],
+              sections?.map(({ name, submissions }) => ({
+                name,
+                data: [
+                  {
+                    name: "Submissions",
+                    data: submissions.map(
+                      ({ created_at, user_id, section_id }) => ({
+                        name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+                        data: [],
+                      })
+                    ),
+                  },
+                ],
+              })) ?? [],
           },
         ],
       };
