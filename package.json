@@ -65,6 +65,7 @@
     "request-ip": "^3.3.0",
     "superjson": "1.12.2",
     "swagger-ui-react": "^4.18.3",
+    "tailwind-merge": "^1.13.1",
     "trpc-openapi": "^1.1.2",
     "usehooks-ts": "^2.9.1",
     "zod": "^3.21.4",
