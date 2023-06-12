@@ -5,14 +5,29 @@ import { useRouter } from "next/router";
 import { useTypingStore } from "~/store";
 import { trpc } from "~/helpers";
 import Stats from "~/components/Typing/Stats";
+import { getDuration } from "~/components/Typing/utils/getDuration";
+import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
+import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErrorPercentage";
 
 function Tryout() {
   const router = useRouter();
   const taskId = parseInt(router.query.taskId as string);
-  const [status, setStatus] = useTypingStore((state) => [
+  const [status, setStatus, stats] = useTypingStore((state) => [
     state.status,
     state.setStatus,
+    state.stats,
   ]);
+
+  const { errorChar, startedAt, endedAt, totalChars } = stats;
+  const duration = getDuration(startedAt as Date, endedAt as Date);
+  const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
+    totalChars,
+    errorChar,
+    duration.minutes
+  );
+
+  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+
   const task = trpc.tasks.getTaskById.useQuery({ id: taskId });
   const backPath = router.pathname
     .split("/")
@@ -30,7 +45,9 @@ function Tryout() {
       customBackPath={backPath}
     >
       <div className="flex flex-1 flex-col">
-        {status === "Ended" && <Stats />}
+        {status === "Ended" && (
+          <Stats {...{ adjustedSpeed, duration, errorPercentage, rawSpeed }} />
+        )}
         <TypingGame text={task.data?.body ?? ""} />
       </div>
     </FrontLayout>

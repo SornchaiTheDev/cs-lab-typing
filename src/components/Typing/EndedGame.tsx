@@ -21,6 +21,7 @@ function EndedGame() {
   const typingHistories = trpc.front.getTypingHistory.useQuery({
     sectionId: sectionIdInt,
     taskId: taskIdInt,
+    labId: labIdInt,
   });
 
   const [stats, setStatus] = useTypingStore((state) => [
