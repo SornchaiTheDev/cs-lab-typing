@@ -72,6 +72,59 @@ export const getTaskRouter = router({
       return task;
     }),
 
+  getUserTaskStatus: teacherProcedure
+    .input(
+      z.object({
+        student_id: z.string(),
+        sectionId: z.number(),
+        labId: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { student_id, sectionId, labId } = input;
+      const tasks = await ctx.prisma.tasks.findMany({
+        where: {
+          submissions: {
+            some: {
+              lab_id: labId,
+              section_id: sectionId,
+              user: {
+                student_id,
+              },
+            },
+          },
+        },
+        select: {
+          name: true,
+          submissions: {
+            include: {
+              typing_histories: {
+                orderBy: {
+                  created_at: "desc",
+                },
+                take: 1,
+              },
+            },
+            orderBy: {
+              created_at: "desc",
+            },
+            take: 1,
+          },
+        },
+      });
+
+      const tasksWithHistory = tasks.map((task) => {
+        const { submissions } = task;
+
+        return {
+          name: task.name,
+          history: submissions[0]?.typing_histories[0],
+        };
+      });
+
+      return tasksWithHistory;
+    }),
+
   searchTasks: authedProcedure
     .input(
       z.object({

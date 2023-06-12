@@ -1,24 +1,26 @@
 import { Icon } from "@iconify/react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 interface Props {
-  isOpen: boolean;
-  onClick: () => void;
   title: string;
   titleBtn?: ReactNode;
   children?: ReactNode;
 }
 
-function Collapse({ isOpen, title, onClick, children, titleBtn }: Props) {
+function Collapse({ title, children, titleBtn }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="my-4 rounded-md border border-sand-6 bg-white p-4 shadow">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <h4 className="text-xl font-semibold">{title}</h4>
           {isOpen && titleBtn}
         </div>
 
-        <button className="rounded-full p-2 hover:bg-sand-4" onClick={onClick}>
+        <button
+          className="rounded-full p-2 hover:bg-sand-4"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           <Icon
             icon={
               isOpen

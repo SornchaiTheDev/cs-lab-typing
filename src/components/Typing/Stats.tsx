@@ -1,18 +1,14 @@
-import React from "react";
-import { getDuration } from "./utils/getDuration";
-import { calculateTypingSpeed } from "./utils/calculateWPM";
-import { calculateErrorPercentage } from "./utils/calculateErrorPercentage";
-import { useTypingStore } from "~/store";
-function Stats() {
-  const stats = useTypingStore((state) => state.stats);
-  const { errorChar, startedAt, endedAt, totalChars } = stats;
-  const { minutes, seconds } = getDuration(startedAt as Date, endedAt as Date);
-  const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-    totalChars,
-    errorChar,
-    minutes
-  );
-  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+interface Props {
+  rawSpeed: number;
+  adjustedSpeed: number;
+  errorPercentage: number;
+  duration: { minutes: number; seconds: number };
+}
+function Stats({ adjustedSpeed, duration, errorPercentage, rawSpeed }: Props) {
+  const isGreaterThanOneMinute = duration.seconds > 60;
+  const _duration = isGreaterThanOneMinute
+    ? duration.minutes
+    : duration.seconds;
 
   return (
     <div className="flex justify-center gap-10 text-sand-12">
@@ -31,8 +27,8 @@ function Stats() {
       <div>
         <h6 className="text-sm">Duration</h6>
         <h2 className="text-4xl font-bold">
-          {seconds.toFixed(2)}
-          <span>s</span>
+          {_duration.toFixed(2)}
+          <span>{isGreaterThanOneMinute ? "m" : "s"}</span>
         </h2>
       </div>
     </div>

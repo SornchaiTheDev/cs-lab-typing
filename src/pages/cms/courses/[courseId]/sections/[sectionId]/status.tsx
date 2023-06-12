@@ -7,13 +7,37 @@ import { Icon } from "@iconify/react";
 import { useState } from "react";
 import Modal from "~/components/Common/Modal";
 import Collapse from "~/components/Common/Collapse";
+import Stats from "~/components/Typing/Stats";
+import { getDuration } from "~/components/Typing/utils/getDuration";
+import type { submission_type } from "@prisma/client";
 
 interface RecentTaskProps {
-  selectedUser: string | null;
+  selectedUser: {
+    fullName: string;
+    studentId: string;
+    taskStatus: submission_type[];
+  };
+  sectionId: number;
+  labId: number;
   onClose: () => void;
 }
-const RecentTasks = ({ selectedUser, onClose }: RecentTaskProps) => {
-  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+const RecentTasks = ({
+  selectedUser,
+  sectionId,
+  labId,
+
+  onClose,
+}: RecentTaskProps) => {
+  const { fullName, studentId, taskStatus } = selectedUser;
+
+  const tasks = trpc.tasks.getUserTaskStatus.useQuery(
+    {
+      student_id: selectedUser.studentId,
+      sectionId,
+      labId,
+    },
+    { refetchOnWindowFocus: false }
+  );
 
   return (
     <Modal
@@ -27,16 +51,43 @@ const RecentTasks = ({ selectedUser, onClose }: RecentTaskProps) => {
           <Icon className="text-xl" icon="solar:user-line-duotone" />
         </div>
         <div className="flex-1">
-          <h5 className="font-medium">Sornchai Somsakul</h5>
-          <h6 className="text-sm">6510405814</h6>
+          <h5 className="font-medium">{fullName}</h5>
+          <h6 className="text-sm">{studentId}</h6>
         </div>
-        <ProgressIndicator tasksStatus={["NOT_SUBMITTED"]} />
+        <ProgressIndicator
+          className="md:justify-end"
+          tasksStatus={taskStatus}
+        />
       </div>
-      <Collapse
-        title="Task01"
-        isOpen={selectedTask === "task01"}
-        onClick={() => setSelectedTask(null)}
-      ></Collapse>
+      {tasks.isLoading ? (
+        <>
+          <Skeleton width="100%" height="3rem" className="my-2" />
+          <Skeleton width="100%" height="3rem" className="my-2" />
+          <Skeleton width="100%" height="3rem" className="my-2" />
+          <Skeleton width="100%" height="3rem" className="my-2" />
+        </>
+      ) : (tasks.data?.length as number) > 0 ? (
+        tasks.data?.map(({ name, history }) => (
+          <Collapse key={name} title={name}>
+            {history ? (
+              <Stats
+                adjustedSpeed={history.adjusted_speed ?? 0}
+                duration={getDuration(
+                  history.started_at as Date,
+                  history.ended_at as Date
+                )}
+                errorPercentage={history.percent_error ?? 0}
+                rawSpeed={history.raw_speed ?? 0}
+              />
+            ) : null}
+          </Collapse>
+        ))
+      ) : (
+        <div className="flex flex-col justify-center items-center gap-2 my-[25%]">
+          <Icon className="text-4xl" icon="solar:ghost-smile-line-duotone" />
+          <h4 className="text-lg">No Submissions Yet</h4>
+        </div>
+      )}
     </Modal>
   );
 };
@@ -50,7 +101,6 @@ const LabStatus = ({
   labId: number;
   sectionName: string;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { sectionId } = router.query;
@@ -111,20 +161,23 @@ const LabStatus = ({
     link.click();
   };
 
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{
+    fullName: string;
+    studentId: string;
+    taskStatus: submission_type[];
+  } | null>(null);
 
   return (
     <>
       {selectedUser !== null && (
         <RecentTasks
-          {...{ selectedUser }}
+          {...{ selectedUser, labId }}
+          sectionId={sectionIdInt}
           onClose={() => setSelectedUser(null)}
         />
       )}
       <Collapse
         title={name}
-        isOpen={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
         titleBtn={
           <>
             <button
@@ -157,14 +210,20 @@ const LabStatus = ({
           lab.data?.usersTaskStatus?.map(
             ({ full_name, student_id, taskStatus }) => (
               <div key={student_id}>
-                <div className="flex w-full items-center">
+                <div className="flex w-full flex-wrap items-center">
                   <div className="flex w-full flex-1 items-center gap-4">
                     <div>
                       <h5 className="font-medium">{full_name}</h5>
                       <h6 className="text-sm">{student_id}</h6>
                     </div>
                     <button
-                      onClick={() => setSelectedUser(student_id)}
+                      onClick={() =>
+                        setSelectedUser({
+                          fullName: full_name,
+                          studentId: student_id,
+                          taskStatus,
+                        })
+                      }
                       className="flex h-7 w-7 items-center gap-2 rounded border p-1 text-xl text-sand-12"
                     >
                       <Icon
@@ -174,7 +233,10 @@ const LabStatus = ({
                     </button>
                   </div>
 
-                  <ProgressIndicator tasksStatus={taskStatus ?? []} />
+                  <ProgressIndicator
+                    tasksStatus={taskStatus ?? []}
+                    className="mt-4 md:mt-0 md:justify-end"
+                  />
                 </div>
                 <hr className="my-2" />
               </div>

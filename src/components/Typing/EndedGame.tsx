@@ -27,6 +27,16 @@ function EndedGame() {
     state.stats,
     state.setStatus,
   ]);
+
+  const { errorChar, startedAt, endedAt, totalChars } = stats;
+  const duration = getDuration(startedAt as Date, endedAt as Date);
+  const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
+    totalChars,
+    errorChar,
+    duration.minutes
+  );
+
+  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
   const submitTyping = trpc.front.submitTyping.useMutation();
 
   useEffect(() => {
@@ -36,21 +46,13 @@ function EndedGame() {
       if (!sectionIdInt) return;
       if (!taskIdInt) return;
 
-      const { errorChar, startedAt, endedAt, totalChars } = stats;
-      const { minutes } = getDuration(startedAt as Date, endedAt as Date);
-      const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-        totalChars,
-        errorChar,
-        minutes
-      );
-      const percentError = calculateErrorPercentage(totalChars, errorChar);
       await submitTyping.mutateAsync({
         sectionId: sectionIdInt,
         labId: labIdInt,
         taskId: taskIdInt,
         rawSpeed,
         adjustedSpeed,
-        percentError,
+        percentError: errorPercentage,
         startedAt: startedAt as Date,
         endedAt: endedAt as Date,
       });
@@ -69,7 +71,7 @@ function EndedGame() {
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>
       </button>
-      <Stats />
+      <Stats {...{ adjustedSpeed, duration, errorPercentage, rawSpeed }} />
       <div className="h-[10rem] w-full">
         <LineChart datas={typingHistories.data ?? []} />
       </div>
