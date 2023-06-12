@@ -117,7 +117,7 @@ export const getCourseRouter = router({
       const sections = course?.sections;
       const sectionsLength = sections?.length ?? 0;
 
-      const relation : Relation = {
+      const relation: Relation = {
         summary: [
           { name: "Courses", amount: 1 },
           { name: "Semesters", amount: semestersLength },
@@ -127,26 +127,35 @@ export const getCourseRouter = router({
           { name: "Submissions", amount: sectionsLength },
         ],
         object: [
-          { name: "Courses", data: [name] },
+          { name: "Courses", data: [{ name, data: [] }] },
           {
             name: "Semesters",
-            data: arrayOfSemesters,
+            data: arrayOfSemesters.map((semester) => ({
+              name: semester,
+              data: [],
+            })),
           },
           {
             name: "Users",
-            data: mergeAllUsers,
+            data: mergeAllUsers.map((user) => ({ name: user, data: [] })),
           },
           {
             name: "Sections",
-            data: sections?.map((section) => section.name) ?? [],
+            data:
+              sections?.map((section) => ({ name: section.name, data: [] })) ??
+              [],
           },
           {
             name: "Lab in this course",
-            data: sections?.map((section) => section.name) ?? [],
+            data:
+              sections?.map((section) => ({ name: section.name, data: [] })) ??
+              [],
           },
           {
             name: "Submissions",
-            data: sections?.map((section) => section.name) ?? [],
+            data:
+              sections?.map((section) => ({ name: section.name, data: [] })) ??
+              [],
           },
         ],
       };
