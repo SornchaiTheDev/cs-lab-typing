@@ -1,5 +1,6 @@
 import { teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
+import type { Relation } from "~/types/Relation";
 
 export const getUserRouter = router({
   getUserPagination: teacherProcedure
@@ -45,12 +46,12 @@ export const getUserRouter = router({
         },
       });
 
-      const relation = {
+      const relation: Relation = {
         summary: [{ name: "Role", amount: user?.roles.length ?? 0 }],
         object: [
           {
             name: "Role",
-            data: user?.roles ?? [],
+            data: user?.roles.map((role) => ({ name: role, data: [] })) ?? [],
           },
         ],
       };

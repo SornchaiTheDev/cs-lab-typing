@@ -1,5 +1,6 @@
 import { authedProcedure, teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
+import type { Relation } from "~/types/Relation";
 export const getTaskRouter = router({
   getTask: authedProcedure
     .input(
@@ -205,43 +206,42 @@ export const getTaskRouter = router({
         where: {
           id,
         },
+        include: {
+          labs: {
+            include: {
+              submissions: true,
+            },
+          },
+        },
       });
 
-      // const course = await ctx.prisma.courses.findUnique({
-      //   where: {
-      //     id: lab?.courseId,
-      //   },
-      //   include: {
-      //     sections: {
-      //       include: {
-      //         students: true,
-      //         instructors: true,
-      //         tas: true,
-      //         semester: true,
-      //       },
-      //     },
-      //     authors: true,
-      //   },
-      // });
+      const submissions = await ctx.prisma.submissions.findMany({
+        where: {
+          task_id: id,
+        },
+      });
 
-      const relation = {
+      const relation: Relation = {
         summary: [
-          { name: "Sections", amount: 1 },
-          { name: "Lab in this course", amount: 1 },
-          { name: "Submissions", amount: 100 },
+          { name: "Tasks", amount: 1 },
+          { name: "Assignments", amount: 1 },
+          { name: "Submissions", amount: task?.submission_count ?? 0 },
         ],
         object: [
           {
-            name: "Sections",
-            data: [],
+            name: "Task",
+            data: [{ name: task?.name as string, data: [] }],
           },
           {
-            name: "Lab in this course",
-            data: [],
+            name: "Assignments",
+            data: task?.labs.map((lab) => ({ name: lab.name, data: [] })) ?? [],
           },
           {
             name: "Submissions",
-            data: [],
+            data: submissions.map(({ created_at, user_id, section_id }) => ({
+              name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+              data: [],
+            })),
           },
         ],
       };

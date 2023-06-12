@@ -10,6 +10,7 @@ import { getAllSections } from "./roles/getAllSections";
 import { getTeacherRelatedSections } from "./roles/getTeacherRelatedSections";
 import type { Prisma, labs, labs_status } from "@prisma/client";
 import { getStudentRelatedSections } from "./roles/getStudentRelatedSections";
+import type { Relation } from "~/types/Relation";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
   include: {
@@ -165,7 +166,7 @@ export const getSectionsRouter = router({
         ...(section?.instructors ?? []),
       ];
 
-      const relation = {
+      const relation: Relation = {
         summary: [
           { name: "Course", amount: 1 },
           { name: "Section", amount: 1 },
@@ -176,12 +177,21 @@ export const getSectionsRouter = router({
         object: [
           {
             name: "Courses",
-            data: [section?.course.name],
+            data: [{ name: section?.course.name as string, data: [] }],
           },
-          { name: "Section", data: [section?.name] },
-          { name: "Users", data: allAffectUsers.map((user) => user.full_name) },
-          { name: "Lab in section", data: generatePerson(10) },
-          { name: "Submissions", data: generatePerson(100) },
+          {
+            name: "Section",
+            data: [{ name: section?.name as string, data: [] }],
+          },
+          {
+            name: "Users",
+            data: allAffectUsers.map((user) => ({
+              name: user.full_name,
+              data: [],
+            })),
+          },
+          // { name: "Lab in section", data: generatePerson(10) },
+          // { name: "Submissions", data: generatePerson(100) },
         ],
       };
 

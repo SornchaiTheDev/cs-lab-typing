@@ -5,6 +5,7 @@ import { useDeleteAffectStore } from "~/store";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import { callToast } from "~/services/callToast";
+import { Relation } from "~/types/Relation";
 
 interface Props {
   type:
@@ -18,18 +19,13 @@ interface Props {
     | "semester";
 }
 
-interface fetchDataProps {
-  summary: { name: string; amount: number }[];
-  object: { name: string; data: (string | undefined)[] }[];
-}
-
 function DeleteAffect({ type }: Props) {
   const [selectedObject, setSelectedObject] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
   ]);
   const [confirmMsg, setConfirmMsg] = useState<string>("");
-  const [fetchData, setFetchData] = useState<fetchDataProps | null>(null);
+  const [fetchData, setFetchData] = useState<Relation | null>(null);
 
   const ctx = trpc.useContext();
 
@@ -245,6 +241,32 @@ function DeleteAffect({ type }: Props) {
     }
   };
 
+  interface ListItem {
+    name: string;
+    data: ListItem[];
+  }
+
+  const RecursiveList = ({ items }: { items: ListItem[] }) => {
+    if (items.length === 0) return null;
+
+    return (
+      <ul className="list-disc pl-8">
+        {items.map((item, index) => (
+          <ListItem key={index} name={item.name} data={item.data} />
+        ))}
+      </ul>
+    );
+  };
+
+  const ListItem = ({ name, data }: ListItem) => {
+    return (
+      <li key={name}>
+        {name}
+        {data && data.length > 0 && <RecursiveList items={data} />}
+      </li>
+    );
+  };
+
   return (
     <Modal
       title={`Delete ${type}`}
@@ -272,24 +294,11 @@ function DeleteAffect({ type }: Props) {
             ))}
           </ul>
           <h3 className="mt-2 text-lg font-bold">Objects</h3>
-
-          <ul className="list-inside list-disc">
-            {fetchData?.object.map(({ name, data }) => {
-              if (data) {
-                return (
-                  <li key={name}>
-                    {name}
-                    <ul className="list-inside list-disc pl-8">
-                      {data.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </li>
-                );
-              }
-              return null;
-            })}
-          </ul>
+          {!!fetchData?.object && (
+            <ul className="list-inside list-disc">
+              <RecursiveList items={fetchData?.object} />
+            </ul>
+          )}
         </div>
       </div>
       <div className="mt-4 flex flex-col gap-2">

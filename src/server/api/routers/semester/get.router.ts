@@ -1,5 +1,6 @@
 import { adminProcedure, teacherProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
+import { Relation } from "~/types/Relation";
 export const getSemesterRouter = router({
   getSemesters: adminProcedure
     .input(
@@ -57,14 +58,70 @@ export const getSemesterRouter = router({
             term,
           },
         },
+        include: {
+          sections: {
+            include: {
+              labs: {
+                include: {
+                  submissions: true,
+                },
+              },
+            },
+          },
+        },
       });
 
-      const relation = {
-        summary: [{ name: "Semester", amount: 1 }],
+      const relation: Relation = {
+        summary: [
+          { name: "Semester", amount: 1 },
+          { name: "Sections", amount: semester?.sections.length ?? 0 },
+          {
+            name: "Lab in sections",
+            amount:
+              semester?.sections.reduce(
+                (prev, curr) => prev + curr.labs.length,
+                0
+              ) ?? 0,
+          },
+          {
+            name: "Submissions",
+            amount:
+              semester?.sections.reduce(
+                (prev, curr) =>
+                  prev +
+                  curr.labs.reduce(
+                    (prev, curr) => prev + curr.submissions.length,
+                    0
+                  ),
+                0
+              ) ?? 0,
+          },
+        ],
         object: [
           {
             name: "Semester",
-            data: [`${semester?.year}/${semester?.term}`],
+            data: [{ name: `${semester?.year}/${semester?.term}`, data: [] }],
+          },
+          {
+            name: "Section",
+            data:
+              semester?.sections.map(({ name, labs }) => ({
+                name,
+                data: [
+                  {
+                    name: "Lab in section",
+                    data: labs.map(({ name, submissions }) => ({
+                      name,
+                      data: submissions.map(
+                        ({ created_at, user_id, section_id }) => ({
+                          name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+                          data: [],
+                        })
+                      ),
+                    })),
+                  },
+                ],
+              })) ?? [],
           },
         ],
       };

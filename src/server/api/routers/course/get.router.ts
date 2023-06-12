@@ -10,6 +10,7 @@ import { getHighestRole } from "~/helpers";
 import { getAdminCourses } from "./roles/getAdminCourses";
 import { getTeacherCourses } from "./roles/getTeacherCourses";
 import { getStudentCourses } from "./roles/getStudentCourses";
+import type { Relation } from "~/types/Relation";
 
 export const getCourseRouter = router({
   getCoursePagination: teacherProcedure
@@ -116,7 +117,7 @@ export const getCourseRouter = router({
       const sections = course?.sections;
       const sectionsLength = sections?.length ?? 0;
 
-      const relation = {
+      const relation : Relation = {
         summary: [
           { name: "Courses", amount: 1 },
           { name: "Semesters", amount: semestersLength },
