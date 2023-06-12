@@ -42,7 +42,7 @@ const RecentTasks = ({
   return (
     <Modal
       title="Recent submissions"
-      className="h-full max-h-[80%] max-w-[50rem]"
+      className="h-full max-h-[80%] max-w-[48rem]"
       onClose={onClose}
       isOpen
     >
