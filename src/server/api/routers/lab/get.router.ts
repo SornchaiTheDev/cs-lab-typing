@@ -128,42 +128,42 @@ export const getLabRouter = router({
         where: {
           name,
         },
-      });
-
-      const course = await ctx.prisma.courses.findUnique({
-        where: {
-          id: lab?.courseId,
-        },
         include: {
-          sections: {
+          submissions: true,
+          tasks: {
             include: {
-              students: true,
-              instructors: true,
-              semester: true,
+              submissions: true,
             },
           },
-          authors: true,
         },
       });
+
+      const assignmentLength = lab?.tasks.length ?? 0;
+
+      const submissionLength = lab?.submissions.length ?? 0;
 
       const relation = {
         summary: [
-          { name: "Sections", amount: 1 },
-          { name: "Lab in this course", amount: 1 },
-          { name: "Submissions", amount: 100 },
+          { name: "Labs", amount: 1 },
+          { name: "Assignments", amount: assignmentLength },
+          { name: "Submissions", amount: submissionLength },
         ],
         object: [
           {
-            name: "Sections",
-            data: [],
+            name: "Labs",
+            data: [{ name: lab?.name as string, data: [] }],
           },
           {
-            name: "Lab in this course",
-            data: [],
-          },
-          {
-            name: "Submissions",
-            data: [],
+            name: "Assignments",
+            data:
+              lab?.tasks.map(({ name, submissions }) => ({
+                name,
+                data:
+                  submissions.map(({ created_at, user_id, section_id }) => ({
+                    name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+                    data: [],
+                  })) ?? [],
+              })) ?? [],
           },
         ],
       };
