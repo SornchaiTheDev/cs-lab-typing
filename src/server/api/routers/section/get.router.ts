@@ -149,49 +149,39 @@ export const getSectionsRouter = router({
           name,
         },
         include: {
-          instructors: true,
-          semester: true,
-          students: true,
-          course: true,
+          labs: true,
+          submissions: true,
         },
       });
 
-      const studentAmount = section?.students.length ?? 0;
-      const instructorAmount = section?.instructors.length ?? 0;
-
-      const userAmount = studentAmount + instructorAmount;
-
-      const allAffectUsers = [
-        ...(section?.students ?? []),
-        ...(section?.instructors ?? []),
-      ];
-
+      const labLength = section?.labs.length as number;
+      const submissionsLength = section?.submissions.length as number;
       const relation: Relation = {
         summary: [
-          { name: "Course", amount: 1 },
           { name: "Section", amount: 1 },
-          { name: "Users", amount: userAmount },
-          { name: "Lab in section", amount: 10 },
-          { name: "Submissions", amount: 100 },
+          { name: "Lab in section", amount: labLength },
+          { name: "Submissions", amount: submissionsLength },
         ],
         object: [
-          {
-            name: "Courses",
-            data: [{ name: section?.course.name as string, data: [] }],
-          },
           {
             name: "Section",
             data: [{ name: section?.name as string, data: [] }],
           },
+
           {
-            name: "Users",
-            data: allAffectUsers.map((user) => ({
-              name: user.full_name,
-              data: [],
-            })),
+            name: "Lab in section",
+            data: section?.labs.map(({ name }) => ({ name, data: [] })) ?? [],
           },
-          // { name: "Lab in section", data: generatePerson(10) },
-          // { name: "Submissions", data: generatePerson(100) },
+          {
+            name: "Submissions",
+            data:
+              section?.submissions.map(
+                ({ created_at, user_id, section_id }) => ({
+                  name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+                  data: [],
+                })
+              ) ?? [],
+          },
         ],
       };
 
