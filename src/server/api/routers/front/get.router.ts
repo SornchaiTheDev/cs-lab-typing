@@ -249,15 +249,18 @@ export const getFrontRouter = router({
       }
     }),
   getTypingHistory: authedProcedure
-    .input(z.object({ taskId: z.number(), sectionId: z.number() }))
+    .input(
+      z.object({ taskId: z.number(), sectionId: z.number(), labId: z.number() })
+    )
     .query(async ({ ctx, input }) => {
-      const { sectionId, taskId } = input;
+      const { sectionId, taskId, labId } = input;
       const full_name = ctx.user.full_name;
       try {
         const typingHistories = await ctx.prisma.typing_histories.findMany({
           where: {
             submission: {
               section_id: sectionId,
+              lab_id: labId,
               user: {
                 full_name,
               },

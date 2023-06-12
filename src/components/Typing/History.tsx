@@ -6,13 +6,15 @@ import { trpc } from "~/helpers";
 
 function History() {
   const router = useRouter();
-  const { sectionId, taskId } = router.query;
+  const { sectionId, taskId, labId } = router.query;
   const sectionIdInt = parseInt(sectionId as string);
   const taskIdInt = parseInt(taskId as string);
+  const labIdInt = parseInt(labId as string);
 
   const typingHistories = trpc.front.getTypingHistory.useQuery({
     sectionId: sectionIdInt,
     taskId: taskIdInt,
+    labId: labIdInt,
   });
 
   const datas = typingHistories.data ?? [];
