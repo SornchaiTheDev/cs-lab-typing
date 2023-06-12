@@ -1,5 +1,6 @@
 import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const deleteUserRouter = router({
   deleteUser: teacherProcedure
@@ -10,11 +11,18 @@ export const deleteUserRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { email } = input;
-      await await ctx.prisma.users.delete({
-        where: {
-          email,
-        },
-      });
-      return "Success";
+      try {
+        await await ctx.prisma.users.delete({
+          where: {
+            email,
+          },
+        });
+        return "Success";
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 });

@@ -1,5 +1,6 @@
 import { router, adminProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const deleteSemesterRouter = router({
   deleteSemester: adminProcedure
@@ -12,15 +13,21 @@ export const deleteSemesterRouter = router({
       const { yearAndTerm } = input;
       const year = yearAndTerm.split("/")[0] ?? "";
       const term = yearAndTerm.split("/")[1] ?? "";
-
-      await ctx.prisma.semesters.delete({
-        where: {
-          year_term: {
-            year,
-            term,
+      try {
+        await ctx.prisma.semesters.delete({
+          where: {
+            year_term: {
+              year,
+              term,
+            },
           },
-        },
-      });
-      return "Success";
+        });
+        return "Success";
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 });
