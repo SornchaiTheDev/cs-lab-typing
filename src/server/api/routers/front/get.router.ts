@@ -203,6 +203,11 @@ export const getFrontRouter = router({
           },
           select: {
             name: true,
+            status: {
+              where: {
+                sectionId,
+              },
+            },
           },
         });
 
@@ -240,7 +245,11 @@ export const getFrontRouter = router({
             },
           },
         });
-        return { task, lab, section };
+
+        const labStatus = lab?.status.find(
+          (status) => status.sectionId === sectionId
+        )?.status;
+        return { task, lab, section, labStatus };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

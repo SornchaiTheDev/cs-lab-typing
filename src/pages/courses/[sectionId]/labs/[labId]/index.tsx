@@ -1,11 +1,11 @@
 import clsx from "clsx";
+import type { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
 import React, { useEffect } from "react";
 import FrontLayout from "~/Layout/FrontLayout";
-import Badge from "~/components/Common/Badge";
 import { replaceSlugwithQueryPath, trpc } from "~/helpers";
+import { prisma } from "~/server/db";
 
 function Labs() {
   const router = useRouter();
@@ -79,3 +79,30 @@ function Labs() {
 }
 
 export default Labs;
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { labId, sectionId } = ctx.query;
+  const labIdInt = parseInt(labId as string);
+  const lab = await prisma.labs.findUnique({
+    where: {
+      id: labIdInt,
+    },
+    select: {
+      status: true,
+    },
+  });
+  if (lab) {
+    const labStatus = lab?.status.find(
+      (status) => status.sectionId === parseInt(sectionId as string)
+    )?.status;
+
+    if (labStatus === "DISABLED") {
+      return {
+        notFound: true,
+      };
+    }
+  }
+  return {
+    props: {},
+  };
+};

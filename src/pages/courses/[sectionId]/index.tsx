@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import Card from "~/components/Common/Card";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
 import { trpc } from "~/helpers";
-import Badge from "~/components/Common/Badge";
 
 function Course() {
   const router = useRouter();
@@ -16,7 +15,7 @@ function Course() {
       refetchOnWindowFocus: false,
     }
   );
-  console.log(labs.data);
+
   return (
     <FrontLayout
       title={labs.data?.course.name ?? ""}
