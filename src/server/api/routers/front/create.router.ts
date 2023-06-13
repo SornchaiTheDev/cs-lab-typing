@@ -41,66 +41,63 @@ export const createFrontRouter = router({
       }
 
       if (user) {
-        await ctx.prisma.users.update({
+        await ctx.prisma.submissions.upsert({
           where: {
-            full_name,
+            user_id_task_id_section_id_lab_id: {
+              user_id: user.id,
+              section_id: sectionId,
+              lab_id: labId,
+              task_id: taskId,
+            },
           },
-          data: {
-            submissions: {
-              upsert: {
-                where: {
-                  user_id_task_id_section_id_lab_id: {
-                    user_id: user.id,
-                    section_id: sectionId,
-                    lab_id: labId,
-                    task_id: taskId,
-                  },
-                },
-                create: {
-                  section: {
-                    connect: {
-                      id: sectionId,
-                    },
-                  },
-                  lab: {
-                    connect: {
-                      id: labId,
-                    },
-                  },
-                  task: {
-                    connect: {
-                      id: taskId,
-                    },
-                  },
-                  status: status,
-                  task_type: "Typing",
-                  typing_histories: {
-                    create: {
-                      raw_speed: rawSpeed,
-                      adjusted_speed: adjustedSpeed,
-                      started_at: startedAt,
-                      ended_at: endedAt,
-                      percent_error: percentError,
-                    },
-                  },
-                },
-                update: {
-                  status: status,
-                  task_type: "Typing",
-                  typing_histories: {
-                    create: {
-                      raw_speed: rawSpeed,
-                      adjusted_speed: adjustedSpeed,
-                      started_at: startedAt,
-                      ended_at: endedAt,
-                      percent_error: percentError,
-                    },
-                  },
-                },
+          create: {
+            section: {
+              connect: {
+                id: sectionId,
+              },
+            },
+            lab: {
+              connect: {
+                id: labId,
+              },
+            },
+            task: {
+              connect: {
+                id: taskId,
+              },
+            },
+            user: {
+              connect: {
+                id: user.id,
+              },
+            },
+            status,
+            task_type: "Typing",
+            typing_histories: {
+              create: {
+                raw_speed: rawSpeed,
+                adjusted_speed: adjustedSpeed,
+                started_at: startedAt,
+                ended_at: endedAt,
+                percent_error: percentError,
+              },
+            },
+          },
+          update: {
+            status: status,
+            task_type: "Typing",
+            typing_histories: {
+              create: {
+                raw_speed: rawSpeed,
+                adjusted_speed: adjustedSpeed,
+                started_at: startedAt,
+                ended_at: endedAt,
+                percent_error: percentError,
               },
             },
           },
         });
+
         await ctx.prisma.tasks.update({
           where: {
             id: taskId,
@@ -129,14 +126,6 @@ export const createFrontRouter = router({
         });
       }
 
-      // typing_history: {
-      //   create: {
-      //     raw_speed: rawSpeed,
-      //     adjusted_speed: adjustedSpeed,
-      //     started_at: startedAt,
-      //     ended_at: endedAt,
-      //     percent_error: percentError,
-      //   },
       try {
       } catch (err) {
         throw new TRPCError({
