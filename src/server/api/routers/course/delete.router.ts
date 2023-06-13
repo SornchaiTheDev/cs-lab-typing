@@ -17,6 +17,23 @@ export const deleteCourseRouter = router({
             name,
           },
         });
+
+        await ctx.prisma.labs.deleteMany({
+          where: {
+            course: {
+              name,
+            },
+          },
+        });
+        
+        await ctx.prisma.sections.deleteMany({
+          where: {
+            course: {
+              name,
+            },
+          },
+        });
+
         return "Success";
       } catch (err) {
         throw new TRPCError({

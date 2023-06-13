@@ -20,19 +20,19 @@ enum roles {
 }
 
 model users {
-  id               Int            @id @default(autoincrement())
-  student_id       String         @unique
-  full_name        String         @unique
-  email            String         @unique
-  password         String?
-  last_logined     DateTime?
-  roles            roles[]
-  auth_loggers     auth_loggers[]
-  lab_loggers      lab_loggers[]
-  authors          courses[]      @relation("course_author")
-  students         sections[]     @relation("section_student")
-  instructors      sections[]     @relation("section_instructor")
-  created_sections sections[]
+  id                Int                 @id @default(autoincrement())
+  student_id        String              @unique
+  full_name         String              @unique
+  email             String              @unique
+  password          String?
+  last_logined      DateTime?
+  roles             roles[]
+  auth_loggers      auth_loggers[]
+  lab_loggers       lab_loggers[]
+  authors           courses[]           @relation("course_author")
+  students          sections[]          @relation("section_student")
+  instructors       sections[]          @relation("section_instructor")
+  created_sections  sections[]
   created_tasks     tasks[]
   task_histories    task_histories[]
   section_histories section_histories[]
@@ -92,11 +92,11 @@ model courses {
   note       String?
   comments   String?
   labs       labs[]
+  authors    users[]    @relation("course_author")
+  sections   sections[]
   created_at DateTime   @default(now())
   updated_at DateTime?  @updatedAt
   deleted_at DateTime?
-  authors    users[]    @relation("course_author")
-  sections   sections[]
 }
 
 model sections {
@@ -135,7 +135,7 @@ model section_histories {
 
 model labs {
   id          Int             @id @default(autoincrement())
-  name        String          @unique
+  name        String
   tags        tags[]          @relation("lab_tag")
   course      courses         @relation(fields: [courseId], references: [id])
   courseId    Int
@@ -242,6 +242,7 @@ model submissions {
   typing_histories typing_histories[]
   created_at       DateTime           @default(now())
   updated_at       DateTime?          @updatedAt
+  deleted_at       DateTime?
 
   @@unique([user_id, task_id, section_id, lab_id])
 }

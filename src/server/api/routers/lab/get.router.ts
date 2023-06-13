@@ -1,6 +1,6 @@
 import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import type { submission_type, tasks } from "@prisma/client";
+import type { tasks } from "@prisma/client";
 
 export const getLabRouter = router({
   getLabPagination: teacherProcedure
@@ -120,13 +120,13 @@ export const getLabRouter = router({
       return { usersTaskStatus, taskLength };
     }),
   getLabObjectRelation: teacherProcedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
 
       const lab = await ctx.prisma.labs.findUnique({
         where: {
-          name,
+          id,
         },
         include: {
           submissions: true,
