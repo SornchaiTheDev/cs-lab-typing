@@ -12,6 +12,7 @@ export const getFrontRouter = router({
         where: {
           AND: [
             { deleted_at: null },
+            { active: true },
             {
               OR: [
                 {
