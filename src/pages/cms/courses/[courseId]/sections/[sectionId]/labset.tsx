@@ -88,9 +88,9 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
       isOpen
       onClose={onClose}
       title="Add Labs to Section"
-      className="flex h-[90%] max-h-[90%] flex-col gap-2 overflow-y-auto"
+      className="flex h-[90%] max-h-[90%] flex-col gap-2 overflow-y-auto max-w-[60rem]"
     >
-      <div className="grid flex-1 grid-cols-12 gap-4 px-2 py-4 overflow-y-auto">
+      <div className="grid grid-cols-12 gap-4 px-2 py-4 overflow-y-auto">
         {labs.isLoading
           ? new Array(6)
               .fill(0)
@@ -98,7 +98,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
                 <Skeleton
                   key={i}
                   height={"12rem"}
-                  className="col-span-12 md:col-span-4"
+                  className="col-span-12 md:col-span-6"
                 />
               ))
           : labs.data?.map(({ id, name, tags, sections }) => {
@@ -108,7 +108,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
               return (
                 <div
                   key={id}
-                  className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
+                  className="relative col-span-12 md:col-span-6 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5"
                 >
                   <button
                     onClick={() => handleOnClickAdd({ labId: id, isAdded })}

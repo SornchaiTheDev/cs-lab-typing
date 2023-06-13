@@ -13,6 +13,35 @@ export const deleteTaskRouter = router({
           id,
         },
       });
+
+      const labs = await ctx.prisma.labs.findMany({
+        where: {
+          tasks: {
+            some: {
+              id,
+            },
+          },
+        },
+      });
+
+      labs.forEach(async (lab) => {
+        await ctx.prisma.labs.update({
+          where: {
+            id: lab.id,
+          },
+          data: {
+            tasks: {
+              disconnect: {
+                id,
+              },
+            },
+            tasks_order: {
+              set: lab.tasks_order.filter((taskId) => taskId !== id),
+            },
+          },
+        });
+      });
+
       try {
         await ctx.prisma.task_histories.create({
           data: {

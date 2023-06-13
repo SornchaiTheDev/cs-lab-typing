@@ -89,6 +89,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     },
     select: {
       status: true,
+      isDisabled: true,
     },
   });
   if (lab) {
@@ -96,7 +97,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       (status) => status.sectionId === parseInt(sectionId as string)
     )?.status;
 
-    if (labStatus === "DISABLED") {
+    if (labStatus === "DISABLED" || lab.isDisabled) {
       return {
         notFound: true,
       };

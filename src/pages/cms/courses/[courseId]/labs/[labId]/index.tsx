@@ -118,7 +118,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       isOpen={isShow}
       onClose={onClose}
       title="Add Task"
-      className="flex h-[90%] max-h-[90%] flex-col gap-2 overflow-y-auto"
+      className="flex h-[90%] max-h-[90%] flex-col gap-2 overflow-y-auto max-w-[50rem]"
     >
       <h6 className="font-semibold">Task Name</h6>
       <input
@@ -152,7 +152,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
         Search
       </Button>
       <hr className="my-2" />
-      <div className="grid flex-1 grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
+      <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
         {tasks.isLoading
           ? new Array(6)
               .fill(0)
@@ -169,7 +169,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
                 return (
                   <div
                     key={id}
-                    className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
+                    className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-6"
                   >
                     <button
                       onClick={() => handleOnClickAdd({ taskId: id, isAdded })}

@@ -5,7 +5,7 @@ import { useDeleteAffectStore } from "~/store";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import { callToast } from "~/services/callToast";
-import { Relation } from "~/types/Relation";
+import type { Relation } from "~/types/Relation";
 
 interface Props {
   type:
@@ -13,6 +13,7 @@ interface Props {
     | "section"
     | "task-outside"
     | "task-inside"
+    | "lab"
     | "lab-outside"
     | "lab-inside"
     | "user"
@@ -266,6 +267,8 @@ function DeleteAffect({ type }: Props) {
       </li>
     );
   };
+
+  type = type === "lab-inside" || type === "lab-outside" ? "lab" : type;
 
   return (
     <Modal
