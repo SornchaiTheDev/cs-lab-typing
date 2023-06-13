@@ -28,25 +28,24 @@ interface TaskRow {
 }
 
 function Tasks() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
-  const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
-    state.selectedObj,
-    state.setSelectedObj,
-  ]);
+  const selectedObj = useDeleteAffectStore((state) => state.selectedObj);
 
   const [isShow, setIsShow] = useState(false);
-
-  const columnHelper = createColumnHelper<TaskRow>();
 
   const allTasks = trpc.tasks.getTask.useQuery({ page: 1, limit: 50 });
 
   const addTaskMutation = trpc.tasks.addTask.useMutation();
   const addTask = async (formData: TAddTask) => {
     try {
-      await addTaskMutation.mutateAsync(formData);
+      const task = await addTaskMutation.mutateAsync(formData);
       await allTasks.refetch();
       setIsShow(false);
+      await router.push({
+        pathname: router.pathname + "/[taskId]",
+        query: { ...router.query, taskId: task?.id },
+      });
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
@@ -126,7 +125,7 @@ function Tasks() {
       //           type: "lab",
       //         });
       //       }}
-      //       className="rounded-xl text-xl text-sand-12"
+      //       className="text-xl rounded-xl text-sand-12"
       //     >
       //       <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
       //     </button>
@@ -188,6 +187,7 @@ function Tasks() {
               title: "Owner",
               type: "single-search",
               options: ownerUser.data?.map(({ full_name }) => full_name) ?? [],
+              value: session?.user?.full_name as string,
             },
             {
               label: "isPrivate",
@@ -208,14 +208,14 @@ function Tasks() {
         <Table
           data={allTasks.data ?? []}
           columns={columns}
-          className="mt-6 flex-1"
+          className="flex-1 mt-6"
         >
           {isTeacher && (
             <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:programming-line-duotone"
-                className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
+                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
               >
                 Add Task
               </Button>

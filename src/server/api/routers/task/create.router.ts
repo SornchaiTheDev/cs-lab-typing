@@ -42,6 +42,7 @@ export const createTaskRouter = router({
             },
           },
         });
+        return task
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") {
