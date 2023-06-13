@@ -4,15 +4,15 @@ import { TRPCError } from "@trpc/server";
 
 export const deleteLabRouter = router({
   deleteLab: teacherProcedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
       const requester = ctx.user.full_name;
       let lab;
       try {
         lab = await ctx.prisma.labs.delete({
           where: {
-            name,
+            id,
           },
         });
 

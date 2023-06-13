@@ -179,7 +179,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteLab.mutateAsync({
-        name: selectedObject.selected.display,
+        id: selectedObject.selected.id,
       });
 
       callToast({ msg: "Delete Lab successfully", type: "success" });
