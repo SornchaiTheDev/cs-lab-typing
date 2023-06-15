@@ -8,12 +8,12 @@ import Announcement from "~/components/Common/Announcement";
 function Course() {
   const router = useRouter();
   const { sectionId } = router.query;
-  
 
   const labs = trpc.front.getLabs.useQuery(
     { sectionId: sectionId as string },
     {
       refetchOnWindowFocus: false,
+      enabled: !!sectionId,
     }
   );
 
@@ -26,7 +26,7 @@ function Course() {
     >
       <Announcement />
 
-      <div className="grid grid-cols-12 gap-6 my-10">
+      <div className="my-10 grid grid-cols-12 gap-6">
         {labs.data?.labs.map(
           ({ id, name, tasksStatus, status, isDisabled }) => (
             <Card

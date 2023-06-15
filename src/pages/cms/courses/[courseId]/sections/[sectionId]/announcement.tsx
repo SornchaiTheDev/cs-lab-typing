@@ -9,9 +9,14 @@ function AnnouncementPage() {
 
   const { sectionId } = router.query;
 
-  const section = trpc.sections.getSectionById.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getSectionById.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   return (
     <SectionLayout

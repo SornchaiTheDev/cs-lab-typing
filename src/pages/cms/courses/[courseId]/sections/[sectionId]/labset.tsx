@@ -25,9 +25,14 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
   const { courseId, sectionId } = router.query;
 
   const ctx = trpc.useContext();
-  const labs = trpc.labs.getLabPagination.useQuery({
-    courseId: courseId as string,
-  });
+  const labs = trpc.labs.getLabPagination.useQuery(
+    {
+      courseId: courseId as string,
+    },
+    {
+      enabled: !!courseId,
+    }
+  );
 
   const addLab = trpc.sections.addLab.useMutation();
   const addLabToSection = async (labId: number) => {
@@ -157,9 +162,14 @@ function LabSet() {
 
   const { sectionId } = router.query;
 
-  const section = trpc.sections.getLabSet.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getLabSet.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   const deleteLab = trpc.sections.deleteLab.useMutation();
   const deleteSelectRow = useCallback(

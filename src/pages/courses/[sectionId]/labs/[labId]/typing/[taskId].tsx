@@ -33,6 +33,7 @@ function TypingTask() {
     },
     {
       refetchOnWindowFocus: false,
+      enabled: !!taskIdInt && !!labIdInt && !!sectionIdInt,
     }
   );
 

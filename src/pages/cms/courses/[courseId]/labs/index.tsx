@@ -35,17 +35,27 @@ function Labs() {
   const router = useRouter();
 
   const { courseId } = router.query;
-  const course = trpc.courses.getCourseById.useQuery({
-    id: courseId as string,
-  });
+  const course = trpc.courses.getCourseById.useQuery(
+    {
+      id: courseId as string,
+    },
+    {
+      enabled: !!courseId,
+    }
+  );
 
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
-  const allLabs = trpc.labs.getLabPagination.useQuery({
-    page: 1,
-    limit: 10,
-    courseId: courseId as string,
-  });
+  const allLabs = trpc.labs.getLabPagination.useQuery(
+    {
+      page: 1,
+      limit: 10,
+      courseId: courseId as string,
+    },
+    {
+      enabled: !!courseId,
+    }
+  );
 
   const addLabMutation = trpc.labs.createLab.useMutation();
   const addLab = async (formData: TAddLabSchema) => {

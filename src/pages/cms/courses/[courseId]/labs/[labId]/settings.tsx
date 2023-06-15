@@ -23,9 +23,14 @@ function Settings() {
 
   const { courseId, labId } = router.query;
 
-  const lab = trpc.labs.getLabById.useQuery({
-    id: labId as string,
-  });
+  const lab = trpc.labs.getLabById.useQuery(
+    {
+      id: labId as string,
+    },
+    {
+      enabled: !!labId,
+    }
+  );
 
   const tags = trpc.tags.getTags.useQuery();
 

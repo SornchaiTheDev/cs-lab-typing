@@ -15,9 +15,14 @@ function InCourse() {
   const router = useRouter();
 
   const { courseId } = router.query;
-  const course = trpc.courses.getCourseById.useQuery({
-    id: courseId as string,
-  });
+  const course = trpc.courses.getCourseById.useQuery(
+    {
+      id: courseId as string,
+    },
+    {
+      enabled: !!courseId,
+    }
+  );
 
   const students = course.data?.sections.reduce(
     (acc, cur) => acc + cur._count.students,

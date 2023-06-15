@@ -15,9 +15,14 @@ function Sections() {
 
   const { courseId } = router.query;
 
-  const course = trpc.courses.getCourseById.useQuery({
-    id: courseId as string,
-  });
+  const course = trpc.courses.getCourseById.useQuery(
+    {
+      id: courseId as string,
+    },
+    {
+      enabled: !!courseId,
+    }
+  );
 
   const addSectionMutation = trpc.sections.createSection.useMutation();
   const addSection = async (formData: TAddSection & { courseId: number }) => {
@@ -47,11 +52,16 @@ function Sections() {
     roles: ["ADMIN", "TEACHER", "STUDENT"],
   });
 
-  const sections = trpc.sections.getSectionPagination.useQuery({
-    page: 1,
-    limit: 10,
-    courseId: courseId as string,
-  });
+  const sections = trpc.sections.getSectionPagination.useQuery(
+    {
+      page: 1,
+      limit: 10,
+      courseId: courseId as string,
+    },
+    {
+      enabled: !!courseId,
+    }
+  );
   return (
     <CourseLayout
       title={course.data?.name as string}

@@ -228,9 +228,14 @@ function Lab() {
 
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
-  const lab = trpc.labs.getLabById.useQuery({
-    id: labId as string,
-  });
+  const lab = trpc.labs.getLabById.useQuery(
+    {
+      id: labId as string,
+    },
+    {
+      enabled: !!labId,
+    }
+  );
 
   useEffect(() => {
     if (lab.data?.tasks) {

@@ -18,6 +18,7 @@ function Labs() {
     },
     {
       refetchOnWindowFocus: false,
+      enabled: !!sectionId && !!labId,
     }
   );
 

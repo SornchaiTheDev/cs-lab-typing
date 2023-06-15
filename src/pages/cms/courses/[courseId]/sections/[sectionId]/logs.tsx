@@ -39,16 +39,26 @@ function Logger() {
     to: new Date(today.setHours(23, 59, 59, 999)),
   });
 
-  const section = trpc.sections.getLabSet.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getLabSet.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
-  const labLogs = trpc.loggers.getLabLog.useQuery({
-    limit: 50,
-    page: 1,
-    date: dateRange,
-    sectionId: sectionId as string,
-  });
+  const labLogs = trpc.loggers.getLabLog.useQuery(
+    {
+      limit: 50,
+      page: 1,
+      date: dateRange,
+      sectionId: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   const columns = useMemo<ColumnDef<lab_loggers, string>[]>(
     () => [

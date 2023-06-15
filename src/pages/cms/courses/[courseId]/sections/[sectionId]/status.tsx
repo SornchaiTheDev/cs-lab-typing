@@ -36,7 +36,7 @@ const RecentTasks = ({
       sectionId,
       labId,
     },
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false, enabled: !!sectionId && !!labId }
   );
 
   return (
@@ -110,7 +110,7 @@ const LabStatus = ({
       sectionId: sectionId as string,
       labId,
     },
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false, enabled: !!sectionId && !!labId }
   );
 
   const handleOnRefresh = async () => {
@@ -252,9 +252,14 @@ function LabsStatus() {
 
   const { sectionId } = router.query;
 
-  const section = trpc.sections.getSectionById.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getSectionById.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   return (
     <SectionLayout

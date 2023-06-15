@@ -8,11 +8,16 @@ function History() {
   const router = useRouter();
   const { sectionId, taskId, labId } = router.query;
 
-  const typingHistories = trpc.front.getTypingHistory.useQuery({
-    sectionId: sectionId as string,
-    taskId: taskId as string,
-    labId: labId as string,
-  });
+  const typingHistories = trpc.front.getTypingHistory.useQuery(
+    {
+      sectionId: sectionId as string,
+      taskId: taskId as string,
+      labId: labId as string,
+    },
+    {
+      enabled: !!sectionId && !!taskId && !!labId,
+    }
+  );
 
   const datas = typingHistories.data ?? [];
 

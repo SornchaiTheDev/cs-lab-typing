@@ -26,9 +26,14 @@ function Settings() {
     data: course,
     isLoading,
     refetch,
-  } = trpc.courses.getCourseById.useQuery({
-    id: courseId as string,
-  });
+  } = trpc.courses.getCourseById.useQuery(
+    {
+      id: courseId as string,
+    },
+    {
+      enabled: !!courseId,
+    }
+  );
 
   const authorUser = trpc.users.getAllUsersInRole.useQuery({
     roles: ["ADMIN", "TEACHER"],

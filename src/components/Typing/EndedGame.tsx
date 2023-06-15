@@ -14,11 +14,16 @@ function EndedGame() {
   const router = useRouter();
   const { sectionId, labId, taskId } = router.query;
 
-  const typingHistories = trpc.front.getTypingHistory.useQuery({
-    sectionId: sectionId as string,
-    taskId: taskId as string,
-    labId: labId as string,
-  });
+  const typingHistories = trpc.front.getTypingHistory.useQuery(
+    {
+      sectionId: sectionId as string,
+      taskId: taskId as string,
+      labId: labId as string,
+    },
+    {
+      enabled: !!sectionId && !!taskId && !!labId,
+    }
+  );
 
   const [stats, setStatus] = useTypingStore((state) => [
     state.stats,

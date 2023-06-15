@@ -19,9 +19,14 @@ function Students() {
 
   const { sectionId } = router.query;
 
-  const section = trpc.sections.getSectionById.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getSectionById.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
 

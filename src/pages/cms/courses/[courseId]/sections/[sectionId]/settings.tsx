@@ -24,9 +24,14 @@ function Settings() {
     roles: ["ADMIN", "TEACHER", "STUDENT"],
   });
 
-  const section = trpc.sections.getSectionById.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getSectionById.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   const editSectionMutation = trpc.sections.updateSection.useMutation();
   const editSection = async (formData: TAddSection) => {

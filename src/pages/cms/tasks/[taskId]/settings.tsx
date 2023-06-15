@@ -19,7 +19,12 @@ function Settings() {
   ]);
 
   const { taskId } = router.query;
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
+  const task = trpc.tasks.getTaskById.useQuery(
+    { id: taskId as string },
+    {
+      enabled: !!taskId,
+    }
+  );
   const editTaskMutation = trpc.tasks.updateTask.useMutation();
 
   const isTeacher = session?.user?.roles.includes("TEACHER");

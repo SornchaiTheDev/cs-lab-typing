@@ -18,7 +18,12 @@ function LabHistory() {
   const router = useRouter();
   const labId = router.query.labId as string;
 
-  const lab = trpc.labs.getLabById.useQuery({ id: labId });
+  const lab = trpc.labs.getLabById.useQuery(
+    { id: labId },
+    {
+      enabled: !!labId,
+    }
+  );
 
   const columnHelper = createColumnHelper<HistoryRow>();
 

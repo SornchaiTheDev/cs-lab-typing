@@ -17,7 +17,12 @@ function TypingTask() {
 
   const { taskId } = router.query;
 
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
+  const task = trpc.tasks.getTaskById.useQuery(
+    { id: taskId as string },
+    {
+      enabled: !!taskId,
+    }
+  );
   const saveTask = trpc.tasks.setTaskBody.useMutation();
 
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;

@@ -28,7 +28,12 @@ function Tryout() {
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
+  const task = trpc.tasks.getTaskById.useQuery(
+    { id: taskId as string },
+    {
+      enabled: !!taskId,
+    }
+  );
   const backPath = router.pathname
     .split("/")
     .slice(0, -2)

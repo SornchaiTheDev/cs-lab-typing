@@ -20,7 +20,12 @@ function TaskHistory() {
   const router = useRouter();
   const { taskId } = router.query;
 
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
+  const task = trpc.tasks.getTaskById.useQuery(
+    { id: taskId as string },
+    {
+      enabled: !!taskId,
+    }
+  );
 
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
   const isOwner = task.data?.owner.full_name === session?.user?.full_name;

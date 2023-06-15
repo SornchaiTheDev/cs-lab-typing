@@ -9,9 +9,14 @@ function Sections() {
 
   const { sectionId } = router.query;
 
-  const section = trpc.sections.getSectionById.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getSectionById.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   const instructors =
     section.data?.instructors.map((user) => user.full_name) ?? [];

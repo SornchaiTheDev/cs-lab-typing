@@ -18,9 +18,14 @@ function SectionHistory() {
   const router = useRouter();
   const { sectionId } = router.query;
 
-  const section = trpc.sections.getSectionById.useQuery({
-    id: sectionId as string,
-  });
+  const section = trpc.sections.getSectionById.useQuery(
+    {
+      id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
 
   const columnHelper = createColumnHelper<HistoryRow>();
 
