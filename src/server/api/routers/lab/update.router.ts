@@ -7,15 +7,20 @@ import { createNotExistTags } from "~/server/utils/createNotExistTags";
 
 export const updateLabRouter = router({
   updateLab: teacherProcedure
-    .input(AddLabSchema.and(z.object({ courseId: z.number(), id: z.number() })))
+    .input(
+      AddLabSchema.and(z.object({ courseId: z.string(), labId: z.string() }))
+    )
     .mutation(async ({ ctx, input }) => {
-      const { isDisabled, name, tags, courseId, id } = input;
+      const { isDisabled, name, tags, courseId, labId } = input;
+
+      const _labId = parseInt(labId);
+      const _courseId = parseInt(courseId);
 
       try {
         await createNotExistTags(ctx.prisma, tags);
         await ctx.prisma.labs.update({
           where: {
-            id,
+            id: _labId,
           },
           data: {
             name,
@@ -25,7 +30,7 @@ export const updateLabRouter = router({
             isDisabled,
             course: {
               connect: {
-                id: courseId,
+                id: _courseId,
               },
             },
             history: {
@@ -55,7 +60,7 @@ export const updateLabRouter = router({
   updateTaskOrder: teacherProcedure
     .input(
       z.object({
-        labId: z.number(),
+        labId: z.string(),
         tasks: z.array(z.object({ id: z.number(), order: z.number() })),
       })
     )
@@ -70,7 +75,7 @@ export const updateLabRouter = router({
       try {
         await ctx.prisma.labs.update({
           where: {
-            id: labId,
+            id: parseInt(labId),
           },
           data: {
             tasks_order: {
@@ -96,13 +101,15 @@ export const updateLabRouter = router({
       }
     }),
   addTask: teacherProcedure
-    .input(z.object({ labId: z.number(), taskId: z.number() }))
+    .input(z.object({ labId: z.string(), taskId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;
+      const _labId = parseInt(labId);
+
       try {
         const lab = await ctx.prisma.labs.findUnique({
           where: {
-            id: labId,
+            id: _labId,
           },
           include: {
             tasks: true,
@@ -110,7 +117,7 @@ export const updateLabRouter = router({
         });
         await ctx.prisma.labs.update({
           where: {
-            id: labId,
+            id: _labId,
           },
           data: {
             tasks: {
@@ -129,7 +136,7 @@ export const updateLabRouter = router({
 
         await ctx.prisma.labs.update({
           where: {
-            id: labId,
+            id: _labId,
           },
           data: {
             tasks_order: {
@@ -146,13 +153,15 @@ export const updateLabRouter = router({
       return "Success";
     }),
   removeTask: teacherProcedure
-    .input(z.object({ labId: z.number(), taskId: z.number() }))
+    .input(z.object({ labId: z.string(), taskId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;
+      const _labId = parseInt(labId);
+
       try {
         const lab = await ctx.prisma.labs.findUnique({
           where: {
-            id: labId,
+            id: _labId,
           },
           include: {
             tasks: true,
@@ -165,7 +174,7 @@ export const updateLabRouter = router({
           .map((task) => task.id);
         await ctx.prisma.labs.update({
           where: {
-            id: labId,
+            id: _labId,
           },
           data: {
             tasks: {

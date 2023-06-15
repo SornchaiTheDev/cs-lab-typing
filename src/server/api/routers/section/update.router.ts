@@ -5,16 +5,17 @@ import { z } from "zod";
 
 export const updateSectionsRouter = router({
   updateSection: teacherProcedure
-    .input(AddSectionSchema.and(z.object({ id: z.number() })))
+    .input(AddSectionSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { id, instructors, name, semester, note, active } = input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
       const requester = ctx.user.full_name;
+      const _id = parseInt(id);
       try {
         await ctx.prisma.sections.update({
           where: {
-            id,
+            id: _id,
           },
           data: {
             active,
@@ -56,17 +57,20 @@ export const updateSectionsRouter = router({
   addLab: teacherProcedure
     .input(
       z.object({
-        sectionId: z.number(),
+        sectionId: z.string(),
         labId: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { labId, sectionId } = input;
+
+      const _sectionId = parseInt(sectionId);
+
       const requester = ctx.user.full_name;
       try {
         await ctx.prisma.sections.update({
           where: {
-            id: sectionId,
+            id: _sectionId,
           },
           data: {
             labs: {
@@ -110,18 +114,19 @@ export const updateSectionsRouter = router({
   updateLabOrder: teacherProcedure
     .input(
       z.object({
-        sectionId: z.number(),
+        sectionId: z.string(),
         order: z.array(z.number()),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { sectionId, order } = input;
+      const _sectionId = parseInt(sectionId);
       const requester = ctx.user.full_name;
 
       try {
         await ctx.prisma.sections.update({
           where: {
-            id: sectionId,
+            id: _sectionId,
           },
           data: {
             labs_order: {
@@ -150,7 +155,7 @@ export const updateSectionsRouter = router({
   updateLabStatus: teacherProcedure
     .input(
       z.object({
-        sectionId: z.number(),
+        sectionId: z.string(),
         labId: z.number(),
         status: z
           .literal("ACTIVE")
@@ -160,12 +165,15 @@ export const updateSectionsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { sectionId, labId, status } = input;
+
+      const _sectionId = parseInt(sectionId);
+
       try {
         await ctx.prisma.labs_status.update({
           where: {
             labId_sectionId: {
               labId,
-              sectionId,
+              sectionId: _sectionId,
             },
           },
           data: {

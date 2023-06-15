@@ -18,9 +18,9 @@ interface HistoryRow {
 function TaskHistory() {
   const { data: session } = useSession();
   const router = useRouter();
-  const taskId = parseInt(router.query.taskId as string);
+  const { taskId } = router.query;
 
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId });
+  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
 
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
   const isOwner = task.data?.owner.full_name === session?.user?.full_name;

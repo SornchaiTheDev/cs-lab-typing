@@ -7,12 +7,13 @@ import { z } from "zod";
 
 export const createSectionsRouter = router({
   createSection: teacherProcedure
-    .input(AddSectionSchema.and(z.object({ courseId: z.number() })))
+    .input(AddSectionSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { instructors, name, semester, note, courseId, active } = input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
       const requester = ctx.user.full_name;
+      const _courseId = parseInt(courseId);
 
       let section;
       try {
@@ -36,7 +37,7 @@ export const createSectionsRouter = router({
             },
             course: {
               connect: {
-                id: courseId,
+                id: _courseId,
               },
             },
             created_by: {
@@ -70,10 +71,11 @@ export const createSectionsRouter = router({
       return section;
     }),
   addUsersToSection: teacherProcedure
-    .input(z.object({ studentIds: z.array(z.string()), sectionId: z.number() }))
+    .input(z.object({ studentIds: z.array(z.string()), sectionId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { studentIds, sectionId } = input;
       const requester = ctx.user.full_name;
+      const _sectionId = parseInt(sectionId);
 
       if (!isArrayUnique(studentIds)) {
         throw new TRPCError({
@@ -84,7 +86,7 @@ export const createSectionsRouter = router({
 
       const sectionUsers = await ctx.prisma.sections.findUnique({
         where: {
-          id: sectionId,
+          id: _sectionId,
         },
         select: {
           students: {
@@ -108,7 +110,7 @@ export const createSectionsRouter = router({
         try {
           await ctx.prisma.sections.update({
             where: {
-              id: sectionId,
+              id: _sectionId,
             },
             data: {
               students: {

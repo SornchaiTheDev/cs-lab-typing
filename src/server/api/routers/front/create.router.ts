@@ -7,9 +7,9 @@ export const createFrontRouter = router({
   submitTyping: authedProcedure
     .input(
       z.object({
-        sectionId: z.number(),
-        labId: z.number(),
-        taskId: z.number(),
+        sectionId: z.string(),
+        labId: z.string(),
+        taskId: z.string(),
         rawSpeed: z.number(),
         adjustedSpeed: z.number(),
         startedAt: z.date(),
@@ -28,6 +28,11 @@ export const createFrontRouter = router({
         endedAt,
         percentError,
       } = input;
+
+      const _sectionId = parseInt(sectionId);
+      const _labId = parseInt(labId);
+      const _taskId = parseInt(taskId);
+
       const full_name = ctx.session?.user?.full_name;
       const user = await ctx.prisma.users.findUnique({
         where: {
@@ -45,25 +50,25 @@ export const createFrontRouter = router({
           where: {
             user_id_task_id_section_id_lab_id: {
               user_id: user.id,
-              section_id: sectionId,
-              lab_id: labId,
-              task_id: taskId,
+              section_id: _sectionId,
+              lab_id: _labId,
+              task_id: _taskId,
             },
           },
           create: {
             section: {
               connect: {
-                id: sectionId,
+                id: _sectionId,
               },
             },
             lab: {
               connect: {
-                id: labId,
+                id: _labId,
               },
             },
             task: {
               connect: {
-                id: taskId,
+                id: _taskId,
               },
             },
             user: {
@@ -100,7 +105,7 @@ export const createFrontRouter = router({
 
         await ctx.prisma.tasks.update({
           where: {
-            id: taskId,
+            id: _taskId,
           },
           data: {
             submission_count: {
@@ -117,7 +122,7 @@ export const createFrontRouter = router({
                 },
                 section: {
                   connect: {
-                    id: sectionId,
+                    id: _sectionId,
                   },
                 },
               },

@@ -15,9 +15,9 @@ function TypingTask() {
 
   const router = useRouter();
 
-  const taskId = parseInt(router.query.taskId as string);
+  const { taskId } = router.query;
 
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId });
+  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
   const saveTask = trpc.tasks.setTaskBody.useMutation();
 
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
@@ -27,7 +27,7 @@ function TypingTask() {
 
   const handleOnSave = async () => {
     try {
-      await saveTask.mutateAsync({ id: taskId, body: text });
+      await saveTask.mutateAsync({ taskId: taskId as string, body: text });
       callToast({ msg: "Save task successfully", type: "success" });
       task.refetch();
     } catch (err) {

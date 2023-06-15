@@ -36,7 +36,7 @@ function Labs() {
 
   const { courseId } = router.query;
   const course = trpc.courses.getCourseById.useQuery({
-    id: parseInt(courseId as string),
+    id: courseId as string,
   });
 
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
@@ -44,7 +44,7 @@ function Labs() {
   const allLabs = trpc.labs.getLabPagination.useQuery({
     page: 1,
     limit: 10,
-    courseId: parseInt(courseId as string),
+    courseId: courseId as string,
   });
 
   const addLabMutation = trpc.labs.createLab.useMutation();
@@ -52,7 +52,7 @@ function Labs() {
     try {
       const lab = await addLabMutation.mutateAsync({
         ...formData,
-        courseId: parseInt(courseId as string),
+        courseId: courseId as string,
       });
       if (lab) {
         await allLabs.refetch();

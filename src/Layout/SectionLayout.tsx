@@ -1,6 +1,4 @@
-import { ReactNode } from "react";
-import CourseLayout from "./CourseLayout";
-import { useRouter } from "next/router";
+import type { ReactNode } from "react";
 import Layout from ".";
 import HorizontalMenu from "~/components/Common/HorizontalMenu";
 import useRole from "~/hooks/useRole";
@@ -32,6 +30,7 @@ function SectionLayout({ title, children, isLoading }: Props) {
   teacherMenus.splice(1, 0, { name: "LAB SET", path: "labset" });
   teacherMenus.splice(1, 0, { name: "Status", path: "status" });
   teacherMenus.splice(1, 0, { name: "Students", path: "students" });
+  teacherMenus.splice(1, 0, { name: "Annoucement", path: "announcement" });
   return (
     <Layout {...{ title }} isLoading={isLoading}>
       <HorizontalMenu

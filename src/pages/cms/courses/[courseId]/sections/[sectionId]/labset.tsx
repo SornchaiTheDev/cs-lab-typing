@@ -8,7 +8,7 @@ import { Icon } from "@iconify/react";
 import { callToast } from "~/services/callToast";
 import { TRPCClientError } from "@trpc/client";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import type { LabStatus, labs, labs_status } from "@prisma/client";
+import type { LabStatus, labs } from "@prisma/client";
 import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
 import clsx from "clsx";
@@ -24,16 +24,15 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
 
   const { courseId, sectionId } = router.query;
 
-  const courseIdInt = parseInt(courseId as string);
-  const sectionIdInt = parseInt(sectionId as string);
-
   const ctx = trpc.useContext();
-  const labs = trpc.labs.getLabPagination.useQuery({ courseId: courseIdInt });
+  const labs = trpc.labs.getLabPagination.useQuery({
+    courseId: courseId as string,
+  });
 
   const addLab = trpc.sections.addLab.useMutation();
   const addLabToSection = async (labId: number) => {
     try {
-      await addLab.mutateAsync({ sectionId: sectionIdInt, labId });
+      await addLab.mutateAsync({ sectionId: sectionId as string, labId });
       labs.refetch();
       await ctx.sections.invalidate();
       callToast({
@@ -53,7 +52,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
   const removeTask = trpc.sections.deleteLab.useMutation();
   const deleteLabFromSection = async (labId: number) => {
     try {
-      await removeTask.mutateAsync({ sectionId: sectionIdInt, labId });
+      await removeTask.mutateAsync({ sectionId: sectionId as string, labId });
       await labs.refetch();
       await ctx.sections.invalidate();
       callToast({
@@ -88,9 +87,9 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
       isOpen
       onClose={onClose}
       title="Add Labs to Section"
-      className="flex h-[90%] max-h-[90%] flex-col gap-2 overflow-y-auto max-w-[60rem]"
+      className="flex h-[90%] max-h-[90%] max-w-[60rem] flex-col gap-2 overflow-y-auto"
     >
-      <div className="grid grid-cols-12 gap-4 px-2 py-4 overflow-y-auto">
+      <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
         {labs.isLoading
           ? new Array(6)
               .fill(0)
@@ -103,12 +102,12 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
               ))
           : labs.data?.map(({ id, name, tags, sections }) => {
               const isAdded = sections.some(
-                (section) => section.id === sectionIdInt
+                (section) => section.id === parseInt(sectionId as string)
               );
               return (
                 <div
                   key={id}
-                  className="relative col-span-12 md:col-span-6 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5"
+                  className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-6"
                 >
                   <button
                     onClick={() => handleOnClickAdd({ labId: id, isAdded })}
@@ -130,7 +129,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
                       {tags.map(({ name }) => (
                         <div
                           key={name}
-                          className="px-2 text-white rounded-lg w-fit bg-lime-9"
+                          className="w-fit rounded-lg bg-lime-9 px-2 text-white"
                         >
                           {name}
                         </div>
@@ -157,9 +156,9 @@ function LabSet() {
   const columnHelper = createColumnHelper<LabWithStatus>();
 
   const { sectionId } = router.query;
-  const sectionIdInt = parseInt(sectionId as string);
+
   const section = trpc.sections.getLabSet.useQuery({
-    id: sectionIdInt,
+    id: sectionId as string,
   });
 
   const deleteLab = trpc.sections.deleteLab.useMutation();
@@ -168,7 +167,7 @@ function LabSet() {
       try {
         await deleteLab.mutateAsync({
           labId,
-          sectionId: parseInt(sectionId as string),
+          sectionId: sectionId as string,
         });
         await section.refetch();
         callToast({
@@ -190,7 +189,7 @@ function LabSet() {
       try {
         await changeLabStatus.mutateAsync({
           labId,
-          sectionId: parseInt(sectionId as string),
+          sectionId: sectionId as string,
           status,
         });
         await section.refetch();
@@ -247,7 +246,7 @@ function LabSet() {
         cell: (props) => (
           <button
             onClick={() => deleteSelectRow(props.row.original.id)}
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
           </button>
@@ -255,7 +254,7 @@ function LabSet() {
         size: 50,
       }),
     ],
-    [columnHelper, deleteSelectRow]
+    [columnHelper, deleteSelectRow, updateLabStatus]
   );
 
   const [newOrdered, setNewOrdered] = useState<labs[]>([]);
@@ -264,7 +263,7 @@ function LabSet() {
   const handleOnSave = async () => {
     try {
       await saveLabTasks.mutateAsync({
-        sectionId: parseInt(sectionId as string),
+        sectionId: sectionId as string,
         order: newOrdered.map(({ id }) => id),
       });
       await section.refetch();
@@ -298,7 +297,7 @@ function LabSet() {
             <Button
               onClick={() => setIsShow(true)}
               icon="solar:checklist-minimalistic-line-duotone"
-              className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add Lab
             </Button>
@@ -306,7 +305,7 @@ function LabSet() {
               <Button
                 onClick={handleOnSave}
                 icon="solar:diskette-line-duotone"
-                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
               >
                 Save
               </Button>

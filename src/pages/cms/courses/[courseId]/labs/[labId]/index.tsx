@@ -19,7 +19,7 @@ import Skeleton from "~/components/Common/Skeleton";
 interface AddTaskModalProps {
   isShow: boolean;
   onClose: () => void;
-  labId: number;
+  labId: string;
 }
 
 type TaskType = "Lesson" | "Problem" | "Typing";
@@ -118,7 +118,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       isOpen={isShow}
       onClose={onClose}
       title="Add Task"
-      className="flex h-[90%] max-h-[90%] flex-col gap-2 overflow-y-auto max-w-[50rem]"
+      className="flex h-[90%] max-h-[90%] max-w-[50rem] flex-col gap-2 overflow-y-auto"
     >
       <h6 className="font-semibold">Task Name</h6>
       <input
@@ -165,7 +165,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
               ))
           : tasks.data?.map(
               ({ id, name, tags, submission_count, note, labs }) => {
-                const isAdded = labs.some((lab) => lab.id === labId);
+                const isAdded = labs.some((lab) => lab.id === parseInt(labId));
                 return (
                   <div
                     key={id}
@@ -229,7 +229,7 @@ function Lab() {
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
   const lab = trpc.labs.getLabById.useQuery({
-    id: parseInt(labId as string),
+    id: labId as string,
   });
 
   useEffect(() => {
@@ -243,8 +243,8 @@ function Lab() {
     async (id: string) => {
       try {
         await deleteTask.mutateAsync({
-          taskId: parseInt(id),
-          labId: parseInt(labId as string),
+          taskId: id,
+          labId: labId as string,
         });
         await lab.refetch();
         callToast({
@@ -312,7 +312,7 @@ function Lab() {
   const handleOnSave = async () => {
     try {
       await saveLabTasks.mutateAsync({
-        labId: parseInt(labId as string),
+        labId: labId as string,
         tasks: newOrdered.map(({ id }, index) => ({
           id: id,
           order: index + 1,
@@ -334,7 +334,7 @@ function Lab() {
         <AddTaskModal
           isShow={isShow}
           onClose={() => setIsShow(false)}
-          labId={parseInt(labId as string)}
+          labId={labId as string}
         />
       )}
       <LabLayout title={lab.data?.name as string} isLoading={lab.isLoading}>

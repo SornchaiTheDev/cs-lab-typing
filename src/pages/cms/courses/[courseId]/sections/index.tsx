@@ -14,9 +14,9 @@ function Sections() {
   const router = useRouter();
 
   const { courseId } = router.query;
-  const courseIdAsNumber = parseInt(courseId as string);
+
   const course = trpc.courses.getCourseById.useQuery({
-    id: courseIdAsNumber,
+    id: courseId as string,
   });
 
   const addSectionMutation = trpc.sections.createSection.useMutation();
@@ -24,7 +24,7 @@ function Sections() {
     try {
       const section = await addSectionMutation.mutateAsync({
         ...formData,
-        courseId: parseInt(courseId as string),
+        courseId: courseId as string,
       });
       if (section) {
         callToast({ msg: "Added Section successfully", type: "success" });
@@ -46,11 +46,11 @@ function Sections() {
   const authorUser = trpc.users.getAllUsersInRole.useQuery({
     roles: ["ADMIN", "TEACHER", "STUDENT"],
   });
-  
+
   const sections = trpc.sections.getSectionPagination.useQuery({
     page: 1,
     limit: 10,
-    courseId: courseIdAsNumber,
+    courseId: courseId as string,
   });
   return (
     <CourseLayout

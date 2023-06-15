@@ -7,7 +7,7 @@ import { createNotExistTags } from "~/server/utils/createNotExistTags";
 
 export const updateTaskRouter = router({
   updateTask: teacherProcedure
-    .input(AddTaskSchema.and(z.object({ id: z.number() })))
+    .input(AddTaskSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const {
         isPrivate,
@@ -19,6 +19,7 @@ export const updateTaskRouter = router({
         tags = [],
         id,
       } = input;
+      const _id = parseInt(id);
       const actionUser = ctx.user.full_name;
       let task;
       try {
@@ -26,7 +27,7 @@ export const updateTaskRouter = router({
 
         task = await ctx.prisma.tasks.update({
           where: {
-            id,
+            id: _id,
           },
           data: {
             name,
@@ -71,14 +72,15 @@ export const updateTaskRouter = router({
       return task;
     }),
   setTaskBody: teacherProcedure
-    .input(z.object({ id: z.number(), body: z.string() }))
+    .input(z.object({ taskId: z.string(), body: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const actionUser = ctx.user.full_name;
-      const { id, body } = input;
+      const { taskId, body } = input;
+      const _taskId = parseInt(taskId);
       try {
         await ctx.prisma.tasks.update({
           where: {
-            id,
+            id: _taskId,
           },
           data: {
             body,

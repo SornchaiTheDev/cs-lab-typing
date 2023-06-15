@@ -33,7 +33,6 @@ const today = new Date();
 function Logger() {
   const router = useRouter();
   const { sectionId } = router.query;
-  const sectionIdInt = parseInt(sectionId as string);
 
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(today.setHours(0, 0, 0, 0)),
@@ -41,14 +40,14 @@ function Logger() {
   });
 
   const section = trpc.sections.getLabSet.useQuery({
-    id: sectionIdInt,
+    id: sectionId as string,
   });
 
   const labLogs = trpc.loggers.getLabLog.useQuery({
     limit: 50,
     page: 1,
     date: dateRange,
-    sectionId: sectionIdInt,
+    sectionId: sectionId as string,
   });
 
   const columns = useMemo<ColumnDef<lab_loggers, string>[]>(

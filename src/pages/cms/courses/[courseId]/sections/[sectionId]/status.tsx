@@ -17,7 +17,7 @@ interface RecentTaskProps {
     studentId: string;
     taskStatus: submission_type[];
   };
-  sectionId: number;
+  sectionId: string;
   labId: number;
   onClose: () => void;
 }
@@ -83,7 +83,7 @@ const RecentTasks = ({
           </Collapse>
         ))
       ) : (
-        <div className="flex flex-col justify-center items-center gap-2 my-[25%]">
+        <div className="my-[25%] flex flex-col items-center justify-center gap-2">
           <Icon className="text-4xl" icon="solar:ghost-smile-line-duotone" />
           <h4 className="text-lg">No Submissions Yet</h4>
         </div>
@@ -104,11 +104,10 @@ const LabStatus = ({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { sectionId } = router.query;
-  const sectionIdInt = parseInt(sectionId as string);
 
   const lab = trpc.labs.getLabStatus.useQuery(
     {
-      sectionId: sectionIdInt,
+      sectionId: sectionId as string,
       labId,
     },
     { refetchOnWindowFocus: false }
@@ -172,7 +171,7 @@ const LabStatus = ({
       {selectedUser !== null && (
         <RecentTasks
           {...{ selectedUser, labId }}
-          sectionId={sectionIdInt}
+          sectionId={sectionId as string}
           onClose={() => setSelectedUser(null)}
         />
       )}
@@ -252,9 +251,9 @@ function LabsStatus() {
   const router = useRouter();
 
   const { sectionId } = router.query;
-  const sectionIdInt = parseInt(sectionId as string);
+
   const section = trpc.sections.getSectionById.useQuery({
-    id: sectionIdInt,
+    id: sectionId as string,
   });
 
   return (

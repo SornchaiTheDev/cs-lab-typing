@@ -24,7 +24,7 @@ function Settings() {
   const { courseId, labId } = router.query;
 
   const lab = trpc.labs.getLabById.useQuery({
-    id: parseInt(labId as string),
+    id: labId as string,
   });
 
   const tags = trpc.tags.getTags.useQuery();
@@ -34,8 +34,8 @@ function Settings() {
     try {
       await editLabMutation.mutateAsync({
         ...formData,
-        courseId: parseInt(courseId as string),
-        id: parseInt(labId as string),
+        courseId: courseId as string,
+        labId: labId as string,
       });
 
       await lab.refetch();

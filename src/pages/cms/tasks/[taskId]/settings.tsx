@@ -18,8 +18,8 @@ function Settings() {
     state.setSelectedObj,
   ]);
 
-  const taskId = parseInt(router.query.taskId as string);
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId });
+  const { taskId } = router.query;
+  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
   const editTaskMutation = trpc.tasks.updateTask.useMutation();
 
   const isTeacher = session?.user?.roles.includes("TEACHER");
@@ -32,7 +32,7 @@ function Settings() {
     try {
       await editTaskMutation.mutateAsync({
         ...formData,
-        id: taskId,
+        id: taskId as string,
       });
       await task.refetch();
       await tags.refetch();

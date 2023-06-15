@@ -53,15 +53,16 @@ export const getFrontRouter = router({
     }
   }),
   getLabs: authedProcedure
-    .input(z.object({ sectionId: z.number() }))
+    .input(z.object({ sectionId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { sectionId } = input;
       const full_name = ctx.user.full_name;
+      const _sectionId = parseInt(sectionId);
 
       try {
         const labs = await ctx.prisma.sections.findUnique({
           where: {
-            id: sectionId,
+            id: _sectionId,
           },
           select: {
             course: {
@@ -117,14 +118,16 @@ export const getFrontRouter = router({
       }
     }),
   getTasks: authedProcedure
-    .input(z.object({ sectionId: z.number(), labId: z.number() }))
+    .input(z.object({ sectionId: z.string(), labId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { labId, sectionId } = input;
+      const _labId = parseInt(labId);
+      const _sectionId = parseInt(sectionId);
       const full_name = ctx.user.full_name;
       try {
         const lab = await ctx.prisma.labs.findUnique({
           where: {
-            id: labId,
+            id: _labId,
           },
           select: {
             course: {
@@ -134,7 +137,7 @@ export const getFrontRouter = router({
             },
             status: {
               where: {
-                sectionId,
+                sectionId: _sectionId,
               },
             },
             name: true,
@@ -146,7 +149,7 @@ export const getFrontRouter = router({
                   full_name,
                 },
                 section: {
-                  id: sectionId,
+                  id: _sectionId,
                 },
               },
             },
@@ -154,7 +157,7 @@ export const getFrontRouter = router({
         });
         if (lab) {
           const labStatus = lab.status.find(
-            (status) => status.sectionId === labId
+            (status) => status.sectionId === _labId
           );
           if (labStatus?.status === "DISABLED") return null;
 
@@ -182,15 +185,19 @@ export const getFrontRouter = router({
     }),
   getTaskById: authedProcedure
     .input(
-      z.object({ taskId: z.number(), labId: z.number(), sectionId: z.number() })
+      z.object({ taskId: z.string(), labId: z.string(), sectionId: z.string() })
     )
     .query(async ({ ctx, input }) => {
       const { taskId, labId, sectionId } = input;
+      const _taskId = parseInt(taskId);
+      const _labId = parseInt(labId);
+      const _sectionId = parseInt(sectionId);
+
       const full_name = ctx.user.full_name;
       try {
         const task = await ctx.prisma.tasks.findUnique({
           where: {
-            id: taskId,
+            id: _taskId,
           },
           select: {
             name: true,
@@ -200,13 +207,13 @@ export const getFrontRouter = router({
 
         const lab = await ctx.prisma.labs.findUnique({
           where: {
-            id: labId,
+            id: _labId,
           },
           select: {
             name: true,
             status: {
               where: {
-                sectionId,
+                sectionId: _sectionId,
               },
             },
           },
@@ -214,7 +221,7 @@ export const getFrontRouter = router({
 
         const section = await ctx.prisma.sections.findUnique({
           where: {
-            id: sectionId,
+            id: _sectionId,
           },
           select: {
             course: {
@@ -236,19 +243,19 @@ export const getFrontRouter = router({
             },
             task: {
               connect: {
-                id: taskId,
+                id: _taskId,
               },
             },
             section: {
               connect: {
-                id: sectionId,
+                id: _sectionId,
               },
             },
           },
         });
 
         const labStatus = lab?.status.find(
-          (status) => status.sectionId === sectionId
+          (status) => status.sectionId === _sectionId
         )?.status;
         return { task, lab, section, labStatus };
       } catch (err) {
@@ -260,21 +267,26 @@ export const getFrontRouter = router({
     }),
   getTypingHistory: authedProcedure
     .input(
-      z.object({ taskId: z.number(), sectionId: z.number(), labId: z.number() })
+      z.object({ taskId: z.string(), sectionId: z.string(), labId: z.string() })
     )
     .query(async ({ ctx, input }) => {
       const { sectionId, taskId, labId } = input;
+
+      const _sectionId = parseInt(sectionId);
+      const _taskId = parseInt(taskId);
+      const _labId = parseInt(labId);
+
       const full_name = ctx.user.full_name;
       try {
         const typingHistories = await ctx.prisma.typing_histories.findMany({
           where: {
             submission: {
-              section_id: sectionId,
-              lab_id: labId,
+              section_id: _sectionId,
+              lab_id: _labId,
               user: {
                 full_name,
               },
-              task_id: taskId,
+              task_id: _taskId,
             },
           },
           orderBy: {

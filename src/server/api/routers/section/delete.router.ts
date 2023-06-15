@@ -46,15 +46,15 @@ export const deleteSectionsRouter = router({
     .input(
       z.object({
         student_id: z.string(),
-        sectionId: z.number(),
+        sectionId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { sectionId, student_id } = input;
-
+      const _sectionId = parseInt(sectionId)
       await ctx.prisma.sections.update({
         where: {
-          id: sectionId,
+          id: _sectionId,
         },
         data: {
           students: {
@@ -78,17 +78,19 @@ export const deleteSectionsRouter = router({
   deleteLab: teacherProcedure
     .input(
       z.object({
-        sectionId: z.number(),
+        sectionId: z.string(),
         labId: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { labId, sectionId } = input;
+      const _sectionId = parseInt(sectionId);
+
       const requester = ctx.user.full_name;
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
-            id: sectionId,
+            id: _sectionId,
           },
         });
 
@@ -96,7 +98,7 @@ export const deleteSectionsRouter = router({
 
         await ctx.prisma.sections.update({
           where: {
-            id: sectionId,
+            id: _sectionId,
           },
           data: {
             labs: {
@@ -120,7 +122,7 @@ export const deleteSectionsRouter = router({
             labs_status: {
               deleteMany: {
                 labId,
-                sectionId,
+                sectionId: _sectionId,
               },
             },
           },

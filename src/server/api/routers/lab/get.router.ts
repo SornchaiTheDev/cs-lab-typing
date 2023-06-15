@@ -8,7 +8,7 @@ export const getLabRouter = router({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
-        courseId: z.number(),
+        courseId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -17,7 +17,7 @@ export const getLabRouter = router({
       const labs = await ctx.prisma.labs.findMany({
         where: {
           deleted_at: null,
-          courseId,
+          courseId: parseInt(courseId),
         },
         skip: (page - 1) * limit,
         take: limit,
@@ -36,12 +36,14 @@ export const getLabRouter = router({
       return labs;
     }),
   getLabById: teacherProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
+      const _id = parseInt(id);
+
       const lab = await ctx.prisma.labs.findFirst({
         where: {
-          id,
+          id: _id,
           deleted_at: null,
         },
         include: {
@@ -68,9 +70,10 @@ export const getLabRouter = router({
     }),
 
   getLabStatus: teacherProcedure
-    .input(z.object({ sectionId: z.number(), labId: z.number() }))
+    .input(z.object({ sectionId: z.string(), labId: z.number() }))
     .query(async ({ ctx, input }) => {
       const { sectionId, labId } = input;
+      const _sectionId = parseInt(sectionId);
 
       const lab = await ctx.prisma.labs.findUnique({
         where: {
@@ -85,7 +88,7 @@ export const getLabRouter = router({
         where: {
           students: {
             some: {
-              id: sectionId,
+              id: _sectionId,
             },
           },
         },
@@ -93,7 +96,7 @@ export const getLabRouter = router({
           submissions: {
             where: {
               lab_id: labId,
-              section_id: sectionId,
+              section_id: _sectionId,
             },
             select: {
               task_id: true,

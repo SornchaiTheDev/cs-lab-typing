@@ -1,4 +1,4 @@
-import { generatePerson, getHighestRole } from "~/helpers";
+import { getHighestRole } from "~/helpers";
 import {
   adminProcedure,
   authedProcedure,
@@ -26,14 +26,15 @@ export const getSectionsRouter = router({
   getSectionById: authedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { id } = input;
+      const _id = parseInt(id);
       const section = await ctx.prisma.sections.findUnique({
         where: {
-          id,
+          id: _id,
         },
         include: {
           semester: true,
@@ -63,14 +64,15 @@ export const getSectionsRouter = router({
   getLabSet: authedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { id } = input;
+      const _id = parseInt(id);
       const section = await ctx.prisma.sections.findUnique({
         where: {
-          id,
+          id: _id,
         },
         include: {
           semester: true,
@@ -104,22 +106,23 @@ export const getSectionsRouter = router({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
-        courseId: z.number(),
+        courseId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { page, limit, courseId } = input;
-      const role = getHighestRole(
-        (ctx.user.roles.split(",") as string[]) ?? []
-      );
+
+      const _courseId = parseInt(courseId);
+      const role = getHighestRole(ctx.user.roles);
       const full_name = ctx.user.full_name;
       let sections: sectionsIncludedStudentLength[] = [];
+
       if (role === "ADMIN") {
-        sections = await getAllSections(ctx.prisma, courseId, page, limit);
+        sections = await getAllSections(ctx.prisma, _courseId, page, limit);
       } else if (role === "TEACHER") {
         sections = await getTeacherRelatedSections(
           ctx.prisma,
-          courseId,
+          _courseId,
           page,
           limit,
           full_name
@@ -127,7 +130,7 @@ export const getSectionsRouter = router({
       } else {
         sections = await getStudentRelatedSections(
           ctx.prisma,
-          courseId,
+          _courseId,
           page,
           limit,
           full_name

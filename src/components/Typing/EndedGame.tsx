@@ -14,14 +14,10 @@ function EndedGame() {
   const router = useRouter();
   const { sectionId, labId, taskId } = router.query;
 
-  const sectionIdInt = parseInt(sectionId as string);
-  const labIdInt = parseInt(labId as string);
-  const taskIdInt = parseInt(taskId as string);
-
   const typingHistories = trpc.front.getTypingHistory.useQuery({
-    sectionId: sectionIdInt,
-    taskId: taskIdInt,
-    labId: labIdInt,
+    sectionId: sectionId as string,
+    taskId: taskId as string,
+    labId: labId as string,
   });
 
   const [stats, setStatus] = useTypingStore((state) => [
@@ -43,14 +39,11 @@ function EndedGame() {
   useEffect(() => {
     const saveTypingScore = async () => {
       if (!stats) return;
-      if (!labIdInt) return;
-      if (!sectionIdInt) return;
-      if (!taskIdInt) return;
 
       await submitTyping.mutateAsync({
-        sectionId: sectionIdInt,
-        labId: labIdInt,
-        taskId: taskIdInt,
+        sectionId: sectionId as string,
+        labId: labId as string,
+        taskId: taskId as string,
         rawSpeed,
         adjustedSpeed,
         percentError: errorPercentage,

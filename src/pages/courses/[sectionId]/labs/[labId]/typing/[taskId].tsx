@@ -8,14 +8,13 @@ import { replaceSlugwithQueryPath, trpc } from "~/helpers";
 import Button from "~/components/Common/Button";
 import Skeleton from "~/components/Common/Skeleton";
 import History from "~/components/Typing/History";
-import { LabStatus } from "@prisma/client";
 
 function TypingTask() {
   const router = useRouter();
   const { taskId, labId, sectionId } = router.query;
-  const taskIdInt = parseInt(taskId as string);
-  const labIdInt = parseInt(labId as string);
-  const sectionIdInt = parseInt(sectionId as string);
+  const taskIdInt = taskId as string;
+  const labIdInt = labId as string;
+  const sectionIdInt = sectionId as string;
 
   const [status, setStatus] = useTypingStore((state) => [
     state.status,

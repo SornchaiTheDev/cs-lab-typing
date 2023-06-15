@@ -1,6 +1,9 @@
 export const getHighestRole = (
-  roles: string[]
-): "ADMIN" | "TEACHER" | "STUDENT" => {
+  roleString: string | undefined
+): "ADMIN" | "TEACHER" | "STUDENT" | null => {
+  if (roleString === undefined) return null;
+
+  const roles = roleString.split(",");
   const isAdmin = roles.includes("ADMIN");
   const isTeacher = roles.includes("TEACHER");
   if (isAdmin) return "ADMIN";

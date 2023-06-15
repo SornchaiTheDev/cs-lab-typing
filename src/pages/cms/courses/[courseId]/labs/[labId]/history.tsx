@@ -16,7 +16,7 @@ interface HistoryRow {
 
 function LabHistory() {
   const router = useRouter();
-  const labId = parseInt(router.query.labId as string);
+  const labId = router.query.labId as string;
 
   const lab = trpc.labs.getLabById.useQuery({ id: labId });
 

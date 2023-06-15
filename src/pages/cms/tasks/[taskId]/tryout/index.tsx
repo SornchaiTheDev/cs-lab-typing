@@ -11,7 +11,7 @@ import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErr
 
 function Tryout() {
   const router = useRouter();
-  const taskId = parseInt(router.query.taskId as string);
+  const { taskId } = router.query;
   const [status, setStatus, stats] = useTypingStore((state) => [
     state.status,
     state.setStatus,
@@ -28,11 +28,11 @@ function Tryout() {
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
-  const task = trpc.tasks.getTaskById.useQuery({ id: taskId });
+  const task = trpc.tasks.getTaskById.useQuery({ id: taskId as string });
   const backPath = router.pathname
     .split("/")
     .slice(0, -2)
-    .concat(router.query.taskId as string)
+    .concat(taskId as string)
     .join("/");
 
   useEffect(() => {

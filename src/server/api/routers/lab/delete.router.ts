@@ -43,15 +43,17 @@ export const deleteLabRouter = router({
       return lab;
     }),
   deleteTaskFromLab: teacherProcedure
-    .input(z.object({ labId: z.number(), taskId: z.number() }))
+    .input(z.object({ labId: z.string(), taskId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;
       const requester = ctx.user.full_name;
+      const _labId = parseInt(labId);
+      const _taskId = parseInt(taskId);
 
       try {
         const lab = await ctx.prisma.labs.findUnique({
           where: {
-            id: labId,
+            id: _labId,
           },
           include: {
             tasks: true,
@@ -62,17 +64,17 @@ export const deleteLabRouter = router({
         }
 
         const filteredTasks = lab.tasks
-          .filter((task) => task.id !== taskId)
+          .filter((task) => task.id !== _taskId)
           .map((task) => task.id);
 
         await ctx.prisma.labs.update({
           where: {
-            id: labId,
+            id: _labId,
           },
           data: {
             tasks: {
               disconnect: {
-                id: taskId,
+                id: _taskId,
               },
             },
             tasks_order: {

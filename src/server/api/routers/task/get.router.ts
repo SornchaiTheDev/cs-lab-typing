@@ -50,15 +50,16 @@ export const getTaskRouter = router({
   getTaskById: authedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { id } = input;
+      const _id = parseInt(id);
 
       const task = await ctx.prisma.tasks.findUnique({
         where: {
-          id,
+          id: _id,
         },
         include: {
           tags: true,
@@ -77,18 +78,20 @@ export const getTaskRouter = router({
     .input(
       z.object({
         student_id: z.string(),
-        sectionId: z.number(),
+        sectionId: z.string(),
         labId: z.number(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { student_id, sectionId, labId } = input;
+      const _sectionId = parseInt(sectionId);
+
       const tasks = await ctx.prisma.tasks.findMany({
         where: {
           submissions: {
             some: {
               lab_id: labId,
-              section_id: sectionId,
+              section_id: _sectionId,
               user: {
                 student_id,
               },

@@ -2,17 +2,15 @@ import SectionLayout from "~/Layout/SectionLayout";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import Skeleton from "~/components/Common/Skeleton";
-import AddUser from "~/features/Users/AddUserToSection";
 import Badge from "~/components/Common/Badge";
-import Alert from "~/components/Common/Alert";
 
 function Sections() {
   const router = useRouter();
 
   const { sectionId } = router.query;
-  const sectionIdInt = parseInt(sectionId as string);
+
   const section = trpc.sections.getSectionById.useQuery({
-    id: sectionIdInt,
+    id: sectionId as string,
   });
 
   const instructors =

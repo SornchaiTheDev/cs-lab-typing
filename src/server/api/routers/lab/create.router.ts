@@ -6,9 +6,11 @@ import { TRPCError } from "@trpc/server";
 
 export const createLabRouter = router({
   createLab: teacherProcedure
-    .input(AddLabSchema.and(z.object({ courseId: z.number() })))
+    .input(AddLabSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { isDisabled, name, tags, courseId } = input;
+      const _courseId = parseInt(courseId);
+
       let lab;
       try {
         lab = await ctx.prisma.labs.create({
@@ -23,7 +25,7 @@ export const createLabRouter = router({
             isDisabled,
             course: {
               connect: {
-                id: courseId,
+                id: _courseId,
               },
             },
             history: {

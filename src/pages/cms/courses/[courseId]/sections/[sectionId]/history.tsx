@@ -16,9 +16,11 @@ interface HistoryRow {
 
 function SectionHistory() {
   const router = useRouter();
-  const sectionId = parseInt(router.query.sectionId as string);
+  const { sectionId } = router.query;
 
-  const section = trpc.sections.getSectionById.useQuery({ id: sectionId });
+  const section = trpc.sections.getSectionById.useQuery({
+    id: sectionId as string,
+  });
 
   const columnHelper = createColumnHelper<HistoryRow>();
 

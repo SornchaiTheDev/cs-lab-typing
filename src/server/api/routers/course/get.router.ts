@@ -23,7 +23,7 @@ export const getCourseRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
 
-      const role = getHighestRole(ctx.user.roles.split(",") as string[]);
+      const role = getHighestRole(ctx.user.roles);
       const full_name = ctx.user.full_name;
       let courses = null;
 
@@ -42,12 +42,13 @@ export const getCourseRouter = router({
       return courses;
     }),
   getCourseById: teacherProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
+      const _id = parseInt(id);
       const course = await ctx.prisma.courses.findFirst({
         where: {
-          id,
+          id: _id,
           deleted_at: null,
         },
         include: {

@@ -12,9 +12,7 @@ import { useSession } from "next-auth/react";
 
 function Settings() {
   const { data: session } = useSession();
-  const role = getHighestRole(
-    (session?.user?.roles.split(",") as string[]) ?? []
-  );
+  const role = getHighestRole(session?.user?.roles);
 
   const isAdmin = role === "ADMIN";
 
@@ -29,7 +27,7 @@ function Settings() {
     isLoading,
     refetch,
   } = trpc.courses.getCourseById.useQuery({
-    id: parseInt(courseId as string),
+    id: courseId as string,
   });
 
   const authorUser = trpc.users.getAllUsersInRole.useQuery({
@@ -41,7 +39,7 @@ function Settings() {
     try {
       await editCourseMutation.mutateAsync({
         ...formData,
-        id: parseInt(courseId as string),
+        id: courseId as string,
       });
 
       callToast({ msg: "Edit course successfully", type: "success" });

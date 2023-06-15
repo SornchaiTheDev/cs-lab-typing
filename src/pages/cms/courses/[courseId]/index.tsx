@@ -3,7 +3,7 @@ import type { GetServerSideProps } from "next";
 import CourseLayout from "~/Layout/CourseLayout";
 import { Icon } from "@iconify/react";
 import Badge from "~/components/Common/Badge";
-import { trpc } from "~/helpers";
+import { getHighestRole, trpc } from "~/helpers";
 import Skeleton from "~/components/Common/Skeleton";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { transformer } from "~/helpers";
@@ -16,9 +16,9 @@ function InCourse() {
 
   const { courseId } = router.query;
   const course = trpc.courses.getCourseById.useQuery({
-    id: parseInt(courseId as string),
+    id: courseId as string,
   });
-  
+
   const students = course.data?.sections.reduce(
     (acc, cur) => acc + cur._count.students,
     0
@@ -92,14 +92,18 @@ export const getServerSideProps: GetServerSideProps = async ({
     transformer,
   });
   const { courseId } = query;
-  const id = parseInt(courseId as string);
-  if (isNaN(id)) {
+
+  const role = getHighestRole(session?.user?.roles);
+
+  if (role === "STUDENT" || !courseId) {
     return {
       notFound: true,
     };
   }
 
-  const course = await trpc.courses.getCourseById.fetch({ id });
+  const course = await trpc.courses.getCourseById.fetch({
+    id: courseId as string,
+  });
 
   if (!course) {
     return {

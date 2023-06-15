@@ -16,7 +16,7 @@ function Courses() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const role = getHighestRole(session?.user?.roles.split(",") ?? []);
+  const role = getHighestRole(session?.user?.roles);
 
   const allCourses = trpc.courses.getCoursePagination.useQuery({
     page: 1,

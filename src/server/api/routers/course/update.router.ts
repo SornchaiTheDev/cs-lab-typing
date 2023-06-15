@@ -5,13 +5,14 @@ import { z } from "zod";
 
 export const updateCoursesRouter = router({
   updateCourse: teacherProcedure
-    .input(AddCourseSchema.and(z.object({ id: z.number() })))
+    .input(AddCourseSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { id, number, name, authors, note, comments } = input;
+      const _id = parseInt(id);
       try {
         await ctx.prisma.courses.update({
           where: {
-            id,
+            id: _id,
           },
           data: {
             number,

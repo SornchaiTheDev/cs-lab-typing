@@ -25,7 +25,7 @@ function Settings() {
   });
 
   const section = trpc.sections.getSectionById.useQuery({
-    id: parseInt(sectionId as string),
+    id: sectionId as string,
   });
 
   const editSectionMutation = trpc.sections.updateSection.useMutation();
@@ -33,7 +33,7 @@ function Settings() {
     try {
       await editSectionMutation.mutateAsync({
         ...formData,
-        id: parseInt(sectionId as string),
+        id: sectionId as string,
       });
       callToast({ msg: "Edit section successfully", type: "success" });
 

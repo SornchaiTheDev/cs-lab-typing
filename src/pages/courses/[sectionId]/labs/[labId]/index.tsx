@@ -10,13 +10,11 @@ import { prisma } from "~/server/db";
 function Labs() {
   const router = useRouter();
   const { sectionId, labId } = router.query;
-  const labIdInt = parseInt(labId as string);
-  const sectionIdInt = parseInt(sectionId as string);
 
   const tasks = trpc.front.getTasks.useQuery(
     {
-      labId: labIdInt,
-      sectionId: sectionIdInt,
+      labId: labId as string,
+      sectionId: sectionId as string,
     },
     {
       refetchOnWindowFocus: false,

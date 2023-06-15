@@ -11,11 +11,13 @@ export const getLabLogRouter = router({
           from: z.union([z.date(), z.undefined()]),
           to: z.union([z.date(), z.undefined()]).optional(),
         }),
-        sectionId: z.number(),
+        sectionId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { page, limit, date, sectionId } = input;
+
+      const _sectionId = parseInt(sectionId);
 
       const labLoggers = await ctx.prisma.lab_loggers.findMany({
         where: {
@@ -23,7 +25,7 @@ export const getLabLogRouter = router({
             lte: date.to,
             gte: date.from,
           },
-          sectionId,
+          sectionId: _sectionId,
         },
         skip: (page - 1) * limit,
         take: limit,

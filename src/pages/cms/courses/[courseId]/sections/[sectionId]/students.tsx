@@ -18,9 +18,9 @@ function Students() {
   const columnHelper = createColumnHelper<users>();
 
   const { sectionId } = router.query;
-  const sectionIdInt = parseInt(sectionId as string);
+
   const section = trpc.sections.getSectionById.useQuery({
-    id: sectionIdInt,
+    id: sectionId as string,
   });
 
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
@@ -29,7 +29,7 @@ function Students() {
   const deleteSelectRow = async () => {
     try {
       await deleteStudent.mutateAsync({
-        sectionId: sectionIdInt,
+        sectionId: sectionId as string,
         student_id: selectedUser as string,
       });
       await section.refetch();
@@ -106,7 +106,7 @@ function Students() {
           className="mx-4"
         >
           <div className="flex items-center justify-between p-1">
-            <AddUser sectionId={parseInt(sectionId as string)} />
+            <AddUser sectionId={sectionId as string} />
             <Button
               onClick={exportCSV}
               icon="solar:document-text-line-duotone"

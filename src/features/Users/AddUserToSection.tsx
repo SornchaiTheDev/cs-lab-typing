@@ -10,7 +10,7 @@ import { useDropzone } from "react-dropzone";
 import { callToast } from "~/services/callToast";
 
 interface Props {
-  sectionId: number;
+  sectionId: string;
 }
 
 function AddUser({ sectionId }: Props) {
