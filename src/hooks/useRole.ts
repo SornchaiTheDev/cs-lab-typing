@@ -5,7 +5,7 @@ function useRole() {
   const isAdmin = session?.user?.roles.split(",").includes("ADMIN");
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
   const isStudent = session?.user?.roles.split(",").includes("STUDENT");
-  
+
   return { isAdmin, isTeacher, isStudent };
 }
 

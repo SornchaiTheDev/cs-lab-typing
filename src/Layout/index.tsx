@@ -15,8 +15,9 @@ interface Props {
   children?: React.ReactNode;
   title: string;
   isLoading?: boolean;
+  showBreadcrumb?: boolean;
 }
-function Layout({ children, title, isLoading }: Props) {
+function Layout({ children, title, isLoading, showBreadcrumb = true }: Props) {
   const { data } = useSession();
   const profileImage = data?.user?.image;
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -54,7 +55,7 @@ function Layout({ children, title, isLoading }: Props) {
             <div className="flex-1">
               {!isBasePath && <BackArrow />}
               <div className="flex gap-2">
-                {!isBasePath &&
+                {!isBasePath && showBreadcrumb &&
                   breadcrumbs.slice(0, -1).map(({ label, path }) => (
                     <Link
                       key={path}

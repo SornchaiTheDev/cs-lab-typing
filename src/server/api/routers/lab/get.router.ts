@@ -1,4 +1,4 @@
-import { router, teacherProcedure } from "~/server/api/trpc";
+import { TaAboveProcedure, router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
 
@@ -69,59 +69,59 @@ export const getLabRouter = router({
       return null;
     }),
 
-  getLabStatus: teacherProcedure
-    .input(z.object({ sectionId: z.string(), labId: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const { sectionId, labId } = input;
-      const _sectionId = parseInt(sectionId);
+  getLabStatus: TaAboveProcedure.input(
+    z.object({ sectionId: z.string(), labId: z.number() })
+  ).query(async ({ ctx, input }) => {
+    const { sectionId, labId } = input;
+    const _sectionId = parseInt(sectionId);
 
-      const lab = await ctx.prisma.labs.findUnique({
-        where: {
-          id: labId,
-        },
-        select: {
-          tasks_order: true,
-        },
-      });
+    const lab = await ctx.prisma.labs.findUnique({
+      where: {
+        id: labId,
+      },
+      select: {
+        tasks_order: true,
+      },
+    });
 
-      const users = await ctx.prisma.users.findMany({
-        where: {
-          students: {
-            some: {
-              id: _sectionId,
-            },
+    const users = await ctx.prisma.users.findMany({
+      where: {
+        students: {
+          some: {
+            id: _sectionId,
           },
         },
-        select: {
-          submissions: {
-            where: {
-              lab_id: labId,
-              section_id: _sectionId,
-            },
-            select: {
-              task_id: true,
-              status: true,
-            },
+      },
+      select: {
+        submissions: {
+          where: {
+            lab_id: labId,
+            section_id: _sectionId,
           },
-          full_name: true,
-          student_id: true,
+          select: {
+            task_id: true,
+            status: true,
+          },
         },
-      });
+        full_name: true,
+        student_id: true,
+      },
+    });
 
-      const usersTaskStatus = users.map((user) => {
-        const taskStatus =
-          lab?.tasks_order.map((order) => {
-            const submission = user.submissions.find(
-              (submission) => submission.task_id === order
-            );
+    const usersTaskStatus = users.map((user) => {
+      const taskStatus =
+        lab?.tasks_order.map((order) => {
+          const submission = user.submissions.find(
+            (submission) => submission.task_id === order
+          );
 
-            return submission?.status ?? "NOT_SUBMITTED";
-          }) ?? [];
-        return { ...user, taskStatus };
-      });
-      const taskLength = lab?.tasks_order.length ?? 0;
-      return { usersTaskStatus, taskLength };
-    }),
+          return submission?.status ?? "NOT_SUBMITTED";
+        }) ?? [];
+      return { ...user, taskStatus };
+    });
+    const taskLength = lab?.tasks_order.length ?? 0;
+    return { usersTaskStatus, taskLength };
+  }),
   getLabObjectRelation: teacherProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {

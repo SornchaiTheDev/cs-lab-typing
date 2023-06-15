@@ -1,9 +1,9 @@
-import { router, adminProcedure, teacherProcedure } from "~/server/api/trpc";
+import { router, teacherProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const deleteSectionsRouter = router({
-  deleteSection: adminProcedure
+  deleteSection: teacherProcedure
     .input(
       z.object({
         name: z.string(),
@@ -13,7 +13,19 @@ export const deleteSectionsRouter = router({
       const { name } = input;
       const requester = ctx.user.full_name;
       try {
-        const section = await ctx.prisma.sections.delete({
+        const section = await ctx.prisma.sections.findUnique({
+          where: {
+            name,
+          },
+          include: {
+            created_by: true,
+          },
+        });
+        if (section?.created_by.full_name !== requester) {
+          throw new Error("UNAUTHORIZED");
+        }
+
+        await ctx.prisma.sections.delete({
           where: {
             name,
           },
@@ -35,10 +47,18 @@ export const deleteSectionsRouter = router({
           },
         });
       } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
+        }
       }
       return "Success";
     }),
@@ -51,7 +71,7 @@ export const deleteSectionsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { sectionId, student_id } = input;
-      const _sectionId = parseInt(sectionId)
+      const _sectionId = parseInt(sectionId);
       await ctx.prisma.sections.update({
         where: {
           id: _sectionId,

@@ -11,7 +11,7 @@ interface Menus {
   description: string;
   icon: string;
   path: string;
-  role: string | null;
+  role: string[];
 }
 
 interface Props {
@@ -63,44 +63,46 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       description: "Create, modify, and delete courses.",
       icon: "solar:book-2-line-duotone",
       path: "courses",
-      role: "TEACHER",
+      role: ["TEACHER"],
     },
     {
       name: "Tasks Management",
       description: "Create, modify, and delete tasks",
       icon: "solar:programming-line-duotone",
       path: "tasks",
-      role: "TEACHER",
+      role: ["TEACHER"],
     },
     {
       name: "Semesters Management",
       description: "Create, modify, and delete semesters",
       icon: "solar:calendar-line-duotone",
       path: "semesters",
-      role: null,
+      role: [],
     },
     {
       name: "Users Management",
       description: "Create, modify, and delete users",
       icon: "solar:user-line-duotone",
       path: "users",
-      role: null,
+      role: [],
     },
     {
       name: "LOGGER",
       description: "View logs of the system",
       icon: "solar:graph-line-duotone",
       path: "logger",
-      role: null,
+      role: [],
     },
   ];
 
   const isAdmin = session.user && session.user.roles.includes("ADMIN");
 
+  const roles = session.user?.roles.split(",");
+
   if (!isAdmin) {
     menus = menus.filter((menu) => {
       if (menu.role && session.user) {
-        return session.user.roles.includes(menu.role);
+        return roles?.some((role) => menu.role?.includes(role));
       }
     });
   }

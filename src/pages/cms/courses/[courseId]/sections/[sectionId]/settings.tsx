@@ -113,6 +113,7 @@ function Settings() {
               }}
             />
           </div>
+
           <div className="mt-10">
             <h4 className="text-xl text-red-9">Danger Zone</h4>
             <hr className="my-2" />

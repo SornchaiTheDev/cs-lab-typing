@@ -22,6 +22,40 @@ export const getFrontRouter = router({
                     },
                   },
                 },
+              ],
+            },
+          ],
+        },
+        include: {
+          course: {
+            select: {
+              id: true,
+              number: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      return sections;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
+  getTeachingSections: authedProcedure.query(async ({ ctx }) => {
+    const full_name = ctx.session?.user?.full_name;
+
+    try {
+      const sections = ctx.prisma.sections.findMany({
+        where: {
+          AND: [
+            { deleted_at: null },
+            { active: true },
+            {
+              OR: [
                 {
                   instructors: {
                     some: {

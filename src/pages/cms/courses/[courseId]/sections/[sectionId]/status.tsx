@@ -1,5 +1,5 @@
 import SectionLayout from "~/Layout/SectionLayout";
-import { sanitizeFilename, trpc } from "~/helpers";
+import { getHighestRole, sanitizeFilename, trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import Skeleton from "~/components/Common/Skeleton";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
@@ -10,6 +10,7 @@ import Collapse from "~/components/Common/Collapse";
 import Stats from "~/components/Typing/Stats";
 import { getDuration } from "~/components/Typing/utils/getDuration";
 import type { submission_type } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 interface RecentTaskProps {
   selectedUser: {
@@ -101,9 +102,12 @@ const LabStatus = ({
   labId: number;
   sectionName: string;
 }) => {
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { sectionId } = router.query;
+
+  const isTA = getHighestRole(session?.user?.roles) === "STUDENT";
 
   const lab = trpc.labs.getLabStatus.useQuery(
     {
@@ -188,13 +192,15 @@ const LabStatus = ({
                 className={isLoading ? "animate-spin" : undefined}
               />
             </button>
-            <button
-              onClick={exportCSV}
-              className="flex items-center gap-2 rounded-lg bg-sand-12 px-2 py-1 text-sand-1 shadow active:bg-sand-11"
-            >
-              <Icon icon="solar:document-text-line-duotone" />
-              Export as CSV
-            </button>
+            {!isTA && (
+              <button
+                onClick={exportCSV}
+                className="flex items-center gap-2 rounded-lg bg-sand-12 px-2 py-1 text-sand-1 shadow active:bg-sand-11"
+              >
+                <Icon icon="solar:document-text-line-duotone" />
+                Export as CSV
+              </button>
+            )}
           </>
         }
       >

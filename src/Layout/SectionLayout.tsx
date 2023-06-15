@@ -10,32 +10,46 @@ interface Props {
 }
 
 function SectionLayout({ title, children, isLoading }: Props) {
-  const { isTeacher } = useRole();
+  const { isAdmin, isTeacher, isStudent } = useRole();
 
   const menus = [
     { name: "Overview", path: "" },
-    { name: "Logs", path: "logs" },
+    { name: "Annoucement", path: "announcement" },
     {
       name: "History",
       path: "history",
     },
+    { name: "Logs", path: "logs" },
     {
       name: "Settings",
       path: "settings",
     },
   ];
 
+  const adminMenus = [...menus];
+
   const teacherMenus = [...menus];
 
-  teacherMenus.splice(1, 0, { name: "LAB SET", path: "labset" });
-  teacherMenus.splice(1, 0, { name: "Status", path: "status" });
-  teacherMenus.splice(1, 0, { name: "Students", path: "students" });
-  teacherMenus.splice(1, 0, { name: "Annoucement", path: "announcement" });
+  teacherMenus.splice(2, 0, { name: "Status", path: "status" });
+  teacherMenus.splice(2, 0, { name: "LAB SET", path: "labset" });
+  teacherMenus.splice(2, 0, { name: "Students", path: "students" });
+
+  const taMenus = [
+    { name: "Overview", path: "" },
+    { name: "Annoucement", path: "announcement" },
+    { name: "LAB SET", path: "labset" },
+    { name: "Status", path: "status" },
+  ];
+
   return (
-    <Layout {...{ title }} isLoading={isLoading}>
+    <Layout
+      {...{ title }}
+      isLoading={isLoading}
+      showBreadcrumb={isTeacher || isAdmin}
+    >
       <HorizontalMenu
         basePath="/cms/courses/[courseId]/sections/[sectionId]"
-        menus={isTeacher ? teacherMenus : menus}
+        menus={isAdmin ? adminMenus : isTeacher ? teacherMenus : taMenus}
       />
       {children}
     </Layout>

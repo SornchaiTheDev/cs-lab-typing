@@ -58,6 +58,33 @@ const isTeacherAbove = t.middleware(async (opts) => {
   });
 });
 
+const isTaAbove = t.middleware(async (opts) => {
+  const { ctx, next } = opts;
+
+  if (!(ctx.session?.user && ctx.session?.user.roles.includes("STUDENT"))) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const isInstructors = await ctx.prisma.users.findUnique({
+    where: {
+      full_name: ctx.session.user.full_name,
+    },
+    select: {
+      instructors: true,
+    },
+  });
+
+  if (isInstructors?.instructors.length === 0) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      user: ctx.session.user,
+    },
+  });
+});
+
 const isAuthed = t.middleware(async (opts) => {
   const { ctx, next } = opts;
 
@@ -71,6 +98,7 @@ const isAuthed = t.middleware(async (opts) => {
   });
 });
 
+export const TaAboveProcedure = publicProcedure.use(isTaAbove);
 export const teacherProcedure = publicProcedure.use(isTeacherAbove);
 export const adminProcedure = publicProcedure.use(isAdmin);
 export const authedProcedure = publicProcedure.use(isAuthed);

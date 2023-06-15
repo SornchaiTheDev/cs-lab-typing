@@ -6,6 +6,7 @@ import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import { callToast } from "~/services/callToast";
 import type { Relation } from "~/types/Relation";
+import { TRPCClientError } from "@trpc/client";
 
 interface Props {
   type:
@@ -170,7 +171,9 @@ function DeleteAffect({ type }: Props) {
         query: { courseId: router.query.courseId },
       });
     } catch (err) {
-      callToast({ msg: "SOMETHING_WENT_WRONG", type: "error" });
+      if (err instanceof TRPCClientError) {
+        callToast({ msg: err.message, type: "error" });
+      }
     }
   };
 
@@ -251,7 +254,7 @@ function DeleteAffect({ type }: Props) {
     if (items.length === 0) return null;
 
     return (
-      <ul className="pl-8 list-disc">
+      <ul className="list-disc pl-8">
         {items.map((item, index) => (
           <ListItem key={index} name={item.name} data={item.data} />
         ))}
@@ -289,7 +292,7 @@ function DeleteAffect({ type }: Props) {
       <div className="flex-1 overflow-auto">
         <div className="overflow-auto whitespace-nowrap">
           <h3 className="mt-2 text-lg font-bold">Summary</h3>
-          <ul className="list-disc list-inside">
+          <ul className="list-inside list-disc">
             {fetchData?.summary.map(({ name, amount }) => (
               <li key={name}>
                 {name} : {amount}
@@ -298,26 +301,26 @@ function DeleteAffect({ type }: Props) {
           </ul>
           <h3 className="mt-2 text-lg font-bold">Objects</h3>
           {!!fetchData?.object && (
-            <ul className="list-disc list-inside">
+            <ul className="list-inside list-disc">
               <RecursiveList items={fetchData?.object} />
             </ul>
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-2 mt-4">
+      <div className="mt-4 flex flex-col gap-2">
         <input
           value={confirmMsg}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setConfirmMsg(e.target.value)
           }
-          className="w-full p-2 border rounded-md outline-none border-sand-6 bg-sand-1"
+          className="w-full rounded-md border border-sand-6 bg-sand-1 p-2 outline-none"
           placeholder={`Type "${selectedObject?.selected.display}" to confirm`}
         />
 
         <Button
           disabled={confirmMsg !== selectedObject?.selected.display}
           onClick={handleDelete}
-          className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
+          className="w-full bg-red-9 font-bold text-sand-2 hover:bg-red-10"
         >
           Delete
         </Button>
