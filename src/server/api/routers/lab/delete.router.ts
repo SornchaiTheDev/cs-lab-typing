@@ -1,9 +1,9 @@
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const deleteLabRouter = router({
-  deleteLab: teacherProcedure
+  deleteLab: teacherAboveProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -42,13 +42,12 @@ export const deleteLabRouter = router({
       }
       return lab;
     }),
-  deleteTaskFromLab: teacherProcedure
-    .input(z.object({ labId: z.string(), taskId: z.string() }))
+  deleteTaskFromLab: teacherAboveProcedure
+    .input(z.object({ labId: z.string(), taskId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;
       const requester = ctx.user.full_name;
       const _labId = parseInt(labId);
-      const _taskId = parseInt(taskId);
 
       try {
         const lab = await ctx.prisma.labs.findUnique({
@@ -64,7 +63,7 @@ export const deleteLabRouter = router({
         }
 
         const filteredTasks = lab.tasks
-          .filter((task) => task.id !== _taskId)
+          .filter((task) => task.id !== taskId)
           .map((task) => task.id);
 
         await ctx.prisma.labs.update({
@@ -74,7 +73,7 @@ export const deleteLabRouter = router({
           data: {
             tasks: {
               disconnect: {
-                id: _taskId,
+                id: taskId,
               },
             },
             tasks_order: {

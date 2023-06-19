@@ -3,6 +3,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import type { Context } from "../context";
+import { getHighestRole } from "~/helpers";
 
 const t = initTRPC
   .meta<OpenApiMeta>()
@@ -28,7 +29,9 @@ export const mergeRouter = t.mergeRouters;
 const isAdmin = t.middleware(async (opts) => {
   const { ctx, next } = opts;
 
-  if (!(ctx.session?.user && ctx.session?.user.roles.includes("ADMIN"))) {
+  if (
+    !(ctx.session?.user && getHighestRole(ctx.session?.user.roles) === "ADMIN")
+  ) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -85,6 +88,23 @@ const isTaAbove = t.middleware(async (opts) => {
   });
 });
 
+const isTeacher = t.middleware(async (opts) => {
+  const { ctx, next } = opts;
+
+  if (
+    !(
+      ctx.session?.user && getHighestRole(ctx.session?.user.roles) === "TEACHER"
+    )
+  ) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      user: ctx.session.user,
+    },
+  });
+});
+
 const isAuthed = t.middleware(async (opts) => {
   const { ctx, next } = opts;
 
@@ -99,6 +119,7 @@ const isAuthed = t.middleware(async (opts) => {
 });
 
 export const TaAboveProcedure = publicProcedure.use(isTaAbove);
-export const teacherProcedure = publicProcedure.use(isTeacherAbove);
+export const teacherProcedure = publicProcedure.use(isTeacher);
+export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
 export const adminProcedure = publicProcedure.use(isAdmin);
 export const authedProcedure = publicProcedure.use(isAuthed);

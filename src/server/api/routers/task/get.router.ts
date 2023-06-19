@@ -1,8 +1,13 @@
-import { authedProcedure, teacherProcedure, router } from "~/server/api/trpc";
+import {
+  teacherAboveProcedure,
+  router,
+  TaAboveProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import type { Relation } from "~/types/Relation";
+import { TRPCError } from "@trpc/server";
 export const getTaskRouter = router({
-  getTask: authedProcedure
+  getTask: teacherAboveProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -11,43 +16,49 @@ export const getTaskRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
-
-      const tasks = await ctx.prisma.tasks.findMany({
-        skip: (page - 1) * limit,
-        take: limit,
-        where: {
-          deleted_at: null,
-          OR: [
-            { isPrivate: false },
-            {
-              owner: {
-                full_name: ctx.user.full_name,
+      try {
+        const tasks = await ctx.prisma.tasks.findMany({
+          skip: (page - 1) * limit,
+          take: limit,
+          where: {
+            deleted_at: null,
+            OR: [
+              { isPrivate: false },
+              {
+                owner: {
+                  full_name: ctx.user.full_name,
+                },
+              },
+            ],
+          },
+          include: {
+            tags: {
+              select: {
+                name: true,
               },
             },
-          ],
-        },
-        include: {
-          tags: {
-            select: {
-              name: true,
+            owner: {
+              select: {
+                full_name: true,
+              },
             },
           },
-          owner: {
-            select: {
-              full_name: true,
-            },
+          orderBy: {
+            updated_at: "desc",
           },
-        },
-        orderBy: {
-          updated_at: "desc",
-        },
-      });
-      if (!tasks) {
-        return [];
+        });
+        if (!tasks) {
+          return [];
+        }
+        return tasks;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      return tasks;
     }),
-  getTaskById: authedProcedure
+  getTaskById: teacherAboveProcedure
     .input(
       z.object({
         id: z.string(),
@@ -56,36 +67,40 @@ export const getTaskRouter = router({
     .query(async ({ ctx, input }) => {
       const { id } = input;
       const _id = parseInt(id);
-
-      const task = await ctx.prisma.tasks.findUnique({
-        where: {
-          id: _id,
-        },
-        include: {
-          tags: true,
-          owner: true,
-          history: {
-            include: {
-              user: true,
+      try {
+        const task = await ctx.prisma.tasks.findUnique({
+          where: {
+            id: _id,
+          },
+          include: {
+            tags: true,
+            owner: true,
+            history: {
+              include: {
+                user: true,
+              },
             },
           },
-        },
-      });
-      return task;
+        });
+        return task;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 
-  getUserTaskStatus: teacherProcedure
-    .input(
-      z.object({
-        student_id: z.string(),
-        sectionId: z.string(),
-        labId: z.number(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { student_id, sectionId, labId } = input;
-      const _sectionId = parseInt(sectionId);
-
+  getUserTaskStatus: TaAboveProcedure.input(
+    z.object({
+      student_id: z.string(),
+      sectionId: z.string(),
+      labId: z.number(),
+    })
+  ).query(async ({ ctx, input }) => {
+    const { student_id, sectionId, labId } = input;
+    const _sectionId = parseInt(sectionId);
+    try {
       const tasks = await ctx.prisma.tasks.findMany({
         where: {
           submissions: {
@@ -127,9 +142,15 @@ export const getTaskRouter = router({
       });
 
       return tasksWithHistory;
-    }),
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
 
-  searchTasks: authedProcedure
+  searchTasks: teacherAboveProcedure
     .input(
       z.object({
         query: z.string(),
@@ -144,111 +165,124 @@ export const getTaskRouter = router({
       const { query, limit, tags, types } = input;
 
       if (types.length === 0) types.push("Lesson", "Problem", "Typing");
-
-      const tasks = await ctx.prisma.tasks.findMany({
-        take: limit,
-        where: {
-          deleted_at: null,
-          AND: [
-            {
-              name: {
-                contains: query,
-                mode: "insensitive",
+      try {
+        const tasks = await ctx.prisma.tasks.findMany({
+          take: limit,
+          where: {
+            deleted_at: null,
+            AND: [
+              {
+                name: {
+                  contains: query,
+                  mode: "insensitive",
+                },
               },
-            },
-            {
-              OR: [
-                {
-                  tags: {
-                    some: {
-                      name: {
-                        in: tags,
+              {
+                OR: [
+                  {
+                    tags: {
+                      some: {
+                        name: {
+                          in: tags,
+                        },
                       },
                     },
                   },
-                },
-                {
-                  type: {
-                    in: types,
+                  {
+                    type: {
+                      in: types,
+                    },
                   },
-                },
-              ],
-            },
+                ],
+              },
 
-            {
-              OR: [
-                { isPrivate: false },
-                {
-                  owner: {
-                    full_name: ctx.user.full_name,
+              {
+                OR: [
+                  { isPrivate: false },
+                  {
+                    owner: {
+                      full_name: ctx.user.full_name,
+                    },
                   },
-                },
-              ],
-            },
-          ],
-        },
-        include: {
-          tags: true,
-          labs: {
-            select: {
-              id: true,
+                ],
+              },
+            ],
+          },
+          include: {
+            tags: true,
+            labs: {
+              select: {
+                id: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      return tasks;
+        return tasks;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 
-  getTaskObjectRelation: teacherProcedure
+  getTaskObjectRelation: teacherAboveProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
-
-      const task = await ctx.prisma.tasks.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          labs: {
-            include: {
-              submissions: true,
+      try {
+        const task = await ctx.prisma.tasks.findUnique({
+          where: {
+            id,
+          },
+          include: {
+            labs: {
+              include: {
+                submissions: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      const submissions = await ctx.prisma.submissions.findMany({
-        where: {
-          task_id: id,
-        },
-      });
+        const submissions = await ctx.prisma.submissions.findMany({
+          where: {
+            task_id: id,
+          },
+        });
 
-      const relation: Relation = {
-        summary: [
-          { name: "Tasks", amount: 1 },
-          { name: "Assignments", amount: 1 },
-          { name: "Submissions", amount: task?.submission_count ?? 0 },
-        ],
-        object: [
-          {
-            name: "Task",
-            data: [{ name: task?.name as string, data: [] }],
-          },
-          {
-            name: "Assignments",
-            data: task?.labs.map((lab) => ({ name: lab.name, data: [] })) ?? [],
-          },
-          {
-            name: "Submissions",
-            data: submissions.map(({ created_at, user_id, section_id }) => ({
-              name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
-              data: [],
-            })),
-          },
-        ],
-      };
+        const relation: Relation = {
+          summary: [
+            { name: "Tasks", amount: 1 },
+            { name: "Assignments", amount: 1 },
+            { name: "Submissions", amount: task?.submission_count ?? 0 },
+          ],
+          object: [
+            {
+              name: "Task",
+              data: [{ name: task?.name as string, data: [] }],
+            },
+            {
+              name: "Assignments",
+              data:
+                task?.labs.map((lab) => ({ name: lab.name, data: [] })) ?? [],
+            },
+            {
+              name: "Submissions",
+              data: submissions.map(({ created_at, user_id, section_id }) => ({
+                name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+                data: [],
+              })),
+            },
+          ],
+        };
 
-      return relation;
+        return relation;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 });

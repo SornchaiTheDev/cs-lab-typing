@@ -1,4 +1,4 @@
-import { router, teacherProcedure } from "~/server/api/trpc";
+import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { AddLabSchema } from "~/forms/LabSchema";
@@ -6,7 +6,7 @@ import { Prisma } from "@prisma/client";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
 
 export const updateLabRouter = router({
-  updateLab: teacherProcedure
+  updateLab: teacherAboveProcedure
     .input(
       AddLabSchema.and(z.object({ courseId: z.string(), labId: z.string() }))
     )
@@ -54,10 +54,14 @@ export const updateLabRouter = router({
               cause: "DUPLICATED_LAB",
             });
           }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       }
     }),
-  updateTaskOrder: teacherProcedure
+  updateTaskOrder: teacherAboveProcedure
     .input(
       z.object({
         labId: z.string(),
@@ -100,7 +104,7 @@ export const updateLabRouter = router({
         });
       }
     }),
-  addTask: teacherProcedure
+  addTask: teacherAboveProcedure
     .input(z.object({ labId: z.string(), taskId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;
@@ -144,15 +148,15 @@ export const updateLabRouter = router({
             },
           },
         });
+        return "Success";
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
         });
       }
-      return "Success";
     }),
-  removeTask: teacherProcedure
+  removeTask: teacherAboveProcedure
     .input(z.object({ labId: z.string(), taskId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;

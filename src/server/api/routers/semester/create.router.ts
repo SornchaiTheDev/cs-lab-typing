@@ -25,6 +25,10 @@ export const createSemesterRouter = router({
               cause: "DUPLICATED_SEMESTER",
             });
           }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       }
     }),

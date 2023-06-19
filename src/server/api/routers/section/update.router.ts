@@ -1,10 +1,14 @@
 import { AddSectionSchema } from "~/forms/SectionSchema";
-import { router, teacherProcedure } from "~/server/api/trpc";
+import {
+  TaAboveProcedure,
+  router,
+  teacherAboveProcedure,
+} from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const updateSectionsRouter = router({
-  updateSection: teacherProcedure
+  updateSection: teacherAboveProcedure
     .input(AddSectionSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { id, instructors, name, semester, note, active } = input;
@@ -54,137 +58,131 @@ export const updateSectionsRouter = router({
       }
       return "Success";
     }),
-  addLab: teacherProcedure
-    .input(
-      z.object({
-        sectionId: z.string(),
-        labId: z.number(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { labId, sectionId } = input;
+  addLab: TaAboveProcedure.input(
+    z.object({
+      sectionId: z.string(),
+      labId: z.number(),
+    })
+  ).mutation(async ({ ctx, input }) => {
+    const { labId, sectionId } = input;
 
-      const _sectionId = parseInt(sectionId);
+    const _sectionId = parseInt(sectionId);
 
-      const requester = ctx.user.full_name;
-      try {
-        await ctx.prisma.sections.update({
-          where: {
-            id: _sectionId,
-          },
-          data: {
-            labs: {
-              connect: {
-                id: labId,
-              },
-            },
-            labs_order: {
-              push: labId,
-            },
-            history: {
-              create: {
-                action: "Add lab",
-                user: {
-                  connect: {
-                    full_name: requester,
-                  },
-                },
-              },
-            },
-            labs_status: {
-              create: {
-                labs: {
-                  connect: {
-                    id: labId,
-                  },
-                },
-                status: "ACTIVE",
-              },
+    const requester = ctx.user.full_name;
+    try {
+      await ctx.prisma.sections.update({
+        where: {
+          id: _sectionId,
+        },
+        data: {
+          labs: {
+            connect: {
+              id: labId,
             },
           },
-        });
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
-      }
-      return "Success";
-    }),
-  updateLabOrder: teacherProcedure
-    .input(
-      z.object({
-        sectionId: z.string(),
-        order: z.array(z.number()),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { sectionId, order } = input;
-      const _sectionId = parseInt(sectionId);
-      const requester = ctx.user.full_name;
-
-      try {
-        await ctx.prisma.sections.update({
-          where: {
-            id: _sectionId,
+          labs_order: {
+            push: labId,
           },
-          data: {
-            labs_order: {
-              set: order,
-            },
-            history: {
-              create: {
-                action: "Re-order lab",
-                user: {
-                  connect: {
-                    full_name: requester,
-                  },
+          history: {
+            create: {
+              action: "Add lab",
+              user: {
+                connect: {
+                  full_name: requester,
                 },
               },
             },
           },
-        });
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
-      }
-      return "Success";
-    }),
-  updateLabStatus: teacherProcedure
-    .input(
-      z.object({
-        sectionId: z.string(),
-        labId: z.number(),
-        status: z
-          .literal("ACTIVE")
-          .or(z.literal("READONLY"))
-          .or(z.literal("DISABLED")),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { sectionId, labId, status } = input;
-
-      const _sectionId = parseInt(sectionId);
-
-      try {
-        await ctx.prisma.labs_status.update({
-          where: {
-            labId_sectionId: {
-              labId,
-              sectionId: _sectionId,
+          labs_status: {
+            create: {
+              labs: {
+                connect: {
+                  id: labId,
+                },
+              },
+              status: "ACTIVE",
             },
           },
-          data: {
-            status,
+        },
+      });
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+    return "Success";
+  }),
+  updateLabOrder: TaAboveProcedure.input(
+    z.object({
+      sectionId: z.string(),
+      order: z.array(z.number()),
+    })
+  ).mutation(async ({ ctx, input }) => {
+    const { sectionId, order } = input;
+    const _sectionId = parseInt(sectionId);
+    const requester = ctx.user.full_name;
+
+    try {
+      await ctx.prisma.sections.update({
+        where: {
+          id: _sectionId,
+        },
+        data: {
+          labs_order: {
+            set: order,
           },
-        });
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
-      }
-    }),
+          history: {
+            create: {
+              action: "Re-order lab",
+              user: {
+                connect: {
+                  full_name: requester,
+                },
+              },
+            },
+          },
+        },
+      });
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+    return "Success";
+  }),
+  updateLabStatus: TaAboveProcedure.input(
+    z.object({
+      sectionId: z.string(),
+      labId: z.number(),
+      status: z
+        .literal("ACTIVE")
+        .or(z.literal("READONLY"))
+        .or(z.literal("DISABLED")),
+    })
+  ).mutation(async ({ ctx, input }) => {
+    const { sectionId, labId, status } = input;
+
+    const _sectionId = parseInt(sectionId);
+
+    try {
+      await ctx.prisma.labs_status.update({
+        where: {
+          labId_sectionId: {
+            labId,
+            sectionId: _sectionId,
+          },
+        },
+        data: {
+          status,
+        },
+      });
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
 });

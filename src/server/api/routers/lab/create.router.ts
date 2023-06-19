@@ -49,6 +49,10 @@ export const createLabRouter = router({
               cause: "DUPLICATED_LAB",
             });
           }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       }
 

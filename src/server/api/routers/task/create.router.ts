@@ -1,11 +1,11 @@
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { AddTaskSchema } from "~/forms/TaskSchema";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const createTaskRouter = router({
-  addTask: teacherProcedure
+  addTask: teacherAboveProcedure
     .input(AddTaskSchema)
     .mutation(async ({ ctx, input }) => {
       const { isPrivate, language, name, owner, type, note, tags } = input;
@@ -42,7 +42,7 @@ export const createTaskRouter = router({
             },
           },
         });
-        return task
+        return task;
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") {
@@ -52,13 +52,17 @@ export const createTaskRouter = router({
               cause: "DUPLICATED_TASK",
             });
           }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       }
 
       return task;
     }),
 
-  cloneTask: teacherProcedure
+  cloneTask: teacherAboveProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;

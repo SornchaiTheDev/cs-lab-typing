@@ -1,9 +1,9 @@
-import { router, teacherProcedure } from "~/server/api/trpc";
+import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const deleteSectionsRouter = router({
-  deleteSection: teacherProcedure
+  deleteSection: teacherAboveProcedure
     .input(
       z.object({
         name: z.string(),
@@ -62,7 +62,7 @@ export const deleteSectionsRouter = router({
       }
       return "Success";
     }),
-  deleteStudent: teacherProcedure
+  deleteStudent: teacherAboveProcedure
     .input(
       z.object({
         student_id: z.string(),
@@ -72,30 +72,37 @@ export const deleteSectionsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { sectionId, student_id } = input;
       const _sectionId = parseInt(sectionId);
-      await ctx.prisma.sections.update({
-        where: {
-          id: _sectionId,
-        },
-        data: {
-          students: {
-            disconnect: {
-              student_id,
-            },
+      try {
+        await ctx.prisma.sections.update({
+          where: {
+            id: _sectionId,
           },
-          history: {
-            create: {
-              action: "Delete student from this section",
-              user: {
-                connect: {
-                  full_name: ctx.user.full_name,
+          data: {
+            students: {
+              disconnect: {
+                student_id,
+              },
+            },
+            history: {
+              create: {
+                action: "Delete student from this section",
+                user: {
+                  connect: {
+                    full_name: ctx.user.full_name,
+                  },
                 },
               },
             },
           },
-        },
-      });
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
-  deleteLab: teacherProcedure
+  deleteLab: teacherAboveProcedure
     .input(
       z.object({
         sectionId: z.string(),

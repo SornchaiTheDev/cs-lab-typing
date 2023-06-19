@@ -1,4 +1,4 @@
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { isArrayUnique, isAllUserValid } from "~/helpers";
@@ -7,7 +7,7 @@ import { addNonKUStudent } from "./role/nonKU";
 import { addTeacher } from "./role/teacher";
 
 export const createUserRouter = router({
-  addUser: teacherProcedure
+  addUser: teacherAboveProcedure
     .input(
       z.object({
         users: z.array(z.string()),
@@ -23,15 +23,22 @@ export const createUserRouter = router({
       }
 
       if (isAllUserValid(users)) {
-        for (const user of users) {
-          const splitedUser = user.split(",");
-          if (splitedUser.length === 3) {
-            await addStudent(ctx.prisma, user);
-          } else if (splitedUser.length === 4) {
-            await addNonKUStudent(ctx.prisma, user);
-          } else if (splitedUser.length === 2) {
-            await addTeacher(ctx.prisma, user);
+        try {
+          for (const user of users) {
+            const splitedUser = user.split(",");
+            if (splitedUser.length === 3) {
+              await addStudent(ctx.prisma, user);
+            } else if (splitedUser.length === 4) {
+              await addNonKUStudent(ctx.prisma, user);
+            } else if (splitedUser.length === 2) {
+              await addTeacher(ctx.prisma, user);
+            }
           }
+        } catch (err) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       } else {
         throw new TRPCError({

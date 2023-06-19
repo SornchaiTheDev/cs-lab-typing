@@ -1,9 +1,9 @@
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const deleteTaskRouter = router({
-  deleteTask: teacherProcedure
+  deleteTask: teacherAboveProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;

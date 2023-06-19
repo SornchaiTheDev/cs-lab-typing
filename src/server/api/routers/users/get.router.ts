@@ -1,9 +1,14 @@
-import { teacherProcedure, router } from "~/server/api/trpc";
+import {
+  teacherAboveProcedure,
+  router,
+  adminProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import type { Relation } from "~/types/Relation";
+import { TRPCError } from "@trpc/server";
 
 export const getUserRouter = router({
-  getUserPagination: teacherProcedure
+  getUserPagination: adminProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -13,52 +18,73 @@ export const getUserRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
 
-      const users = await ctx.prisma.users.findMany({
-        where: {
-          deleted_at: null,
-        },
-        skip: (page - 1) * limit,
-        take: limit,
-      });
-      if (!users) {
-        return [];
-      }
-      return users;
-    }),
-  getUserByEmail: teacherProcedure
-    .input(z.object({ email: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const { email } = input;
-      const user = await ctx.prisma.users.findUnique({
-        where: {
-          email,
-        },
-      });
-      return user;
-    }),
-  getUserObjectRelation: teacherProcedure
-    .input(z.object({ email: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const { email } = input;
-      const user = await ctx.prisma.users.findUnique({
-        where: {
-          email,
-        },
-      });
-
-      const relation: Relation = {
-        summary: [{ name: "Role", amount: user?.roles.length ?? 0 }],
-        object: [
-          {
-            name: "Role",
-            data: user?.roles.map((role) => ({ name: role, data: [] })) ?? [],
+      try {
+        const users = await ctx.prisma.users.findMany({
+          where: {
+            deleted_at: null,
           },
-        ],
-      };
-
-      return relation;
+          skip: (page - 1) * limit,
+          take: limit,
+        });
+        if (!users) {
+          return [];
+        }
+        return users;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
-  getAllUsersInRole: teacherProcedure
+  getUserByEmail: teacherAboveProcedure
+    .input(z.object({ email: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { email } = input;
+      try {
+        const user = await ctx.prisma.users.findUnique({
+          where: {
+            email,
+          },
+        });
+        return user;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+  getUserObjectRelation: teacherAboveProcedure
+    .input(z.object({ email: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { email } = input;
+      try {
+        const user = await ctx.prisma.users.findUnique({
+          where: {
+            email,
+          },
+        });
+
+        const relation: Relation = {
+          summary: [{ name: "Role", amount: user?.roles.length ?? 0 }],
+          object: [
+            {
+              name: "Role",
+              data: user?.roles.map((role) => ({ name: role, data: [] })) ?? [],
+            },
+          ],
+        };
+
+        return relation;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+  getAllUsersInRole: teacherAboveProcedure
     .input(
       z.object({
         roles: z.array(
@@ -68,17 +94,24 @@ export const getUserRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { roles } = input;
-      const users = await ctx.prisma.users.findMany({
-        where: {
-          roles: {
-            hasSome: roles,
+      try {
+        const users = await ctx.prisma.users.findMany({
+          where: {
+            roles: {
+              hasSome: roles,
+            },
+            deleted_at: null,
           },
-          deleted_at: null,
-        },
-      });
-      return users;
+        });
+        return users;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
-  getUserByNameAndRole: teacherProcedure
+  getUserByNameAndRole: teacherAboveProcedure
     .input(
       z.object({
         name: z.string(),
@@ -89,18 +122,25 @@ export const getUserRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { name, roles } = input;
-      const users = await ctx.prisma.users.findMany({
-        where: {
-          full_name: {
-            contains: name,
+      try {
+        const users = await ctx.prisma.users.findMany({
+          where: {
+            full_name: {
+              contains: name,
+            },
+            roles: {
+              hasSome: roles,
+            },
+            deleted_at: null,
           },
-          roles: {
-            hasSome: roles,
-          },
-          deleted_at: null,
-        },
-        take: 20,
-      });
-      return users;
+          take: 20,
+        });
+        return users;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 });

@@ -1,12 +1,12 @@
 import { AddSectionSchema } from "~/forms/SectionSchema";
 import { isArrayUnique, isAllUserHaveValidStudentId } from "~/helpers";
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const createSectionsRouter = router({
-  createSection: teacherProcedure
+  createSection: teacherAboveProcedure
     .input(AddSectionSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { instructors, name, semester, note, courseId, active } = input;
@@ -66,11 +66,15 @@ export const createSectionsRouter = router({
               cause: "DUPLICATED_SECTION",
             });
           }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       }
       return section;
     }),
-  addUsersToSection: teacherProcedure
+  addUsersToSection: teacherAboveProcedure
     .input(z.object({ studentIds: z.array(z.string()), sectionId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { studentIds, sectionId } = input;
@@ -83,26 +87,32 @@ export const createSectionsRouter = router({
           message: "DUPLICATED_USER",
         });
       }
-
-      const sectionUsers = await ctx.prisma.sections.findUnique({
-        where: {
-          id: _sectionId,
-        },
-        select: {
-          students: {
-            where: {
-              student_id: {
-                in: studentIds,
+      try {
+        const sectionUsers = await ctx.prisma.sections.findUnique({
+          where: {
+            id: _sectionId,
+          },
+          select: {
+            students: {
+              where: {
+                student_id: {
+                  in: studentIds,
+                },
               },
             },
           },
-        },
-      });
+        });
 
-      if (sectionUsers && sectionUsers?.students.length > 0) {
+        if (sectionUsers && sectionUsers?.students.length > 0) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "DUPLICATED_USER",
+          });
+        }
+      } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "DUPLICATED_USER",
+          message: "SOMETHING_WENT_WRONG",
         });
       }
 
@@ -148,6 +158,10 @@ export const createSectionsRouter = router({
               });
             }
           }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       } else {
         throw new TRPCError({

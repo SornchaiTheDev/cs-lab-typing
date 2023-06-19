@@ -1,9 +1,14 @@
-import { TaAboveProcedure, router, teacherProcedure } from "~/server/api/trpc";
+import {
+  TaAboveProcedure,
+  router,
+  teacherAboveProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 export const getLabRouter = router({
-  getLabPagination: teacherProcedure
+  getLabPagination: TaAboveProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -13,164 +18,188 @@ export const getLabRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { page, limit, courseId } = input;
-
-      const labs = await ctx.prisma.labs.findMany({
-        where: {
-          deleted_at: null,
-          courseId: parseInt(courseId),
-        },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          sections: true,
-          tags: {
-            select: {
-              name: true,
+      try {
+        const labs = await ctx.prisma.labs.findMany({
+          where: {
+            deleted_at: null,
+            courseId: parseInt(courseId),
+          },
+          skip: (page - 1) * limit,
+          take: limit,
+          include: {
+            sections: true,
+            tags: {
+              select: {
+                name: true,
+              },
             },
           },
-        },
-      });
-      if (!labs) {
-        return [];
+        });
+        if (!labs) {
+          return [];
+        }
+        return labs;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      return labs;
     }),
-  getLabById: teacherProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
+  getLabById: TaAboveProcedure.input(z.object({ id: z.string() })).query(
+    async ({ ctx, input }) => {
       const { id } = input;
       const _id = parseInt(id);
-
-      const lab = await ctx.prisma.labs.findFirst({
-        where: {
-          id: _id,
-          deleted_at: null,
-        },
-        include: {
-          tags: true,
-          tasks: true,
-          history: {
-            include: {
-              user: true,
+      try {
+        const lab = await ctx.prisma.labs.findFirst({
+          where: {
+            id: _id,
+            deleted_at: null,
+          },
+          include: {
+            tags: true,
+            tasks: true,
+            history: {
+              include: {
+                user: true,
+              },
             },
           },
-        },
-      });
-
-      if (lab) {
-        const sortedTaskLab = lab.tasks_order.map((id) => {
-          const task = lab?.tasks.find((task) => task.id === id) as tasks;
-          return task;
         });
 
-        return { ...lab, tasks: sortedTaskLab };
-      }
+        if (lab) {
+          const sortedTaskLab = lab.tasks_order.map((id) => {
+            const task = lab?.tasks.find((task) => task.id === id) as tasks;
+            return task;
+          });
 
-      return null;
-    }),
+          return { ...lab, tasks: sortedTaskLab };
+        }
+
+        return null;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }
+  ),
 
   getLabStatus: TaAboveProcedure.input(
     z.object({ sectionId: z.string(), labId: z.number() })
   ).query(async ({ ctx, input }) => {
     const { sectionId, labId } = input;
     const _sectionId = parseInt(sectionId);
-
-    const lab = await ctx.prisma.labs.findUnique({
-      where: {
-        id: labId,
-      },
-      select: {
-        tasks_order: true,
-      },
-    });
-
-    const users = await ctx.prisma.users.findMany({
-      where: {
-        students: {
-          some: {
-            id: _sectionId,
-          },
-        },
-      },
-      select: {
-        submissions: {
-          where: {
-            lab_id: labId,
-            section_id: _sectionId,
-          },
-          select: {
-            task_id: true,
-            status: true,
-          },
-        },
-        full_name: true,
-        student_id: true,
-      },
-    });
-
-    const usersTaskStatus = users.map((user) => {
-      const taskStatus =
-        lab?.tasks_order.map((order) => {
-          const submission = user.submissions.find(
-            (submission) => submission.task_id === order
-          );
-
-          return submission?.status ?? "NOT_SUBMITTED";
-        }) ?? [];
-      return { ...user, taskStatus };
-    });
-    const taskLength = lab?.tasks_order.length ?? 0;
-    return { usersTaskStatus, taskLength };
-  }),
-  getLabObjectRelation: teacherProcedure
-    .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const { id } = input;
-
+    try {
       const lab = await ctx.prisma.labs.findUnique({
         where: {
-          id,
+          id: labId,
         },
-        include: {
-          submissions: true,
-          tasks: {
-            include: {
-              submissions: true,
-            },
-          },
+        select: {
+          tasks_order: true,
         },
       });
 
-      const assignmentLength = lab?.tasks.length ?? 0;
-
-      const submissionLength = lab?.submissions.length ?? 0;
-
-      const relation = {
-        summary: [
-          { name: "Labs", amount: 1 },
-          { name: "Assignments", amount: assignmentLength },
-          { name: "Submissions", amount: submissionLength },
-        ],
-        object: [
-          {
-            name: "Labs",
-            data: [{ name: lab?.name as string, data: [] }],
+      const users = await ctx.prisma.users.findMany({
+        where: {
+          students: {
+            some: {
+              id: _sectionId,
+            },
           },
-          {
-            name: "Assignments",
-            data:
-              lab?.tasks.map(({ name, submissions }) => ({
-                name,
-                data:
-                  submissions.map(({ created_at, user_id, section_id }) => ({
-                    name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
-                    data: [],
-                  })) ?? [],
-              })) ?? [],
+        },
+        select: {
+          submissions: {
+            where: {
+              lab_id: labId,
+              section_id: _sectionId,
+            },
+            select: {
+              task_id: true,
+              status: true,
+            },
           },
-        ],
-      };
+          full_name: true,
+          student_id: true,
+        },
+      });
 
-      return relation;
+      const usersTaskStatus = users.map((user) => {
+        const taskStatus =
+          lab?.tasks_order.map((order) => {
+            const submission = user.submissions.find(
+              (submission) => submission.task_id === order
+            );
+
+            return submission?.status ?? "NOT_SUBMITTED";
+          }) ?? [];
+        return { ...user, taskStatus };
+      });
+      const taskLength = lab?.tasks_order.length ?? 0;
+      return { usersTaskStatus, taskLength };
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
+  getLabObjectRelation: teacherAboveProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      try {
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id,
+          },
+          include: {
+            submissions: true,
+            tasks: {
+              include: {
+                submissions: true,
+              },
+            },
+          },
+        });
+
+        const assignmentLength = lab?.tasks.length ?? 0;
+
+        const submissionLength = lab?.submissions.length ?? 0;
+
+        const relation = {
+          summary: [
+            { name: "Labs", amount: 1 },
+            { name: "Assignments", amount: assignmentLength },
+            { name: "Submissions", amount: submissionLength },
+          ],
+          object: [
+            {
+              name: "Labs",
+              data: [{ name: lab?.name as string, data: [] }],
+            },
+            {
+              name: "Assignments",
+              data:
+                lab?.tasks.map(({ name, submissions }) => ({
+                  name,
+                  data:
+                    submissions.map(({ created_at, user_id, section_id }) => ({
+                      name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+                      data: [],
+                    })) ?? [],
+                })) ?? [],
+            },
+          ],
+        };
+
+        return relation;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 });

@@ -1,10 +1,11 @@
-import { router, teacherProcedure } from "~/server/api/trpc";
+import { router, adminProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import type { roles } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 export const updateUserRouter = router({
-  updateKUStudent: teacherProcedure
+  updateKUStudent: adminProcedure
     .input(
       z.object({
         email: z.string().email(),
@@ -15,21 +16,27 @@ export const updateUserRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles, student_id } = input;
-
-      await ctx.prisma.users.update({
-        where: {
-          email,
-        },
-        data: {
-          full_name,
-          student_id,
-          roles: {
-            set: roles.map((role) => role.toUpperCase()) as roles[],
+      try {
+        await ctx.prisma.users.update({
+          where: {
+            email,
           },
-        },
-      });
+          data: {
+            full_name,
+            student_id,
+            roles: {
+              set: roles.map((role) => role.toUpperCase()) as roles[],
+            },
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
-  updateNonKUStudent: teacherProcedure
+  updateNonKUStudent: adminProcedure
     .input(
       z.object({
         email: z.string().email(),
@@ -41,24 +48,30 @@ export const updateUserRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles, student_id, password } = input;
-
-      await ctx.prisma.users.update({
-        where: {
-          email,
-        },
-        data: {
-          full_name,
-          student_id,
-          ...(password.length > 0 && {
-            password: await bcrypt.hash(password, 10),
-          }),
-          roles: {
-            set: roles.map((role) => role.toUpperCase()) as roles[],
+      try {
+        await ctx.prisma.users.update({
+          where: {
+            email,
           },
-        },
-      });
+          data: {
+            full_name,
+            student_id,
+            ...(password.length > 0 && {
+              password: await bcrypt.hash(password, 10),
+            }),
+            roles: {
+              set: roles.map((role) => role.toUpperCase()) as roles[],
+            },
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
-  updateTeacher: teacherProcedure
+  updateTeacher: adminProcedure
     .input(
       z.object({
         email: z.string().email(),
@@ -68,17 +81,23 @@ export const updateUserRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles } = input;
-
-      await ctx.prisma.users.update({
-        where: {
-          email,
-        },
-        data: {
-          full_name,
-          roles: {
-            set: roles.map((role) => role.toUpperCase()) as roles[],
+      try {
+        await ctx.prisma.users.update({
+          where: {
+            email,
           },
-        },
-      });
+          data: {
+            full_name,
+            roles: {
+              set: roles.map((role) => role.toUpperCase()) as roles[],
+            },
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
     }),
 });

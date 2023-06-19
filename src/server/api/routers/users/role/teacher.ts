@@ -46,11 +46,3 @@ export const getStudentObjectRelation = async (
 
   return user;
 };
-
-export const deleteStudent = async (prisma: PrismaClient, id: number) => {
-  await prisma.users.delete({
-    where: {
-      id,
-    },
-  });
-};

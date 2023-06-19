@@ -34,104 +34,103 @@ export const createFrontRouter = router({
       const _taskId = parseInt(taskId);
 
       const full_name = ctx.session?.user?.full_name;
-      const user = await ctx.prisma.users.findUnique({
-        where: {
-          full_name,
-        },
-      });
-
-      let status: submission_type = "FAILED";
-      if (percentError <= 3) {
-        status = "PASSED";
-      }
-
-      if (user) {
-        await ctx.prisma.submissions.upsert({
-          where: {
-            user_id_task_id_section_id_lab_id: {
-              user_id: user.id,
-              section_id: _sectionId,
-              lab_id: _labId,
-              task_id: _taskId,
-            },
-          },
-          create: {
-            section: {
-              connect: {
-                id: _sectionId,
-              },
-            },
-            lab: {
-              connect: {
-                id: _labId,
-              },
-            },
-            task: {
-              connect: {
-                id: _taskId,
-              },
-            },
-            user: {
-              connect: {
-                id: user.id,
-              },
-            },
-            status,
-            task_type: "Typing",
-            typing_histories: {
-              create: {
-                raw_speed: rawSpeed,
-                adjusted_speed: adjustedSpeed,
-                started_at: startedAt,
-                ended_at: endedAt,
-                percent_error: percentError,
-              },
-            },
-          },
-          update: {
-            status: status,
-            task_type: "Typing",
-            typing_histories: {
-              create: {
-                raw_speed: rawSpeed,
-                adjusted_speed: adjustedSpeed,
-                started_at: startedAt,
-                ended_at: endedAt,
-                percent_error: percentError,
-              },
-            },
-          },
-        });
-
-        await ctx.prisma.tasks.update({
-          where: {
-            id: _taskId,
-          },
-          data: {
-            submission_count: {
-              increment: 1,
-            },
-            lab_loggers: {
-              create: {
-                type: "SUBMIT",
-                ip_address: ctx.ip as string,
-                user: {
-                  connect: {
-                    id: user.id,
-                  },
-                },
-                section: {
-                  connect: {
-                    id: _sectionId,
-                  },
-                },
-              },
-            },
-          },
-        });
-      }
-
       try {
+        const user = await ctx.prisma.users.findUnique({
+          where: {
+            full_name,
+          },
+        });
+
+        let status: submission_type = "FAILED";
+        if (percentError <= 3) {
+          status = "PASSED";
+        }
+
+        if (user) {
+          await ctx.prisma.submissions.upsert({
+            where: {
+              user_id_task_id_section_id_lab_id: {
+                user_id: user.id,
+                section_id: _sectionId,
+                lab_id: _labId,
+                task_id: _taskId,
+              },
+            },
+            create: {
+              section: {
+                connect: {
+                  id: _sectionId,
+                },
+              },
+              lab: {
+                connect: {
+                  id: _labId,
+                },
+              },
+              task: {
+                connect: {
+                  id: _taskId,
+                },
+              },
+              user: {
+                connect: {
+                  id: user.id,
+                },
+              },
+              status,
+              task_type: "Typing",
+              typing_histories: {
+                create: {
+                  raw_speed: rawSpeed,
+                  adjusted_speed: adjustedSpeed,
+                  started_at: startedAt,
+                  ended_at: endedAt,
+                  percent_error: percentError,
+                },
+              },
+            },
+            update: {
+              status: status,
+              task_type: "Typing",
+              typing_histories: {
+                create: {
+                  raw_speed: rawSpeed,
+                  adjusted_speed: adjustedSpeed,
+                  started_at: startedAt,
+                  ended_at: endedAt,
+                  percent_error: percentError,
+                },
+              },
+            },
+          });
+
+          await ctx.prisma.tasks.update({
+            where: {
+              id: _taskId,
+            },
+            data: {
+              submission_count: {
+                increment: 1,
+              },
+              lab_loggers: {
+                create: {
+                  type: "SUBMIT",
+                  ip_address: ctx.ip as string,
+                  user: {
+                    connect: {
+                      id: user.id,
+                    },
+                  },
+                  section: {
+                    connect: {
+                      id: _sectionId,
+                    },
+                  },
+                },
+              },
+            },
+          });
+        }
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

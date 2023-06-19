@@ -18,15 +18,15 @@ function MyCourse() {
   return (
     <FrontLayout title="My Courses">
       {allSections.isLoading ? (
-        new Array(6)
-          .fill(0)
-          .map((_, i) => (
+        <div className="my-4 grid grid-cols-12 gap-6">
+          {new Array(3).fill(0).map((_, i) => (
             <Skeleton
               key={i}
               height={"12rem"}
               className="col-span-12 md:col-span-4"
             />
-          ))
+          ))}
+        </div>
       ) : (allSections.data?.length as number) > 0 ? (
         <div className="my-4 grid grid-cols-12 gap-6">
           {allSections.data?.map(({ id, name, course }) => {
@@ -50,15 +50,20 @@ function MyCourse() {
       ) : null}
 
       {teachingAssistantSections.isLoading ? (
-        new Array(6)
-          .fill(0)
-          .map((_, i) => (
-            <Skeleton
-              key={i}
-              height={"12rem"}
-              className="col-span-12 md:col-span-4"
-            />
-          ))
+        <>
+          <div className="mt-4">
+            <Skeleton width="16rem" height="2rem" />
+          </div>
+          <div className="my-4 grid grid-cols-12 gap-6">
+            {new Array(3).fill(0).map((_, i) => (
+              <Skeleton
+                key={i}
+                height={"12rem"}
+                className="col-span-12 md:col-span-4"
+              />
+            ))}
+          </div>
+        </>
       ) : (teachingAssistantSections.data?.length as number) > 0 ? (
         <>
           <div className="mt-4">

@@ -23,9 +23,14 @@ function Courses() {
     limit: 10,
   });
 
-  const authorUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER"],
-  });
+  const authorUser = trpc.users.getAllUsersInRole.useQuery(
+    {
+      roles: ["ADMIN", "TEACHER"],
+    },
+    {
+      enabled: role === "ADMIN",
+    }
+  );
 
   const addCourseMutation = trpc.courses.createCourse.useMutation();
   const addCourse = async (formData: TAddCourse) => {

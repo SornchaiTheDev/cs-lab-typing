@@ -1,10 +1,10 @@
 import { AddCourseSchema } from "~/forms/CourseSchema";
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const updateCoursesRouter = router({
-  updateCourse: teacherProcedure
+  updateCourse: teacherAboveProcedure
     .input(AddCourseSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { id, number, name, authors, note, comments } = input;
@@ -29,7 +29,7 @@ export const updateCoursesRouter = router({
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "EDIT_DUPLICATED_COURSE",
+          message: "SOMETHING_WENT_WRONG",
         });
       }
       return "Success";

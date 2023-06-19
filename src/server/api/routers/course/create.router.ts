@@ -32,6 +32,10 @@ export const createCourseRouter = router({
               cause: "DUPLICATED_COURSE",
             });
           }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       }
       return course;

@@ -1,4 +1,4 @@
-import { teacherProcedure, router } from "~/server/api/trpc";
+import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
@@ -6,7 +6,7 @@ import { AddTaskSchema } from "~/forms/TaskSchema";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
 
 export const updateTaskRouter = router({
-  updateTask: teacherProcedure
+  updateTask: teacherAboveProcedure
     .input(AddTaskSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const {
@@ -67,11 +67,15 @@ export const updateTaskRouter = router({
             });
           }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
 
       return task;
     }),
-  setTaskBody: teacherProcedure
+  setTaskBody: teacherAboveProcedure
     .input(z.object({ taskId: z.string(), body: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const actionUser = ctx.user.full_name;
