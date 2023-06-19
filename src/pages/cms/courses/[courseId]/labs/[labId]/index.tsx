@@ -245,7 +245,7 @@ function Lab() {
 
   const deleteTask = trpc.labs.deleteTaskFromLab.useMutation();
   const deleteSelectRow = useCallback(
-    async (id: string) => {
+    async (id: number) => {
       try {
         await deleteTask.mutateAsync({
           taskId: id,
@@ -299,7 +299,7 @@ function Lab() {
           header: "Delete",
           cell: (props) => (
             <button
-              onClick={() => deleteSelectRow(props.row.id)}
+              onClick={() => deleteSelectRow(props.row.original.id)}
               className="rounded-xl text-xl text-sand-12"
             >
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
