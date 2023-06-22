@@ -14,6 +14,8 @@ const Login: NextPage = () => {
   const catchError = (error: string) => {
     if (error) {
       if (error === "not-authorize") {
+        callToast({ msg: "กรุณาเข้าสู่ระบบด้วยบัญชี @ku.th", type: "error" });
+
       } else if (error === "not-found") {
         callToast({ msg: "ไม่พบผู้ใช้นี้", type: "error" });
       } else if (error === "wrong-credential") {

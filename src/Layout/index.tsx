@@ -16,8 +16,15 @@ interface Props {
   title: string;
   isLoading?: boolean;
   showBreadcrumb?: boolean;
+  customBackPath?: string;
 }
-function Layout({ children, title, isLoading, showBreadcrumb = true }: Props) {
+function Layout({
+  children,
+  title,
+  isLoading,
+  showBreadcrumb = true,
+  customBackPath = undefined,
+}: Props) {
   const { data } = useSession();
   const profileImage = data?.user?.image;
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -53,9 +60,10 @@ function Layout({ children, title, isLoading, showBreadcrumb = true }: Props) {
         <div className="roboto container mx-auto flex max-w-6xl flex-1 flex-col p-4 lg:p-0">
           <div className="mt-10 flex justify-between">
             <div className="flex-1">
-              {!isBasePath && <BackArrow />}
+              {!isBasePath && <BackArrow customPath={customBackPath} />}
               <div className="flex gap-2">
-                {!isBasePath && showBreadcrumb &&
+                {!isBasePath &&
+                  showBreadcrumb &&
                   breadcrumbs.slice(0, -1).map(({ label, path }) => (
                     <Link
                       key={path}
