@@ -64,8 +64,8 @@ function Admin() {
             onClick={() =>
               setSelectedObj({
                 selected: {
-                  display : props.row.getValue("email"),
-                  id : props.row.getValue("id")
+                  display: props.row.getValue("email"),
+                  id: props.row.getValue("id"),
                 },
                 type: getUserType(props.row.original),
               })
@@ -158,6 +158,15 @@ function Admin() {
         isOpen={isShow}
         onClose={onClose}
         title="Add/Edit User"
+        description={
+          <>
+            <p className="text-sand-11">
+              Teacher <br /> (email,fullname) <br /> Student <br />
+              (student-id,email,ชื่อ นามสกุล) <br />
+              POSN Student <br /> (username,password,email,ชื่อ นามสกุล)
+            </p>
+          </>
+        }
         className="flex flex-col gap-4 md:w-[40rem]"
       >
         <div>

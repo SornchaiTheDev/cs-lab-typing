@@ -60,7 +60,7 @@ function Students() {
       }),
       columnHelper.display({
         id: "actions",
-        header: "Delete",
+        header: "Remove",
         size: 50,
         cell: (props) => (
           <button
@@ -96,6 +96,7 @@ function Students() {
   return (
     <>
       <Alert
+        type="student"
         isOpen={!!selectedUser}
         onCancel={() => setSelectedUser(null)}
         onConfirm={deleteSelectRow}

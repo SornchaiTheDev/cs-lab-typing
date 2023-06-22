@@ -87,6 +87,12 @@ function AddUser({ sectionId }: Props) {
         isOpen={isShow}
         onClose={handleOnClose}
         title="Add Student"
+        description={
+          <p className="text-sand-10">
+            Student <br /> 651040xxxx <br />
+            Teacher <br /> john.doe@ku.th
+          </p>
+        }
         className="flex flex-col gap-4 md:w-[40rem]"
       >
         <div>

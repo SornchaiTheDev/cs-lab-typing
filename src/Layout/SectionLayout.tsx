@@ -46,6 +46,7 @@ function SectionLayout({ title, children, isLoading }: Props) {
       {...{ title }}
       isLoading={isLoading}
       showBreadcrumb={isTeacher || isAdmin}
+      customBackPath={isStudent ? "/" : undefined}
     >
       <HorizontalMenu
         basePath="/cms/courses/[courseId]/sections/[sectionId]"

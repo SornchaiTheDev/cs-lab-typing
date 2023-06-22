@@ -14,6 +14,7 @@ import Modal from "~/components/Common/Modal";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
 import Select from "~/components/Forms/Select";
+import Alert from "~/components/Common/Alert";
 
 interface AddLabModalProps {
   onClose: () => void;
@@ -171,28 +172,6 @@ function LabSet() {
     }
   );
 
-  const deleteLab = trpc.sections.deleteLab.useMutation();
-  const deleteSelectRow = useCallback(
-    async (labId: number) => {
-      try {
-        await deleteLab.mutateAsync({
-          labId,
-          sectionId: sectionId as string,
-        });
-        await section.refetch();
-        callToast({
-          msg: "Delete Lab from Section successfully",
-          type: "success",
-        });
-      } catch (err) {
-        if (err instanceof TRPCClientError) {
-          callToast({ msg: err.message, type: "error" });
-        }
-      }
-    },
-    [deleteLab, section, sectionId]
-  );
-
   const changeLabStatus = trpc.sections.updateLabStatus.useMutation();
   const updateLabStatus = useCallback(
     async (labId: number, status: LabStatus) => {
@@ -215,6 +194,28 @@ function LabSet() {
     },
     [changeLabStatus, section, sectionId]
   );
+
+  const [selectedLab, setSelectedLab] = useState<number | null>(null);
+
+  const deleteLab = trpc.sections.deleteLab.useMutation();
+  const deleteSelectRow = async () => {
+    try {
+      await deleteLab.mutateAsync({
+        labId: selectedLab as number,
+        sectionId: sectionId as string,
+      });
+      setSelectedLab(null);
+      await section.refetch();
+      callToast({
+        msg: "Delete Lab from Section successfully",
+        type: "success",
+      });
+    } catch (err) {
+      if (err instanceof TRPCClientError) {
+        callToast({ msg: err.message, type: "error" });
+      }
+    }
+  };
 
   const columns = useMemo<ColumnDef<LabWithStatus, string>[]>(
     () => [
@@ -252,10 +253,10 @@ function LabSet() {
 
       columnHelper.display({
         id: "actions",
-        header: "Delete",
+        header: "Remove",
         cell: (props) => (
           <button
-            onClick={() => deleteSelectRow(props.row.original.id)}
+            onClick={() => setSelectedLab(props.row.original.id)}
             className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
@@ -264,7 +265,7 @@ function LabSet() {
         size: 50,
       }),
     ],
-    [columnHelper, deleteSelectRow, updateLabStatus]
+    [columnHelper, setSelectedLab, updateLabStatus]
   );
 
   const [newOrdered, setNewOrdered] = useState<labs[]>([]);
@@ -291,7 +292,12 @@ function LabSet() {
   return (
     <>
       {isShow && <AddLabModal onClose={() => setIsShow(false)} />}
-
+      <Alert
+        type="lab"
+        isOpen={!!selectedLab}
+        onCancel={() => setSelectedLab(null)}
+        onConfirm={deleteSelectRow}
+      />
       <SectionLayout
         title={section.data?.name as string}
         isLoading={section.isLoading}

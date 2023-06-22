@@ -26,6 +26,7 @@ const Modal = ({
 
   useOnClickOutside(modalRef, onClose);
   if (!isOpen) return null;
+
   return (
     <div className="fixed left-0 top-0 z-50 flex h-screen w-full items-center justify-center bg-sand-12 bg-opacity-30 backdrop-blur-sm">
       <motion.div
@@ -37,10 +38,14 @@ const Modal = ({
           className
         )}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           <div>
             <h4 className="text-xl font-bold capitalize">{title}</h4>
-            {!!description && <p className="text-sand-9">{description}</p>}
+            {!!description && typeof description === "string" ? (
+              <p className="text-sand-9">{description}</p>
+            ) : (
+              description
+            )}
           </div>
           <button
             onClick={onClose}
