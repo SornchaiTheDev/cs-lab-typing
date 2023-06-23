@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import clsx from "clsx";
@@ -93,13 +93,13 @@ function Logger() {
       sectionId: sectionId as string,
     },
     {
-      enabled: false,
+      enabled: !!sectionId && !!dateRange,
     }
   );
 
   const exportCSV = async () => {
-    await labLogsCSV.refetch();
     let csvString = "Type,Date,Email / Username,TaskId,SectionId,IP Address\n";
+
     labLogsCSV.data?.forEach((log) => {
       csvString += `${log.type},${dayjs(log.date).format(
         "DD/MM/YYYY HH:mm:ss"
@@ -146,6 +146,7 @@ function Logger() {
     },
     {
       enabled: !!sectionId,
+      keepPreviousData: true,
     }
   );
 
