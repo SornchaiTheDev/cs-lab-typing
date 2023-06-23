@@ -5,10 +5,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { ColumnSort, Row, SortingState } from "@tanstack/react-table";
+import type {
+  ColumnSort,
+  OnChangeFn,
+  PaginationState,
+  Row,
+  SortingState,
+} from "@tanstack/react-table";
 import clsx from "clsx";
 import { Icon } from "@iconify/react";
 import { useDrag, useDrop } from "react-dnd";
+import Button from "./Button";
 
 interface DragAndDropProps {
   row: Row<any>;
@@ -59,6 +66,9 @@ interface Props {
   children?: ReactNode;
   isLoading?: boolean;
   draggabled?: boolean;
+  pageCount?: number;
+  pagination?: PaginationState;
+  onPaginationChange?: OnChangeFn<PaginationState> | undefined;
   onDrag?: (data: any[]) => void;
 }
 
@@ -71,6 +81,9 @@ function Table({
   isLoading,
   draggabled,
   onDrag,
+  pageCount = -1,
+  pagination,
+  onPaginationChange,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>(
     defaultSortingState ? [defaultSortingState] : []
@@ -113,10 +126,14 @@ function Table({
   const table = useReactTable({
     data: tableData,
     columns: tableColumns,
+    pageCount,
     state: {
       sorting,
+      pagination,
     },
+    manualPagination: true,
     onSortingChange: setSorting,
+    onPaginationChange,
     getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -198,23 +215,25 @@ function Table({
               );
             })}
           </tbody>
-          <tfoot>
-            {table.getFooterGroups().map((footerGroup) => (
-              <tr key={footerGroup.id}>
-                {footerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.footer,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </tfoot>
         </table>
+        {!!pagination && (
+          <div className="flex w-full justify-end gap-2 border-t border-sand-6 p-2">
+            <Button
+              className="hover:bg-sand-4"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <Icon icon="solar:alt-arrow-left-line-duotone" />
+            </Button>
+            <Button
+              className="hover:bg-sand-4"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <Icon icon="solar:alt-arrow-right-line-duotone" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

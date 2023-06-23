@@ -1,8 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import { createColumnHelper } from "@tanstack/react-table";
+import {
+  type PaginationState,
+  createColumnHelper,
+} from "@tanstack/react-table";
 import SectionLayout from "~/Layout/SectionLayout";
 import dayjs from "dayjs";
 
@@ -25,6 +28,30 @@ function SectionHistory() {
     {
       enabled: !!sectionId,
     }
+  );
+
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const history = trpc.sections.getSectionHistoryPagination.useQuery(
+    {
+      sectionId: sectionId as string,
+      limit: pageSize,
+      page: pageIndex,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
   );
 
   const columnHelper = createColumnHelper<HistoryRow>();
@@ -57,10 +84,13 @@ function SectionHistory() {
       isLoading={section.isLoading}
     >
       <Table
-        data={section.data?.history ?? []}
+        data={history.data?.sectionHistory ?? []}
         columns={columns}
         defaultSortingState={{ id: "created_at", desc: true }}
         className="mt-4"
+        onPaginationChange={setPagination}
+        pageCount={history.data?.pageCount ?? 0}
+        {...{ pagination }}
       />
     </SectionLayout>
   );

@@ -83,11 +83,6 @@ export const getSectionsRouter = router({
           instructors: true,
           students: true,
           labs: true,
-          history: {
-            include: {
-              user: true,
-            },
-          },
           labs_status: true,
         },
       });
@@ -158,6 +153,48 @@ export const getSectionsRouter = router({
         });
       }
     }),
+
+  getSectionHistoryPagination: teacherAboveProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        limit: z.number().default(10),
+        sectionId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit, sectionId } = input;
+
+      const _sectionId = parseInt(sectionId);
+
+      try {
+        const [sectionHistory, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.section_histories.findMany({
+            where: {
+              sectionId: _sectionId,
+            },
+            skip: page * limit,
+            take: limit,
+            include: {
+              user: true,
+            },
+          }),
+          ctx.prisma.section_histories.count({
+            where: {
+              sectionId: _sectionId,
+            },
+          }),
+        ]);
+
+        return { sectionHistory, pageCount: Math.ceil(amount / limit) };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+
   getSectionObjectRelation: teacherAboveProcedure
     .input(z.object({ name: z.string() }))
     .query(async ({ ctx, input }) => {

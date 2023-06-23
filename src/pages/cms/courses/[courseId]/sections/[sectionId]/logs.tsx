@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import clsx from "clsx";
 import TimePickerRange from "~/components/TimePickerRange";
 import { Icon } from "@iconify/react";
@@ -48,18 +48,6 @@ function Logger() {
     }
   );
 
-  const labLogs = trpc.loggers.getLabLog.useQuery(
-    {
-      limit: 50,
-      page: 1,
-      date: dateRange,
-      sectionId: sectionId as string,
-    },
-    {
-      enabled: !!sectionId,
-    }
-  );
-
   const columns = useMemo<ColumnDef<lab_loggers, string>[]>(
     () => [
       {
@@ -99,9 +87,20 @@ function Logger() {
     []
   );
 
-  const exportCSV = () => {
+  const labLogsCSV = trpc.loggers.exportCSV.useQuery(
+    {
+      date: dateRange,
+      sectionId: sectionId as string,
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  const exportCSV = async () => {
+    await labLogsCSV.refetch();
     let csvString = "Type,Date,Email / Username,TaskId,SectionId,IP Address\n";
-    labLogs.data?.forEach((log) => {
+    labLogsCSV.data?.forEach((log) => {
       csvString += `${log.type},${dayjs(log.date).format(
         "DD/MM/YYYY HH:mm:ss"
       )},${log.user.email},${log.taskId},${log.sectionId},${log.ip_address}\n`;
@@ -125,6 +124,31 @@ function Logger() {
     link.click();
   };
 
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
+
+  const labLogs = trpc.loggers.getLabLog.useQuery(
+    {
+      limit: pageSize,
+      page: pageIndex,
+      date: dateRange,
+      sectionId: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
+
   return (
     <SectionLayout
       title={section.data?.name as string}
@@ -132,9 +156,12 @@ function Logger() {
     >
       <Table
         isLoading={labLogs.isLoading}
-        data={labLogs.data ?? []}
+        data={labLogs.data?.logger ?? []}
         columns={columns}
         defaultSortingState={{ id: "date", desc: true }}
+        pageCount={labLogs.data?.pageCount ?? 0}
+        pagination={pagination}
+        onPaginationChange={setPagination}
       >
         <div className="flex justify-end p-2 ">
           <button
