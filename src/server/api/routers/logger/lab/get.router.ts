@@ -68,7 +68,7 @@ export const getLabLogRouter = router({
         });
       }
     }),
-  exportCSV: teacherAboveProcedure
+  exportLabLoggerCSV: teacherAboveProcedure
     .input(
       z.object({
         date: z.object({

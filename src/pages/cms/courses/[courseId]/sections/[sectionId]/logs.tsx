@@ -87,7 +87,7 @@ function Logger() {
     []
   );
 
-  const labLogsCSV = trpc.loggers.exportCSV.useQuery(
+  const labLogsCSV = trpc.loggers.exportLabLoggerCSV.useQuery(
     {
       date: dateRange,
       sectionId: sectionId as string,
