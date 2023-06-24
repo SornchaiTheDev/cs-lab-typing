@@ -67,7 +67,7 @@ interface Props {
   isLoading?: boolean;
   draggabled?: boolean;
   pageCount?: number;
-  pagination?: PaginationState;
+  pagination: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
   onDrag?: (data: any[]) => void;
 }
@@ -123,13 +123,23 @@ function Table({
     [isLoading, columns]
   );
 
+  const { pageIndex, pageSize } = pagination;
+
+  const _pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
+
   const table = useReactTable({
     data: tableData,
     columns: tableColumns,
     pageCount,
     state: {
       sorting,
-      pagination,
+      pagination: _pagination,
     },
     manualPagination: true,
     onSortingChange: setSorting,

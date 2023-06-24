@@ -124,18 +124,12 @@ function Logger() {
     link.click();
   };
 
-  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  const pagination = useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
-  );
+  const { pageIndex, pageSize } = pagination;
 
   const labLogs = trpc.loggers.getLabLog.useQuery(
     {

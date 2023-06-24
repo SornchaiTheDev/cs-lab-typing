@@ -30,10 +30,12 @@ function SectionHistory() {
     }
   );
 
-  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const { pageIndex, pageSize } = pagination;
 
   const history = trpc.sections.getSectionHistoryPagination.useQuery(
     {
@@ -44,14 +46,6 @@ function SectionHistory() {
     {
       enabled: !!sectionId,
     }
-  );
-
-  const pagination = useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
   );
 
   const columnHelper = createColumnHelper<HistoryRow>();

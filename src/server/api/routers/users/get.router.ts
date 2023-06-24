@@ -19,17 +19,21 @@ export const getUserRouter = router({
       const { page, limit } = input;
 
       try {
-        const users = await ctx.prisma.users.findMany({
-          where: {
-            deleted_at: null,
-          },
-          skip: (page - 1) * limit,
-          take: limit,
-        });
-        if (!users) {
-          return [];
-        }
-        return users;
+        const [users, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.users.findMany({
+            where: {
+              deleted_at: null,
+            },
+            skip: page * limit,
+            take: limit,
+            orderBy: {
+              created_at: "desc",
+            },
+          }),
+          ctx.prisma.users.count(),
+        ]);
+
+        return { users, pageCount: Math.ceil(amount / limit) };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

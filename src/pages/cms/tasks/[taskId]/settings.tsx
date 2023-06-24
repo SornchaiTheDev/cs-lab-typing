@@ -27,10 +27,10 @@ function Settings() {
   );
   const editTaskMutation = trpc.tasks.updateTask.useMutation();
 
-  const isTeacher = session?.user?.roles.includes("TEACHER");
+  // const isTeacher = session?.user?.roles.includes("TEACHER");
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
   const isOwner = task.data?.owner.full_name === session?.user?.full_name;
-  const canEdit = isTeacher && isOwner;
+  const canEdit = isOwner;
   const canDelete = isOwner || isAdmin;
 
   const editTask = async (formData: TAddTask) => {

@@ -1,7 +1,7 @@
 import Layout from "~/Layout";
 import Table from "~/components/Common/Table";
 import { Icon } from "@iconify/react";
-import { createColumnHelper } from "@tanstack/react-table";
+import { PaginationState, createColumnHelper } from "@tanstack/react-table";
 import { useCallback, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -92,9 +92,16 @@ function Admin() {
 
   useOnClickOutside(modalRef, onClose);
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+
+  const { pageIndex, pageSize } = pagination;
+
   const users = trpc.users.getUserPagination.useQuery({
-    limit: 50,
-    page: 1,
+    limit: pageSize,
+    page: pageIndex,
   });
 
   const [isShow, setIsShow] = useState(false);
@@ -221,8 +228,11 @@ function Admin() {
       <Layout title="Users">
         <Table
           isLoading={users.isLoading}
-          data={users.data ?? []}
+          data={users.data?.users ?? []}
+          pageCount={users.data?.pageCount ?? 0}
           columns={columns}
+          {...{ pagination }}
+          onPaginationChange={setPagination}
         >
           <div className="flex justify-end">
             <Button
