@@ -67,7 +67,7 @@ interface Props {
   isLoading?: boolean;
   draggabled?: boolean;
   pageCount?: number;
-  pagination: PaginationState;
+  pagination?: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
   onDrag?: (data: any[]) => void;
 }
@@ -123,15 +123,14 @@ function Table({
     [isLoading, columns]
   );
 
-  const { pageIndex, pageSize } = pagination;
-
-  const _pagination = useMemo(
-    () => ({
+  const _pagination = useMemo(() => {
+    if (pagination === undefined) return undefined;
+    const { pageIndex, pageSize } = pagination;
+    return {
       pageIndex,
       pageSize,
-    }),
-    [pageIndex, pageSize]
-  );
+    };
+  }, [pagination]);
 
   const table = useReactTable({
     data: tableData,
@@ -226,7 +225,7 @@ function Table({
             })}
           </tbody>
         </table>
-        {!!pagination && (
+        {!!_pagination && (
           <div className="flex w-full justify-end gap-2 border-t border-sand-6 p-2">
             <Button
               className="hover:bg-sand-4"

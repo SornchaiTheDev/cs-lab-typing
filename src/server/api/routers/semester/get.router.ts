@@ -7,7 +7,7 @@ import { z } from "zod";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 export const getSemesterRouter = router({
-  getSemesters: adminProcedure
+  getSemestersPagination: adminProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -17,17 +17,22 @@ export const getSemesterRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
       try {
-        const semesters = await ctx.prisma.semesters.findMany({
-          where: {
-            deleted_at: null,
-          },
-          skip: (page - 1) * limit,
-          take: limit,
-        });
-        if (!semesters) {
-          return [];
-        }
-        return semesters;
+        const [semesters, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.semesters.findMany({
+            where: {
+              deleted_at: null,
+            },
+            skip: page * limit,
+            take: limit,
+          }),
+          ctx.prisma.semesters.count({
+            where: {
+              deleted_at: null,
+            },
+          }),
+        ]);
+
+        return { semesters, pageCount: Math.ceil(amount / limit) };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

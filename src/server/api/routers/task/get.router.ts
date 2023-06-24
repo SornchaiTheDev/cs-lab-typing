@@ -7,7 +7,7 @@ import { z } from "zod";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 export const getTaskRouter = router({
-  getTask: teacherAboveProcedure
+  getTaskPagination: teacherAboveProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -17,40 +17,54 @@ export const getTaskRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit } = input;
       try {
-        const tasks = await ctx.prisma.tasks.findMany({
-          skip: (page - 1) * limit,
-          take: limit,
-          where: {
-            deleted_at: null,
-            OR: [
-              { isPrivate: false },
-              {
-                owner: {
-                  full_name: ctx.user.full_name,
+        const [tasks, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.tasks.findMany({
+            skip: page * limit,
+            take: limit,
+            where: {
+              deleted_at: null,
+              OR: [
+                { isPrivate: false },
+                {
+                  owner: {
+                    full_name: ctx.user.full_name,
+                  },
+                },
+              ],
+            },
+            include: {
+              tags: {
+                select: {
+                  name: true,
                 },
               },
-            ],
-          },
-          include: {
-            tags: {
-              select: {
-                name: true,
+              owner: {
+                select: {
+                  full_name: true,
+                },
               },
             },
-            owner: {
-              select: {
-                full_name: true,
-              },
+            orderBy: {
+              updated_at: "desc",
             },
-          },
-          orderBy: {
-            updated_at: "desc",
-          },
-        });
-        if (!tasks) {
-          return [];
-        }
-        return tasks;
+          }),
+          ctx.prisma.tasks.count({
+            where: {
+              deleted_at: null,
+              OR: [
+                { isPrivate: false },
+
+                {
+                  owner: {
+                    full_name: ctx.user.full_name,
+                  },
+                },
+              ],
+            },
+          }),
+        ]);
+
+        return { tasks, pageCount: Math.ceil(amount / limit) };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

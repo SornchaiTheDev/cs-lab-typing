@@ -2,7 +2,11 @@ import SemesterLayout from "~/Layout/SemesterLayout";
 import Table from "~/components/Common/Table";
 import { type TSemesterSchema, SemesterSchema } from "~/forms/SemesterSchema";
 import { Icon } from "@iconify/react";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import {
+  type ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import Forms from "~/components/Forms";
 import Modal from "~/components/Common/Modal";
@@ -34,9 +38,16 @@ function Semesters() {
     state.setSelectedObj,
   ]);
 
-  const semesters = trpc.semesters.getSemesters.useQuery({
-    page: 1,
-    limit: 50,
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+
+  const { pageIndex, pageSize } = pagination;
+
+  const semesters = trpc.semesters.getSemestersPagination.useQuery({
+    page: pageIndex,
+    limit: pageSize,
   });
   const addSemesterMutation = trpc.semesters.createSemester.useMutation();
 
@@ -145,8 +156,11 @@ function Semesters() {
         <Table
           isLoading={semesters.isLoading}
           className="mt-6"
-          data={semesters.data ?? []}
+          data={semesters.data?.semesters ?? []}
+          pageCount={semesters.data?.pageCount ?? 0}
           columns={columns}
+          {...{ pagination }}
+          onPaginationChange={setPagination}
         >
           <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
             <Button

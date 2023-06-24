@@ -3,7 +3,7 @@ import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Table from "~/components/Common/Table";
 import { AddTaskSchema, type TAddTask } from "~/forms/TaskSchema";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { trpc } from "~/helpers";
 import type { tags, users } from "@prisma/client";
@@ -33,7 +33,17 @@ function Tasks() {
 
   const [isShow, setIsShow] = useState(false);
 
-  const allTasks = trpc.tasks.getTask.useQuery({ page: 1, limit: 50 });
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+
+  const { pageIndex, pageSize } = pagination;
+
+  const allTasks = trpc.tasks.getTaskPagination.useQuery({
+    page: pageIndex,
+    limit: pageSize,
+  });
 
   const addTaskMutation = trpc.tasks.addTask.useMutation();
   const addTask = async (formData: TAddTask) => {
@@ -110,27 +120,6 @@ function Tasks() {
           return owner.full_name;
         },
       },
-      // columnHelper.display({
-      //   id: "actions",
-      //   header: "Delete",
-      //   cell: (props) => (
-      //     <button
-      //       onClick={() => {
-      //         setSelectedObj({
-      //           selected: {
-      //             display: props.row.original.name,
-      //             id: props.row.original.id,
-      //           },
-      //           type: "lab",
-      //         });
-      //       }}
-      //       className="text-xl rounded-xl text-sand-12"
-      //     >
-      //       <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
-      //     </button>
-      //   ),
-      //   size: 50,
-      // }),
     ],
     [router.pathname, router.query]
   );
@@ -205,16 +194,19 @@ function Tasks() {
       </Modal>
       <TaskLayout title="Tasks">
         <Table
-          data={allTasks.data ?? []}
+          data={allTasks.data?.tasks ?? []}
           columns={columns}
-          className="flex-1 mt-6"
+          className="mt-6 flex-1"
+          pageCount={allTasks.data?.pageCount ?? 0}
+          onPaginationChange={setPagination}
+          {...{ pagination }}
         >
           {isTeacher && (
             <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:programming-line-duotone"
-                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
               >
                 Add Task
               </Button>

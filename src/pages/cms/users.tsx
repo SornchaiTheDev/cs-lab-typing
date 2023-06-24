@@ -1,7 +1,7 @@
 import Layout from "~/Layout";
 import Table from "~/components/Common/Table";
 import { Icon } from "@iconify/react";
-import { PaginationState, createColumnHelper } from "@tanstack/react-table";
+import { type PaginationState, createColumnHelper } from "@tanstack/react-table";
 import { useCallback, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
