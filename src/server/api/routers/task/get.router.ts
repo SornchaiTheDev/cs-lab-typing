@@ -89,11 +89,6 @@ export const getTaskRouter = router({
           include: {
             tags: true,
             owner: true,
-            history: {
-              include: {
-                user: true,
-              },
-            },
           },
         });
         return task;
@@ -104,7 +99,46 @@ export const getTaskRouter = router({
         });
       }
     }),
+  getTaskHistoryPagination: teacherAboveProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        limit: z.number().default(10),
+        taskId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit, taskId } = input;
 
+      const _taskId = parseInt(taskId);
+
+      try {
+        const [taskHistory, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.task_histories.findMany({
+            where: {
+              tasksId: _taskId,
+            },
+            skip: page * limit,
+            take: limit,
+            include: {
+              user: true,
+            },
+          }),
+          ctx.prisma.task_histories.count({
+            where: {
+              tasksId: _taskId,
+            },
+          }),
+        ]);
+
+        return { taskHistory, pageCount: Math.ceil(amount / limit) };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
   getUserTaskStatus: TaAboveProcedure.input(
     z.object({
       student_id: z.string(),

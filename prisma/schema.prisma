@@ -217,8 +217,8 @@ model task_histories {
   user_id    Int
   action     String
   created_at DateTime @default(now())
-  tasks      tasks    @relation(fields: [tasksId], references: [id])
-  tasksId    Int
+  tasks      tasks    @relation(fields: [taskId], references: [id])
+  taskId    Int
 }
 
 enum submission_type {

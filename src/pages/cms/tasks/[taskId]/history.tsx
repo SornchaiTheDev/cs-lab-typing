@@ -1,10 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
 import InsideTaskLayout from "~/Layout/InsideTaskLayout";
 import { useSession } from "next-auth/react";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import { createColumnHelper } from "@tanstack/react-table";
+import { PaginationState, createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
 interface HistoryRow {
@@ -22,6 +22,24 @@ function TaskHistory() {
 
   const task = trpc.tasks.getTaskById.useQuery(
     { id: taskId as string },
+    {
+      enabled: !!taskId,
+    }
+  );
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { pageIndex, pageSize } = pagination;
+
+  const history = trpc.tasks.getTaskHistoryPagination.useQuery(
+    {
+      taskId: taskId as string,
+      limit: pageSize,
+      page: pageIndex,
+    },
     {
       enabled: !!taskId,
     }
@@ -61,10 +79,13 @@ function TaskHistory() {
       canAccessToSettings={isAdmin || isOwner}
     >
       <Table
-        data={task.data?.history ?? []}
+        data={history.data?.taskHistory ?? []}
         columns={columns}
         defaultSortingState={{ id: "created_at", desc: true }}
         className="mt-4"
+        onPaginationChange={setPagination}
+        pageCount={history.data?.pageCount ?? 0}
+        {...{ pagination }}
       />
     </InsideTaskLayout>
   );
