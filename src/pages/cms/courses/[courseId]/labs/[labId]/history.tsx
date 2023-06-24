@@ -1,8 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import { createColumnHelper } from "@tanstack/react-table";
+import { PaginationState, createColumnHelper } from "@tanstack/react-table";
 import LabLayout from "~/Layout/LabLayout";
 import dayjs from "dayjs";
 
@@ -20,6 +20,24 @@ function LabHistory() {
 
   const lab = trpc.labs.getLabById.useQuery(
     { id: labId },
+    {
+      enabled: !!labId,
+    }
+  );
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { pageIndex, pageSize } = pagination;
+
+  const history = trpc.labs.getLabHistoryPagination.useQuery(
+    {
+      labId: labId as string,
+      limit: pageSize,
+      page: pageIndex,
+    },
     {
       enabled: !!labId,
     }
@@ -52,10 +70,13 @@ function LabHistory() {
   return (
     <LabLayout title={lab.data?.name as string} isLoading={lab.isLoading}>
       <Table
-        data={lab.data?.history ?? []}
+        data={history.data?.labHistory ?? []}
+        pageCount={history.data?.pageCount ?? 0}
         columns={columns}
         defaultSortingState={{ id: "created_at", desc: true }}
         className="mt-4"
+        onPaginationChange={setPagination}
+        {...{ pagination }}
       />
     </LabLayout>
   );

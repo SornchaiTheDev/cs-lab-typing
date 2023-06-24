@@ -8,23 +8,22 @@ import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const getLabRouter = router({
-  getLabPagination: TaAboveProcedure
-    .input(
-      z.object({
-        page: z.number().default(1),
-        limit: z.number().default(10),
-        courseId: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { page, limit, courseId } = input;
-      try {
-        const labs = await ctx.prisma.labs.findMany({
+  getLabPagination: TaAboveProcedure.input(
+    z.object({
+      page: z.number().default(1),
+      limit: z.number().default(10),
+      courseId: z.string(),
+    })
+  ).query(async ({ ctx, input }) => {
+    const { page, limit, courseId } = input;
+    try {
+      const [labs, amount] = await ctx.prisma.$transaction([
+        ctx.prisma.labs.findMany({
           where: {
             deleted_at: null,
             courseId: parseInt(courseId),
           },
-          skip: (page - 1) * limit,
+          skip: page * limit,
           take: limit,
           include: {
             sections: true,
@@ -34,18 +33,23 @@ export const getLabRouter = router({
               },
             },
           },
-        });
-        if (!labs) {
-          return [];
-        }
-        return labs;
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
-      }
-    }),
+        }),
+        ctx.prisma.labs.count({
+          where: {
+            deleted_at: null,
+            courseId: parseInt(courseId),
+          },
+        }),
+      ]);
+
+      return { labs, pageCount: Math.ceil(amount / limit) };
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
   getLabById: TaAboveProcedure.input(z.object({ id: z.string() })).query(
     async ({ ctx, input }) => {
       const { id } = input;
@@ -85,6 +89,47 @@ export const getLabRouter = router({
       }
     }
   ),
+
+  getLabHistoryPagination: teacherAboveProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        limit: z.number().default(10),
+        labId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit, labId } = input;
+
+      const _labId = parseInt(labId);
+
+      try {
+        const [labHistory, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.lab_histories.findMany({
+            where: {
+              labId: _labId,
+            },
+            skip: page * limit,
+            take: limit,
+            include: {
+              user: true,
+            },
+          }),
+          ctx.prisma.lab_histories.count({
+            where: {
+              labId: _labId,
+            },
+          }),
+        ]);
+
+        return { labHistory, pageCount: Math.ceil(amount / limit) };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
 
   getLabStatus: TaAboveProcedure.input(
     z.object({ sectionId: z.string(), labId: z.number() })
@@ -145,6 +190,7 @@ export const getLabRouter = router({
       });
     }
   }),
+
   getLabObjectRelation: teacherAboveProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
