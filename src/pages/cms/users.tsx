@@ -1,7 +1,10 @@
 import Layout from "~/Layout";
 import Table from "~/components/Common/Table";
 import { Icon } from "@iconify/react";
-import { type PaginationState, createColumnHelper } from "@tanstack/react-table";
+import {
+  type PaginationState,
+  createColumnHelper,
+} from "@tanstack/react-table";
 import { useCallback, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -70,7 +73,7 @@ function Admin() {
                 type: getUserType(props.row.original),
               })
             }
-            className="rounded-xl text-xl text-sand-12"
+            className="text-xl rounded-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -219,7 +222,7 @@ function Admin() {
           onClick={handleAddUser}
           disabled={isSubmitting}
           icon="solar:user-plus-rounded-line-duotone"
-          className="bg-sand-12 text-sand-1 shadow active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
+          className="shadow bg-sand-12 text-sand-1 active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
         >
           Add User
         </Button>
@@ -238,7 +241,7 @@ function Admin() {
             <Button
               onClick={() => setIsShow(true)}
               icon="solar:user-plus-rounded-line-duotone"
-              className="m-2 bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+              className="m-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
             >
               Add User
             </Button>

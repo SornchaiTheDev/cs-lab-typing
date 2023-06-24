@@ -19,7 +19,7 @@ interface LoggerRow {
 
 const Type = ({ type }: { type: string }) => {
   return (
-    <div className="flex w-full justify-center">
+    <div className="flex justify-center w-full">
       <button
         className={clsx(
           "rounded-md px-2 text-sm font-medium",
@@ -130,7 +130,7 @@ function Logger() {
         <div className="flex justify-end p-2 ">
           <button
             onClick={exportCSV}
-            className="flex items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
+            className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV

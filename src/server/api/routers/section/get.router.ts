@@ -3,6 +3,7 @@ import {
   TaAboveProcedure,
   router,
   teacherAboveProcedure,
+  teacherProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import { getAllSections } from "./roles/getAllSections";
@@ -38,7 +39,6 @@ export const getSectionsRouter = router({
         include: {
           semester: true,
           instructors: true,
-          students: true,
           labs: true,
           history: {
             include: {
@@ -65,6 +65,69 @@ export const getSectionsRouter = router({
       });
     }
   }),
+
+  getStudentPagination: teacherProcedure
+    .input(
+      z.object({
+        sectionId: z.string(),
+        page: z.number().default(1),
+        limit: z.number().default(10),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit, sectionId } = input;
+      const _sectionId = parseInt(sectionId);
+      try {
+        const [pagination, allStudentAmount, allStudents] =
+          await ctx.prisma.$transaction([
+            ctx.prisma.sections.findUnique({
+              where: {
+                id: _sectionId,
+              },
+              select: {
+                students: {
+                  take: limit,
+                  skip: page * limit,
+                },
+              },
+            }),
+            ctx.prisma.sections.findUnique({
+              where: {
+                id: _sectionId,
+              },
+              select: {
+                _count: {
+                  select: {
+                    students: true,
+                  },
+                },
+              },
+            }),
+            ctx.prisma.sections.findUnique({
+              where: {
+                id: _sectionId,
+              },
+              select: {
+                students: true,
+              },
+            }),
+          ]);
+
+        const students = pagination?.students ?? [];
+        const studentAmount = allStudentAmount?._count.students ?? 0;
+
+        return {
+          students,
+          allStudents: allStudents?.students ?? [],
+          pageCount: Math.ceil(studentAmount / limit),
+        };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
 
   getLabSet: TaAboveProcedure.input(
     z.object({

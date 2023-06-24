@@ -1,6 +1,9 @@
 import { Icon } from "@iconify/react";
 import type { users } from "@prisma/client";
-import { createColumnHelper } from "@tanstack/react-table";
+import {
+  type PaginationState,
+  createColumnHelper,
+} from "@tanstack/react-table";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/router";
 import React, { useMemo, useState } from "react";
@@ -22,6 +25,24 @@ function Students() {
   const section = trpc.sections.getSectionById.useQuery(
     {
       id: sectionId as string,
+    },
+    {
+      enabled: !!sectionId,
+    }
+  );
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { pageIndex, pageSize } = pagination;
+
+  const studentsPagination = trpc.sections.getStudentPagination.useQuery(
+    {
+      sectionId: sectionId as string,
+      page: pageIndex,
+      limit: pageSize,
     },
     {
       enabled: !!sectionId,
@@ -65,7 +86,7 @@ function Students() {
         cell: (props) => (
           <button
             onClick={() => setSelectedUser(props.row.original.student_id)}
-            className="rounded-xl text-xl text-sand-12"
+            className="text-xl rounded-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-trash-line-duotone" />
           </button>
@@ -75,7 +96,7 @@ function Students() {
     [columnHelper]
   );
 
-  const students = section.data?.students ?? [];
+  const students = studentsPagination.data?.allStudents ?? [];
 
   const exportCSV = () => {
     let csvString = "Student Id,Full Name\n";
@@ -106,17 +127,20 @@ function Students() {
         isLoading={section.isLoading}
       >
         <Table
-          data={students ?? []}
-          isLoading={section.isLoading}
-          columns={columns}
           className="mx-4"
+          columns={columns}
+          isLoading={section.isLoading}
+          data={studentsPagination.data?.students ?? []}
+          pageCount={studentsPagination.data?.pageCount ?? 0}
+          onPaginationChange={setPagination}
+          {...{ pagination }}
         >
           <div className="flex items-center justify-between p-1">
             <AddUser sectionId={sectionId as string} />
             <Button
               onClick={exportCSV}
               icon="solar:document-text-line-duotone"
-              className="bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
+              className="p-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
             >
               Export as CSV
             </Button>

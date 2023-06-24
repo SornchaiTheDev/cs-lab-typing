@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react";
 import {
   type ColumnDef,
   createColumnHelper,
-  PaginationState,
+  type PaginationState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
@@ -136,7 +136,7 @@ function Labs() {
                 type: "lab",
               });
             }}
-            className="rounded-xl text-xl text-sand-12"
+            className="text-xl rounded-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
           </button>
@@ -203,7 +203,7 @@ function Labs() {
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:checklist-minimalistic-line-duotone"
-                className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
+                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
               >
                 Add Lab
               </Button>

@@ -2,7 +2,10 @@ import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import { type PaginationState, createColumnHelper } from "@tanstack/react-table";
+import {
+  type PaginationState,
+  createColumnHelper,
+} from "@tanstack/react-table";
 import LabLayout from "~/Layout/LabLayout";
 import dayjs from "dayjs";
 

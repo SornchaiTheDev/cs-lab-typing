@@ -4,7 +4,10 @@ import InsideTaskLayout from "~/Layout/InsideTaskLayout";
 import { useSession } from "next-auth/react";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
-import { PaginationState, createColumnHelper } from "@tanstack/react-table";
+import {
+  type PaginationState,
+  createColumnHelper,
+} from "@tanstack/react-table";
 import dayjs from "dayjs";
 
 interface HistoryRow {

@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react";
 import {
   type ColumnDef,
   createColumnHelper,
-  PaginationState,
+  type PaginationState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import Forms from "~/components/Forms";
@@ -106,7 +106,7 @@ function Semesters() {
                 type: "semester",
               })
             }
-            className="rounded-xl text-xl text-sand-12"
+            className="text-xl rounded-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -166,7 +166,7 @@ function Semesters() {
             <Button
               onClick={() => setIsModalOpen(true)}
               icon="solar:calendar-line-duotone"
-              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+              className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
             >
               Add Semester
             </Button>
