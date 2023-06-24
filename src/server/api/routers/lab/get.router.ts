@@ -8,41 +8,30 @@ import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const getLabRouter = router({
-  getLabPagination: TaAboveProcedure.input(
+  getAllLabInCourse: TaAboveProcedure.input(
     z.object({
-      page: z.number().default(1),
-      limit: z.number().default(10),
       courseId: z.string(),
     })
   ).query(async ({ ctx, input }) => {
-    const { page, limit, courseId } = input;
+    const { courseId } = input;
     try {
-      const [labs, amount] = await ctx.prisma.$transaction([
-        ctx.prisma.labs.findMany({
-          where: {
-            deleted_at: null,
-            courseId: parseInt(courseId),
-          },
-          skip: page * limit,
-          take: limit,
-          include: {
-            sections: true,
-            tags: {
-              select: {
-                name: true,
-              },
+      const labs = await ctx.prisma.labs.findMany({
+        where: {
+          deleted_at: null,
+          courseId: parseInt(courseId),
+        },
+
+        include: {
+          sections: true,
+          tags: {
+            select: {
+              name: true,
             },
           },
-        }),
-        ctx.prisma.labs.count({
-          where: {
-            deleted_at: null,
-            courseId: parseInt(courseId),
-          },
-        }),
-      ]);
+        },
+      });
 
-      return { labs, pageCount: Math.ceil(amount / limit) };
+      return labs;
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",

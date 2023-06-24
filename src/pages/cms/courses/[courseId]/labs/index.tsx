@@ -2,11 +2,7 @@ import CourseLayout from "~/Layout/CourseLayout";
 import Table from "~/components/Common/Table";
 import { AddLabSchema, type TAddLabSchema } from "~/forms/LabSchema";
 import { Icon } from "@iconify/react";
-import {
-  type ColumnDef,
-  createColumnHelper,
-  type PaginationState,
-} from "@tanstack/react-table";
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -50,17 +46,8 @@ function Labs() {
 
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
-  const { pageIndex, pageSize } = pagination;
-
-  const allLabs = trpc.labs.getLabPagination.useQuery(
+  const allLabs = trpc.labs.getAllLabInCourse.useQuery(
     {
-      page: pageIndex,
-      limit: pageSize,
       courseId: courseId as string,
     },
     {
@@ -191,13 +178,7 @@ function Labs() {
         title={course.data?.name as string}
         isLoading={course.isLoading}
       >
-        <Table
-          data={allLabs.data?.labs ?? []}
-          pageCount={allLabs.data?.pageCount}
-          columns={columns}
-          {...{ pagination }}
-          onPaginationChange={setPagination}
-        >
+        <Table data={allLabs.data ?? []} columns={columns}>
           {isTeacher && (
             <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
               <Button
