@@ -63,11 +63,6 @@ export const getLabRouter = router({
           include: {
             tags: true,
             tasks: true,
-            history: {
-              include: {
-                user: true,
-              },
-            },
           },
         });
 
