@@ -16,15 +16,66 @@ export const getAuthLoggerRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit, date } = input;
       try {
-        const authLogger = await ctx.prisma.auth_loggers.findMany({
+        const [authLogger, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.auth_loggers.findMany({
+            where: {
+              date: {
+                lte: date.to,
+                gte: date.from,
+              },
+            },
+            skip: page * limit,
+            take: limit,
+            select: {
+              date: true,
+              ip_address: true,
+              type: true,
+              user: {
+                select: {
+                  email: true,
+                  student_id: true,
+                },
+              },
+            },
+          }),
+          ctx.prisma.auth_loggers.count({
+            where: {
+              date: {
+                lte: date.to,
+                gte: date.from,
+              },
+            },
+          }),
+        ]);
+
+        return { authLogger, pageCount: Math.ceil(amount / limit) };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+  exportAuthLoggerCSV: adminProcedure
+    .input(
+      z.object({
+        date: z.object({
+          from: z.union([z.date(), z.undefined()]),
+          to: z.union([z.date(), z.undefined()]).optional(),
+        }),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { date } = input;
+
+      try {
+        const labLoggers = await ctx.prisma.auth_loggers.findMany({
           where: {
             date: {
               lte: date.to,
               gte: date.from,
             },
           },
-          skip: (page - 1) * limit,
-          take: limit,
           select: {
             date: true,
             ip_address: true,
@@ -38,7 +89,7 @@ export const getAuthLoggerRouter = router({
           },
         });
 
-        return authLogger;
+        return labLoggers;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

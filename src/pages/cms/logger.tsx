@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Layout from "~/Layout";
 import Table from "~/components/Common/Table";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import clsx from "clsx";
 import TimePickerRange from "~/components/TimePickerRange";
 import { Icon } from "@iconify/react";
@@ -42,9 +42,15 @@ function Logger() {
     to: new Date(today.setHours(23, 59, 59, 999)),
   });
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { pageIndex, pageSize } = pagination;
   const authLogs = trpc.loggers.getAuthLog.useQuery({
-    limit: 50,
-    page: 1,
+    page: pageIndex,
+    limit: pageSize,
     date: dateRange,
   });
 
@@ -77,9 +83,18 @@ function Logger() {
     []
   );
 
+  const authLogsCSV = trpc.loggers.exportAuthLoggerCSV.useQuery(
+    {
+      date: dateRange,
+    },
+    {
+      enabled: !!dateRange,
+    }
+  );
+
   const exportCSV = () => {
     let csvString = "Type,Date,Email / Username,IP Address\n";
-    authLogs.data?.forEach((log) => {
+    authLogsCSV.data?.forEach((log) => {
       csvString += `${log.type},${dayjs(log.date).format(
         "DD/MM/YYYY HH:mm:ss"
       )},${log.user.email},${log.ip_address}\n`;
@@ -105,9 +120,12 @@ function Logger() {
     <Layout title="Logger">
       <Table
         isLoading={authLogs.isLoading}
-        data={authLogs.data ?? []}
+        data={authLogs.data?.authLogger ?? []}
         columns={columns}
         defaultSortingState={{ id: "date", desc: true }}
+        pageCount={authLogs.data?.pageCount ?? 0}
+        onPaginationChange={setPagination}
+        {...{ pagination }}
       >
         <div className="flex justify-end p-2 ">
           <button
