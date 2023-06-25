@@ -3,12 +3,17 @@ import { useRouter } from "next/router";
 import { AddCourseSchema, type TAddCourse } from "~/forms/CourseSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
-import { getHighestRole, trpc } from "~/helpers";
+import { getHighestRole, transformer, trpc } from "~/helpers";
 import Forms from "~/components/Forms";
 import { useDeleteAffectStore } from "~/store";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import { useSession } from "next-auth/react";
+import type { GetServerSideProps } from "next";
+import { getServerAuthSession } from "~/server/auth";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { appRouter } from "~/server/api/root";
+import { createInnerTRPCContext } from "~/server/context";
 
 function Settings() {
   const { data: session } = useSession();
@@ -127,7 +132,7 @@ function Settings() {
                   })
                 }
                 icon="solar:trash-bin-minimalistic-line-duotone"
-                className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-1/3"
+                className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-1/3"
               >
                 Delete Course
               </Button>
@@ -140,3 +145,40 @@ function Settings() {
 }
 
 export default Settings;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const session = await getServerAuthSession({ req, res });
+  const ip = req.headers["x-forwarded-for"] as string;
+  const trpc = createServerSideHelpers({
+    router: appRouter,
+    ctx: createInnerTRPCContext({ session, ip }), // eslint here
+    transformer,
+  });
+  const { courseId } = query;
+
+  const role = getHighestRole(session?.user?.roles);
+
+  if (role === "STUDENT" || !courseId) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const course = await trpc.courses.getCourseById.fetch({
+    id: courseId as string,
+  });
+
+  if (!course) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {},
+  };
+};

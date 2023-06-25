@@ -259,13 +259,13 @@ export const getSectionsRouter = router({
     }),
 
   getSectionObjectRelation: teacherAboveProcedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
-            name,
+            id,
           },
           include: {
             labs: true,

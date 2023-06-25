@@ -57,7 +57,7 @@ function DeleteAffect({ type }: Props) {
 
     const fetchSectionData = async () => {
       const data = await ctx.sections.getSectionObjectRelation.fetch({
-        name: selectedObject?.selected.display as string,
+        id: selectedObject?.selected.id as number,
       });
       setFetchData(data);
     };
@@ -161,7 +161,7 @@ function DeleteAffect({ type }: Props) {
     if (!selectedObject) return;
     try {
       await deleteSection.mutateAsync({
-        name: selectedObject.selected.display,
+        id: selectedObject.selected.id,
       });
 
       callToast({ msg: "Delete Section successfully", type: "success" });
@@ -254,7 +254,7 @@ function DeleteAffect({ type }: Props) {
     if (items.length === 0) return null;
 
     return (
-      <ul className="list-disc pl-8">
+      <ul className="pl-8 list-disc">
         {items.map((item, index) => (
           <ListItem key={index} name={item.name} data={item.data} />
         ))}
@@ -292,7 +292,7 @@ function DeleteAffect({ type }: Props) {
       <div className="flex-1 overflow-auto">
         <div className="overflow-auto whitespace-nowrap">
           <h3 className="mt-2 text-lg font-bold">Summary</h3>
-          <ul className="list-inside list-disc">
+          <ul className="list-disc list-inside">
             {fetchData?.summary.map(({ name, amount }) => (
               <li key={name}>
                 {name} : {amount}
@@ -301,26 +301,26 @@ function DeleteAffect({ type }: Props) {
           </ul>
           <h3 className="mt-2 text-lg font-bold">Objects</h3>
           {!!fetchData?.object && (
-            <ul className="list-inside list-disc">
+            <ul className="list-disc list-inside">
               <RecursiveList items={fetchData?.object} />
             </ul>
           )}
         </div>
       </div>
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="flex flex-col gap-2 mt-4">
         <input
           value={confirmMsg}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setConfirmMsg(e.target.value)
           }
-          className="w-full rounded-md border border-sand-6 bg-sand-1 p-2 outline-none"
+          className="w-full p-2 border rounded-md outline-none border-sand-6 bg-sand-1"
           placeholder={`Type "${selectedObject?.selected.display}" to confirm`}
         />
 
         <Button
           disabled={confirmMsg !== selectedObject?.selected.display}
           onClick={handleDelete}
-          className="w-full bg-red-9 font-bold text-sand-2 hover:bg-red-10"
+          className="w-full font-bold bg-red-9 text-sand-2 hover:bg-red-10"
         >
           Delete
         </Button>

@@ -6,16 +6,16 @@ export const deleteSectionsRouter = router({
   deleteSection: teacherAboveProcedure
     .input(
       z.object({
-        name: z.string(),
+        id: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
       const requester = ctx.user.full_name;
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
-            name,
+            id,
           },
           include: {
             created_by: true,
@@ -27,7 +27,7 @@ export const deleteSectionsRouter = router({
 
         await ctx.prisma.sections.delete({
           where: {
-            name,
+            id,
           },
         });
 

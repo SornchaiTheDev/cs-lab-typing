@@ -7,10 +7,10 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // uses connection pooling
+  directUrl = env("DIRECT_URL") // uses a direct connection
+  // shadowDatabaseUrl = env("DIRECT_URL") // used for migrations
 }
 
 enum roles {
@@ -105,7 +105,7 @@ model sections {
   semester_id   Int
   course        courses             @relation(fields: [course_id], references: [id])
   course_id     Int
-  name          String              @unique
+  name          String
   labs_order    Int[]
   labs          labs[]              @relation("section_lab")
   instructors   users[]             @relation("section_instructor")
@@ -121,6 +121,8 @@ model sections {
   created_at    DateTime            @default(now())
   updated_at    DateTime?           @updatedAt
   deleted_at    DateTime?
+
+  @@unique([semester_id, course_id, name])
 }
 
 model section_histories {
