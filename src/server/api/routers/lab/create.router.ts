@@ -1,11 +1,11 @@
-import { router, teacherProcedure } from "~/server/api/trpc";
+import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { AddLabSchema } from "~/forms/LabSchema";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const createLabRouter = router({
-  createLab: teacherProcedure
+  createLab: teacherAboveProcedure
     .input(AddLabSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { isDisabled, name, tags, courseId } = input;

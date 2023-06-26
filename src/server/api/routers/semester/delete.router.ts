@@ -22,6 +22,7 @@ export const deleteSemesterRouter = router({
             },
           },
         });
+
         return "Success";
       } catch (err) {
         throw new TRPCError({

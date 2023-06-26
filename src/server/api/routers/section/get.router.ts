@@ -66,7 +66,7 @@ export const getSectionsRouter = router({
     }
   }),
 
-  getStudentPagination: teacherProcedure
+  getStudentPagination: teacherAboveProcedure
     .input(
       z.object({
         sectionId: z.string(),
