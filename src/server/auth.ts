@@ -99,6 +99,7 @@ export const authOptions: NextAuthOptions = {
                   email: profile.email,
                 },
               });
+
               if (user?.deleted_at === null) {
                 return true;
               }

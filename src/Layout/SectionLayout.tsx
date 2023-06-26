@@ -26,8 +26,6 @@ function SectionLayout({ title, children, isLoading }: Props) {
     },
   ];
 
-  const adminMenus = [...menus];
-
   const teacherMenus = [...menus];
 
   teacherMenus.splice(2, 0, { name: "Status", path: "status" });
@@ -50,7 +48,7 @@ function SectionLayout({ title, children, isLoading }: Props) {
     >
       <HorizontalMenu
         basePath="/cms/courses/[courseId]/sections/[sectionId]"
-        menus={isAdmin ? adminMenus : isTeacher ? teacherMenus : taMenus}
+        menus={isAdmin || isTeacher ? teacherMenus : taMenus}
       />
       {children}
     </Layout>

@@ -21,5 +21,5 @@ export const createTrpcHelper = async ({
     ctx: createInnerTRPCContext({ session, ip }),
     transformer,
   });
-  return { helper, role };
+  return { helper, user: { ...session?.user, role } };
 };
