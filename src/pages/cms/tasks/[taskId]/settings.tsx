@@ -83,7 +83,7 @@ function Settings() {
         canAccessToSettings={isOwner || isAdmin}
         canAccessToHistory={isNotStudent}
       >
-        <div className="w-1/2 p-4">
+        <div className="md:w-1/2 p-4">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
             <hr className="my-2" />
@@ -92,7 +92,7 @@ function Settings() {
               confirmBtn={{
                 title: "Edit Task",
                 icon: "solar:programming-line-duotone",
-                className: "w-1/3 py-2",
+                className: "md:w-1/3 py-2",
               }}
               schema={AddTaskSchema}
               onSubmit={editTask}
@@ -164,7 +164,7 @@ function Settings() {
               <Button
                 onClick={handleDelete}
                 icon="solar:trash-bin-minimalistic-line-duotone"
-                className="bg-red-9 text-sand-1 shadow active:bg-red-11"
+                className="bg-red-9 text-sand-1 w-full md:w-fit shadow active:bg-red-11"
               >
                 Delete Task
               </Button>

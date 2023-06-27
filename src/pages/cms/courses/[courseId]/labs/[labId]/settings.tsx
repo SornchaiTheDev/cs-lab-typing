@@ -68,7 +68,7 @@ function Settings() {
         isLoading={lab.isLoading}
         canAccessToSuperUserMenus={!isStudent}
       >
-        <div className="w-1/2 p-4">
+        <div className="md:w-1/2 p-4">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
             <hr className="my-2" />
@@ -120,7 +120,7 @@ function Settings() {
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="bg-red-9 text-sand-1 shadow active:bg-red-11"
+              className="bg-red-9 text-sand-1 w-full md:w-fit shadow active:bg-red-11"
             >
               Delete Lab
             </Button>

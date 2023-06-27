@@ -131,7 +131,7 @@ function Settings() {
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="bg-red-9 text-sand-1 shadow active:bg-red-11"
+              className="bg-red-9 text-sand-1 w-full md:w-fit shadow active:bg-red-11"
             >
               Delete Section
             </Button>

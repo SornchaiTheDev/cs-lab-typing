@@ -57,7 +57,7 @@ function Layout({
       />
 
       <div className="flex min-h-screen flex-col">
-        <div className="roboto container mx-auto flex max-w-6xl flex-1 flex-col p-4 lg:p-0">
+        <div className="roboto container mx-auto flex max-w-6xl flex-1 flex-col p-4 xl:p-0">
           <div className="mt-10 flex justify-between">
             <div className="flex-1">
               {!isBasePath && <BackArrow customPath={customBackPath} />}
