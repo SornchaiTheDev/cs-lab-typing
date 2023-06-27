@@ -30,6 +30,8 @@ function Settings() {
   // const isTeacher = session?.user?.roles.includes("TEACHER");
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
   const isOwner = task.data?.owner.full_name === session?.user?.full_name;
+  const isTeacher = session?.user?.roles.includes("TEACHER") ?? false;
+  const isNotStudent = isAdmin || isTeacher || isOwner;
   const canEdit = isOwner;
   const canDelete = isOwner || isAdmin;
 
@@ -79,6 +81,7 @@ function Settings() {
         title={task.data?.name as string}
         isLoading={task.isLoading}
         canAccessToSettings={isOwner || isAdmin}
+        canAccessToHistory={isNotStudent}
       >
         <div className="w-1/2 p-4">
           <div className="w-full">

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
-import { trpc } from "~/helpers";
+import { getHighestRole, trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import {
   type PaginationState,
@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import LabLayout from "~/Layout/LabLayout";
 import dayjs from "dayjs";
+import { useSession } from "next-auth/react";
 
 interface HistoryRow {
   action: string;
@@ -19,6 +20,7 @@ interface HistoryRow {
 
 function LabHistory() {
   const router = useRouter();
+  const { data: session } = useSession();
   const labId = router.query.labId as string;
 
   const lab = trpc.labs.getLabById.useQuery(
@@ -70,8 +72,15 @@ function LabHistory() {
     [columnHelper]
   );
 
+  const role = getHighestRole(session?.user?.roles);
+  const isStudent = role === "STUDENT";
+
   return (
-    <LabLayout title={lab.data?.name as string} isLoading={lab.isLoading}>
+    <LabLayout
+      title={lab.data?.name as string}
+      isLoading={lab.isLoading}
+      canAccessToSuperUserMenus={!isStudent}
+    >
       <Table
         data={history.data?.labHistory ?? []}
         pageCount={history.data?.pageCount ?? 0}

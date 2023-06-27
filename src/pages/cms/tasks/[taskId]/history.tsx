@@ -50,6 +50,8 @@ function TaskHistory() {
 
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
   const isOwner = task.data?.owner.full_name === session?.user?.full_name;
+  const isTeacher = session?.user?.roles.includes("TEACHER") ?? false;
+  const isNotStudent = isAdmin || isTeacher || isOwner;
 
   const columnHelper = createColumnHelper<HistoryRow>();
 
@@ -80,6 +82,7 @@ function TaskHistory() {
       title={task.data?.name ?? ""}
       isLoading={task.isLoading}
       canAccessToSettings={isAdmin || isOwner}
+      canAccessToHistory={isNotStudent}
     >
       <Table
         data={history.data?.taskHistory ?? []}

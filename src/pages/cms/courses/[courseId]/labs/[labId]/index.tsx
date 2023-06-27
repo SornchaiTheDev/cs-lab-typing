@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { convertToThousand, trpc } from "~/helpers";
+import { convertToThousand, getHighestRole, trpc } from "~/helpers";
 import { useSession } from "next-auth/react";
 import type { tasks } from "@prisma/client";
 import { TRPCClientError } from "@trpc/client";
@@ -333,6 +333,9 @@ function Lab() {
   };
 
   const [isShow, setIsShow] = useState(false);
+
+  const role = getHighestRole(session?.user?.roles);
+  const isStudent = role === "STUDENT";
   return (
     <>
       {isShow && (
@@ -342,7 +345,11 @@ function Lab() {
           labId={labId as string}
         />
       )}
-      <LabLayout title={lab.data?.name as string} isLoading={lab.isLoading}>
+      <LabLayout
+        title={lab.data?.name as string}
+        isLoading={lab.isLoading}
+        canAccessToSuperUserMenus={!isStudent}
+      >
         <Table
           data={tableData}
           columns={isTeacher ? teacherColumns : adminColumns}

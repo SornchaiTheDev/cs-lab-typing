@@ -72,33 +72,31 @@ export const getTaskRouter = router({
         });
       }
     }),
-  getTaskById: teacherAboveProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { id } = input;
-      const _id = parseInt(id);
-      try {
-        const task = await ctx.prisma.tasks.findUnique({
-          where: {
-            id: _id,
-          },
-          include: {
-            tags: true,
-            owner: true,
-          },
-        });
-        return task;
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
-      }
-    }),
+  getTaskById: TaAboveProcedure.input(
+    z.object({
+      id: z.string(),
+    })
+  ).query(async ({ ctx, input }) => {
+    const { id } = input;
+    const _id = parseInt(id);
+    try {
+      const task = await ctx.prisma.tasks.findUnique({
+        where: {
+          id: _id,
+        },
+        include: {
+          tags: true,
+          owner: true,
+        },
+      });
+      return task;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
   getTaskHistoryPagination: teacherAboveProcedure
     .input(
       z.object({

@@ -3,7 +3,7 @@ import { AddLabSchema, type TAddLabSchema } from "~/forms/LabSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import Forms from "~/components/Forms";
-import { trpc } from "~/helpers";
+import { getHighestRole, trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
@@ -57,10 +57,17 @@ function Settings() {
     }
   };
 
+  const role = getHighestRole(session?.user?.roles);
+  const isStudent = role === "STUDENT";
+
   return (
     <>
       {selectedObj && <DeleteAffect type="lab-inside" />}
-      <LabLayout title={lab.data?.name as string} isLoading={lab.isLoading}>
+      <LabLayout
+        title={lab.data?.name as string}
+        isLoading={lab.isLoading}
+        canAccessToSuperUserMenus={!isStudent}
+      >
         <div className="w-1/2 p-4">
           <div className="w-full">
             <h4 className="text-xl">General</h4>

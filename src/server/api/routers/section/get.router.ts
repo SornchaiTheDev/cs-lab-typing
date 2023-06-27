@@ -30,7 +30,15 @@ export const getSectionsRouter = router({
     })
   ).query(async ({ ctx, input }) => {
     const { id } = input;
+
+    if (/^\d+$/.test(id) === false) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
     const _id = parseInt(id);
+
     try {
       const section = await ctx.prisma.sections.findUnique({
         where: {

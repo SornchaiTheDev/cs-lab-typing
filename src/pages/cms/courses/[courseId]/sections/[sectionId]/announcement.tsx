@@ -61,11 +61,9 @@ export const getServerSideProps: GetServerSideProps = async ({
     }
   } catch (err) {
     if (err instanceof TRPCError) {
-      if (err.code === "UNAUTHORIZED") {
-        return {
-          notFound: true,
-        };
-      }
+      return {
+        notFound: true,
+      };
     }
   }
 

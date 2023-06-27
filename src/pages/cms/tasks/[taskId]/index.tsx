@@ -26,7 +26,9 @@ function TypingTask() {
   const saveTask = trpc.tasks.setTaskBody.useMutation();
 
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
+  const isTeacher = session?.user?.roles.includes("TEACHER") ?? false;
   const isOwner = task.data?.owner.full_name === session?.user?.full_name;
+  const isNotStudent = isAdmin || isTeacher || isOwner;
 
   const isAlreadySave = task.data?.body === text;
 
@@ -94,6 +96,7 @@ function TypingTask() {
       title={task.data?.name ?? ""}
       isLoading={task.isLoading}
       canAccessToSettings={isOwner || isAdmin}
+      canAccessToHistory={isNotStudent}
     >
       <div className="mt-4 flex justify-between">
         <div>
@@ -129,14 +132,16 @@ function TypingTask() {
           >
             Try it out
           </Button>
-          <Button
-            onClick={handleCloneTask}
-            isLoading={cloneTask.isLoading}
-            className="h-fit w-fit rounded bg-sand-12 px-4 text-sm text-sand-1 active:bg-sand-11"
-            icon="solar:clipboard-check-line-duotone"
-          >
-            Clone
-          </Button>
+          {isNotStudent && (
+            <Button
+              onClick={handleCloneTask}
+              isLoading={cloneTask.isLoading}
+              className="h-fit w-fit rounded bg-sand-12 px-4 text-sm text-sand-1 active:bg-sand-11"
+              icon="solar:clipboard-check-line-duotone"
+            >
+              Clone
+            </Button>
+          )}
         </div>
       </div>
 

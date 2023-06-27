@@ -7,6 +7,7 @@ interface Props {
   children?: ReactNode;
   isLoading?: boolean;
   canAccessToSettings: boolean;
+  canAccessToHistory: boolean;
 }
 
 function InsideTaskLayout({
@@ -14,11 +15,13 @@ function InsideTaskLayout({
   children,
   isLoading,
   canAccessToSettings,
+  canAccessToHistory,
 }: Props) {
-  const menus = [
-    { name: "Task", path: "" },
-    { name: "History", path: "history" },
-  ];
+  const menus = [{ name: "Task", path: "" }];
+
+  if (canAccessToHistory) {
+    menus.splice(1, 0, { name: "History", path: "history" });
+  }
 
   return (
     <Layout {...{ title, isLoading }}>
