@@ -15,6 +15,9 @@ import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
 import Select from "~/components/Forms/Select";
 import Alert from "~/components/Common/Alert";
+import { TRPCError } from "@trpc/server";
+import type { GetServerSideProps } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 
 interface AddLabModalProps {
   onClose: () => void;
@@ -96,7 +99,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
       title="Add Labs to Section"
       className="flex h-[90%] max-h-[90%] max-w-[60rem] flex-col gap-2 overflow-y-auto"
     >
-      <div className="grid grid-cols-12 gap-4 px-2 py-4 overflow-y-auto">
+      <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
         {labs.isLoading
           ? new Array(6)
               .fill(0)
@@ -136,7 +139,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
                       {tags.map(({ name }) => (
                         <div
                           key={name}
-                          className="px-2 text-white rounded-lg w-fit bg-lime-9"
+                          className="w-fit rounded-lg bg-lime-9 px-2 text-white"
                         >
                           {name}
                         </div>
@@ -258,7 +261,7 @@ function LabSet() {
         cell: (props) => (
           <button
             onClick={() => setSelectedLab(props.row.original.id)}
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
           </button>
@@ -314,7 +317,7 @@ function LabSet() {
             <Button
               onClick={() => setIsShow(true)}
               icon="solar:checklist-minimalistic-line-duotone"
-              className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add Lab
             </Button>
@@ -322,7 +325,7 @@ function LabSet() {
               <Button
                 onClick={handleOnSave}
                 icon="solar:diskette-line-duotone"
-                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
               >
                 Save
               </Button>
@@ -335,3 +338,50 @@ function LabSet() {
 }
 
 export default LabSet;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { helper, user } = await createTrpcHelper({ req, res });
+  const { role, full_name } = user;
+  const { courseId, sectionId } = query;
+
+  if (role === "STUDENT" || !courseId) {
+    return {
+      notFound: true,
+    };
+  }
+
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+    const section = await helper.sections.getSectionById.fetch({
+      id: sectionId as string,
+    });
+
+    if (
+      !section?.instructors
+        .map((user) => user.full_name)
+        .includes(full_name as string)
+    ) {
+      return {
+        notFound: true,
+      };
+    }
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.code === "UNAUTHORIZED") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+};

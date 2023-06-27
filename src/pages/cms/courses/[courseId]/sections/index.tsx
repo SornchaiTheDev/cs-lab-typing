@@ -9,6 +9,9 @@ import { trpc } from "~/helpers";
 import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
+import type { GetServerSideProps } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 function Sections() {
   const router = useRouter();
@@ -157,3 +160,37 @@ function Sections() {
 }
 
 export default Sections;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { helper, user } = await createTrpcHelper({ req, res });
+  const { role } = user;
+  const { courseId } = query;
+
+  if (role === "STUDENT" || !courseId) {
+    return {
+      notFound: true,
+    };
+  }
+
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.code === "UNAUTHORIZED") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+};

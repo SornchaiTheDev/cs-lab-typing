@@ -11,10 +11,13 @@ import dayjs from "dayjs";
 import SectionLayout from "~/Layout/SectionLayout";
 import { useRouter } from "next/router";
 import type { lab_loggers } from "@prisma/client";
+import type { GetServerSideProps } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 const Type = ({ type }: { type: string }) => {
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex w-full justify-center">
       <button
         className={clsx(
           "rounded-md px-2 text-sm font-medium",
@@ -161,7 +164,7 @@ function Logger() {
         <div className="flex justify-end p-2 ">
           <button
             onClick={exportCSV}
-            className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+            className="flex items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV
@@ -186,3 +189,50 @@ function Logger() {
 }
 
 export default Logger;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { helper, user } = await createTrpcHelper({ req, res });
+  const { role, full_name } = user;
+  const { courseId, sectionId } = query;
+
+  if (role === "STUDENT" || !courseId) {
+    return {
+      notFound: true,
+    };
+  }
+
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+    const section = await helper.sections.getSectionById.fetch({
+      id: sectionId as string,
+    });
+
+    if (
+      !section?.instructors
+        .map((user) => user.full_name)
+        .includes(full_name as string)
+    ) {
+      return {
+        notFound: true,
+      };
+    }
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.code === "UNAUTHORIZED") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+};

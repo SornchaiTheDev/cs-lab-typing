@@ -5,6 +5,8 @@ import {
   createColumnHelper,
 } from "@tanstack/react-table";
 import { TRPCClientError } from "@trpc/client";
+import { TRPCError } from "@trpc/server";
+import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React, { useMemo, useState } from "react";
 import SectionLayout from "~/Layout/SectionLayout";
@@ -13,6 +15,7 @@ import Button from "~/components/Common/Button";
 import Table from "~/components/Common/Table";
 import AddUser from "~/features/Users/AddUserToSection";
 import { sanitizeFilename, trpc } from "~/helpers";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { callToast } from "~/services/callToast";
 
 function Students() {
@@ -86,7 +89,7 @@ function Students() {
         cell: (props) => (
           <button
             onClick={() => setSelectedUser(props.row.original.student_id)}
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-trash-line-duotone" />
           </button>
@@ -140,7 +143,7 @@ function Students() {
             <Button
               onClick={exportCSV}
               icon="solar:document-text-line-duotone"
-              className="p-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
             >
               Export as CSV
             </Button>
@@ -152,3 +155,50 @@ function Students() {
 }
 
 export default Students;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { helper, user } = await createTrpcHelper({ req, res });
+  const { role, full_name } = user;
+  const { courseId, sectionId } = query;
+
+  if (role === "STUDENT" || !courseId) {
+    return {
+      notFound: true,
+    };
+  }
+
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+    const section = await helper.sections.getSectionById.fetch({
+      id: sectionId as string,
+    });
+
+    if (
+      !section?.instructors
+        .map((user) => user.full_name)
+        .includes(full_name as string)
+    ) {
+      return {
+        notFound: true,
+      };
+    }
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.code === "UNAUTHORIZED") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+};

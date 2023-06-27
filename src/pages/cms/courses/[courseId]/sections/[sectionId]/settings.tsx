@@ -8,6 +8,9 @@ import { useRouter } from "next/router";
 import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
 import { callToast } from "~/services/callToast";
+import type { GetServerSideProps } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 function Settings() {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -140,3 +143,50 @@ function Settings() {
 }
 
 export default Settings;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { helper, user } = await createTrpcHelper({ req, res });
+  const { role, full_name } = user;
+  const { courseId, sectionId } = query;
+
+  if (role === "STUDENT" || !courseId) {
+    return {
+      notFound: true,
+    };
+  }
+
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+    const section = await helper.sections.getSectionById.fetch({
+      id: sectionId as string,
+    });
+
+    if (
+      !section?.instructors
+        .map((user) => user.full_name)
+        .includes(full_name as string)
+    ) {
+      return {
+        notFound: true,
+      };
+    }
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.code === "UNAUTHORIZED") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+};

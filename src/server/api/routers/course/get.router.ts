@@ -1,4 +1,8 @@
-import { adminProcedure, router, teacherAboveProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  router,
+  teacherAboveProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import { getHighestRole } from "~/helpers";
 import { getAdminCourses } from "./roles/getAdminCourses";
@@ -63,10 +67,18 @@ export const getCourseRouter = router({
           },
         });
         if (!course) {
-          return null;
+          throw new Error("UNAUTHORIZED");
         }
         return course;
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

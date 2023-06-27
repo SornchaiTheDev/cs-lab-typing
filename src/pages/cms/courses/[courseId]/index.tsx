@@ -4,8 +4,9 @@ import CourseLayout from "~/Layout/CourseLayout";
 import { Icon } from "@iconify/react";
 import Badge from "~/components/Common/Badge";
 import { trpc } from "~/helpers";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import Skeleton from "~/components/Common/Skeleton";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 function InCourse() {
   const router = useRouter();
@@ -86,8 +87,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   query,
 }) => {
   const { helper, user } = await createTrpcHelper({ req, res });
-  const { role, full_name } = user;
-
+  const { role } = user;
   const { courseId } = query;
 
   if (role === "STUDENT" || !courseId) {
@@ -95,15 +95,18 @@ export const getServerSideProps: GetServerSideProps = async ({
       notFound: true,
     };
   }
-
-  const course = await helper.courses.getCourseById.fetch({
-    id: courseId as string,
-  });
-
-  if (!course) {
-    return {
-      notFound: true,
-    };
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.code === "UNAUTHORIZED") {
+        return {
+          notFound: true,
+        };
+      }
+    }
   }
 
   return {
