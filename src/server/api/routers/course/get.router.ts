@@ -1,4 +1,5 @@
 import {
+  TaAboveProcedure,
   adminProcedure,
   router,
   teacherAboveProcedure,
@@ -42,7 +43,7 @@ export const getCourseRouter = router({
         });
       }
     }),
-  getCourseById: teacherAboveProcedure
+  getCourseById: TaAboveProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;

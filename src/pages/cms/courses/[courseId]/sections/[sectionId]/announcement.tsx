@@ -39,14 +39,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   query,
 }) => {
   const { helper, user } = await createTrpcHelper({ req, res });
-  const { role, full_name } = user;
+  const { full_name } = user;
   const { courseId, sectionId } = query;
-
-  if (role === "STUDENT" || !courseId) {
-    return {
-      notFound: true,
-    };
-  }
 
   try {
     await helper.courses.getCourseById.fetch({
