@@ -2,6 +2,7 @@ import type { submission_type } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, authedProcedure } from "~/server/api/trpc";
+import { getVerifyStatus } from "~/server/utils/verifyTurnstileToken";
 
 export const createFrontRouter = router({
   submitTyping: authedProcedure
@@ -15,6 +16,7 @@ export const createFrontRouter = router({
         startedAt: z.date(),
         endedAt: z.date(),
         percentError: z.number(),
+        token: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -27,7 +29,23 @@ export const createFrontRouter = router({
         startedAt,
         endedAt,
         percentError,
+        token,
       } = input;
+
+      try {
+        const status = await getVerifyStatus(token);
+        if (status === "FAILED") {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
+        }
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
 
       const _sectionId = parseInt(sectionId);
       const _labId = parseInt(labId);

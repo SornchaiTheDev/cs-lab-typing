@@ -10,7 +10,10 @@ import { useRouter } from "next/router";
 import LineChart from "./Datas/LineChart";
 import TypingTable from "./Datas/Table";
 
-function EndedGame() {
+interface Props {
+  token: string;
+}
+function EndedGame({ token }: Props) {
   const router = useRouter();
   const { sectionId, labId, taskId } = router.query;
 
@@ -54,6 +57,7 @@ function EndedGame() {
         percentError: errorPercentage,
         startedAt: startedAt as Date,
         endedAt: endedAt as Date,
+        token,
       });
       await typingHistories.refetch();
     };
