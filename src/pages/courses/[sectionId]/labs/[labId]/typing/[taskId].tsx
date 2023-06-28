@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import FrontLayout from "~/Layout/FrontLayout";
 import TypingGame from "~/components/Typing";
 import EndedGame from "~/components/Typing/EndedGame";
@@ -8,10 +8,13 @@ import { replaceSlugwithQueryPath, trpc } from "~/helpers";
 import Button from "~/components/Common/Button";
 import Skeleton from "~/components/Common/Skeleton";
 import History from "~/components/Typing/History";
-import { Turnstile } from "@marsidev/react-turnstile";
-import { env } from "~/env.mjs";
+import type { GetServerSideProps } from "next";
 
-function TypingTask() {
+interface Props {
+  csrfToken: string;
+}
+
+function TypingTask({ csrfToken }: Props) {
   const router = useRouter();
   const { taskId, labId, sectionId } = router.query;
   const taskIdInt = taskId as string;
@@ -44,14 +47,8 @@ function TypingTask() {
   const isHistoryPhase = status === "History";
   const isReadOnly = task.data?.labStatus === "READONLY";
 
-  const [token, setToken] = useState("");
-
   return (
     <>
-      <Turnstile
-        siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-        onSuccess={setToken}
-      />
       <FrontLayout
         title={task.data?.task?.name ?? ""}
         customBackPath={`/courses/${replaceSlugwithQueryPath(
@@ -107,7 +104,7 @@ function TypingTask() {
             ) : isTypingPhase ? (
               <TypingGame text={task.data?.task?.body ?? ""} />
             ) : isEndedPhase ? (
-              <EndedGame token={token} />
+              <EndedGame {...{ csrfToken }} />
             ) : (
               isHistoryPhase && <History />
             )}
@@ -119,3 +116,9 @@ function TypingTask() {
 }
 
 export default TypingTask;
+
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  const csrfToken = res.req.headers["x-csrf-token"] || "missing";
+
+  return { props: { csrfToken } };
+};

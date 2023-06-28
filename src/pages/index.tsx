@@ -2,6 +2,7 @@ import FrontLayout from "~/Layout/FrontLayout";
 import { trpc } from "~/helpers";
 import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";
+import { useTypingStore } from "~/store";
 
 function MyCourse() {
   const allSections = trpc.front.getSections.useQuery(undefined, {
@@ -17,6 +18,10 @@ function MyCourse() {
 
   return (
     <FrontLayout title="My Courses">
+      {/* <Turnstile
+        siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+        onSuccess={(token) => setToken({ token })}
+      /> */}
       {allSections.isLoading ? (
         <div className="my-4 grid grid-cols-12 gap-6">
           {new Array(3).fill(0).map((_, i) => (

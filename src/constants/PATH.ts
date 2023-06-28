@@ -6,6 +6,10 @@ interface IPATH {
 }
 
 export const PATH: IPATH[] = [
+  {
+    pathname: "/courses/:courseId/labs/:labId/typing/:taskId",
+    roles: ["ADMIN", "TEACHER", "STUDENT"],
+  },
   { pathname: "/cms", roles: ["ADMIN", "TEACHER"] },
   { pathname: "/cms/semesters", roles: ["ADMIN"] },
   { pathname: "/cms/logger", roles: ["ADMIN"] },

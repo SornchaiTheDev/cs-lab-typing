@@ -29,6 +29,7 @@ export const useTypingStore = create<TypingStore>((set) => ({
     startedAt: null,
     endedAt: null,
   },
+
   setStats: (stats) =>
     set((state) => ({ stats: { ...state.stats, ...stats } })),
   status: "NotStarted",

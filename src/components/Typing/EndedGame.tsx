@@ -9,12 +9,15 @@ import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import LineChart from "./Datas/LineChart";
 import TypingTable from "./Datas/Table";
+import { useSession } from "next-auth/react";
+import axios from "axios";
 
 interface Props {
-  token: string;
+  csrfToken: string;
 }
-function EndedGame({ token }: Props) {
+function EndedGame({ csrfToken }: Props) {
   const router = useRouter();
+  const { update } = useSession();
   const { sectionId, labId, taskId } = router.query;
 
   const typingHistories = trpc.front.getTypingHistory.useQuery(
@@ -42,13 +45,11 @@ function EndedGame({ token }: Props) {
   );
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
-  const submitTyping = trpc.front.submitTyping.useMutation();
 
   useEffect(() => {
     const saveTypingScore = async () => {
       if (!stats) return;
-
-      await submitTyping.mutateAsync({
+      await axios.post("/api/submitTyping", {
         sectionId: sectionId as string,
         labId: labId as string,
         taskId: taskId as string,
@@ -57,8 +58,9 @@ function EndedGame({ token }: Props) {
         percentError: errorPercentage,
         startedAt: startedAt as Date,
         endedAt: endedAt as Date,
-        token,
+        csrf_token: csrfToken,
       });
+
       await typingHistories.refetch();
     };
     saveTypingScore();
