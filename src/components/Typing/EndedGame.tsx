@@ -17,7 +17,7 @@ interface Props {
 }
 function EndedGame({ csrfToken }: Props) {
   const router = useRouter();
-  const { update } = useSession();
+
   const { sectionId, labId, taskId } = router.query;
 
   const typingHistories = trpc.front.getTypingHistory.useQuery(

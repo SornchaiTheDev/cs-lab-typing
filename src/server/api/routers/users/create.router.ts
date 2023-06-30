@@ -35,6 +35,14 @@ export const createUserRouter = router({
             }
           }
         } catch (err) {
+          if (err instanceof Error) {
+            if (err.message === "DUPLICATED_USER") {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "DUPLICATED_USER",
+              });
+            }
+          }
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "SOMETHING_WENT_WRONG",
@@ -42,7 +50,7 @@ export const createUserRouter = router({
         }
       } else {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: "BAD_REQUEST",
           message: "INVALID_INPUT",
         });
       }

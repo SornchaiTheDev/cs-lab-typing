@@ -18,12 +18,8 @@ function MyCourse() {
 
   return (
     <FrontLayout title="My Courses">
-      {/* <Turnstile
-        siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-        onSuccess={(token) => setToken({ token })}
-      /> */}
       {allSections.isLoading ? (
-        <div className="my-4 grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-6 my-4">
           {new Array(3).fill(0).map((_, i) => (
             <Skeleton
               key={i}
@@ -33,7 +29,7 @@ function MyCourse() {
           ))}
         </div>
       ) : (allSections.data?.length as number) > 0 ? (
-        <div className="my-4 grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-6 my-4">
           {allSections.data?.map(({ id, name, course }) => {
             const { name: courseName, number } = course;
             return (
@@ -59,7 +55,7 @@ function MyCourse() {
           <div className="mt-4">
             <Skeleton width="16rem" height="2rem" />
           </div>
-          <div className="my-4 grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-6 my-4">
             {new Array(3).fill(0).map((_, i) => (
               <Skeleton
                 key={i}
@@ -76,7 +72,7 @@ function MyCourse() {
               Teaching Assistant
             </h4>
           </div>
-          <div className="my-6 grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-6 my-6">
             {teachingAssistantSections.data?.map(({ id, name, course }) => {
               const { name: courseName, number, id: courseId } = course;
               return (

@@ -24,10 +24,15 @@ import { useDeleteAffectStore } from "~/store/deleteAffect";
 import { useDropzone } from "react-dropzone";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
+import { GetServerSideProps } from "next";
 
 dayjs.extend(relativeTime);
 
-function Admin() {
+interface Props {
+  csrfToken: string;
+}
+
+function Users({ csrfToken }: Props) {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -73,7 +78,7 @@ function Admin() {
                 type: getUserType(props.row.original),
               })
             }
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -222,7 +227,7 @@ function Admin() {
           onClick={handleAddUser}
           disabled={isSubmitting}
           icon="solar:user-plus-rounded-line-duotone"
-          className="shadow bg-sand-12 text-sand-1 active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
+          className="bg-sand-12 text-sand-1 shadow active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
         >
           Add User
         </Button>
@@ -241,7 +246,7 @@ function Admin() {
             <Button
               onClick={() => setIsShow(true)}
               icon="solar:user-plus-rounded-line-duotone"
-              className="m-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="m-2 bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add User
             </Button>
@@ -252,4 +257,10 @@ function Admin() {
   );
 }
 
-export default Admin;
+export default Users;
+
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  const csrfToken = res.req.headers["x-csrf-token"] || "missing";
+
+  return { props: { csrfToken } };
+};

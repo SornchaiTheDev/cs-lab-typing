@@ -12,8 +12,7 @@ interface Props {
   type:
     | "course"
     | "section"
-    | "task-outside"
-    | "task-inside"
+    | "task"
     | "lab"
     | "lab-outside"
     | "lab-inside"
@@ -209,13 +208,9 @@ function DeleteAffect({ type }: Props) {
         id: selectedObject.selected.id,
       });
 
-      if (type === "task-outside") {
-        await ctx.tasks.invalidate();
-      } else {
-        await router.replace({
-          pathname: "/cms/tasks",
-        });
-      }
+      await router.replace({
+        pathname: "/cms/tasks",
+      });
 
       callToast({ msg: "Delete Task successfully", type: "success" });
       setSelectedObject(null);

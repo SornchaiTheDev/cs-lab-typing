@@ -7,8 +7,6 @@ import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { trpc } from "~/helpers";
 import type { tags, users } from "@prisma/client";
-import { useDeleteAffectStore } from "~/store";
-import DeleteAffect from "~/components/DeleteAffect";
 import Button from "~/components/Common/Button";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
@@ -29,7 +27,6 @@ interface TaskRow {
 function Tasks() {
   const { data: session } = useSession();
   const router = useRouter();
-  const selectedObj = useDeleteAffectStore((state) => state.selectedObj);
 
   const [isShow, setIsShow] = useState(false);
 
@@ -128,7 +125,6 @@ function Tasks() {
 
   return (
     <>
-      {selectedObj && <DeleteAffect type="task-outside" />}
       <Modal
         isOpen={isShow}
         onClose={() => setIsShow(false)}
@@ -196,7 +192,7 @@ function Tasks() {
         <Table
           data={allTasks.data?.tasks ?? []}
           columns={columns}
-          className="mt-6 flex-1"
+          className="flex-1 mt-6"
           pageCount={allTasks.data?.pageCount ?? 0}
           onPaginationChange={setPagination}
           {...{ pagination }}
@@ -206,7 +202,7 @@ function Tasks() {
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:programming-line-duotone"
-                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
               >
                 Add Task
               </Button>

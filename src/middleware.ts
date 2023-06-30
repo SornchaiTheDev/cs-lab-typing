@@ -8,12 +8,22 @@ const csrfProtect = csrf({
   cookie: {
     name: "token",
     secure: process.env.NODE_ENV === "production",
+    maxAge: 10,
   },
 });
 
 export default withAuth(
   async function middleware(request: NextRequestWithAuth) {
+    const { nextUrl } = request;
     const response = NextResponse.next();
+
+    const matching = match("/courses/:courseId/labs/:labId/typing/:taskId", {
+      decode: decodeURIComponent,
+    });
+    const isMatch = matching(nextUrl.pathname);
+    const isNotSubmitTyping = nextUrl.pathname !== "/api/submitTyping";
+    if (!isMatch && isNotSubmitTyping) return response;
+
     // csrf protection
     const csrfError = await csrfProtect(request, response);
 

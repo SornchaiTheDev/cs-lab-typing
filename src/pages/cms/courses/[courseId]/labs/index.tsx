@@ -120,7 +120,7 @@ function Labs() {
                   display: props.row.original.name,
                   id: props.row.original.id,
                 },
-                type: "lab",
+                type: "lab-outside",
               });
             }}
             className="text-xl rounded-xl text-sand-12"

@@ -1,5 +1,4 @@
 import { Prisma, type PrismaClient } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
 
 export const addStudent = async (prisma: PrismaClient, user: string) => {
   const [student_id, email, full_name] = user.split(",");
@@ -18,11 +17,7 @@ export const addStudent = async (prisma: PrismaClient, user: string) => {
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "DUPLICATED_USER",
-          cause: "DUPLICATED_USER",
-        });
+        throw new Error("DUPLICATED_USER");
       }
     }
   }

@@ -76,14 +76,14 @@ function Settings() {
 
   return (
     <>
-      {selectedObj && <DeleteAffect type="task-inside" />}
+      {selectedObj && <DeleteAffect type="task" />}
       <InsideTaskLayout
         title={task.data?.name as string}
         isLoading={task.isLoading}
         canAccessToSettings={isOwner || isAdmin}
         canAccessToHistory={isNotStudent}
       >
-        <div className="md:w-1/2 p-4">
+        <div className="p-4 md:w-1/2">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
             <hr className="my-2" />
@@ -164,7 +164,7 @@ function Settings() {
               <Button
                 onClick={handleDelete}
                 icon="solar:trash-bin-minimalistic-line-duotone"
-                className="bg-red-9 text-sand-1 w-full md:w-fit shadow active:bg-red-11"
+                className="w-full shadow bg-red-9 text-sand-1 md:w-fit active:bg-red-11"
               >
                 Delete Task
               </Button>

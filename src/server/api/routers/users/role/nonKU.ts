@@ -1,5 +1,4 @@
 import { Prisma, type PrismaClient } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
 
 export const addNonKUStudent = async (prisma: PrismaClient, user: string) => {
@@ -21,25 +20,8 @@ export const addNonKUStudent = async (prisma: PrismaClient, user: string) => {
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "DUPLICATED_USER",
-          cause: "DUPLICATED_USER",
-        });
+        throw new Error("DUPLICATED_USER");
       }
     }
   }
-};
-
-export const getStudentObjectRelation = async (
-  prisma: PrismaClient,
-  email: string
-) => {
-  const user = await prisma.users.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  return user;
 };
