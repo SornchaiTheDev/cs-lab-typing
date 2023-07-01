@@ -62,9 +62,9 @@ function FrontLayout({
         defaultTitle="CS-LAB"
         description="Programming Lab web application for Computer Science Kasetsart University"
       />
-      <div className="flex min-h-screen flex-col">
-        <div className="roboto container mx-auto flex max-w-6xl flex-1 flex-col p-4 lg:p-0">
-          <div className="mt-10 flex items-center justify-between">
+      <div className="flex flex-col min-h-screen">
+        <div className="container flex flex-col flex-1 max-w-6xl p-4 mx-auto roboto xl:p-0">
+          <div className="flex items-center justify-between mt-10">
             <div className="flex-1">
               {(!isBasePath || isStudentPath) && (
                 <BackArrow customPath={customBackPath} />
@@ -136,7 +136,7 @@ function FrontLayout({
                     <hr />
                     {/* <button
                       onClick={() => setIsDarkMode(!isDarkMode)}
-                      className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                      className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                     >
                       Theme
                       <Icon
@@ -148,7 +148,7 @@ function FrontLayout({
                       <div>
                         <button
                           onClick={() => router.push("/cms")}
-                          className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                          className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                         >
                           CMS
                           <Icon icon="solar:code-square-line-duotone" />
@@ -158,7 +158,7 @@ function FrontLayout({
                     <div>
                       <button
                         onClick={() => signOut()}
-                        className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                        className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                       >
                         Sign Out
                         <Icon icon="solar:exit-line-duotone" />
@@ -171,9 +171,9 @@ function FrontLayout({
               </Popover.Root>
             </div>
           </div>
-          <div className="mt-6 flex flex-1 flex-col">{children}</div>
+          <div className="flex flex-col flex-1 mt-6">{children}</div>
         </div>
-        <div className="roboto w-full gap-2 bg-sand-12 py-6 text-center">
+        <div className="w-full gap-2 py-6 text-center roboto bg-sand-12">
           <h6 className="text-sand-6">
             made with 💖 for CS Kasetsart University
           </h6>
@@ -181,7 +181,7 @@ function FrontLayout({
           <a
             href="https://github.com/SornchaiTheDev"
             target="_blank"
-            className="font-bold text-sand-6 underline decoration-dashed hover:text-sand-2"
+            className="font-bold underline text-sand-6 decoration-dashed hover:text-sand-2"
           >
             @SornchaiTheDev
           </a>

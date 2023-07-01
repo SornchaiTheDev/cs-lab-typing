@@ -92,6 +92,7 @@ export const trpc = createTRPCNext<AppRouter, SSRContext>({
         defaultOptions: {
           queries: {
             networkMode: "always",
+            refetchOnWindowFocus: false,
           },
           mutations: {
             networkMode: "always",

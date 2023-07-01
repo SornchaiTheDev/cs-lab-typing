@@ -4,6 +4,8 @@ import Card from "~/components/Common/Card";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
 import { trpc } from "~/helpers";
 import Announcement from "~/components/Common/Announcement";
+import type { GetServerSideProps } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 
 function Course() {
   const router = useRouter();
@@ -12,7 +14,6 @@ function Course() {
   const labs = trpc.front.getLabs.useQuery(
     { sectionId: sectionId as string },
     {
-      refetchOnWindowFocus: false,
       enabled: !!sectionId,
     }
   );
@@ -26,7 +27,7 @@ function Course() {
     >
       <Announcement />
 
-      <div className="my-10 grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 my-10">
         {labs.data?.labs.map(
           ({ id, name, tasksStatus, status, isDisabled }) => (
             <Card
@@ -60,3 +61,34 @@ function Course() {
 }
 
 export default Course;
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { helper } = await createTrpcHelper({ req, res });
+  const { sectionId } = query;
+
+  try {
+    const section = await helper.front.getLabs.fetch({
+      sectionId: sectionId as string,
+    });
+
+    if (!section?.active) {
+      throw new Error("NOT_FOUND");
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === "NOT_FOUND") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+};

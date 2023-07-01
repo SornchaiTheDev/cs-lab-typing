@@ -1,44 +1,62 @@
 import type { submission_type } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErrorPercentage";
+import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
+import { getDuration } from "~/components/Typing/utils/getDuration";
 import { router, authedProcedure } from "~/server/api/trpc";
+import { TypingResultSchema } from "./schemas/TypingResult";
+import { checkSameHash } from "~/server/utils/checkSameHash";
 
 export const createFrontRouter = router({
   submitTyping: authedProcedure
-    .meta({
-      openapi: { method: "POST", path: "/submitTyping", tags: ["submit"] },
-    })
-    .output(z.void())
-    .input(
-      z.object({
-        sectionId: z.string(),
-        labId: z.string(),
-        taskId: z.string(),
-        rawSpeed: z.number(),
-        adjustedSpeed: z.number(),
-        startedAt: z.date(),
-        endedAt: z.date(),
-        percentError: z.number(),
-      })
-    )
+    .input(TypingResultSchema.and(z.object({ hash: z.string().optional() })))
     .mutation(async ({ ctx, input }) => {
       const {
         sectionId,
         labId,
         taskId,
-        rawSpeed,
-        adjustedSpeed,
+        totalChars,
+        errorChar,
         startedAt,
         endedAt,
-        percentError,
+        hash,
       } = input;
+      const result = Object.assign({}, input);
+
+      delete result.hash;
+
+      if (!checkSameHash(result, hash as string)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "INVALID_INPUT",
+        });
+      }
+
+      const duration = getDuration(startedAt as Date, endedAt as Date);
+      const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
+        totalChars,
+        errorChar,
+        duration.minutes
+      );
+
+      const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
       const _sectionId = parseInt(sectionId);
       const _labId = parseInt(labId);
       const _taskId = parseInt(taskId);
 
       const full_name = ctx.session?.user?.full_name;
+
       try {
+        const section = await ctx.prisma.sections.findUnique({
+          where: {
+            id: _sectionId,
+          },
+        });
+
+        if (section?.active === false) throw new Error("INTERNAL_SERVER_ERROR");
+
         const user = await ctx.prisma.users.findUnique({
           where: {
             full_name,
@@ -46,7 +64,7 @@ export const createFrontRouter = router({
         });
 
         let status: submission_type = "FAILED";
-        if (percentError <= 3) {
+        if (errorPercentage <= 3) {
           status = "PASSED";
         }
 
@@ -85,11 +103,12 @@ export const createFrontRouter = router({
               task_type: "Typing",
               typing_histories: {
                 create: {
+                  id: hash as string,
                   raw_speed: rawSpeed,
                   adjusted_speed: adjustedSpeed,
                   started_at: startedAt,
                   ended_at: endedAt,
-                  percent_error: percentError,
+                  percent_error: errorPercentage,
                 },
               },
             },
@@ -98,11 +117,12 @@ export const createFrontRouter = router({
               task_type: "Typing",
               typing_histories: {
                 create: {
+                  id: hash as string,
                   raw_speed: rawSpeed,
                   adjusted_speed: adjustedSpeed,
                   started_at: startedAt,
                   ended_at: endedAt,
-                  percent_error: percentError,
+                  percent_error: errorPercentage,
                 },
               },
             },

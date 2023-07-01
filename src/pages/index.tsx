@@ -2,19 +2,11 @@ import FrontLayout from "~/Layout/FrontLayout";
 import { trpc } from "~/helpers";
 import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";
-import { useTypingStore } from "~/store";
 
 function MyCourse() {
-  const allSections = trpc.front.getSections.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const allSections = trpc.front.getSections.useQuery();
 
-  const teachingAssistantSections = trpc.front.getTeachingSections.useQuery(
-    undefined,
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+  const teachingAssistantSections = trpc.front.getTeachingSections.useQuery();
 
   return (
     <FrontLayout title="My Courses">

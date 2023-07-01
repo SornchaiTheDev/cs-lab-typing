@@ -17,7 +17,6 @@ function Labs() {
       sectionId: sectionId as string,
     },
     {
-      refetchOnWindowFocus: false,
       enabled: !!sectionId && !!labId,
     }
   );
@@ -26,7 +25,7 @@ function Labs() {
     if (tasks.data === null) {
       router.replace("/404");
     }
-  }, [tasks.data]);
+  }, [tasks.data, router]);
 
   return (
     <FrontLayout
@@ -48,7 +47,7 @@ function Labs() {
         },
       ]}
     >
-      <div className="my-10 grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 my-10">
         {tasks.data?.tasks.map(({ id, name, status }) => (
           <Link
             key={id}
@@ -67,7 +66,7 @@ function Labs() {
               )}
             />
 
-            <div className="mb-2 flex flex-col gap-2 p-2">
+            <div className="flex flex-col gap-2 p-2 mb-2">
               <h4 className="text-xl font-medium text-sand-12">{name}</h4>
             </div>
           </Link>

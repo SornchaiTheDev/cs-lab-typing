@@ -40,7 +40,7 @@ const RecentTasks = ({
       sectionId,
       labId,
     },
-    { refetchOnWindowFocus: false, enabled: !!sectionId && !!labId }
+    { enabled: !!sectionId && !!labId }
   );
 
   return (
@@ -50,7 +50,7 @@ const RecentTasks = ({
       onClose={onClose}
       isOpen
     >
-      <div className="my-4 flex items-center gap-2">
+      <div className="flex items-center gap-2 my-4">
         <div className="p-2">
           <Icon className="text-xl" icon="solar:user-line-duotone" />
         </div>
@@ -117,7 +117,7 @@ const LabStatus = ({
       sectionId: sectionId as string,
       labId,
     },
-    { refetchOnWindowFocus: false, enabled: !!sectionId && !!labId }
+    { enabled: !!sectionId && !!labId }
   );
 
   const handleOnRefresh = async () => {
@@ -188,7 +188,7 @@ const LabStatus = ({
           <>
             <button
               onClick={handleOnRefresh}
-              className="flex items-center gap-2 rounded border p-1 text-lg text-sand-12"
+              className="flex items-center gap-2 p-1 text-lg border rounded text-sand-12"
             >
               <Icon
                 icon="solar:refresh-line-duotone"
@@ -198,7 +198,7 @@ const LabStatus = ({
             {!isTA && (
               <button
                 onClick={exportCSV}
-                className="flex items-center gap-2 rounded-lg bg-sand-12 px-2 py-1 text-sand-1 shadow active:bg-sand-11"
+                className="flex items-center gap-2 px-2 py-1 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
               >
                 <Icon icon="solar:document-text-line-duotone" />
                 Export as CSV
@@ -218,8 +218,8 @@ const LabStatus = ({
           lab.data?.usersTaskStatus?.map(
             ({ full_name, student_id, taskStatus }) => (
               <div key={student_id}>
-                <div className="flex w-full flex-wrap items-center">
-                  <div className="flex w-full flex-1 items-center gap-4">
+                <div className="flex flex-wrap items-center w-full">
+                  <div className="flex items-center flex-1 w-full gap-4">
                     <div>
                       <h5 className="font-medium">{full_name}</h5>
                       <h6 className="text-sm">{student_id}</h6>
@@ -232,7 +232,7 @@ const LabStatus = ({
                           taskStatus,
                         })
                       }
-                      className="flex h-7 w-7 items-center gap-2 rounded border p-1 text-xl text-sand-12"
+                      className="flex items-center gap-2 p-1 text-xl border rounded h-7 w-7 text-sand-12"
                     >
                       <Icon
                         icon="solar:eye-line-duotone"
@@ -278,9 +278,9 @@ function LabsStatus() {
       <div className="p-4">
         {section.isLoading ? (
           <>
-            <Skeleton width="100%" height="4rem" className="my-4 p-4" />
-            <Skeleton width="100%" height="4rem" className="my-4 p-4" />
-            <Skeleton width="100%" height="4rem" className="my-4 p-4" />
+            <Skeleton width="100%" height="4rem" className="p-4 my-4" />
+            <Skeleton width="100%" height="4rem" className="p-4 my-4" />
+            <Skeleton width="100%" height="4rem" className="p-4 my-4" />
           </>
         ) : (
           section.data?.labs.map(({ name, id }) => (

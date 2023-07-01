@@ -8,13 +8,8 @@ import { replaceSlugwithQueryPath, trpc } from "~/helpers";
 import Button from "~/components/Common/Button";
 import Skeleton from "~/components/Common/Skeleton";
 import History from "~/components/Typing/History";
-import type { GetServerSideProps } from "next";
 
-interface Props {
-  csrfToken: string;
-}
-
-function TypingTask({ csrfToken }: Props) {
+function TypingTask() {
   const router = useRouter();
   const { taskId, labId, sectionId } = router.query;
   const taskIdInt = taskId as string;
@@ -37,7 +32,6 @@ function TypingTask({ csrfToken }: Props) {
       sectionId: sectionIdInt,
     },
     {
-      refetchOnWindowFocus: false,
       enabled: !!taskIdInt && !!labIdInt && !!sectionIdInt,
     }
   );
@@ -75,7 +69,7 @@ function TypingTask({ csrfToken }: Props) {
           },
         ]}
       >
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-col flex-1">
           {!isReadOnly && (
             <Button
               icon={
@@ -83,7 +77,7 @@ function TypingTask({ csrfToken }: Props) {
                   ? "solar:history-line-duotone"
                   : "solar:keyboard-line-duotone"
               }
-              className="w-fit self-center border border-sand-9 hover:bg-sand-6"
+              className="self-center border w-fit border-sand-9 hover:bg-sand-6"
               onClick={() =>
                 setStatus(isTypingPhase ? "History" : "NotStarted")
               }
@@ -91,9 +85,9 @@ function TypingTask({ csrfToken }: Props) {
               {isTypingPhase ? "History" : "Back to Typing"}
             </Button>
           )}
-          <div className="mt-12 flex flex-1 flex-col">
+          <div className="flex flex-col flex-1 mt-12">
             {task.isLoading ? (
-              <div className="mt-4 flex flex-col gap-4">
+              <div className="flex flex-col gap-4 mt-4">
                 <Skeleton width="100%" height="3rem" />
                 <Skeleton width="100%" height="3rem" />
                 <Skeleton width="100%" height="3rem" />
@@ -104,7 +98,7 @@ function TypingTask({ csrfToken }: Props) {
             ) : isTypingPhase ? (
               <TypingGame text={task.data?.task?.body ?? ""} />
             ) : isEndedPhase ? (
-              <EndedGame {...{ csrfToken }} />
+              <EndedGame />
             ) : (
               isHistoryPhase && <History />
             )}
@@ -116,9 +110,3 @@ function TypingTask({ csrfToken }: Props) {
 }
 
 export default TypingTask;
-
-export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const csrfToken = res.req.headers["x-csrf-token"] || "missing";
-
-  return { props: { csrfToken } };
-};

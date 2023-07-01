@@ -104,6 +104,7 @@ export const getFrontRouter = router({
                 name: true,
               },
             },
+            active: true,
             labs_status: true,
             labs_order: true,
             labs: {

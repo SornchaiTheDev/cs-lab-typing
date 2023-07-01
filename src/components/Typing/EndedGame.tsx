@@ -9,14 +9,13 @@ import { trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import LineChart from "./Datas/LineChart";
 import TypingTable from "./Datas/Table";
+import objectHash from "object-hash";
+import type { TypingResultWithHashType } from "~/server/api/routers/front/schemas/TypingResult";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 
-interface Props {
-  csrfToken: string;
-}
-function EndedGame({ csrfToken }: Props) {
+function EndedGame() {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const { sectionId, labId, taskId } = router.query;
 
@@ -37,6 +36,33 @@ function EndedGame({ csrfToken }: Props) {
   ]);
 
   const { errorChar, startedAt, endedAt, totalChars } = stats;
+
+  const submitTyping = trpc.front.submitTyping.useMutation();
+
+  useEffect(() => {
+    const saveTypingScore = async () => {
+      const result: TypingResultWithHashType = {
+        email: session?.user?.email as string,
+        sectionId: sectionId as string,
+        labId: labId as string,
+        taskId: taskId as string,
+        totalChars,
+        errorChar,
+        startedAt: startedAt as Date,
+        endedAt: endedAt as Date,
+      };
+
+      result.hash = objectHash(result);
+      if (!stats) return;
+
+      await submitTyping.mutateAsync(result);
+
+      await typingHistories.refetch();
+    };
+    saveTypingScore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const duration = getDuration(startedAt as Date, endedAt as Date);
   const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
     totalChars,
@@ -46,32 +72,11 @@ function EndedGame({ csrfToken }: Props) {
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
-  useEffect(() => {
-    const saveTypingScore = async () => {
-      if (!stats) return;
-      await axios.post("/api/submitTyping", {
-        sectionId: sectionId as string,
-        labId: labId as string,
-        taskId: taskId as string,
-        rawSpeed,
-        adjustedSpeed,
-        percentError: errorPercentage,
-        startedAt: startedAt as Date,
-        endedAt: endedAt as Date,
-        csrf_token: csrfToken,
-      });
-
-      await typingHistories.refetch();
-    };
-    saveTypingScore();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
+    <div className="container flex flex-col items-center flex-1 max-w-2xl gap-4 mx-auto mb-2">
       <button
         onClick={() => setStatus("NotStarted")}
-        className="flex w-fit flex-col items-center rounded-md p-2 outline-none ring-sand-6 ring-offset-2 hover:bg-sand-3 focus:ring-2"
+        className="flex flex-col items-center p-2 rounded-md outline-none w-fit ring-sand-6 ring-offset-2 hover:bg-sand-3 focus:ring-2"
       >
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>

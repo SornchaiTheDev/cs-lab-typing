@@ -250,7 +250,7 @@ model submissions {
 }
 
 model typing_histories {
-  id             Int         @id @default(autoincrement())
+  id             String      @id @unique
   submission     submissions @relation(fields: [submission_id], references: [id])
   submission_id  Int
   raw_speed      Float
