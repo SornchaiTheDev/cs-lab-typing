@@ -8,6 +8,8 @@ import { replaceSlugwithQueryPath, trpc } from "~/helpers";
 import Button from "~/components/Common/Button";
 import Skeleton from "~/components/Common/Skeleton";
 import History from "~/components/Typing/History";
+import type { GetServerSideProps } from "next";
+import { prisma } from "~/server/db";
 
 function TypingTask() {
   const router = useRouter();
@@ -110,3 +112,31 @@ function TypingTask() {
 }
 
 export default TypingTask;
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { labId, sectionId } = ctx.query;
+  const labIdInt = parseInt(labId as string);
+  const lab = await prisma.labs.findUnique({
+    where: {
+      id: labIdInt,
+    },
+    select: {
+      status: true,
+      isDisabled: true,
+    },
+  });
+  if (lab) {
+    const labStatus = lab?.status.find(
+      (status) => status.sectionId === parseInt(sectionId as string)
+    )?.status;
+
+    if (labStatus === "DISABLED" || lab.isDisabled) {
+      return {
+        notFound: true,
+      };
+    }
+  }
+  return {
+    props: {},
+  };
+};

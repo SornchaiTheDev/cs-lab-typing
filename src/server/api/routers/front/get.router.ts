@@ -112,6 +112,7 @@ export const getFrontRouter = router({
                 tasks: true,
               },
             },
+            students: true,
             submissions: {
               where: {
                 user: {
@@ -121,6 +122,13 @@ export const getFrontRouter = router({
             },
           },
         });
+        const isInSection = labs?.students.some(
+          (student) => student.full_name === full_name
+        );
+
+        if (!isInSection) {
+          throw new Error("NOT_FOUND");
+        }
 
         if (labs) {
           const sortedLab = labs.labs_order.map((id) => {

@@ -6,6 +6,7 @@ import { trpc } from "~/helpers";
 import Announcement from "~/components/Common/Announcement";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 function Course() {
   const router = useRouter();
@@ -81,6 +82,14 @@ export const getServerSideProps: GetServerSideProps = async ({
   } catch (err) {
     if (err instanceof Error) {
       if (err.message === "NOT_FOUND") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+
+    if (err instanceof TRPCError) {
+      if (err.message === "SOMETHING_WENT_WRONG") {
         return {
           notFound: true,
         };

@@ -53,9 +53,23 @@ export const createFrontRouter = router({
           where: {
             id: _sectionId,
           },
+          include: {
+            labs_status: {
+              where: {
+                labId: _labId,
+              },
+            },
+          },
         });
 
-        if (section?.active === false) throw new Error("INTERNAL_SERVER_ERROR");
+        const isSectionClose = section?.active === false;
+        const isLabClose = section?.labs_status.some((lab) =>
+          ["DISABLED", "READONLY"].includes(lab.status)
+        );
+
+        if (isSectionClose || isLabClose) {
+          throw new Error("INTERNAL_SERVER_ERROR");
+        }
 
         const user = await ctx.prisma.users.findUnique({
           where: {

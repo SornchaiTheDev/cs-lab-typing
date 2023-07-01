@@ -54,12 +54,15 @@ function EndedGame() {
 
       result.hash = objectHash(result);
       if (!stats) return;
+      try {
+        await submitTyping.mutateAsync(result);
 
-      await submitTyping.mutateAsync(result);
-
-      await typingHistories.refetch();
+        await typingHistories.refetch();
+      } catch (err) {}
     };
+
     saveTypingScore();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

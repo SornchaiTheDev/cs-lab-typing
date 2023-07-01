@@ -15,7 +15,7 @@ function BackArrow({ customPath }: Props) {
   return (
     <Link
       href={{ pathname: backHref }}
-      className="mb-2 flex items-center text-sand-11 hover:text-sand-12"
+      className="flex items-center mb-2 text-sand-11 hover:text-sand-12 w-fit"
     >
       <Icon icon="carbon:arrow-left" className="text-2xl" />
       Back
