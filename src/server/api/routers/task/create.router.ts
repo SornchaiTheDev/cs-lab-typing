@@ -1,5 +1,5 @@
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
-import { AddTaskSchema } from "~/forms/TaskSchema";
+import { AddTaskSchema } from "~/Schemas/TaskSchema";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";

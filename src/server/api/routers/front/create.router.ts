@@ -5,7 +5,7 @@ import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErr
 import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
 import { getDuration } from "~/components/Typing/utils/getDuration";
 import { router, authedProcedure } from "~/server/api/trpc";
-import { TypingResultSchema } from "./schemas/TypingResult";
+import { TypingResultSchema } from "~/Schemas/TypingResult";
 import { checkSameHash } from "~/server/utils/checkSameHash";
 
 export const createFrontRouter = router({

@@ -1,4 +1,4 @@
-import { AddCourseSchema } from "~/forms/CourseSchema";
+import { AddCourseSchema } from "~/Schemas/CourseSchema";
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";

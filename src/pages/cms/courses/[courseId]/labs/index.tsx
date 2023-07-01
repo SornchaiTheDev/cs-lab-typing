@@ -1,6 +1,6 @@
 import CourseLayout from "~/Layout/CourseLayout";
 import Table from "~/components/Common/Table";
-import { AddLabSchema, type TAddLabSchema } from "~/forms/LabSchema";
+import { AddLabSchema, type TAddLabSchema } from "~/Schemas/LabSchema";
 import { Icon } from "@iconify/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useMemo, useState } from "react";

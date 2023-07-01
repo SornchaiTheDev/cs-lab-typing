@@ -1,6 +1,6 @@
 import CourseLayout from "~/Layout/CourseLayout";
 import { useRouter } from "next/router";
-import { AddCourseSchema, type TAddCourse } from "~/forms/CourseSchema";
+import { AddCourseSchema, type TAddCourse } from "~/Schemas/CourseSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import { getHighestRole, transformer, trpc } from "~/helpers";

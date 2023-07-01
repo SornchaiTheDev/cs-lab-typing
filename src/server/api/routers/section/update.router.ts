@@ -1,4 +1,4 @@
-import { AddSectionSchema } from "~/forms/SectionSchema";
+import { AddSectionSchema } from "~/Schemas/SectionSchema";
 import {
   TaAboveProcedure,
   router,

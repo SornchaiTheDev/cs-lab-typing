@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import LineChart from "./Datas/LineChart";
 import TypingTable from "./Datas/Table";
 import objectHash from "object-hash";
-import type { TypingResultWithHashType } from "~/server/api/routers/front/schemas/TypingResult";
+import type { TypingResultWithHashType } from "~/Schemas/TypingResult";
 import { useSession } from "next-auth/react";
 
 function EndedGame() {

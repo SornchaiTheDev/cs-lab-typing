@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import Forms from "~/components/Forms";
-import { AddTaskSchema, type TAddTask } from "~/forms/TaskSchema";
+import { AddTaskSchema, type TAddTask } from "~/Schemas/TaskSchema";
 import { trpc } from "~/helpers";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";

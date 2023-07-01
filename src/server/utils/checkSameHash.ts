@@ -1,5 +1,5 @@
 import objectHash from "object-hash";
-import type { TypingResultType } from "../api/routers/front/schemas/TypingResult";
+import type { TypingResultType } from "~/Schemas/TypingResult";
 
 export const checkSameHash = (input: TypingResultType, hash: string) => {
   const _hash = objectHash(input);

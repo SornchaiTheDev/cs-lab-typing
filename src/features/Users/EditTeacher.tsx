@@ -5,7 +5,7 @@ import { useState } from "react";
 import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Button from "~/components/Common/Button";
-import { type TTeacherSchema, TeacherSchema } from "~/forms/TeacherSchema";
+import { type TTeacherSchema, TeacherSchema } from "~/Schemas/TeacherSchema";
 import Skeleton from "~/components/Common/Skeleton";
 import { callToast } from "~/services/callToast";
 

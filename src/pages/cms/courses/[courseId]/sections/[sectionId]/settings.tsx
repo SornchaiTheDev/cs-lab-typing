@@ -1,7 +1,7 @@
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import SectionLayout from "~/Layout/SectionLayout";
-import { AddSectionSchema, type TAddSection } from "~/forms/SectionSchema";
+import { AddSectionSchema, type TAddSection } from "~/Schemas/SectionSchema";
 import Forms from "~/components/Forms";
 import { trpc } from "~/helpers";
 import { useRouter } from "next/router";

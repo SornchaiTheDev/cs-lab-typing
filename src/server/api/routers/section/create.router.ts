@@ -1,4 +1,4 @@
-import { AddSectionSchema } from "~/forms/SectionSchema";
+import { AddSectionSchema } from "~/Schemas/SectionSchema";
 import { isArrayUnique, isAllUserHaveValidStudentId } from "~/helpers";
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
