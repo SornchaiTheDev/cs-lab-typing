@@ -92,6 +92,13 @@ function Sections() {
               },
               { label: "name", title: "Name", type: "text" },
               {
+                label: "type",
+                title: "Type",
+                type: "select",
+                options: ["Lesson", "Exam"],
+                value: "Lesson",
+              },
+              {
                 label: "instructors",
                 title: "Instructors",
                 type: "multiple-search",
@@ -109,7 +116,7 @@ function Sections() {
           />
         </ModalWithButton>
       </div>
-      <div className="mt-4 grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 mt-4">
         {sections.isLoading
           ? new Array(6)
               .fill(0)
@@ -131,11 +138,11 @@ function Sections() {
                 className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
               >
                 <div className="flex flex-col gap-2 p-2">
-                  <div className="w-fit rounded-lg bg-lime-9 px-2 text-white">
+                  <div className="px-2 text-white rounded-lg w-fit bg-lime-9">
                     {name}
                   </div>
                   <div>
-                    <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
+                    <div className="absolute flex items-center px-1 rounded-lg right-2 top-2 w-fit bg-sand-7">
                       <Icon
                         icon="solar:user-hand-up-line-duotone"
                         className="text-lg"

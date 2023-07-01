@@ -10,8 +10,13 @@ import Skeleton from "~/components/Common/Skeleton";
 import History from "~/components/Typing/History";
 import type { GetServerSideProps } from "next";
 import { prisma } from "~/server/db";
+import type { SectionType } from "@prisma/client";
 
-function TypingTask() {
+interface Props {
+  sectionType: SectionType;
+}
+
+function TypingTask({ sectionType }: Props) {
   const router = useRouter();
   const { taskId, labId, sectionId } = router.query;
   const taskIdInt = taskId as string;
@@ -100,7 +105,7 @@ function TypingTask() {
             ) : isTypingPhase ? (
               <TypingGame text={task.data?.task?.body ?? ""} />
             ) : isEndedPhase ? (
-              <EndedGame />
+              <EndedGame {...{ sectionType }} />
             ) : (
               isHistoryPhase && <History />
             )}
@@ -116,6 +121,7 @@ export default TypingTask;
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { labId, sectionId } = ctx.query;
   const labIdInt = parseInt(labId as string);
+  const sectionIdInt = parseInt(sectionId as string);
   const lab = await prisma.labs.findUnique({
     where: {
       id: labIdInt,
@@ -123,6 +129,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     select: {
       status: true,
       isDisabled: true,
+      sections: {
+        where: {
+          id: sectionIdInt,
+        },
+        select: {
+          type: true,
+        },
+      },
     },
   });
   if (lab) {
@@ -137,6 +151,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
   }
   return {
-    props: {},
+    props: { sectionType: lab?.sections[0]?.type },
   };
 };

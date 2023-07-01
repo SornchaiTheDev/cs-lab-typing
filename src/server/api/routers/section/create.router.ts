@@ -1,7 +1,7 @@
 import { AddSectionSchema } from "~/Schemas/SectionSchema";
 import { isArrayUnique, isAllUserHaveValidStudentId } from "~/helpers";
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
-import { Prisma } from "@prisma/client";
+import { Prisma, type SectionType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -9,18 +9,20 @@ export const createSectionsRouter = router({
   createSection: teacherAboveProcedure
     .input(AddSectionSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const { instructors, name, semester, note, courseId, active } = input;
+      const { instructors, name, type, semester, note, courseId, active } =
+        input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
       const requester = ctx.user.full_name;
       const _courseId = parseInt(courseId);
-
+      const typeUppercase = type.toUpperCase() as SectionType;
       let section;
       try {
         section = await ctx.prisma.sections.create({
           data: {
             active,
             name,
+            type: typeUppercase,
             note,
             semester: {
               connect: {
