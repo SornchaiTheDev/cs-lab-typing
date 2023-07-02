@@ -12,6 +12,7 @@ import { callToast } from "~/services/callToast";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
+import Badge from "~/components/Common/Badge";
 
 function Sections() {
   const router = useRouter();
@@ -116,7 +117,7 @@ function Sections() {
           />
         </ModalWithButton>
       </div>
-      <div className="grid grid-cols-12 gap-6 mt-4">
+      <div className="mt-4 grid grid-cols-12 gap-6">
         {sections.isLoading
           ? new Array(6)
               .fill(0)
@@ -127,7 +128,7 @@ function Sections() {
                   className="col-span-12 md:col-span-4"
                 />
               ))
-          : sections.data?.map(({ name, note, id, _count }) => (
+          : sections.data?.map(({ name, type, note, id, _count }) => (
               <Link
                 key={id}
                 href={{
@@ -138,11 +139,13 @@ function Sections() {
                 className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
               >
                 <div className="flex flex-col gap-2 p-2">
-                  <div className="px-2 text-white rounded-lg w-fit bg-lime-9">
-                    {name}
+                  <div className="flex gap-2">
+                    <Badge type="success">{name}</Badge>
+                    <Badge type="info">{type}</Badge>
                   </div>
+
                   <div>
-                    <div className="absolute flex items-center px-1 rounded-lg right-2 top-2 w-fit bg-sand-7">
+                    <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
                       <Icon
                         icon="solar:user-hand-up-line-duotone"
                         className="text-lg"
@@ -162,6 +165,58 @@ function Sections() {
               </Link>
             ))}
       </div>
+      {/* Todo add archived sections */}
+      {/* <div className="mt-10">
+        <h2 className="text-2xl font-semibold">Archived</h2>
+        <div className="mt-4 grid grid-cols-12 gap-6">
+          {sections.isLoading
+            ? new Array(6)
+                .fill(0)
+                .map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    height={"12rem"}
+                    className="col-span-12 md:col-span-4"
+                  />
+                ))
+            : sections.data?.map(({ name, type, note, id, _count }) => (
+                <Link
+                  key={id}
+                  href={{
+                    pathname: "sections/[sectionId]",
+                    query: { ...router.query, sectionId: id },
+                  }}
+                  shallow={true}
+                  className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
+                >
+                  <div className="flex flex-col gap-2 p-2">
+                    <div className="flex gap-2">
+                      <Badge type="success">{name}</Badge>
+                      <Badge type="info">{type}</Badge>
+                    </div>
+
+                    <div>
+                      <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
+                        <Icon
+                          icon="solar:user-hand-up-line-duotone"
+                          className="text-lg"
+                        />
+                        <h6 className="text-sand-12">
+                          <span className="font-bold">{_count.students}</span>{" "}
+                          student{_count.students > 1 ? "s" : ""}
+                        </h6>
+                      </div>
+                      <div className="min-h-[1.5rem]">
+                        <h6 className="text-sand-10">
+                          {note?.length === 0 ? "-" : note}
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+        </div>
+      </div> */}
     </CourseLayout>
   );
 }

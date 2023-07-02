@@ -100,8 +100,8 @@ model courses {
 }
 
 enum SectionType {
-  LESSON
-  EXAM
+  Lesson
+  Exam
 }
 
 model sections {
@@ -111,7 +111,7 @@ model sections {
   course        courses             @relation(fields: [course_id], references: [id])
   course_id     Int
   name          String
-  type          SectionType         @default(LESSON)
+  type          SectionType         @default(Lesson)
   labs_order    Int[]
   labs          labs[]              @relation("section_lab")
   instructors   users[]             @relation("section_instructor")

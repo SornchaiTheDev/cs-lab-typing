@@ -41,11 +41,19 @@ function Sections() {
               section.data?.semester.year as string
             }/${section.data?.semester.term as string}`}</h4>
           )}
+          <h5 className="mb-2 mt-4 font-bold">Type</h5>
+          {section.isLoading ? (
+            <Skeleton width={"10rem"} height={"2rem"} />
+          ) : (
+            <h4 className="text-lg">{section.data?.type}</h4>
+          )}
           <h5 className="mb-2 mt-4 font-bold">Note</h5>
           {section.isLoading ? (
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
-            <h4 className="text-lg">{section.data?.note}</h4>
+            <h4 className="text-lg">
+              {section.data?.note?.length === 0 ? "-" : section.data?.note}
+            </h4>
           )}
 
           <h5 className="mb-2 mt-4 font-bold">Instructor(s)</h5>

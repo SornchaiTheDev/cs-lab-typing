@@ -1,6 +1,5 @@
 import type { submission_type } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErrorPercentage";
 import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
 import { getDuration } from "~/components/Typing/utils/getDuration";

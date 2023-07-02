@@ -88,6 +88,13 @@ function Settings() {
                   value: section.data?.name ?? "",
                 },
                 {
+                  label: "type",
+                  title: "Type",
+                  type: "select",
+                  options: ["Lesson", "Exam"],
+                  value: section.data?.type ?? "",
+                },
+                {
                   label: "instructors",
                   title: "Instructors",
                   type: "multiple-search",
@@ -131,7 +138,7 @@ function Settings() {
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="bg-red-9 text-sand-1 w-full md:w-fit shadow active:bg-red-11"
+              className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-fit"
             >
               Delete Section
             </Button>

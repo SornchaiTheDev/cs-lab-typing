@@ -50,7 +50,7 @@ function EndedGame({ sectionType }: Props) {
     const saveTypingScore = async () => {
       if (!stats) return;
       try {
-        if (sectionType === "EXAM") {
+        if (sectionType === "Exam") {
           const result: TypingExamResultWithHashType = {
             liame: session?.user?.email as string,
             dInoitces: sectionId as string,
