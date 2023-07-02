@@ -61,14 +61,14 @@ function Layout({
           <div className="flex justify-between mt-10">
             <div className="flex-1">
               {!isBasePath && <BackArrow customPath={customBackPath} />}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {!isBasePath &&
                   showBreadcrumb &&
                   breadcrumbs.slice(0, -1).map(({ label, path }) => (
                     <Link
                       key={path}
                       href={path}
-                      className="block text-xl text-sand-11 hover:text-sand-12"
+                      className="block text-lg text-sand-11 hover:text-sand-12 md:text-xl"
                     >
                       {label} /
                     </Link>

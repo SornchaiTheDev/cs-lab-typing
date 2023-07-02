@@ -64,12 +64,12 @@ function FrontLayout({
       />
       <div className="flex flex-col min-h-screen">
         <div className="container flex flex-col flex-1 max-w-6xl p-4 mx-auto roboto xl:p-0">
-          <div className="flex items-center justify-between mt-10">
+          <div className="flex items-center justify-between gap-4 mt-10">
             <div className="flex-1">
               {(!isBasePath || isStudentPath) && (
                 <BackArrow customPath={customBackPath} />
               )}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {!isBasePath &&
                   breadcrumbs.map(({ label, path, isLoading }) => {
                     if (isLoading)
@@ -80,7 +80,7 @@ function FrontLayout({
                       <Link
                         key={path}
                         href={path}
-                        className="block text-xl text-sand-11 hover:text-sand-12"
+                        className="block text-lg text-sand-11 hover:text-sand-12 md:text-xl"
                       >
                         {label} /
                       </Link>
