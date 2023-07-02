@@ -32,12 +32,12 @@ async function main() {
           },
           created_by: {
             connect: {
-              full_name: adminUser.full_name,
+              id: adminUser.id,
             },
           },
           instructors: {
             connect: {
-              full_name: adminUser.full_name,
+              id: adminUser.id,
             },
           },
           active: true,
@@ -54,7 +54,7 @@ async function main() {
       body: "Lorem Ipsum",
       owner: {
         connect: {
-          full_name: adminUser.full_name,
+          id: adminUser.id,
         },
       },
       history: {
@@ -62,7 +62,7 @@ async function main() {
           action: "Create a Task",
           user: {
             connect: {
-              full_name: adminUser.full_name,
+              id: adminUser.id,
             },
           },
         },

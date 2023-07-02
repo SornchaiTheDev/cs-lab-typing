@@ -22,16 +22,3 @@ export const addTeacher = async (prisma: PrismaClient, user: string) => {
     }
   }
 };
-
-export const getStudentObjectRelation = async (
-  prisma: PrismaClient,
-  email: string
-) => {
-  const user = await prisma.users.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  return user;
-};

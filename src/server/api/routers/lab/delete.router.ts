@@ -16,12 +16,22 @@ export const deleteLabRouter = router({
           },
         });
 
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.lab_histories.create({
           data: {
             action: "Delete section",
             user: {
               connect: {
-                full_name: requester,
+                id: user?.id,
               },
             },
             lab: {
@@ -66,6 +76,16 @@ export const deleteLabRouter = router({
           .filter((task) => task.id !== taskId)
           .map((task) => task.id);
 
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.labs.update({
           where: {
             id: _labId,
@@ -84,7 +104,7 @@ export const deleteLabRouter = router({
                 action: "Delete task from lab",
                 user: {
                   connect: {
-                    full_name: requester,
+                    id: user?.id,
                   },
                 },
               },

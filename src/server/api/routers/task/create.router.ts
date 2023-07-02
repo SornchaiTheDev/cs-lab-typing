@@ -12,6 +12,16 @@ export const createTaskRouter = router({
 
       let task;
       try {
+        const _owner = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: owner,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         task = await ctx.prisma.tasks.create({
           data: {
             isPrivate,
@@ -26,7 +36,7 @@ export const createTaskRouter = router({
             },
             owner: {
               connect: {
-                full_name: owner,
+                id: _owner?.id,
               },
             },
             type,
@@ -35,7 +45,7 @@ export const createTaskRouter = router({
                 action: "Create a task",
                 user: {
                   connect: {
-                    full_name: owner,
+                    id: _owner?.id,
                   },
                 },
               },
@@ -68,6 +78,13 @@ export const createTaskRouter = router({
       const { id } = input;
       const owner_full_name = ctx.user.full_name;
       try {
+        const _owner = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: owner_full_name,
+            deleted_at: null,
+          },
+        });
+
         const originalTask = await ctx.prisma.tasks.findUnique({
           where: {
             id,
@@ -93,7 +110,7 @@ export const createTaskRouter = router({
               },
               owner: {
                 connect: {
-                  full_name: owner_full_name,
+                  id: _owner?.id,
                 },
               },
             },
@@ -103,7 +120,7 @@ export const createTaskRouter = router({
               action: `Clone from ${owner.full_name}/${name}`,
               user: {
                 connect: {
-                  full_name: owner_full_name,
+                  id: _owner?.id,
                 },
               },
               tasks: {

@@ -53,9 +53,10 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials, req) {
         if (credentials) {
-          const user = await prisma.users.findUnique({
+          const user = await prisma.users.findFirst({
             where: {
               student_id: credentials.username,
+              deleted_at: null,
             },
           });
 
@@ -94,9 +95,10 @@ export const authOptions: NextAuthOptions = {
         if (account.type === "oauth") {
           try {
             if (profile && profile.email?.endsWith("@ku.th")) {
-              const user = await prisma.users.findUnique({
+              const user = await prisma.users.findFirst({
                 where: {
                   email: profile.email,
+                  deleted_at: null,
                 },
               });
 
@@ -121,9 +123,10 @@ export const authOptions: NextAuthOptions = {
       return baseUrl;
     },
     async jwt({ token, user }) {
-      const fetchUser = await prisma.users.findUnique({
+      const fetchUser = await prisma.users.findFirst({
         where: {
           email: token.email as string,
+          deleted_at: null,
         },
       });
       token.roles = fetchUser?.roles.join(",") ?? "";

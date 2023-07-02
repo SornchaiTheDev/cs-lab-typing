@@ -68,9 +68,10 @@ const isTaAbove = t.middleware(async (opts) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const isInstructors = await ctx.prisma.users.findUnique({
+  const isInstructors = await ctx.prisma.users.findFirst({
     where: {
       full_name: ctx.session.user.full_name,
+      deleted_at: null,
     },
     select: {
       instructors: true,

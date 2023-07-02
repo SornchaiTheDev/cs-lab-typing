@@ -15,6 +15,7 @@ export const createCourseRouter = router({
             full_name: {
               in: authors,
             },
+            deleted_at: null,
           },
         });
 

@@ -25,6 +25,26 @@ export const updateTaskRouter = router({
       try {
         await createNotExistTags(ctx.prisma, tags);
 
+        const _owner = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: owner,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        const _actionUser = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: actionUser,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         task = await ctx.prisma.tasks.update({
           where: {
             id: _id,
@@ -40,7 +60,7 @@ export const updateTaskRouter = router({
             language,
             owner: {
               connect: {
-                full_name: owner,
+                id: _owner?.id,
               },
             },
             type,
@@ -50,7 +70,7 @@ export const updateTaskRouter = router({
                 action: "Update task info",
                 user: {
                   connect: {
-                    full_name: actionUser,
+                    id: _actionUser?.id,
                   },
                 },
               },
@@ -82,6 +102,15 @@ export const updateTaskRouter = router({
       const { taskId, body } = input;
       const _taskId = parseInt(taskId);
       try {
+        const _actionUser = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: actionUser,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
         await ctx.prisma.tasks.update({
           where: {
             id: _taskId,
@@ -93,7 +122,7 @@ export const updateTaskRouter = router({
                 action: "Edit task body",
                 user: {
                   connect: {
-                    full_name: actionUser,
+                    id: _actionUser?.id,
                   },
                 },
               },

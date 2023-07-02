@@ -15,6 +15,7 @@ export const getStudentCourses = async (
             students: {
               some: {
                 full_name,
+                deleted_at: null,
               },
             },
           },

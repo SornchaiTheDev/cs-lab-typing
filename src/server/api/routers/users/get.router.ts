@@ -46,9 +46,10 @@ export const getUserRouter = router({
     .query(async ({ ctx, input }) => {
       const { email } = input;
       try {
-        const user = await ctx.prisma.users.findUnique({
+        const user = await ctx.prisma.users.findFirst({
           where: {
             email,
+            deleted_at: null,
           },
         });
         return user;
@@ -64,9 +65,10 @@ export const getUserRouter = router({
     .query(async ({ ctx, input }) => {
       const { email } = input;
       try {
-        const user = await ctx.prisma.users.findUnique({
+        const user = await ctx.prisma.users.findFirst({
           where: {
             email,
+            deleted_at: null,
           },
         });
 

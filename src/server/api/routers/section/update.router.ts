@@ -27,6 +27,28 @@ export const updateSectionsRouter = router({
           },
           take: 1,
         });
+
+        const instructorsId = await ctx.prisma.users.findMany({
+          where: {
+            full_name: {
+              in: instructors,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        const _requester = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.sections.update({
           where: {
             id: _id,
@@ -41,16 +63,14 @@ export const updateSectionsRouter = router({
               },
             },
             instructors: {
-              set: instructors.map((instructor) => ({
-                full_name: instructor,
-              })),
+              set: instructorsId,
             },
             history: {
               create: {
                 action: "Update section",
                 user: {
                   connect: {
-                    full_name: requester,
+                    id: _requester?.id,
                   },
                 },
               },
@@ -77,6 +97,16 @@ export const updateSectionsRouter = router({
 
     const requester = ctx.user.full_name;
     try {
+      const _requester = await ctx.prisma.users.findFirst({
+        where: {
+          full_name: requester,
+          deleted_at: null,
+        },
+        select: {
+          id: true,
+        },
+      });
+
       await ctx.prisma.sections.update({
         where: {
           id: _sectionId,
@@ -95,7 +125,7 @@ export const updateSectionsRouter = router({
               action: "Add lab",
               user: {
                 connect: {
-                  full_name: requester,
+                  id: _requester?.id,
                 },
               },
             },
@@ -131,6 +161,16 @@ export const updateSectionsRouter = router({
     const requester = ctx.user.full_name;
 
     try {
+      const _requester = await ctx.prisma.users.findFirst({
+        where: {
+          full_name: requester,
+          deleted_at: null,
+        },
+        select: {
+          id: true,
+        },
+      });
+
       await ctx.prisma.sections.update({
         where: {
           id: _sectionId,
@@ -144,7 +184,7 @@ export const updateSectionsRouter = router({
               action: "Re-order lab",
               user: {
                 connect: {
-                  full_name: requester,
+                  id: _requester?.id,
                 },
               },
             },
@@ -235,22 +275,37 @@ export const updateSectionsRouter = router({
       }
 
       try {
+        const _requester = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+        });
+
+        const _studentsId = await ctx.prisma.users.findMany({
+          where: {
+            student_id: {
+              in: studentIds,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
         await ctx.prisma.sections.update({
           where: {
             id: _sectionId,
           },
           data: {
             students: {
-              connect: studentIds.map((id) => ({
-                student_id: id,
-              })),
+              connect: _studentsId,
             },
             history: {
               create: {
                 action: "Add students to section",
                 user: {
                   connect: {
-                    full_name: requester,
+                    id: _requester?.id,
                   },
                 },
               },

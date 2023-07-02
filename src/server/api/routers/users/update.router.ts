@@ -17,9 +17,18 @@ export const updateUserRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles, student_id } = input;
       try {
-        await ctx.prisma.users.update({
+        const user = await ctx.prisma.users.findFirst({
           where: {
             email,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+        await ctx.prisma.users.update({
+          where: {
+            id: user?.id,
           },
           data: {
             full_name,
@@ -49,9 +58,18 @@ export const updateUserRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles, student_id, password } = input;
       try {
-        await ctx.prisma.users.update({
+        const user = await ctx.prisma.users.findFirst({
           where: {
             email,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+        await ctx.prisma.users.update({
+          where: {
+            id: user?.id,
           },
           data: {
             full_name,
@@ -82,9 +100,18 @@ export const updateUserRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles } = input;
       try {
-        await ctx.prisma.users.update({
+        const user = await ctx.prisma.users.findFirst({
           where: {
             email,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+        await ctx.prisma.users.update({
+          where: {
+            id: user?.id,
           },
           data: {
             full_name,

@@ -18,6 +18,17 @@ export const updateLabRouter = router({
 
       try {
         await createNotExistTags(ctx.prisma, tags);
+
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: ctx.user.full_name,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.labs.update({
           where: {
             id: _labId,
@@ -38,7 +49,7 @@ export const updateLabRouter = router({
                 action: "Edit lab settings",
                 user: {
                   connect: {
-                    full_name: ctx.user.full_name,
+                    id: user?.id,
                   },
                 },
               },
@@ -77,6 +88,16 @@ export const updateLabRouter = router({
         .map((t) => t.id);
 
       try {
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: ctx.user.full_name,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.labs.update({
           where: {
             id: parseInt(labId),
@@ -90,7 +111,7 @@ export const updateLabRouter = router({
                 action: "Edit task order",
                 user: {
                   connect: {
-                    full_name: requester,
+                    id: user?.id,
                   },
                 },
               },

@@ -15,6 +15,7 @@ export const getTeacherCourses = async (
             instructors: {
               some: {
                 full_name,
+                deleted_at: null,
               },
             },
           },

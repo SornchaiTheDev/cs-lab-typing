@@ -21,9 +21,9 @@ enum roles {
 
 model users {
   id                Int                 @id @default(autoincrement())
-  student_id        String              @unique
-  full_name         String              @unique
-  email             String              @unique
+  student_id        String
+  full_name         String
+  email             String
   password          String?
   last_logined      DateTime?
   roles             roles[]

@@ -31,12 +31,22 @@ export const deleteSectionsRouter = router({
           },
         });
 
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.section_histories.create({
           data: {
             action: "Delete section",
             user: {
               connect: {
-                full_name: requester,
+                id: user?.id,
               },
             },
             section: {
@@ -65,14 +75,24 @@ export const deleteSectionsRouter = router({
   deleteStudent: teacherAboveProcedure
     .input(
       z.object({
-        student_id: z.string(),
+        id: z.number(),
         sectionId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { sectionId, student_id } = input;
+      const { sectionId, id } = input;
       const _sectionId = parseInt(sectionId);
+      const requester = ctx.user.full_name;
       try {
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
         await ctx.prisma.sections.update({
           where: {
             id: _sectionId,
@@ -80,7 +100,7 @@ export const deleteSectionsRouter = router({
           data: {
             students: {
               disconnect: {
-                student_id,
+                id,
               },
             },
             history: {
@@ -88,7 +108,7 @@ export const deleteSectionsRouter = router({
                 action: "Delete student from this section",
                 user: {
                   connect: {
-                    full_name: ctx.user.full_name,
+                    id: user?.id,
                   },
                 },
               },
@@ -115,6 +135,16 @@ export const deleteSectionsRouter = router({
 
       const requester = ctx.user.full_name;
       try {
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -141,7 +171,7 @@ export const deleteSectionsRouter = router({
                 action: "Remove lab",
                 user: {
                   connect: {
-                    full_name: requester,
+                    id: user?.id,
                   },
                 },
               },

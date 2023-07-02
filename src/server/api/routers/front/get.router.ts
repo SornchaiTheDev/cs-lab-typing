@@ -19,6 +19,7 @@ export const getFrontRouter = router({
                   students: {
                     some: {
                       full_name,
+                      deleted_at: null,
                     },
                   },
                 },
@@ -60,6 +61,7 @@ export const getFrontRouter = router({
                   instructors: {
                     some: {
                       full_name,
+                      deleted_at: null,
                     },
                   },
                 },
@@ -117,6 +119,7 @@ export const getFrontRouter = router({
               where: {
                 user: {
                   full_name,
+                  deleted_at: null,
                 },
               },
             },
@@ -190,6 +193,7 @@ export const getFrontRouter = router({
               where: {
                 user: {
                   full_name,
+                  deleted_at: null,
                 },
                 section: {
                   id: _sectionId,
@@ -275,13 +279,23 @@ export const getFrontRouter = router({
           },
         });
 
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.lab_loggers.create({
           data: {
             type: "ACCESS",
             ip_address: ctx.ip as string,
             user: {
               connect: {
-                full_name,
+                id: user?.id,
               },
             },
             task: {
@@ -328,6 +342,7 @@ export const getFrontRouter = router({
               lab_id: _labId,
               user: {
                 full_name,
+                deleted_at: null,
               },
               task_id: _taskId,
             },

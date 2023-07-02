@@ -73,9 +73,10 @@ export const createFrontRouter = router({
           throw new Error("INTERNAL_SERVER_ERROR");
         }
 
-        const user = await ctx.prisma.users.findUnique({
+        const user = await ctx.prisma.users.findFirst({
           where: {
             full_name,
+            deleted_at: null,
           },
         });
 
@@ -240,9 +241,10 @@ export const createFrontRouter = router({
           throw new Error("INTERNAL_SERVER_ERROR");
         }
 
-        const user = await ctx.prisma.users.findUnique({
+        const user = await ctx.prisma.users.findFirst({
           where: {
             full_name,
+            deleted_at: null,
           },
         });
 

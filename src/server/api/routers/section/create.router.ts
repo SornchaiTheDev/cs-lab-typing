@@ -1,6 +1,6 @@
 import { AddSectionSchema } from "~/schemas/SectionSchema";
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
-import { Prisma, type SectionType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -14,9 +14,16 @@ export const createSectionsRouter = router({
       const term = semester.split("/")[1] ?? "";
       const requester = ctx.user.full_name;
       const _courseId = parseInt(courseId);
-      const typeUppercase = type.toUpperCase() as SectionType;
+
       let section;
       try {
+        const _requester = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+        });
+
         const semester = await ctx.prisma.semesters.findMany({
           where: {
             year,
@@ -26,11 +33,23 @@ export const createSectionsRouter = router({
           take: 1,
         });
 
+        const instructorsId = await ctx.prisma.users.findMany({
+          where: {
+            full_name: {
+              in: instructors,
+            },
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         section = await ctx.prisma.sections.create({
           data: {
             active,
             name,
-            type: typeUppercase,
+            type,
             note,
             semester: {
               connect: {
@@ -38,9 +57,7 @@ export const createSectionsRouter = router({
               },
             },
             instructors: {
-              connect: instructors.map((instructor) => ({
-                full_name: instructor,
-              })),
+              connect: instructorsId,
             },
             course: {
               connect: {
@@ -49,7 +66,7 @@ export const createSectionsRouter = router({
             },
             created_by: {
               connect: {
-                full_name: requester,
+                id: _requester?.id,
               },
             },
             history: {
@@ -57,7 +74,7 @@ export const createSectionsRouter = router({
                 action: "Create a section",
                 user: {
                   connect: {
-                    full_name: requester,
+                    id: _requester?.id,
                   },
                 },
               },

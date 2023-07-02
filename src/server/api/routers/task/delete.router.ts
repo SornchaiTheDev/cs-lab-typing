@@ -43,12 +43,22 @@ export const deleteTaskRouter = router({
           });
         });
 
+        const requester = ctx.user.full_name;
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
         await ctx.prisma.task_histories.create({
           data: {
             action: "Delete task",
             user: {
               connect: {
-                full_name: ctx.user.full_name,
+                id: user?.id,
               },
             },
             tasks: {

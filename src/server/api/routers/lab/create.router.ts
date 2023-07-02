@@ -13,6 +13,16 @@ export const createLabRouter = router({
 
       let lab;
       try {
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            full_name: ctx.user.full_name,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         lab = await ctx.prisma.labs.create({
           data: {
             name,
@@ -33,7 +43,7 @@ export const createLabRouter = router({
                 action: "Create a lab",
                 user: {
                   connect: {
-                    full_name: ctx.user.full_name,
+                    id: user?.id,
                   },
                 },
               },

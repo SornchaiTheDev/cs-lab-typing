@@ -52,14 +52,14 @@ function Students() {
     }
   );
 
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<number | null>(null);
 
   const deleteStudent = trpc.sections.deleteStudent.useMutation();
   const deleteSelectRow = async () => {
     try {
       await deleteStudent.mutateAsync({
         sectionId: sectionId as string,
-        student_id: selectedUser as string,
+        id: selectedUser as number,
       });
       await section.refetch();
       callToast({
@@ -88,8 +88,8 @@ function Students() {
         size: 50,
         cell: (props) => (
           <button
-            onClick={() => setSelectedUser(props.row.original.student_id)}
-            className="rounded-xl text-xl text-sand-12"
+            onClick={() => setSelectedUser(props.row.original.id)}
+            className="text-xl rounded-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-trash-line-duotone" />
           </button>
@@ -143,7 +143,7 @@ function Students() {
             <Button
               onClick={exportCSV}
               icon="solar:document-text-line-duotone"
-              className="bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
+              className="p-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
             >
               Export as CSV
             </Button>

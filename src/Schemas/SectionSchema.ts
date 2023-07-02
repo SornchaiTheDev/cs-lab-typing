@@ -6,7 +6,7 @@ export const AddSectionSchema = z.object({
     .nonempty({ message: "Semester cannot be empty" })
     .default(""),
   name: z.string().min(1, { message: "Name cannot be empty" }),
-  type: z.string().min(1, { message: "Type cannot be empty" }),
+  type: z.literal("Lesson").or(z.literal("Exam")),
   instructors: z
     .array(z.string())
     .min(1, { message: "Instructors cannot be empty" }),

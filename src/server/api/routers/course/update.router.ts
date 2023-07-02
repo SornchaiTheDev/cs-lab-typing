@@ -10,6 +10,18 @@ export const updateCoursesRouter = router({
       const { id, number, name, authors, note, comments } = input;
       const _id = parseInt(id);
       try {
+        const authorsIds = await ctx.prisma.users.findMany({
+          where: {
+            full_name: {
+              in: authors,
+            },
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+
         await ctx.prisma.courses.update({
           where: {
             id: _id,
@@ -18,9 +30,7 @@ export const updateCoursesRouter = router({
             number,
             name,
             authors: {
-              set: authors.map((author) => ({
-                full_name: author,
-              })),
+              set: authorsIds,
             },
             note,
             comments,
