@@ -31,8 +31,6 @@ function EndedGame({ sectionType }: Props) {
     pageSize: 6,
   });
 
-  const { pageIndex, pageSize } = pagination;
-
   const typingHistories = trpc.front.getTypingHistory.useQuery(
     {
       sectionId: sectionId as string,
@@ -106,9 +104,6 @@ function EndedGame({ sectionType }: Props) {
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
-  const PAGE = pageIndex * pageSize;
-  const LIMIT = PAGE + pageSize;
-
   const highestSpeed = useMemo(() => {
     if (typingHistories.data === undefined) return -1;
     const cloneDatas = [...typingHistories.data];
@@ -136,10 +131,7 @@ function EndedGame({ sectionType }: Props) {
       </div>
       <TypingTable
         isLoading={typingHistories.isLoading}
-        datas={typingHistories.data?.slice(PAGE, LIMIT) ?? []}
-        pageCount={
-          Math.ceil((typingHistories.data?.length as number) / pageSize) ?? 0
-        }
+        datas={typingHistories.data ?? []}
         onPaginationChange={setPagination}
         {...{ pagination, highestSpeed }}
       />

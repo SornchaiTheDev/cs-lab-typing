@@ -33,6 +33,7 @@ function History() {
   const highestSpeed = useMemo(() => {
     if (typingHistories.data === undefined) return -1;
     const cloneDatas = [...typingHistories.data];
+
     const highestSpeed = cloneDatas.sort(
       (prev, current) => current.adjusted_speed - prev.adjusted_speed
     );
@@ -51,10 +52,7 @@ function History() {
         </div>
         <TypingTable
           isLoading={typingHistories.isLoading}
-          datas={typingHistories.data?.slice(PAGE, LIMIT) ?? []}
-          pageCount={
-            Math.ceil((typingHistories.data?.length as number) / pageSize) ?? 0
-          }
+          datas={typingHistories.data ?? []}
           onPaginationChange={setPagination}
           {...{ pagination, highestSpeed }}
         />

@@ -31,10 +31,7 @@ function LineChart({ datas }: Props) {
       datasets: [
         {
           label: "Typing Speed (wpm)",
-          data:
-            datas
-              .sort((a, b) => a.adjusted_speed - b.adjusted_speed)
-              .map(({ adjusted_speed }) => adjusted_speed) ?? [], // Replace with your actual data
+          data: datas.map(({ adjusted_speed }) => adjusted_speed) ?? [], // Replace with your actual data
           backgroundColor: "#e3e3e0", // Background color of the line
           borderColor: "#1b1b18", // Border color of the line
           borderWidth: 2, // Border width of the line

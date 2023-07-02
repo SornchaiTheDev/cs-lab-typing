@@ -115,7 +115,7 @@ function Table({
         ? columns.map((column) => ({
             ...column,
             cell: (
-              <div className="h-4 w-full animate-pulse rounded bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="w-full h-4 rounded animate-pulse bg-gradient-to-r from-sand-6 to-sand-4"></div>
             ),
           }))
         : columns,
@@ -166,12 +166,12 @@ function Table({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="w-fit p-3"
+                    className="p-3 w-fit"
                     style={{ width: header.getSize() }}
                   >
                     {header.isPlaceholder ? null : (
                       <button
-                        className="flex w-full items-center justify-center gap-2"
+                        className="flex items-center justify-center w-full gap-2"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(
@@ -226,7 +226,7 @@ function Table({
           </tbody>
         </table>
         {!!_pagination && (
-          <div className="flex w-full justify-end gap-2 border-t border-sand-6 p-2">
+          <div className="flex justify-end w-full gap-2 p-2 border-t border-sand-6">
             <Button
               className="hover:bg-sand-4"
               onClick={() => table.previousPage()}

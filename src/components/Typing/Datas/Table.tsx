@@ -13,7 +13,6 @@ import { twMerge } from "tailwind-merge";
 interface Props {
   datas: typing_histories[];
   isLoading: boolean;
-  pageCount: number;
   pagination: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
   highestSpeed: number;
@@ -22,7 +21,6 @@ interface Props {
 function TypingTable({
   datas,
   isLoading,
-  pageCount,
   pagination,
   onPaginationChange,
   highestSpeed,
@@ -78,12 +76,22 @@ function TypingTable({
     ],
     [columnHelper, highestSpeed]
   );
+
+  const { pageIndex, pageSize } = pagination;
+
+  const PAGE = pageIndex * pageSize;
+  const LIMIT = PAGE + pageSize;
+
   return (
     <Table
       isLoading={isLoading}
-      data={datas}
+      data={datas?.slice(PAGE, LIMIT)}
       columns={columns}
-      {...{ pagination, onPaginationChange, pageCount }}
+      {...{
+        pagination,
+        onPaginationChange,
+        pageCount: Math.ceil(datas.length / pageSize),
+      }}
     />
   );
 }
