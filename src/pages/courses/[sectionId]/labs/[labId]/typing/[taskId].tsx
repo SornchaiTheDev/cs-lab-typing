@@ -8,7 +8,6 @@ import { replaceSlugwithQueryPath } from "~/helpers";
 import Button from "~/components/Common/Button";
 import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { prisma } from "~/server/db";
 import type { SectionType } from "@prisma/client";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 
@@ -30,10 +29,6 @@ function TypingTask({
   labStatus,
 }: Props) {
   const router = useRouter();
-  const { taskId, labId, sectionId } = router.query;
-  // const taskIdInt = taskId as string;
-  // const labIdInt = labId as string;
-  // const sectionIdInt = sectionId as string;
 
   const [status, setStatus] = useTypingStore((state) => [
     state.status,
@@ -43,17 +38,6 @@ function TypingTask({
   useEffect(() => {
     setStatus("NotStarted");
   }, [setStatus]);
-
-  // const task = trpc.front.getTaskById.useQuery(
-  //   {
-  //     taskId: taskIdInt,
-  //     labId: labIdInt,
-  //     sectionId: sectionIdInt,
-  //   },
-  //   {
-  //     enabled: !!taskIdInt && !!labIdInt && !!sectionIdInt,
-  //   }
-  // );
 
   const isTypingPhase = status === "NotStarted" || status === "Started";
   const isEndedPhase = status === "Ended";
