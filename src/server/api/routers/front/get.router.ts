@@ -170,6 +170,31 @@ export const getFrontRouter = router({
       const _sectionId = parseInt(sectionId);
       const full_name = ctx.user.full_name;
       try {
+        const section = await ctx.prisma.sections.findUnique({
+          where: {
+            id: _sectionId,
+          },
+          select: {
+            labs: true,
+            students: true,
+            active: true,
+          },
+        });
+
+        const isLabActive = section?.active;
+
+        const isLabExistInSection = section?.labs.some(
+          (lab) => lab.id === _labId
+        );
+
+        const isStudentInSection = section?.students.some(
+          (student) => student.full_name === full_name
+        );
+
+        if (!isLabExistInSection || !isStudentInSection || !isLabActive) {
+          throw new Error("NOT_FOUND");
+        }
+
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,
@@ -203,9 +228,14 @@ export const getFrontRouter = router({
         });
         if (lab) {
           const labStatus = lab.status.find(
-            (status) => status.sectionId === _labId
+            (status) => status.labId === _labId
           );
-          if (labStatus?.status === "DISABLED") return null;
+
+          const isLabSetDisabled = labStatus?.status === "DISABLED";
+
+          if (isLabSetDisabled) {
+            throw new Error("NOT_FOUND");
+          }
 
           const sortedTaskLab = lab.tasks_order.map((id) => {
             const task = lab?.tasks.find((task) => task.id === id) as tasks;
@@ -223,6 +253,14 @@ export const getFrontRouter = router({
           };
         }
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "NOT_FOUND") {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "NOT_FOUND",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -253,10 +291,15 @@ export const getFrontRouter = router({
                 name: true,
               },
             },
+            labs: {
+              where: {
+                id: _labId,
+              },
+            },
           },
         });
 
-        if (!section?.active) {
+        if (!section?.active || section.labs.length === 0) {
           throw new Error("NOT_FOUND");
         }
 
@@ -276,7 +319,11 @@ export const getFrontRouter = router({
           },
         });
 
-        if (lab?.status[0]?.status !== "ACTIVE" || lab.isDisabled) {
+        if (!lab) {
+          throw new Error("NOT_FOUND");
+        }
+
+        if (lab.status[0]?.status === "DISABLED" || lab.isDisabled) {
           throw new Error("NOT_FOUND");
         }
 
@@ -296,8 +343,12 @@ export const getFrontRouter = router({
           },
         });
 
-        const isTaskNotInLab = task?.labs.length === 0;
-        const isTaskAlreadyDeleted = task?.deleted_at !== null;
+        if (!task) {
+          throw new Error("NOT_FOUND");
+        }
+
+        const isTaskNotInLab = task.labs.length === 0;
+        const isTaskAlreadyDeleted = task.deleted_at !== null;
 
         if (isTaskAlreadyDeleted || isTaskNotInLab) {
           throw new Error("NOT_FOUND");
@@ -336,7 +387,7 @@ export const getFrontRouter = router({
         });
 
         const labStatus =
-          lab?.status.find((status) => status.sectionId === _sectionId)
+          lab.status.find((status) => status.sectionId === _sectionId)
             ?.status ?? "DISABLED";
 
         if (task.body === null) {
@@ -383,6 +434,25 @@ export const getFrontRouter = router({
 
       const full_name = ctx.user.full_name;
       try {
+        const section = await ctx.prisma.sections.findUnique({
+          where: {
+            id: _sectionId,
+          },
+          select: {
+            labs: {
+              where: {
+                id: _labId,
+              },
+            },
+          },
+        });
+
+        const isLabNotExist = section?.labs.length === 0;
+
+        if (isLabNotExist) {
+          throw new Error("NOT_FOUND");
+        }
+
         const typingHistories = await ctx.prisma.typing_histories.findMany({
           where: {
             submission: {
@@ -402,6 +472,14 @@ export const getFrontRouter = router({
 
         return typingHistories;
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "NOT_FOUND") {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "NOT_FOUND",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

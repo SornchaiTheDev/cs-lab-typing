@@ -1,36 +1,31 @@
+import type { tasks } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import clsx from "clsx";
 import type { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import FrontLayout from "~/Layout/FrontLayout";
-import { replaceSlugwithQueryPath, trpc } from "~/helpers";
-import { prisma } from "~/server/db";
+import { replaceSlugwithQueryPath } from "~/helpers";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import superjson from "superjson";
 
-function Labs() {
+type taskWithStatus = tasks & { status: "PASSED" | "FAILED" | "NOT_SUBMITTED" };
+
+interface Props {
+  courseName: string;
+  labName: string;
+  tasks: string;
+}
+
+function Labs({ courseName, labName, tasks }: Props) {
   const router = useRouter();
-  const { sectionId, labId } = router.query;
 
-  const tasks = trpc.front.getTasks.useQuery(
-    {
-      labId: labId as string,
-      sectionId: sectionId as string,
-    },
-    {
-      enabled: !!sectionId && !!labId,
-    }
-  );
-
-  useEffect(() => {
-    if (tasks.data === null) {
-      router.replace("/404");
-    }
-  }, [tasks.data, router]);
+  const _tasks: taskWithStatus[] = superjson.parse(tasks);
 
   return (
     <FrontLayout
-      title={tasks.data?.labName ?? ""}
-      isLoading={tasks.isLoading}
+      title={labName ?? ""}
       customBackPath={`/courses/${replaceSlugwithQueryPath(
         "[sectionId]",
         router.query
@@ -38,17 +33,16 @@ function Labs() {
       breadcrumbs={[
         { label: "My Course", path: "/" },
         {
-          label: tasks.data?.courseName ?? "",
+          label: courseName ?? "",
           path: `/courses/${replaceSlugwithQueryPath(
             "[sectionId]",
             router.query
           )}`,
-          isLoading: tasks.isLoading,
         },
       ]}
     >
       <div className="grid grid-cols-12 gap-6 my-10">
-        {tasks.data?.tasks.map(({ id, name, status }) => (
+        {_tasks.map(({ id, name, status }) => (
           <Link
             key={id}
             href={{
@@ -78,43 +72,42 @@ function Labs() {
 
 export default Labs;
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { labId, sectionId } = ctx.query;
-  const labIdInt = parseInt(labId as string);
-  const lab = await prisma.labs.findUnique({
-    where: {
-      id: labIdInt,
-    },
-    select: {
-      status: true,
-      isDisabled: true,
-    },
-  });
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  const { helper } = await createTrpcHelper({ req, res });
+  const { sectionId, labId } = query;
 
-  const section = await prisma.sections.findUnique({
-    where: {
-      id: parseInt(sectionId as string),
-    },
-    select: {
-      active: true,
-    },
-  });
-
-  if (lab) {
-    const labStatus = lab?.status.find(
-      (status) => status.sectionId === parseInt(sectionId as string)
-    )?.status;
-
-    const isLabSetDisabled = labStatus === "DISABLED";
-    const isLabDisabed = lab?.isDisabled;
-    const isSectionNotActive = !section?.active;
-
-    if (isLabSetDisabled || isLabDisabed || isSectionNotActive) {
+  try {
+    const lab = await helper.front.getTasks.fetch({
+      labId: labId as string,
+      sectionId: sectionId as string,
+    });
+    if (lab) {
+      const { courseName, labName, tasks } = lab;
       return {
-        notFound: true,
+        props: {
+          courseName,
+          labName,
+          tasks: superjson.stringify(tasks),
+        },
       };
     }
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (
+        err.message === "NOT_FOUND" ||
+        err.message === "SOMETHING_WENT_WRONG"
+      ) {
+        return {
+          notFound: true,
+        };
+      }
+    }
   }
+
   return {
     props: {},
   };
