@@ -14,7 +14,10 @@ function SectionLayout({ title, children, isLoading }: Props) {
 
   const menus = [
     { name: "Overview", path: "" },
-    { name: "Annoucement", path: "announcement" },
+    // { name: "Annoucement", path: "announcement" },
+    { name: "Students", path: "students" },
+    { name: "LAB SET", path: "labset" },
+    { name: "Status", path: "status" },
     {
       name: "History",
       path: "history",
@@ -28,13 +31,9 @@ function SectionLayout({ title, children, isLoading }: Props) {
 
   const teacherMenus = [...menus];
 
-  teacherMenus.splice(2, 0, { name: "Status", path: "status" });
-  teacherMenus.splice(2, 0, { name: "LAB SET", path: "labset" });
-  teacherMenus.splice(2, 0, { name: "Students", path: "students" });
-
   const taMenus = [
     { name: "Overview", path: "" },
-    { name: "Annoucement", path: "announcement" },
+    // { name: "Annoucement", path: "announcement" },
     { name: "LAB SET", path: "labset" },
     { name: "Status", path: "status" },
   ];

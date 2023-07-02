@@ -74,17 +74,16 @@ export const getSemesterRouter = router({
       const year = yearAndTerm.split("/")[0] ?? "";
       const term = yearAndTerm.split("/")[1] ?? "";
       try {
-        const semesters = await ctx.prisma.semesters.findMany({
+        const semesters = await ctx.prisma.semesters.findFirst({
           where: {
             year,
             term,
             deleted_at: null,
           },
-          take: 1,
         });
         const semester = await ctx.prisma.semesters.findUnique({
           where: {
-            id: semesters[0]?.id,
+            id: semesters?.id,
           },
           include: {
             sections: {
@@ -133,19 +132,19 @@ export const getSemesterRouter = router({
             {
               name: "Section",
               data:
-                semester?.sections.map(({ name, labs }) => ({
+                semester?.sections.map(({ name, labs, id }) => ({
                   name,
                   data: [
                     {
                       name: "Lab in section",
                       data: labs.map(({ name, submissions }) => ({
                         name,
-                        data: submissions.map(
-                          ({ created_at, user_id, section_id }) => ({
+                        data: submissions
+                          .filter((submission) => submission.section_id === id)
+                          .map(({ created_at, user_id, section_id }) => ({
                             name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
                             data: [],
-                          })
-                        ),
+                          })),
                       })),
                     },
                   ],

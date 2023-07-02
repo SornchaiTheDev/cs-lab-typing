@@ -61,7 +61,7 @@ function Students() {
         sectionId: sectionId as string,
         id: selectedUser as number,
       });
-      await section.refetch();
+      await studentsPagination.refetch();
       callToast({
         msg: "Delete Student from Section successfully",
         type: "success",

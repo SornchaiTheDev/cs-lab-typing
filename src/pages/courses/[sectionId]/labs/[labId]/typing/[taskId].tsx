@@ -4,24 +4,36 @@ import TypingGame from "~/components/Typing";
 import EndedGame from "~/components/Typing/EndedGame";
 import { useTypingStore } from "~/store";
 import { useRouter } from "next/router";
-import { replaceSlugwithQueryPath, trpc } from "~/helpers";
+import { replaceSlugwithQueryPath } from "~/helpers";
 import Button from "~/components/Common/Button";
-import Skeleton from "~/components/Common/Skeleton";
 import History from "~/components/Typing/History";
-import type { GetServerSideProps } from "next";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { prisma } from "~/server/db";
 import type { SectionType } from "@prisma/client";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 
 interface Props {
   sectionType: SectionType;
+  taskName: string;
+  taskBody: string;
+  courseName: string;
+  labName: string;
+  labStatus: string;
 }
 
-function TypingTask({ sectionType }: Props) {
+function TypingTask({
+  sectionType,
+  taskName,
+  taskBody,
+  courseName,
+  labName,
+  labStatus,
+}: Props) {
   const router = useRouter();
   const { taskId, labId, sectionId } = router.query;
-  const taskIdInt = taskId as string;
-  const labIdInt = labId as string;
-  const sectionIdInt = sectionId as string;
+  // const taskIdInt = taskId as string;
+  // const labIdInt = labId as string;
+  // const sectionIdInt = sectionId as string;
 
   const [status, setStatus] = useTypingStore((state) => [
     state.status,
@@ -32,26 +44,26 @@ function TypingTask({ sectionType }: Props) {
     setStatus("NotStarted");
   }, [setStatus]);
 
-  const task = trpc.front.getTaskById.useQuery(
-    {
-      taskId: taskIdInt,
-      labId: labIdInt,
-      sectionId: sectionIdInt,
-    },
-    {
-      enabled: !!taskIdInt && !!labIdInt && !!sectionIdInt,
-    }
-  );
+  // const task = trpc.front.getTaskById.useQuery(
+  //   {
+  //     taskId: taskIdInt,
+  //     labId: labIdInt,
+  //     sectionId: sectionIdInt,
+  //   },
+  //   {
+  //     enabled: !!taskIdInt && !!labIdInt && !!sectionIdInt,
+  //   }
+  // );
 
   const isTypingPhase = status === "NotStarted" || status === "Started";
   const isEndedPhase = status === "Ended";
   const isHistoryPhase = status === "History";
-  const isReadOnly = task.data?.labStatus === "READONLY";
+  const isReadOnly = labStatus === "READONLY";
 
   return (
     <>
       <FrontLayout
-        title={task.data?.task?.name ?? ""}
+        title={taskName}
         customBackPath={`/courses/${replaceSlugwithQueryPath(
           "[sectionId]",
           router.query
@@ -59,20 +71,18 @@ function TypingTask({ sectionType }: Props) {
         breadcrumbs={[
           { label: "My Course", path: "/" },
           {
-            label: task.data?.section?.course.name ?? "",
+            label: courseName ?? "",
             path: `/courses/${replaceSlugwithQueryPath(
               "[sectionId]",
               router.query
             )}`,
-            isLoading: task.isLoading,
           },
           {
-            label: task.data?.lab?.name ?? "",
+            label: labName ?? "",
             path: `/courses/${replaceSlugwithQueryPath(
               "[sectionId]",
               router.query
             )}/labs/${replaceSlugwithQueryPath("[labId]", router.query)}`,
-            isLoading: task.isLoading,
           },
         ]}
       >
@@ -93,17 +103,10 @@ function TypingTask({ sectionType }: Props) {
             </Button>
           )}
           <div className="flex flex-col flex-1 mt-12">
-            {task.isLoading ? (
-              <div className="flex flex-col gap-4 mt-4">
-                <Skeleton width="100%" height="3rem" />
-                <Skeleton width="100%" height="3rem" />
-                <Skeleton width="100%" height="3rem" />
-                <Skeleton width="20%" height="3rem" />
-              </div>
-            ) : isReadOnly ? (
+            {isReadOnly ? (
               <History />
             ) : isTypingPhase ? (
-              <TypingGame text={task.data?.task?.body ?? ""} />
+              <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
               <EndedGame {...{ sectionType }} />
             ) : (
@@ -118,39 +121,33 @@ function TypingTask({ sectionType }: Props) {
 
 export default TypingTask;
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { labId, sectionId } = ctx.query;
-  const labIdInt = parseInt(labId as string);
-  const sectionIdInt = parseInt(sectionId as string);
-  const lab = await prisma.labs.findUnique({
-    where: {
-      id: labIdInt,
-    },
-    select: {
-      status: true,
-      isDisabled: true,
-      sections: {
-        where: {
-          id: sectionIdInt,
-        },
-        select: {
-          type: true,
-        },
-      },
-    },
-  });
-  if (lab) {
-    const labStatus = lab?.status.find(
-      (status) => status.sectionId === parseInt(sectionId as string)
-    )?.status;
+export const getServerSideProps: GetServerSideProps<Props> = async (
+  ctx: GetServerSidePropsContext
+) => {
+  const { req, res } = ctx;
+  const { helper } = await createTrpcHelper({ req, res });
+  const { labId, sectionId, taskId } = ctx.query;
+  try {
+    const { courseName, labName, labStatus, sectionType, taskName, taskBody } =
+      await helper.front.getTaskById.fetch({
+        labId: labId as string,
+        sectionId: sectionId as string,
+        taskId: taskId as string,
+      });
 
-    if (labStatus === "DISABLED" || lab.isDisabled) {
-      return {
-        notFound: true,
-      };
-    }
+    return {
+      props: {
+        courseName,
+        labName,
+        labStatus,
+        sectionType,
+        taskName,
+        taskBody,
+      },
+    };
+  } catch (err) {
+    return {
+      notFound: true,
+    };
   }
-  return {
-    props: { sectionType: lab?.sections[0]?.type },
-  };
 };

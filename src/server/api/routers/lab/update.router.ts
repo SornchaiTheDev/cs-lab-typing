@@ -90,7 +90,7 @@ export const updateLabRouter = router({
       try {
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: ctx.user.full_name,
+            full_name: requester,
             deleted_at: null,
           },
           select: {

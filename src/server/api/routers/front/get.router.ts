@@ -54,7 +54,6 @@ export const getFrontRouter = router({
         where: {
           AND: [
             { deleted_at: null },
-            { active: true },
             {
               OR: [
                 {
@@ -242,35 +241,13 @@ export const getFrontRouter = router({
 
       const full_name = ctx.user.full_name;
       try {
-        const task = await ctx.prisma.tasks.findUnique({
-          where: {
-            id: _taskId,
-          },
-          select: {
-            name: true,
-            body: true,
-          },
-        });
-
-        const lab = await ctx.prisma.labs.findUnique({
-          where: {
-            id: _labId,
-          },
-          select: {
-            name: true,
-            status: {
-              where: {
-                sectionId: _sectionId,
-              },
-            },
-          },
-        });
-
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
           },
           select: {
+            active: true,
+            type: true,
             course: {
               select: {
                 name: true,
@@ -278,6 +255,53 @@ export const getFrontRouter = router({
             },
           },
         });
+
+        if (!section?.active) {
+          throw new Error("NOT_FOUND");
+        }
+
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: _labId,
+          },
+          select: {
+            name: true,
+            isDisabled: true,
+            status: {
+              where: {
+                sectionId: _sectionId,
+              },
+              take: 1,
+            },
+          },
+        });
+
+        if (lab?.status[0]?.status !== "ACTIVE" || lab.isDisabled) {
+          throw new Error("NOT_FOUND");
+        }
+
+        const task = await ctx.prisma.tasks.findUnique({
+          where: {
+            id: _taskId,
+          },
+          select: {
+            deleted_at: true,
+            labs: {
+              where: {
+                id: _labId,
+              },
+            },
+            name: true,
+            body: true,
+          },
+        });
+
+        const isTaskNotInLab = task?.labs.length === 0;
+        const isTaskAlreadyDeleted = task?.deleted_at !== null;
+
+        if (isTaskAlreadyDeleted || isTaskNotInLab) {
+          throw new Error("NOT_FOUND");
+        }
 
         const user = await ctx.prisma.users.findFirst({
           where: {
@@ -311,11 +335,31 @@ export const getFrontRouter = router({
           },
         });
 
-        const labStatus = lab?.status.find(
-          (status) => status.sectionId === _sectionId
-        )?.status;
-        return { task, lab, section, labStatus };
+        const labStatus =
+          lab?.status.find((status) => status.sectionId === _sectionId)
+            ?.status ?? "DISABLED";
+
+        if (task.body === null) {
+          throw new Error("NOT_FOUND");
+        }
+
+        return {
+          taskName: task.name,
+          taskBody: task.body,
+          courseName: section.course.name,
+          labName: lab.name,
+          labStatus,
+          sectionType: section.type,
+        };
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "NOT_FOUND") {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "TASK_NOT_FOUND",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

@@ -294,14 +294,28 @@ export const getTaskRouter = router({
         const submissions = await ctx.prisma.submissions.findMany({
           where: {
             task_id: id,
+            section: {
+              deleted_at: null,
+            },
+          },
+        });
+
+        const typingHistories = await ctx.prisma.typing_histories.findMany({
+          where: {
+            submission_id: {
+              in: submissions.map(({ id }) => id),
+            },
+          },
+          include: {
+            submission: true,
           },
         });
 
         const relation: Relation = {
           summary: [
             { name: "Tasks", amount: 1 },
-            { name: "Assignments", amount: 1 },
-            { name: "Submissions", amount: task?.submission_count ?? 0 },
+            { name: "Assignments", amount: task?.labs.length ?? 0 },
+            { name: "Submissions", amount: typingHistories.length ?? 0 },
           ],
           object: [
             {
@@ -315,10 +329,13 @@ export const getTaskRouter = router({
             },
             {
               name: "Submissions",
-              data: submissions.map(({ created_at, user_id, section_id }) => ({
-                name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
-                data: [],
-              })),
+              data: typingHistories.map(({ created_at, submission }) => {
+                const { user_id, section_id } = submission;
+                return {
+                  name: `Submitted at ${created_at} by user-id:${user_id} sec-id:${section_id}`,
+                  data: [],
+                };
+              }),
             },
           ],
         };

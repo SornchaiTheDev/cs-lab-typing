@@ -90,12 +90,26 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       isDisabled: true,
     },
   });
+
+  const section = await prisma.sections.findUnique({
+    where: {
+      id: parseInt(sectionId as string),
+    },
+    select: {
+      active: true,
+    },
+  });
+
   if (lab) {
     const labStatus = lab?.status.find(
       (status) => status.sectionId === parseInt(sectionId as string)
     )?.status;
 
-    if (labStatus === "DISABLED" || lab.isDisabled) {
+    const isLabSetDisabled = labStatus === "DISABLED";
+    const isLabDisabed = lab?.isDisabled;
+    const isSectionNotActive = !section?.active;
+
+    if (isLabSetDisabled || isLabDisabed || isSectionNotActive) {
       return {
         notFound: true,
       };

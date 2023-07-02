@@ -26,7 +26,7 @@ function Course() {
       customBackPath="/"
       breadcrumbs={[{ label: "My Course", path: "/" }]}
     >
-      <Announcement />
+      {/* <Announcement /> */}
 
       <div className="grid grid-cols-12 gap-6 my-10">
         {labs.data?.labs.map(

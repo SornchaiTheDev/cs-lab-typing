@@ -294,6 +294,11 @@ export const updateSectionsRouter = router({
             id: true,
           },
         });
+
+        if (_studentsId.length === 0) {
+          throw new Error("USER_NOT_FOUND");
+        }
+
         await ctx.prisma.sections.update({
           where: {
             id: _sectionId,
@@ -315,20 +320,18 @@ export const updateSectionsRouter = router({
           },
         });
       } catch (err) {
+        if (err instanceof Error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "USER_NOT_FOUND",
+          });
+        }
         if (err instanceof Prisma.PrismaClientKnownRequestError) {
           if (err.code === "P2002") {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "DUPLICATED_USER",
               cause: "DUPLICATED_USER",
-            });
-          }
-
-          if (err.code === "P2025") {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "USER_NOT_FOUND",
-              cause: "USER_NOT_FOUND",
             });
           }
         }
