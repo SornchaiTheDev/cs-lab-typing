@@ -15,6 +15,9 @@ import Modal from "~/components/Common/Modal";
 import Multiple from "~/components/Forms/Search/MultipleSearch";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 interface AddTaskModalProps {
   isShow: boolean;
@@ -124,7 +127,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="h-fit w-full rounded-md border border-sand-6 bg-sand-1 p-2 outline-none"
+        className="w-full p-2 border rounded-md outline-none h-fit border-sand-6 bg-sand-1"
         placeholder="eg. Typing01"
       />
       <div className="flex gap-4">
@@ -147,12 +150,12 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       <Button
         onClick={handleOnSearch}
         icon="solar:magnifer-line-duotone"
-        className="mt-2 w-fit bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+        className="mt-2 shadow w-fit bg-sand-12 text-sand-1 active:bg-sand-11"
       >
         Search
       </Button>
       <hr className="my-2" />
-      <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
+      <div className="grid grid-cols-12 gap-4 px-2 py-4 overflow-y-auto">
         {tasks.isLoading
           ? new Array(6)
               .fill(0)
@@ -191,7 +194,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
                         {tags.map(({ name }) => (
                           <div
                             key={name}
-                            className="w-fit rounded-lg bg-lime-9 px-2 text-white"
+                            className="px-2 text-white rounded-lg w-fit bg-lime-9"
                           >
                             {name}
                           </div>
@@ -300,7 +303,7 @@ function Lab() {
           cell: (props) => (
             <button
               onClick={() => deleteSelectRow(props.row.original.id)}
-              className="rounded-xl text-xl text-sand-12"
+              className="text-xl rounded-xl text-sand-12"
             >
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
             </button>
@@ -362,7 +365,7 @@ function Lab() {
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:checklist-minimalistic-line-duotone"
-                className="bg-sand-12  text-sand-1 shadow active:bg-sand-11"
+                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
               >
                 Add Task
               </Button>
@@ -370,7 +373,7 @@ function Lab() {
                 <Button
                   onClick={handleOnSave}
                   icon="solar:diskette-line-duotone"
-                  className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+                  className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
                 >
                   Save
                 </Button>
@@ -384,3 +387,27 @@ function Lab() {
 }
 
 export default Lab;
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+) => {
+  const { req, res } = ctx;
+  const { helper } = await createTrpcHelper({ req, res });
+  const { courseId } = ctx.query;
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.message === "NOT_FOUND") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+  return {
+    props: {},
+  };
+};

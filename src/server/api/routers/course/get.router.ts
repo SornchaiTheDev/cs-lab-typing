@@ -68,15 +68,15 @@ export const getCourseRouter = router({
           },
         });
         if (!course) {
-          throw new Error("UNAUTHORIZED");
+          throw new Error("NOT_FOUND");
         }
         return course;
       } catch (err) {
         if (err instanceof Error) {
-          if (err.message === "UNAUTHORIZED") {
+          if (err.message === "NOT_FOUND") {
             throw new TRPCError({
-              code: "UNAUTHORIZED",
-              message: "UNAUTHORIZED",
+              code: "INTERNAL_SERVER_ERROR",
+              message: "NOT_FOUND",
             });
           }
         }

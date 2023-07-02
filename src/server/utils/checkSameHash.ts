@@ -9,6 +9,6 @@ export const checkSameHash = (
   hash: string
 ) => {
   const _hash = objectHash(input);
-  console.log(_hash, hash, input);
+
   return _hash === hash;
 };

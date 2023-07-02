@@ -9,6 +9,9 @@ import {
 import LabLayout from "~/Layout/LabLayout";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 interface HistoryRow {
   action: string;
@@ -95,3 +98,27 @@ function LabHistory() {
 }
 
 export default LabHistory;
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+) => {
+  const { req, res } = ctx;
+  const { helper } = await createTrpcHelper({ req, res });
+  const { courseId } = ctx.query;
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.message === "NOT_FOUND") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+  return {
+    props: {},
+  };
+};

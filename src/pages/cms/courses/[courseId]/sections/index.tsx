@@ -117,7 +117,7 @@ function Sections() {
           />
         </ModalWithButton>
       </div>
-      <div className="mt-4 grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 mt-4">
         {sections.isLoading
           ? new Array(6)
               .fill(0)
@@ -145,7 +145,7 @@ function Sections() {
                   </div>
 
                   <div>
-                    <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
+                    <div className="absolute flex items-center px-1 rounded-lg right-2 top-2 w-fit bg-sand-7">
                       <Icon
                         icon="solar:user-hand-up-line-duotone"
                         className="text-lg"
@@ -168,7 +168,7 @@ function Sections() {
       {/* Todo add archived sections */}
       {/* <div className="mt-10">
         <h2 className="text-2xl font-semibold">Archived</h2>
-        <div className="mt-4 grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-6 mt-4">
           {sections.isLoading
             ? new Array(6)
                 .fill(0)
@@ -196,7 +196,7 @@ function Sections() {
                     </div>
 
                     <div>
-                      <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
+                      <div className="absolute flex items-center px-1 rounded-lg right-2 top-2 w-fit bg-sand-7">
                         <Icon
                           icon="solar:user-hand-up-line-duotone"
                           className="text-lg"
@@ -228,15 +228,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   res,
   query,
 }) => {
-  const { helper, user } = await createTrpcHelper({ req, res });
-  const { role } = user;
+  const { helper } = await createTrpcHelper({ req, res });
   const { courseId } = query;
-
-  if (role === "STUDENT" || !courseId) {
-    return {
-      notFound: true,
-    };
-  }
 
   try {
     await helper.courses.getCourseById.fetch({
@@ -244,7 +237,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     });
   } catch (err) {
     if (err instanceof TRPCError) {
-      if (err.code === "UNAUTHORIZED") {
+      if (err.message === "NOT_FOUND") {
         return {
           notFound: true,
         };

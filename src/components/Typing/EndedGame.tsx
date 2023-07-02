@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTypingStore } from "~/store";
 import { getDuration } from "./utils/getDuration";
 import { calculateTypingSpeed } from "./utils/calculateWPM";
@@ -15,7 +15,7 @@ import type {
   TypingResultWithHashType,
 } from "~/schemas/TypingResult";
 import { useSession } from "next-auth/react";
-import type { SectionType } from "@prisma/client";
+import type { SectionType, typing_histories } from "@prisma/client";
 interface Props {
   sectionType: SectionType;
 }

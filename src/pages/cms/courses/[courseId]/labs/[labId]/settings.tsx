@@ -9,6 +9,9 @@ import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
 import { callToast } from "~/services/callToast";
 import { useSession } from "next-auth/react";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { TRPCError } from "@trpc/server";
 
 function Settings() {
   const { data: session } = useSession();
@@ -68,7 +71,7 @@ function Settings() {
         isLoading={lab.isLoading}
         canAccessToSuperUserMenus={!isStudent}
       >
-        <div className="md:w-1/2 p-4">
+        <div className="p-4 md:w-1/2">
           <div className="w-full">
             <h4 className="text-xl">General</h4>
             <hr className="my-2" />
@@ -120,7 +123,7 @@ function Settings() {
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="bg-red-9 text-sand-1 w-full md:w-fit shadow active:bg-red-11"
+              className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-fit"
             >
               Delete Lab
             </Button>
@@ -132,3 +135,27 @@ function Settings() {
 }
 
 export default Settings;
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+) => {
+  const { req, res } = ctx;
+  const { helper } = await createTrpcHelper({ req, res });
+  const { courseId } = ctx.query;
+  try {
+    await helper.courses.getCourseById.fetch({
+      id: courseId as string,
+    });
+  } catch (err) {
+    if (err instanceof TRPCError) {
+      if (err.message === "NOT_FOUND") {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+  return {
+    props: {},
+  };
+};
