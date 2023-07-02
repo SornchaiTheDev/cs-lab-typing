@@ -81,8 +81,6 @@ model semesters {
   created_at DateTime   @default(now())
   updated_at DateTime?  @updatedAt
   deleted_at DateTime?
-
-  @@unique([year, term])
 }
 
 model courses {
@@ -127,8 +125,6 @@ model sections {
   created_at    DateTime            @default(now())
   updated_at    DateTime?           @updatedAt
   deleted_at    DateTime?
-
-  @@unique([semester_id, course_id, name])
 }
 
 model section_histories {

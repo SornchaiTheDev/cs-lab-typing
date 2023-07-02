@@ -6,15 +6,15 @@ export const deleteUserRouter = router({
   deleteUser: teacherAboveProcedure
     .input(
       z.object({
-        email: z.string(),
+        id: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { email } = input;
+      const { id } = input;
       try {
         await await ctx.prisma.users.delete({
           where: {
-            email,
+            id,
           },
         });
         return "Success";

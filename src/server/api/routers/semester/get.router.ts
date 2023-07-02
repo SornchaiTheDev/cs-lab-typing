@@ -51,15 +51,15 @@ export const getSemesterRouter = router({
       const year = yearAndTerm.split("/")[0] ?? "";
       const term = yearAndTerm.split("/")[1] ?? "";
       try {
-        const semester = await ctx.prisma.semesters.findUnique({
+        const semester = await ctx.prisma.semesters.findMany({
           where: {
-            year_term: {
-              year,
-              term,
-            },
+            year,
+            term,
+            deleted_at: null,
           },
         });
-        return semester;
+
+        return semester[0];
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -74,12 +74,17 @@ export const getSemesterRouter = router({
       const year = yearAndTerm.split("/")[0] ?? "";
       const term = yearAndTerm.split("/")[1] ?? "";
       try {
+        const semesters = await ctx.prisma.semesters.findMany({
+          where: {
+            year,
+            term,
+            deleted_at: null,
+          },
+          take: 1,
+        });
         const semester = await ctx.prisma.semesters.findUnique({
           where: {
-            year_term: {
-              year,
-              term,
-            },
+            id: semesters[0]?.id,
           },
           include: {
             sections: {

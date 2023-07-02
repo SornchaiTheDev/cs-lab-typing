@@ -10,14 +10,20 @@ export const createCourseRouter = router({
       const { number, name, authors, note, comments } = input;
       let course;
       try {
+        const users = await ctx.prisma.users.findMany({
+          where: {
+            full_name: {
+              in: authors,
+            },
+          },
+        });
+
         course = await ctx.prisma.courses.create({
           data: {
             number,
             name,
             authors: {
-              connect: authors.map((author) => ({
-                full_name: author,
-              })),
+              connect: users.map((user) => ({ id: user.id })),
             },
             note,
             comments,

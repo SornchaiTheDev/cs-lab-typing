@@ -19,6 +19,14 @@ export const updateSectionsRouter = router({
       const requester = ctx.user.full_name;
       const _id = parseInt(id);
       try {
+        const semester = await ctx.prisma.semesters.findMany({
+          where: {
+            year,
+            term,
+            deleted_at: null,
+          },
+          take: 1,
+        });
         await ctx.prisma.sections.update({
           where: {
             id: _id,
@@ -29,10 +37,7 @@ export const updateSectionsRouter = router({
             note,
             semester: {
               connect: {
-                year_term: {
-                  year,
-                  term,
-                },
+                id: semester[0]?.id,
               },
             },
             instructors: {

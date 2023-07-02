@@ -13,7 +13,7 @@ export const getUserType = (user: userType) => {
   if (
     isNonKUStudent([
       user.student_id,
-      user.password!,
+      user.password as string,
       user.email,
       user.full_name,
     ])

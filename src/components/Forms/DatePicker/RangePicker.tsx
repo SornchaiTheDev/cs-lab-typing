@@ -1,5 +1,5 @@
-import { DateRange, DayPicker } from "react-day-picker";
-import { format, addDays } from "date-fns";
+import { type DateRange, DayPicker } from "react-day-picker";
+import { format } from "date-fns";
 import { useState, useRef } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Icon } from "@iconify/react";
@@ -43,7 +43,7 @@ function RangePicker({ value, onChange }: Props) {
   return (
     <div className="relative" ref={dateRef}>
       <button
-        className="flex items-center w-full gap-2 p-2 border rounded-md bg-sand-3 border-sand-7"
+        className="flex items-center w-full gap-2 p-2 border rounded-md border-sand-7 bg-sand-3"
         onClick={() => setIsShow(!isShow)}
       >
         <Icon icon="solar:calendar-line-duotone" />

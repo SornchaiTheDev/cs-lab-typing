@@ -17,21 +17,10 @@ import EditSemester from "~/features/Semesters/EditSemester";
 import { useDeleteAffectStore } from "~/store";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
-
-interface SemesterRow {
-  id: string;
-  year: string;
-  startDate: Date;
-}
-
-interface cellProps {
-  row: {
-    getValue: (title: string) => string | number;
-  };
-}
+import type { semesters } from "@prisma/client";
 
 function Semesters() {
-  const columnHelper = createColumnHelper<SemesterRow>();
+  const columnHelper = createColumnHelper<semesters>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
@@ -72,7 +61,7 @@ function Semesters() {
     }
   };
 
-  const columns = useMemo<ColumnDef<SemesterRow, string>[]>(
+  const columns = useMemo<ColumnDef<semesters, string>[]>(
     () => [
       {
         header: "Year",
@@ -93,7 +82,7 @@ function Semesters() {
         id: "actions",
         header: "Edit",
         size: 50,
-        cell: (props: cellProps) => (
+        cell: (props) => (
           <button
             onClick={() =>
               setSelectedObj({
@@ -101,12 +90,12 @@ function Semesters() {
                   display: `${props.row.getValue("year")}/${props.row.getValue(
                     "term"
                   )}`,
-                  id: props.row.getValue("id") as number,
+                  id: props.row.original.id,
                 },
                 type: "semester",
               })
             }
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -166,7 +155,7 @@ function Semesters() {
             <Button
               onClick={() => setIsModalOpen(true)}
               icon="solar:calendar-line-duotone"
-              className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add Semester
             </Button>

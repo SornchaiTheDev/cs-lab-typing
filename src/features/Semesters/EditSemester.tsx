@@ -36,7 +36,7 @@ const EditSemester = () => {
     },
   });
 
-  const editUser = async (formData: TSemesterSchema) => {
+  const editSemester = async (formData: TSemesterSchema) => {
     const { startDate, term, year } = formData;
     updateSemester.mutate({
       id: semester.data?.id as number,
@@ -73,7 +73,7 @@ const EditSemester = () => {
             <>
               <Forms
                 schema={SemesterSchema}
-                onSubmit={editUser}
+                onSubmit={editSemester}
                 fields={[
                   {
                     label: "year",

@@ -3,7 +3,6 @@ import {
   TaAboveProcedure,
   router,
   teacherAboveProcedure,
-  teacherProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import { getAllSections } from "./roles/getAllSections";

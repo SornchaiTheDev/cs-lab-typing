@@ -6,30 +6,30 @@ export const deleteCourseRouter = router({
   deleteCourse: adminProcedure
     .input(
       z.object({
-        name: z.string(),
+        id: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
       try {
         await ctx.prisma.courses.delete({
           where: {
-            name,
+            id,
           },
         });
 
         await ctx.prisma.labs.deleteMany({
           where: {
             course: {
-              name,
+              id,
             },
           },
         });
-        
+
         await ctx.prisma.sections.deleteMany({
           where: {
             course: {
-              name,
+              id,
             },
           },
         });

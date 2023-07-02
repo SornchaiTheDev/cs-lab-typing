@@ -17,6 +17,15 @@ export const createSectionsRouter = router({
       const typeUppercase = type.toUpperCase() as SectionType;
       let section;
       try {
+        const semester = await ctx.prisma.semesters.findMany({
+          where: {
+            year,
+            term,
+            deleted_at: null,
+          },
+          take: 1,
+        });
+
         section = await ctx.prisma.sections.create({
           data: {
             active,
@@ -25,10 +34,7 @@ export const createSectionsRouter = router({
             note,
             semester: {
               connect: {
-                year_term: {
-                  year,
-                  term,
-                },
+                id: semester[0]?.id,
               },
             },
             instructors: {

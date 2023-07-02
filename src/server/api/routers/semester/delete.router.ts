@@ -6,19 +6,23 @@ export const deleteSemesterRouter = router({
   deleteSemester: adminProcedure
     .input(
       z.object({
-        yearAndTerm: z.string(),
+        id: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { yearAndTerm } = input;
-      const year = yearAndTerm.split("/")[0] ?? "";
-      const term = yearAndTerm.split("/")[1] ?? "";
+      const { id } = input;
+
       try {
         await ctx.prisma.semesters.delete({
           where: {
-            year_term: {
-              year,
-              term,
+            id,
+          },
+        });
+
+        await ctx.prisma.sections.deleteMany({
+          where: {
+            semester: {
+              id,
             },
           },
         });
