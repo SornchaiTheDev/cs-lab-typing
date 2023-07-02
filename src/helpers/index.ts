@@ -11,7 +11,6 @@ export {
   isKUStudent,
   isNonKUStudent,
   isValidTeacher,
-  isAllUserHaveValidStudentId,
 } from "./isValidUser";
 export { getHighestRole } from "./getHighestRole";
 export { convertToThousand } from "./convertToThousand";
