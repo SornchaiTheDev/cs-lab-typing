@@ -24,7 +24,6 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string(),
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
-    TURNSTILE_SECRET: z.string().min(1),
   },
 
   /**
@@ -34,7 +33,6 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
-    NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1),
   },
 
   /**
@@ -50,7 +48,5 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
-    TURNSTILE_SECRET: process.env.TURNSTILE_SECRET,
-    NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
   },
 });
