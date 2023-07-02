@@ -12,9 +12,28 @@ export const deleteUserRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
       try {
-        await await ctx.prisma.users.delete({
+        await ctx.prisma.users.delete({
           where: {
             id,
+          },
+        });
+        await ctx.prisma.users.update({
+          where: {
+            id,
+          },
+          data: {
+            instructors: {
+              set: [],
+            },
+            students: {
+              set: [],
+            },
+            authors: {
+              set: [],
+            },
+            created_sections: {
+              set: [],
+            },
           },
         });
         return "Success";

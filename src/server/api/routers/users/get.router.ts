@@ -73,11 +73,11 @@ export const getUserRouter = router({
         });
 
         const relation: Relation = {
-          summary: [{ name: "Role", amount: user?.roles.length ?? 0 }],
+          summary: [{ name: "User", amount: 1 }],
           object: [
             {
-              name: "Role",
-              data: user?.roles.map((role) => ({ name: role, data: [] })) ?? [],
+              name: "User",
+              data: [{ name: user?.full_name as string, data: [] }],
             },
           ],
         };
