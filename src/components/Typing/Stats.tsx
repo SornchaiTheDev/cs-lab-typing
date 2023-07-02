@@ -11,7 +11,7 @@ function Stats({ adjustedSpeed, duration, errorPercentage, rawSpeed }: Props) {
     : duration.seconds;
 
   return (
-    <div className="flex justify-center gap-10 text-sand-12">
+    <div className="flex flex-wrap justify-center gap-10 text-sand-12">
       <div>
         <h6 className="text-sm">Raw Speed</h6>
         <h2 className="text-4xl font-bold">{rawSpeed}</h2>

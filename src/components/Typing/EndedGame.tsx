@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTypingStore } from "~/store";
 import { getDuration } from "./utils/getDuration";
 import { calculateTypingSpeed } from "./utils/calculateWPM";
@@ -15,7 +15,8 @@ import type {
   TypingResultWithHashType,
 } from "~/schemas/TypingResult";
 import { useSession } from "next-auth/react";
-import type { SectionType, typing_histories } from "@prisma/client";
+import type { SectionType } from "@prisma/client";
+import type { PaginationState } from "@tanstack/react-table";
 interface Props {
   sectionType: SectionType;
 }
@@ -24,6 +25,13 @@ function EndedGame({ sectionType }: Props) {
   const { data: session } = useSession();
 
   const { sectionId, labId, taskId } = router.query;
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 6,
+  });
+
+  const { pageIndex, pageSize } = pagination;
 
   const typingHistories = trpc.front.getTypingHistory.useQuery(
     {
@@ -98,6 +106,21 @@ function EndedGame({ sectionType }: Props) {
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
+  const PAGE = pageIndex * pageSize;
+  const LIMIT = PAGE + pageSize;
+
+  const highestSpeed = useMemo(() => {
+    if (typingHistories.data === undefined) return -1;
+    const cloneDatas = [...typingHistories.data];
+    const highestSpeed = cloneDatas.sort(
+      (prev, current) => current.adjusted_speed - prev.adjusted_speed
+    );
+    if (highestSpeed[0] !== undefined) {
+      return highestSpeed[0].adjusted_speed;
+    }
+
+    return -1;
+  }, [typingHistories.data]);
   return (
     <div className="container flex flex-col items-center flex-1 max-w-2xl gap-4 mx-auto mb-2">
       <button
@@ -113,7 +136,12 @@ function EndedGame({ sectionType }: Props) {
       </div>
       <TypingTable
         isLoading={typingHistories.isLoading}
-        datas={typingHistories.data ?? []}
+        datas={typingHistories.data?.slice(PAGE, LIMIT) ?? []}
+        pageCount={
+          Math.ceil((typingHistories.data?.length as number) / pageSize) ?? 0
+        }
+        onPaginationChange={setPagination}
+        {...{ pagination, highestSpeed }}
       />
     </div>
   );

@@ -368,7 +368,11 @@ export const getFrontRouter = router({
     }),
   getTypingHistory: authedProcedure
     .input(
-      z.object({ taskId: z.string(), sectionId: z.string(), labId: z.string() })
+      z.object({
+        taskId: z.string(),
+        sectionId: z.string(),
+        labId: z.string(),
+      })
     )
     .query(async ({ ctx, input }) => {
       const { sectionId, taskId, labId } = input;
@@ -392,9 +396,8 @@ export const getFrontRouter = router({
             },
           },
           orderBy: {
-            id: "desc",
+            created_at: "desc",
           },
-          take: 10,
         });
 
         return typingHistories;

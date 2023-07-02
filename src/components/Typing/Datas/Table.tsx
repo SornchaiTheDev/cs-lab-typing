@@ -1,29 +1,33 @@
 import { Icon } from "@iconify/react";
 import type { typing_histories } from "@prisma/client";
-import { createColumnHelper } from "@tanstack/react-table";
+import {
+  type OnChangeFn,
+  type PaginationState,
+  createColumnHelper,
+} from "@tanstack/react-table";
 import { useMemo } from "react";
 import { getDuration } from "../utils/getDuration";
 import Table from "~/components/Common/Table";
+import { twMerge } from "tailwind-merge";
 
 interface Props {
   datas: typing_histories[];
   isLoading: boolean;
+  pageCount: number;
+  pagination: PaginationState;
+  onPaginationChange?: OnChangeFn<PaginationState> | undefined;
+  highestSpeed: number;
 }
 
-function TypingTable({ datas, isLoading }: Props) {
+function TypingTable({
+  datas,
+  isLoading,
+  pageCount,
+  pagination,
+  onPaginationChange,
+  highestSpeed,
+}: Props) {
   const columnHelper = createColumnHelper<typing_histories>();
-
-  const highestSpeed = useMemo(() => {
-    const cloneDatas = [...datas];
-    const highestSpeed = cloneDatas.sort(
-      (prev, current) => current.adjusted_speed - prev.adjusted_speed
-    );
-    if (highestSpeed[0] !== undefined) {
-      return highestSpeed[0].adjusted_speed;
-    }
-
-    return 0;
-  }, [datas]);
 
   const columns = useMemo(
     () => [
@@ -31,13 +35,18 @@ function TypingTable({ datas, isLoading }: Props) {
         id: "round",
         size: 10,
         cell: (props) => {
-          if (props.row.original.adjusted_speed === highestSpeed)
-            return (
-              <div className="w-fit rounded-full bg-yellow-3 p-2 text-xl text-yellow-10">
-                <Icon icon="ph:trophy-duotone" />
-              </div>
-            );
-          return null;
+          const isHighestSpeed =
+            props.row.original.adjusted_speed === highestSpeed;
+          return (
+            <div
+              className={twMerge(
+                "w-fit rounded-full bg-yellow-3 p-2 text-xl text-yellow-10",
+                !isHighestSpeed && "opacity-0"
+              )}
+            >
+              <Icon icon="ph:trophy-duotone" />
+            </div>
+          );
         },
       }),
       {
@@ -69,7 +78,14 @@ function TypingTable({ datas, isLoading }: Props) {
     ],
     [columnHelper, highestSpeed]
   );
-  return <Table isLoading={isLoading} data={datas} columns={columns} />;
+  return (
+    <Table
+      isLoading={isLoading}
+      data={datas}
+      columns={columns}
+      {...{ pagination, onPaginationChange, pageCount }}
+    />
+  );
 }
 
 export default TypingTable;

@@ -33,7 +33,7 @@ function Sections() {
         <div className="p-4">
           <h4 className="text-2xl">Section Information</h4>
 
-          <h5 className="mb-2 mt-4 font-bold">Semester</h5>
+          <h5 className="mt-4 mb-2 font-bold">Semester</h5>
           {section.isLoading ? (
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
@@ -41,13 +41,13 @@ function Sections() {
               section.data?.semester.year as string
             }/${section.data?.semester.term as string}`}</h4>
           )}
-          <h5 className="mb-2 mt-4 font-bold">Type</h5>
+          <h5 className="mt-4 mb-2 font-bold">Type</h5>
           {section.isLoading ? (
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
             <h4 className="text-lg">{section.data?.type}</h4>
           )}
-          <h5 className="mb-2 mt-4 font-bold">Note</h5>
+          <h5 className="mt-4 mb-2 font-bold">Note</h5>
           {section.isLoading ? (
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
@@ -56,7 +56,7 @@ function Sections() {
             </h4>
           )}
 
-          <h5 className="mb-2 mt-4 font-bold">Instructor(s)</h5>
+          <h5 className="mt-4 mb-2 font-bold">Instructor(s)</h5>
           <div className="flex gap-2">
             {section.isLoading ? (
               <>
@@ -82,27 +82,17 @@ export const getServerSideProps: GetServerSideProps = async ({
   res,
   query,
 }) => {
-  const { helper, user } = await createTrpcHelper({ req, res });
-  const { full_name } = user;
+  const { helper } = await createTrpcHelper({ req, res });
+
   const { courseId, sectionId } = query;
 
   try {
     await helper.courses.getCourseById.fetch({
       id: courseId as string,
     });
-    const section = await helper.sections.getSectionById.fetch({
+    await helper.sections.getSectionById.fetch({
       id: sectionId as string,
     });
-
-    if (
-      !section?.instructors
-        .map((user) => user.full_name)
-        .includes(full_name as string)
-    ) {
-      return {
-        notFound: true,
-      };
-    }
   } catch (err) {
     return {
       notFound: true,

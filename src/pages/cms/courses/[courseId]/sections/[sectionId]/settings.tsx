@@ -138,7 +138,7 @@ function Settings() {
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-fit"
+              className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-fit"
             >
               Delete Section
             </Button>
@@ -156,33 +156,16 @@ export const getServerSideProps: GetServerSideProps = async ({
   res,
   query,
 }) => {
-  const { helper, user } = await createTrpcHelper({ req, res });
-  const { role, full_name } = user;
+  const { helper } = await createTrpcHelper({ req, res });
   const { courseId, sectionId } = query;
-
-  if (role === "STUDENT" || !courseId) {
-    return {
-      notFound: true,
-    };
-  }
 
   try {
     await helper.courses.getCourseById.fetch({
       id: courseId as string,
     });
-    const section = await helper.sections.getSectionById.fetch({
+    await helper.sections.getSectionById.fetch({
       id: sectionId as string,
     });
-
-    if (
-      !section?.instructors
-        .map((user) => user.full_name)
-        .includes(full_name as string)
-    ) {
-      return {
-        notFound: true,
-      };
-    }
   } catch (err) {
     if (err instanceof TRPCError) {
       return {
