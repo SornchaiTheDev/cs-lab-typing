@@ -67,13 +67,17 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
       msg = "Something went wrong";
       break;
     case "USER_NOT_FOUND":
-      msg = "Cannot find that user. Make sure you already added that user or contact Admin.";
+      msg =
+        "Cannot find that user. Make sure you already added that user or contact Admin.";
       break;
     case "SAME_YEAR_AND_TERM":
       msg = "There are already has same year and term";
       break;
     case "UNAUTHORIZED":
       msg = "You don't have permission to do that";
+      break;
+    case "ALREADY_DELETE":
+      msg = "This item is already deleted";
       break;
   }
 
@@ -88,10 +92,10 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
         className="absolute right-2 top-2"
         onClick={() => toast.dismiss(id)}
       >
-        <Icon icon="material-symbols:close-rounded" className="h-5 w-5" />
+        <Icon icon="material-symbols:close-rounded" className="w-5 h-5" />
       </button>
-      <div className="flex h-full flex-col">
-        <Icon icon={icon} className="h-8 w-8" style={{ color }} />
+      <div className="flex flex-col h-full">
+        <Icon icon={icon} className="w-8 h-8" style={{ color }} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -103,7 +107,7 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
         ref={progressRef}
         animate={{ width: isPause ? progressRef.current?.offsetWidth : "0%" }}
         transition={{ duration: duration / 1000 }}
-        className="absolute bottom-0 left-0 h-1 w-full"
+        className="absolute bottom-0 left-0 w-full h-1"
         style={{ background: color }}
       ></motion.div>
     </motion.div>

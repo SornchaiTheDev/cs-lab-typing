@@ -186,7 +186,6 @@ export const getLabRouter = router({
             id,
           },
           include: {
-            submissions: true,
             tasks: {
               include: {
                 submissions: true,
@@ -197,7 +196,13 @@ export const getLabRouter = router({
 
         const assignmentLength = lab?.tasks.length ?? 0;
 
-        const submissionLength = lab?.submissions.length ?? 0;
+        const submissionLength =
+          lab?.tasks.reduce(
+            (prev, curr) => prev + curr.submissions.length,
+            0
+          ) ??
+          0 ??
+          0;
 
         const relation = {
           summary: [

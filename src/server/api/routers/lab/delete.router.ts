@@ -10,11 +10,49 @@ export const deleteLabRouter = router({
       const requester = ctx.user.full_name;
       let lab;
       try {
+        const fetchLab = await ctx.prisma.labs.findUnique({
+          where: {
+            id,
+          },
+        });
+
+        if (fetchLab?.deleted_at !== null) {
+          throw new Error("ALREADY_DELETE");
+        }
+
         lab = await ctx.prisma.labs.delete({
           where: {
             id,
           },
         });
+
+        const sections = await ctx.prisma.sections.findMany({
+          where: {
+            labs: {
+              every: {
+                id,
+              },
+            },
+          },
+        });
+
+        for (const section of sections) {
+          await ctx.prisma.sections.update({
+            where: {
+              id: section.id,
+            },
+            data: {
+              labs: {
+                disconnect: {
+                  id,
+                },
+              },
+              labs_order: {
+                set: section.labs_order.filter((labId) => labId !== id),
+              },
+            },
+          });
+        }
 
         const user = await ctx.prisma.users.findFirst({
           where: {
@@ -45,6 +83,14 @@ export const deleteLabRouter = router({
           return null;
         }
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "ALREADY_DELETE") {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "ALREADY_DELETE",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
