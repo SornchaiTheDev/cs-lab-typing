@@ -2,7 +2,7 @@ import objectHash from "object-hash";
 import type {
   TypingResultType,
   TypingExamResultType,
-} from "~/Schemas/TypingResult";
+} from "~/schemas/TypingResult";
 
 export const checkSameHash = (
   input: TypingResultType | TypingExamResultType,

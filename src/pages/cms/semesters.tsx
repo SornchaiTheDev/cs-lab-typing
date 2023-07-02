@@ -1,6 +1,6 @@
 import SemesterLayout from "~/Layout/SemesterLayout";
 import Table from "~/components/Common/Table";
-import { type TSemesterSchema, SemesterSchema } from "~/Schemas/SemesterSchema";
+import { type TSemesterSchema, SemesterSchema } from "~/schemas/SemesterSchema";
 import { Icon } from "@iconify/react";
 import {
   type ColumnDef,

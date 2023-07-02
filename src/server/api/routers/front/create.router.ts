@@ -7,7 +7,7 @@ import { router, authedProcedure } from "~/server/api/trpc";
 import {
   TypingResultWithHashSchema,
   TypingExamResultWithHashSchema,
-} from "~/Schemas/TypingResult";
+} from "~/schemas/TypingResult";
 import { checkSameHash } from "~/server/utils/checkSameHash";
 
 export const createFrontRouter = router({

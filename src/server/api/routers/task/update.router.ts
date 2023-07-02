@@ -2,7 +2,7 @@ import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { AddTaskSchema } from "~/Schemas/TaskSchema";
+import { AddTaskSchema } from "~/schemas/TaskSchema";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
 
 export const updateTaskRouter = router({

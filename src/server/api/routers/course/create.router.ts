@@ -1,4 +1,4 @@
-import { AddCourseSchema } from "~/Schemas/CourseSchema";
+import { AddCourseSchema } from "~/schemas/CourseSchema";
 import { adminProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";

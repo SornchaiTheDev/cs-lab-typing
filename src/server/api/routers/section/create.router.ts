@@ -1,4 +1,4 @@
-import { AddSectionSchema } from "~/Schemas/SectionSchema";
+import { AddSectionSchema } from "~/schemas/SectionSchema";
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { Prisma, type SectionType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";

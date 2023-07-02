@@ -1,5 +1,5 @@
 import DeleteAffect from "~/components/DeleteAffect";
-import { NonKUStudent, type TNonKUStudent } from "~/Schemas/NonKUSchema";
+import { NonKUStudent, type TNonKUStudent } from "~/schemas/NonKUSchema";
 import { trpc } from "~/helpers";
 import { useDeleteAffectStore } from "~/store";
 import { useState } from "react";

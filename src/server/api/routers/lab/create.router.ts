@@ -1,5 +1,5 @@
 import { router, teacherAboveProcedure } from "~/server/api/trpc";
-import { AddLabSchema } from "~/Schemas/LabSchema";
+import { AddLabSchema } from "~/schemas/LabSchema";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";

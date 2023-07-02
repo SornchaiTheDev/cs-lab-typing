@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ModalWithButton from "~/components/Common/ModalWithButton";
-import { AddSectionSchema, type TAddSection } from "~/Schemas/SectionSchema";
+import { AddSectionSchema, type TAddSection } from "~/schemas/SectionSchema";
 import Forms from "~/components/Forms";
 import { trpc } from "~/helpers";
 import Skeleton from "~/components/Common/Skeleton";

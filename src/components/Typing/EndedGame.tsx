@@ -13,7 +13,7 @@ import objectHash from "object-hash";
 import type {
   TypingExamResultWithHashType,
   TypingResultWithHashType,
-} from "~/Schemas/TypingResult";
+} from "~/schemas/TypingResult";
 import { useSession } from "next-auth/react";
 import type { SectionType } from "@prisma/client";
 interface Props {

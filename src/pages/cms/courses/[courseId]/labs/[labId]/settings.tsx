@@ -1,5 +1,5 @@
 import LabLayout from "~/Layout/LabLayout";
-import { AddLabSchema, type TAddLabSchema } from "~/Schemas/LabSchema";
+import { AddLabSchema, type TAddLabSchema } from "~/schemas/LabSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import Forms from "~/components/Forms";

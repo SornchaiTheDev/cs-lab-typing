@@ -1,7 +1,7 @@
 import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { AddLabSchema } from "~/Schemas/LabSchema";
+import { AddLabSchema } from "~/schemas/LabSchema";
 import { Prisma } from "@prisma/client";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
 

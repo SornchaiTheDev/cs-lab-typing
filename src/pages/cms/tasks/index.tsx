@@ -2,7 +2,7 @@ import TaskLayout from "~/Layout/TaskLayout";
 import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Table from "~/components/Common/Table";
-import { AddTaskSchema, type TAddTask } from "~/Schemas/TaskSchema";
+import { AddTaskSchema, type TAddTask } from "~/schemas/TaskSchema";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { trpc } from "~/helpers";

@@ -2,7 +2,7 @@ import DeleteAffect from "~/components/DeleteAffect";
 import {
   KUStudentSchema,
   type TKUStudentSchema,
-} from "~/Schemas/KUStudentSchema";
+} from "~/schemas/KUStudentSchema";
 import { trpc } from "~/helpers";
 import { useDeleteAffectStore } from "~/store";
 import React, { useState } from "react";

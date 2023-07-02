@@ -1,4 +1,4 @@
-import { SemesterSchema } from "~/Schemas/SemesterSchema";
+import { SemesterSchema } from "~/schemas/SemesterSchema";
 import { adminProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
