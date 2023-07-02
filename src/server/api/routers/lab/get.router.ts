@@ -135,6 +135,7 @@ export const getLabRouter = router({
           students: {
             some: {
               id: _sectionId,
+              deleted_at: null,
             },
           },
         },

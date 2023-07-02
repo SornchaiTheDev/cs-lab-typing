@@ -33,6 +33,7 @@ export const updateSectionsRouter = router({
             full_name: {
               in: instructors,
             },
+            deleted_at: null,
           },
           select: {
             id: true,
@@ -287,6 +288,7 @@ export const updateSectionsRouter = router({
             student_id: {
               in: studentIds,
             },
+            deleted_at: null,
           },
           select: {
             id: true,
