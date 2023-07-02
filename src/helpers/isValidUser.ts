@@ -1,12 +1,5 @@
 import { z } from "zod";
 
-type userType = {
-  student_id?: string;
-  full_name: string;
-  email: string;
-  password?: string | null;
-};
-
 export const isKUStudent = (user: string[]) => {
   const [student_id, email, full_name] = user;
   const isValidStudentID = z
