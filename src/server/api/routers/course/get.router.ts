@@ -43,9 +43,8 @@ export const getCourseRouter = router({
         });
       }
     }),
-  getCourseById: TaAboveProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
+  getCourseById: TaAboveProcedure.input(z.object({ id: z.string() })).query(
+    async ({ ctx, input }) => {
       const { id } = input;
       const _id = parseInt(id);
       try {
@@ -85,7 +84,8 @@ export const getCourseRouter = router({
           message: "SOMETHING_WENT_WRONG",
         });
       }
-    }),
+    }
+  ),
   getCourseObjectRelation: adminProcedure
     .input(z.object({ name: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -97,6 +97,9 @@ export const getCourseRouter = router({
           },
           include: {
             sections: {
+              where: {
+                deleted_at: null,
+              },
               include: {
                 students: true,
                 instructors: true,

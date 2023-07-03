@@ -124,6 +124,7 @@ export const getFrontRouter = router({
             },
           },
         });
+
         const isInSection = labs?.students.some(
           (student) => student.full_name === full_name
         );
@@ -140,9 +141,11 @@ export const getFrontRouter = router({
 
           const labsAddedSubmissionsAndStatus = sortedLab.map((lab) => {
             const tasksStatus = lab.tasks_order.map((taskId) => {
-              const submission = labs.submissions.find(
-                (submission) => submission.task_id === taskId
-              );
+              const submission = labs.submissions.find((submission) => {
+                const isSameTask = submission.task_id === taskId;
+                const isSameLab = submission.lab_id === lab.id;
+                return isSameTask && isSameLab;
+              });
 
               return submission?.status ?? "NOT_SUBMITTED";
             });
@@ -226,6 +229,7 @@ export const getFrontRouter = router({
             },
           },
         });
+
         if (lab) {
           const labStatus = lab.status.find(
             (status) => status.labId === _labId
