@@ -87,6 +87,9 @@ export const getSemesterRouter = router({
           },
           include: {
             sections: {
+              where: {
+                deleted_at: null,
+              },
               include: {
                 labs: {
                   include: {
