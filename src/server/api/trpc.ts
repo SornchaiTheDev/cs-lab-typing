@@ -63,8 +63,9 @@ const isTeacherAbove = t.middleware(async (opts) => {
 
 const isTaAbove = t.middleware(async (opts) => {
   const { ctx, next } = opts;
+  const role = getHighestRole(ctx.session?.user?.roles);
 
-  if (!(ctx.session?.user && ctx.session?.user.roles.includes("STUDENT"))) {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -78,7 +79,7 @@ const isTaAbove = t.middleware(async (opts) => {
     },
   });
 
-  if (isInstructors?.instructors.length === 0) {
+  if (role === "STUDENT" && isInstructors?.instructors.length === 0) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
