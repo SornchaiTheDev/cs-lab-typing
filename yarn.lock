@@ -1160,6 +1160,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.13.tgz#984c48275c718b5b3e47371938f3cff482790598"
   integrity sha512-uZRomboV1vBL61EBXneL4j9/hEn+1Yqa4LQdpGrKmXFyJmVfWc9JV9+yb2AlnOnuaDnb2PDO3hC6/LKmzJxP1A==
 
+"@types/nprogress@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@types/nprogress/-/nprogress-0.2.0.tgz#86c593682d4199212a0509cc3c4d562bbbd6e45f"
+  integrity sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==
+
 "@types/object-hash@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@types/object-hash/-/object-hash-3.0.2.tgz#f3656433e6c6049571fc3fb3fb42f389af96c0eb"
@@ -3925,6 +3930,11 @@ npmlog@^5.0.1:
     console-control-strings "^1.1.0"
     gauge "^3.0.0"
     set-blocking "^2.0.0"
+
+nprogress@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nprogress/-/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
+  integrity sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==
 
 number-is-nan@^1.0.0:
   version "1.0.1"
