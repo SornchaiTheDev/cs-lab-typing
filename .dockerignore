@@ -1,0 +1,15 @@
+node_modules
+#vercel
+.vercel
+# next
+.next
+
+# yarn
+yarn.lock
+yarn-error.log
+
+# git
+.gitignore
+
+#env
+.env*
