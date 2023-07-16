@@ -4,10 +4,6 @@ node_modules
 # next
 .next
 
-# yarn
-yarn.lock
-yarn-error.log
-
 # git
 .gitignore
 
