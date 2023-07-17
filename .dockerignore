@@ -1,11 +1,8 @@
+.env
+Dockerfile
+.dockerignore
 node_modules
-#vercel
-.vercel
-# next
+npm-debug.log
+README.md
 .next
-
-# git
-.gitignore
-
-#env
-.env*
+.git

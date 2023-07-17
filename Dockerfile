@@ -6,6 +6,10 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+# Install Prisma Client - remove if not using Prisma
+
+COPY prisma ./
+
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
@@ -18,6 +22,13 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
+ARG BASE_URL
+ARG NEXTAUTH_URL
+ARG NEXTAUTH_SECRET
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_CLIENT_SECRET
+ARG DATABASE_URL
+ARG DIRECT_URL
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -25,38 +36,23 @@ COPY . .
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN yarn build
+RUN \
+ if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
+ elif [ -f package-lock.json ]; then SKIP_ENV_VALIDATION=1 npm run build; \
+ elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && SKIP_ENV_VALIDATION=1 pnpm run build; \
+ else echo "Lockfile not found." && exit 1; \
+ fi
 
-# If using npm comment out above and use below instead
-# RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
-ARG BASE_URL
-ENV BASE_URL=$BASE_URL
-
-ARG NEXTAUTH_URL
-ENV NEXTAUTH_URL=$NEXTAUTH_URL
-
-ARG GOOGLE_CLIENT_ID
-ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
-
-ARG GOOGLE_CLIENT_SECRET
-ENV GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
-
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
-ARG DIRECT_URL
-ENV DIRECT_URL=$DIRECT_URL
-
 ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
