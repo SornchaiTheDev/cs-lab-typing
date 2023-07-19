@@ -1,20 +1,5 @@
 version: '3'
 services:
-  cs-lab-typing:
-    build: .
-    ports:
-      - 3000:3000
-    restart: always
-    environment:
-      - BASE_URL=${BASE_URL}
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-    depends_on:
-      - db
-    command: sh -c "yarn prisma push"
   db:
     image: postgres:latest
     restart: always
@@ -24,7 +9,19 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_vol:/var/lib/postgresql/data
-
+  cs-lab-typing:
+      build: .
+      ports:
+        - 3000:3000
+      restart: always
+      environment:
+        - BASE_URL=${BASE_URL}
+        - NEXTAUTH_URL=${NEXTAUTH_URL}
+        - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+        - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+        - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+        - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+   
 volumes:
   db_vol:
 
