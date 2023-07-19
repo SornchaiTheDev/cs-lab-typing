@@ -6,18 +6,18 @@ services:
       - 3000:3000
     restart: always
     environment:
-      - BASE_URL: "cs-lab-typing/api"
-      - NEXTAUTH_URL: "cs-lab-typing"
-      - NEXTAUTH_SECRET: "${NEXTAUTH_SECRET}"
-      - GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
-      - GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
-      - DATABASE_URL: "${DATABASE_URL}"
+      - BASE_URL="lab.sornchaithedev.com/api"
+      - NEXTAUTH_URL="lab.sornchaithedev.com"
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
   db:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
     volumes:
@@ -25,3 +25,4 @@ services:
 
 volumes:
   db_vol:
+
