@@ -38,7 +38,8 @@ COPY prisma ./
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN yarn gen
-RUN yarn push
+
+RUN while ! nc -z db 5432; do sleep 1; done; yarn push
 
 RUN \
  if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \

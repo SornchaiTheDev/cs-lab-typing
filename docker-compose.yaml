@@ -17,7 +17,7 @@ services:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     depends_on:
       - db
-    command: sh -c "while ! nc -z db 5432; do sleep 1; done; npm start"
+    
 
   db:
     image: postgres:latest
