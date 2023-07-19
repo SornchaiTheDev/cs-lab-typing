@@ -71,8 +71,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
-RUN yarn push
-
 EXPOSE 3000
 
 ENV PORT 3000
