@@ -10,7 +10,11 @@ services:
     volumes:
       - db_vol:/var/lib/postgresql/data
   cs-lab-typing:
-      build: .
+      build: 
+        context: .
+        dockerfile: Dockerfile
+        environment:
+          - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       ports:
         - 3000:3000
       restart: always
