@@ -39,7 +39,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN yarn gen
 
-RUN yarn push
+
 
 RUN \
  if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
@@ -47,6 +47,8 @@ RUN \
  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && SKIP_ENV_VALIDATION=1 pnpm run build; \
  else echo "Lockfile not found." && exit 1; \
  fi
+
+RUN yarn push
 
 
 # Production image, copy all the files and run next
