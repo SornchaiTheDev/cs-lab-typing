@@ -27,6 +27,8 @@ ARG GOOGLE_CLIENT_ID
 ARG GOOGLE_CLIENT_SECRET
 ARG DATABASE_URL
 
+ENV DATABASE_URL=${DATABASE_URL}
+
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
