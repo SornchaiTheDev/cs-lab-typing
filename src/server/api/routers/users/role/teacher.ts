@@ -1,9 +1,16 @@
-import { Prisma, type PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 
 export const addTeacher = async (prisma: PrismaClient, user: string) => {
   const [email, full_name] = user.split(",");
 
   try {
+    const isExist = await prisma.users.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (isExist) throw new Error("DUPLICATED_USER");
+
     await prisma.users.create({
       data: {
         student_id: email as string,
@@ -14,9 +21,9 @@ export const addTeacher = async (prisma: PrismaClient, user: string) => {
         },
       },
     });
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === "P2002") {
         throw new Error("DUPLICATED_USER");
       }
     }

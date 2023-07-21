@@ -20,14 +20,7 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
-ARG BASE_URL
-ARG NEXTAUTH_URL
-ARG NEXTAUTH_SECRET
-ARG GOOGLE_CLIENT_ID
-ARG GOOGLE_CLIENT_SECRET
-ARG DATABASE_URL
 
-ENV DATABASE_URL=${DATABASE_URL}
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -49,8 +42,6 @@ RUN \
  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && SKIP_ENV_VALIDATION=1 pnpm run build; \
  else echo "Lockfile not found." && exit 1; \
  fi
-
-RUN yarn push
 
 
 # Production image, copy all the files and run next

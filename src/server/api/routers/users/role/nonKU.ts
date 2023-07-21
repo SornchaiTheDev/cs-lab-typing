@@ -1,4 +1,4 @@
-import { Prisma, type PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 export const addNonKUStudent = async (prisma: PrismaClient, user: string) => {
@@ -6,6 +6,12 @@ export const addNonKUStudent = async (prisma: PrismaClient, user: string) => {
 
   const passwordHash = await bcrypt.hash(password as string, 10);
   try {
+    const isExist = await prisma.users.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (isExist) throw new Error("DUPLICATED_USER");
     await prisma.users.create({
       data: {
         student_id: username as string,
@@ -17,9 +23,9 @@ export const addNonKUStudent = async (prisma: PrismaClient, user: string) => {
         },
       },
     });
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === "P2002") {
         throw new Error("DUPLICATED_USER");
       }
     }
