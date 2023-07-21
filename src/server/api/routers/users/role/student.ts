@@ -7,6 +7,7 @@ export const addStudent = async (prisma: PrismaClient, user: string) => {
     const isExist = await prisma.users.findFirst({
       where: {
         email,
+        deleted_at: null,
       },
     });
     if (isExist) throw new Error("DUPLICATED_USER");
@@ -23,7 +24,7 @@ export const addStudent = async (prisma: PrismaClient, user: string) => {
     });
   } catch (err) {
     if (err instanceof Error) {
-      if (err.message === "P2002") {
+      if (err.message === "DUPLICATED_USER") {
         throw new Error("DUPLICATED_USER");
       }
     }
