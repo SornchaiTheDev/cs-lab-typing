@@ -70,15 +70,15 @@ function TypingTask({
           },
         ]}
       >
-        <div className="flex flex-col flex-1">
-          {!isReadOnly && (
+        <div className="flex flex-1 flex-col">
+          {!isReadOnly && !isEndedPhase && (
             <Button
               icon={
                 isTypingPhase
                   ? "solar:history-line-duotone"
                   : "solar:keyboard-line-duotone"
               }
-              className="self-center border w-fit border-sand-9 hover:bg-sand-6"
+              className="w-fit self-center border border-sand-9 text-sand-12 hover:bg-sand-6"
               onClick={() =>
                 setStatus(isTypingPhase ? "History" : "NotStarted")
               }
@@ -86,7 +86,7 @@ function TypingTask({
               {isTypingPhase ? "History" : "Back to Typing"}
             </Button>
           )}
-          <div className="flex flex-col flex-1 mt-12">
+          <div className="mt-12 flex flex-1 flex-col">
             {isReadOnly ? (
               <History />
             ) : isTypingPhase ? (

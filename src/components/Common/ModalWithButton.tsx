@@ -75,14 +75,14 @@ function ModalWithButton({
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-xl font-bold">{title}</h4>
+                  <h4 className="text-xl text-sand-12 font-bold">{title}</h4>
                   {!!description && (
                     <p className="text-sand-9">{description}</p>
                   )}
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-2 text-xl rounded-full hover:bg-sand-3 active:bg-sand-4"
+                  className="p-2 text-xl rounded-full hover:bg-sand-3 active:bg-sand-4 text-sand-12"
                 >
                   <Icon icon="material-symbols:close-rounded" />
                 </button>

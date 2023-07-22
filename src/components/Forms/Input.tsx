@@ -50,7 +50,7 @@ const Input = <T extends FieldValues>(props: Props<T>) => {
         <input
           disabled={disabled}
           className={clsx(
-            "w-full p-2 border border-sand-6 rounded-md outline-none bg-sand-1",
+            "w-full p-2 border border-sand-6 rounded-md text-sand-12 outline-none bg-sand-1 caret-sand-12",
             isError && "border-tomato-7"
           )}
           {...{ type, placeholder, ...register(label) }}

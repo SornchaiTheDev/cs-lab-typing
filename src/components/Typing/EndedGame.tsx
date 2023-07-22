@@ -120,7 +120,7 @@ function EndedGame({ sectionType }: Props) {
     <div className="container flex flex-col items-center flex-1 max-w-2xl gap-4 mx-auto mb-2">
       <button
         onClick={() => setStatus("NotStarted")}
-        className="flex flex-col items-center p-2 rounded-md outline-none w-fit ring-sand-6 ring-offset-2 hover:bg-sand-3 focus:ring-2"
+        className="flex flex-col items-center p-2 rounded-md outline-none w-fit ring-sand-6 ring-offset-2 text-sand-12 hover:bg-sand-3 focus:ring-2"
       >
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>

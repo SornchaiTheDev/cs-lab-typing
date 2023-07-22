@@ -100,7 +100,7 @@ function Select({
             tabIndex={0}
             ref={selectRef}
             className={clsx(
-              "relative min-h-[2.5rem] w-full rounded-md border border-sand-6 bg-sand-1 outline-none",
+              "relative min-h-[2.5rem] w-full rounded-md border border-sand-6 bg-sand-1 outline-none text-sand-12",
               isError && "border-tomato-7"
             )}
             onClick={() => {
@@ -123,7 +123,7 @@ function Select({
       {isShow && (
         <ul
           ref={optionRef}
-          className="absolute z-20 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
+          className="absolute z-20 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-sand-1 p-2 shadow"
           style={
             selectRef.current
               ? {

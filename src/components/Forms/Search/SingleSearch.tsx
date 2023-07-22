@@ -145,7 +145,7 @@ const SingleSearch = (props: Props) => {
             {value.length > 0 ? (
               <div
                 key={value}
-                className="flex select-none items-center rounded-md bg-sand-12 px-2 py-1 text-sm font-semibold text-white"
+                className="flex select-none items-center rounded-md bg-sand-12 px-2 py-1 text-sm font-semibold text-sand-1"
               >
                 {value}{" "}
                 {!disabled && (

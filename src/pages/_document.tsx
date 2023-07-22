@@ -24,7 +24,7 @@ export default function Document() {
           rel="stylesheet"
         />
       </Head>
-      <body className="bg-sand-2 todo-dark:bg-primary-1">
+      <body className="bg-sand-2">
         <Main />
         <NextScript />
       </body>

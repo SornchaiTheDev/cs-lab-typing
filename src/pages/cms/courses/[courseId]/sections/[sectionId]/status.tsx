@@ -50,7 +50,7 @@ const RecentTasks = ({
       onClose={onClose}
       isOpen
     >
-      <div className="flex items-center gap-2 my-4">
+      <div className="flex items-center gap-2 my-4 text-sand-12">
         <div className="p-2">
           <Icon className="text-xl" icon="solar:user-line-duotone" />
         </div>

@@ -3,13 +3,14 @@ import { Icon } from "@iconify/react";
 import * as Popover from "@radix-ui/react-popover";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getHighestRole, replaceSlugwithQueryPath } from "~/helpers";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
 import { NextSeo } from "next-seo";
+import Badge from "~/components/Common/Badge";
 
 interface BreadCrumb {
   label: string;
@@ -55,6 +56,26 @@ function FrontLayout({
     : "CS-LAB";
 
   const isStudentPath = !isBasePath && !router.pathname.startsWith("/cms");
+
+  useEffect(() => {
+    const isDarkMode = localStorage.getItem("theme") === "dark";
+
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      setIsDarkMode(true);
+    }
+  }, []);
+
+  const handleOnChangeTheme = () => {
+    if (!isDarkMode) {
+      localStorage.setItem("theme", "dark");
+      document.documentElement.classList.add("dark");
+    } else {
+      localStorage.setItem("theme", "light");
+      document.documentElement.classList.remove("dark");
+    }
+    setIsDarkMode(!isDarkMode);
+  };
   return (
     <>
       <NextSeo
@@ -62,9 +83,9 @@ function FrontLayout({
         defaultTitle="CS-LAB"
         description="Programming Lab web application for Computer Science Kasetsart University"
       />
-      <div className="flex flex-col min-h-screen">
-        <div className="container flex flex-col flex-1 max-w-6xl p-4 mx-auto roboto xl:p-0">
-          <div className="flex items-center justify-between gap-4 mt-10">
+      <div className="flex min-h-screen flex-col">
+        <div className="roboto container mx-auto flex max-w-6xl flex-1 flex-col p-4 xl:p-0">
+          <div className="mt-10 flex items-center justify-between gap-4">
             <div className="flex-1">
               {(!isBasePath || isStudentPath) && (
                 <BackArrow customPath={customBackPath} />
@@ -134,21 +155,28 @@ function FrontLayout({
                       <h5 className="text-sand-10">{data?.user?.email}</h5>
                     </div>
                     <hr />
-                    {/* <button
-                      onClick={() => setIsDarkMode(!isDarkMode)}
-                      className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                    <button
+                      onClick={handleOnChangeTheme}
+                      className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                     >
                       Theme
                       <Icon
-                        icon="solar:sun-2-line-duotone"
+                        icon={
+                          !isDarkMode
+                            ? "solar:moon-stars-line-duotone"
+                            : "solar:sun-2-line-duotone"
+                        }
                         className="text-xl"
                       />
-                    </button> */}
+                      <Badge type="success" className="px-2 py-0">
+                        Beta
+                      </Badge>
+                    </button>
                     {role !== "STUDENT" && (
                       <div>
                         <button
                           onClick={() => router.push("/cms")}
-                          className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                          className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                         >
                           CMS
                           <Icon icon="solar:code-square-line-duotone" />
@@ -158,7 +186,7 @@ function FrontLayout({
                     <div>
                       <button
                         onClick={() => signOut()}
-                        className="flex items-center justify-between w-full px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
+                        className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                       >
                         Sign Out
                         <Icon icon="solar:exit-line-duotone" />
@@ -171,17 +199,15 @@ function FrontLayout({
               </Popover.Root>
             </div>
           </div>
-          <div className="flex flex-col flex-1 mt-6">{children}</div>
+          <div className="mt-6 flex flex-1 flex-col">{children}</div>
         </div>
-        <div className="w-full gap-2 py-6 text-center roboto bg-sand-12">
-          <h6 className="text-sand-6">
-            made with 💖 for CS Kasetsart University
-          </h6>
+        <div className="roboto w-full gap-2 bg-sand-12 py-6  text-center text-sand-6 dark:bg-sand-1 dark:text-sand-10">
+          <h6>made with 💖 for CS Kasetsart University</h6>
 
           <a
             href="https://github.com/SornchaiTheDev"
             target="_blank"
-            className="font-bold underline text-sand-6 decoration-dashed hover:text-sand-2"
+            className="font-bold underline decoration-dashed hover:text-sand-2 dark:hover:text-sand-11"
           >
             @SornchaiTheDev
           </a>

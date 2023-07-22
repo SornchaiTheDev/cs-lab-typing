@@ -38,7 +38,7 @@ const Modal = ({
           className
         )}
       >
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between text-sand-12">
           <div>
             <h4 className="text-xl font-bold capitalize">{title}</h4>
             {!!description && typeof description === "string" ? (
@@ -49,7 +49,7 @@ const Modal = ({
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-2 text-xl hover:bg-sand-3 active:bg-sand-4"
+            className="rounded-full p-2 text-xl hover:bg-sand-3 active:bg-sand-4 "
           >
             <Icon icon="material-symbols:close-rounded" />
           </button>

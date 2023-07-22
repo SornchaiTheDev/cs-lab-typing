@@ -112,9 +112,9 @@ function TypingGame({ text }: Props) {
             const state = charsState[index];
             const color =
               state === 0
-                ? "text-sand-8"
+                ? "text-sand-8 dark:text-sand-9"
                 : state === 1
-                ? "text-sand-12"
+                ? "text-sand-12 dark:text-sand-11"
                 : "text-red-9";
 
             return (

@@ -123,11 +123,11 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       title="Add Task"
       className="flex h-[90%] max-h-[90%] max-w-[50rem] flex-col gap-2 overflow-y-auto"
     >
-      <h6 className="font-semibold">Task Name</h6>
+      <h6 className="font-semibold text-sand-12">Task Name</h6>
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-2 border rounded-md outline-none h-fit border-sand-6 bg-sand-1"
+        className="w-full p-2 border rounded-md outline-none placeholder:text-sand-8 h-fit border-sand-6 bg-sand-1"
         placeholder="eg. Typing01"
       />
       <div className="flex gap-4">
@@ -204,7 +204,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
                         <h4 className="text-xl font-medium text-sand-12">
                           {name}
                         </h4>
-                        <h6 className="text-sm">
+                        <h6 className="text-sm text-sand-12">
                           Submissions : {convertToThousand(submission_count)}
                         </h6>
                         <h6>{note}</h6>

@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
-import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export type BadgeType = "success" | "info" | "warning" | "danger" | "default";
 
 interface Props {
   children: ReactNode;
+  className?: string;
   type?: BadgeType;
 }
 
-function Badge({ children, type = "default" }: Props) {
+function Badge({ children, type = "default", className }: Props) {
   let color;
   switch (type) {
     case "info":
@@ -28,9 +29,10 @@ function Badge({ children, type = "default" }: Props) {
   }
   return (
     <div
-      className={clsx(
-        "flex w-fit items-center rounded-md px-2 py-1 text-sm font-semibold text-white",
-        color
+      className={twMerge(
+        "flex w-fit items-center rounded-md px-2 py-1 text-sm font-semibold text-sand-4",
+        color,
+        className
       )}
     >
       <h5>{children}</h5>

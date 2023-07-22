@@ -30,7 +30,7 @@ function Sections() {
         title={section.data?.name as string}
         isLoading={section.isLoading}
       >
-        <div className="p-4">
+        <div className="p-4 text-sand-12">
           <h4 className="text-2xl">Section Information</h4>
 
           <h5 className="mt-4 mb-2 font-bold">Semester</h5>

@@ -284,7 +284,7 @@ function DeleteAffect({ type }: Props) {
       onClose={() => setSelectedObject(null)}
       className="flex max-h-[90%] flex-col md:w-[40rem]"
     >
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto text-sand-12">
         <div className="overflow-auto whitespace-nowrap">
           <h3 className="mt-2 text-lg font-bold">Summary</h3>
           <ul className="list-disc list-inside">
@@ -308,7 +308,7 @@ function DeleteAffect({ type }: Props) {
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setConfirmMsg(e.target.value)
           }
-          className="w-full p-2 border rounded-md outline-none border-sand-6 bg-sand-1"
+          className="w-full p-2 border rounded-md outline-none border-sand-6 bg-sand-1 text-sand-12 caret-sand-12"
           placeholder={`Type "${selectedObject?.selected.display}" to confirm`}
         />
 

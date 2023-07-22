@@ -60,7 +60,7 @@ function MyCourse() {
       ) : (teachingAssistantSections.data?.length as number) > 0 ? (
         <>
           <div className="mt-4">
-            <h4 className="text-2xl font-medium md:text-3xl">
+            <h4 className="text-2xl font-medium md:text-3xl text-sand-12">
               Teaching Assistant
             </h4>
           </div>

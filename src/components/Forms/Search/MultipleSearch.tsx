@@ -166,7 +166,7 @@ const Multiple = (props: Props) => {
               <button
                 type="button"
                 key={value}
-                className="flex items-center rounded-md bg-sand-12 px-2 py-1 text-sm font-semibold text-white"
+                className="flex items-center rounded-md bg-sand-12 px-2 py-1 text-sm font-semibold text-sand-1"
                 onClick={() => handleDelete(value)}
               >
                 {value} <Icon icon="material-symbols:close-rounded" />
@@ -188,7 +188,7 @@ const Multiple = (props: Props) => {
           {isFocus && !isEmpty && (
             <ul
               ref={optionsRef}
-              className="absolute z-50 mt-2 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
+              className="absolute z-50 mt-2 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-sand-1 p-2 shadow"
             >
               {filteredDatas.map((data, i) => (
                 <TextHighlight

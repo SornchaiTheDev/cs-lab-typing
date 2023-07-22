@@ -10,7 +10,7 @@ interface Props {
 function Collapse({ title, children, titleBtn }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="my-4 rounded-md border border-sand-6 bg-white p-4 shadow">
+    <div className="my-4 rounded-md border border-sand-6 bg-sand-3 text-sand-12 p-4 shadow">
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <h4 className="text-xl font-semibold">{title}</h4>
