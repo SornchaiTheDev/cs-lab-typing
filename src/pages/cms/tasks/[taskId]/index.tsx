@@ -34,7 +34,7 @@ function TypingTask() {
 
   const handleOnSave = async () => {
     try {
-      const sanitizedText = text.replace(/\r?\n/g, "").trim();
+      const sanitizedText = text.split("\n").map(line => line.trim()).join(" ");
 
       await saveTask.mutateAsync({
         taskId: taskId as string,

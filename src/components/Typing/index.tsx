@@ -54,7 +54,7 @@ function TypingGame({ text }: Props) {
       ] as HTMLSpanElement;
       let left, top;
       if (spanref) {
-        left = spanref.offsetLeft;
+        left = spanref.offsetLeft + 2;
         top = spanref.offsetTop - 2;
       }
       return { left, top };
@@ -104,7 +104,7 @@ function TypingGame({ text }: Props) {
         onClick={() => typingElement.current?.focus()}
       >
         <div
-          className={`pointer-events-none relative select-none monospace text-3xl leading-relaxed tracking-wider text-sand-11 outline-none`}
+          className={`pointer-events-none text-center relative select-none monospace text-3xl leading-relaxed text-sand-11 outline-none`}
           tabIndex={0}
           ref={letterElements}
         >
