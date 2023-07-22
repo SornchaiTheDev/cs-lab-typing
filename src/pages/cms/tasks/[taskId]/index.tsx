@@ -34,9 +34,15 @@ function TypingTask() {
 
   const handleOnSave = async () => {
     try {
-      await saveTask.mutateAsync({ taskId: taskId as string, body: text });
+      const sanitizedText = text.replace(/\r?\n/g, "").trim();
+
+      await saveTask.mutateAsync({
+        taskId: taskId as string,
+        body: sanitizedText,
+      });
       callToast({ msg: "Save task successfully", type: "success" });
       task.refetch();
+      setText(sanitizedText);
     } catch (err) {
       if (err instanceof TRPCClientError) {
         callToast({ msg: err.message, type: "error" });
@@ -98,7 +104,7 @@ function TypingTask() {
       canAccessToSettings={isOwner || isAdmin}
       canAccessToHistory={isNotStudent}
     >
-      <div className="mt-4 flex flex-col md:flex-row gap-4 justify-between">
+      <div className="mt-4 flex flex-col justify-between gap-4 md:flex-row">
         <div>
           <h4 className="mt-4 text-2xl">Task Information</h4>
           <h5 className="mb-2 mt-4 font-bold">Task type</h5>
@@ -154,7 +160,7 @@ function TypingTask() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             disabled={!isOwner}
-            className="min-h-[10rem] w-full md:w-1/2 rounded-md border-2 border-dashed border-sand-6 bg-transparent text-sand-12 outline-none focus:border-sand-10 focus:ring-transparent"
+            className="min-h-[10rem] w-full rounded-md border-2 border-dashed border-sand-6 bg-transparent text-sand-12 outline-none focus:border-sand-10 focus:ring-transparent md:w-1/2"
           />
         )}
         {isOwner && (
@@ -162,7 +168,7 @@ function TypingTask() {
             isLoading={saveTask.isLoading}
             onClick={handleOnSave}
             disabled={isAlreadySave}
-            className="rounded bg-sand-12 px-4 text-sm text-sand-1 active:bg-sand-11 w-full md:w-fit mt-4"
+            className="mt-4 w-full rounded bg-sand-12 px-4 text-sm text-sand-1 active:bg-sand-11 md:w-fit"
             icon="solar:diskette-line-duotone"
           >
             Save

@@ -472,6 +472,7 @@ export const getFrontRouter = router({
           orderBy: {
             created_at: "desc",
           },
+          take: 100,
         });
 
         return typingHistories;
