@@ -64,8 +64,8 @@ function TypingTable({
             props.row.original.ended_at
           );
 
-          if (seconds > 60) return minutes + "m";
-          return seconds + "s";
+          if (seconds > 60) return minutes.toFixed(2) + "m";
+          return seconds.toFixed(2) + "s";
         },
       }),
       {
