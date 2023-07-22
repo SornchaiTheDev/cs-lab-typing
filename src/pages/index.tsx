@@ -61,7 +61,7 @@ function MyCourse() {
         <>
           <div className="mt-4">
             <h4 className="text-2xl font-medium md:text-3xl text-sand-12">
-              Teaching Assistant
+              Teach
             </h4>
           </div>
           <div className="grid grid-cols-12 gap-6 my-6">

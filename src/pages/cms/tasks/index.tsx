@@ -128,7 +128,7 @@ function Tasks() {
       <Modal
         isOpen={isShow}
         onClose={() => setIsShow(false)}
-        title="Add Lab"
+        title="Add Task"
         className="flex flex-col gap-4 md:w-[40rem]"
       >
         <Forms

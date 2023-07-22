@@ -85,7 +85,7 @@ function Settings() {
       >
         <div className="p-4 md:w-1/2">
           <div className="w-full">
-            <h4 className="text-xl">General</h4>
+            <h4 className="text-xl text-sand-12">General</h4>
             <hr className="my-2" />
 
             <Forms

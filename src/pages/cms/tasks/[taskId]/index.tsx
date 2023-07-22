@@ -104,7 +104,7 @@ function TypingTask() {
       canAccessToSettings={isOwner || isAdmin}
       canAccessToHistory={isNotStudent}
     >
-      <div className="mt-4 flex flex-col justify-between gap-4 md:flex-row">
+      <div className="mt-4 flex flex-col justify-between gap-4 md:flex-row text-sand-12">
         <div>
           <h4 className="mt-4 text-2xl">Task Information</h4>
           <h5 className="mb-2 mt-4 font-bold">Task type</h5>
