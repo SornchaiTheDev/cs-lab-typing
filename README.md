@@ -16,7 +16,15 @@ you can get those variables at `.env.example`
 
 in `deploy.sh` you can change destination of standalone folder
 
+Deploy on Server
+
+1. Build project and Setup Database
+
 ```sh
 chmod +x ./deploy.sh
 ./deploy.sh
 ```
+
+or using Docker
+
+...in Progress 🚧

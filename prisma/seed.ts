@@ -9,7 +9,7 @@ async function main() {
       full_name: "Sornchai Somsakul",
       email: "sornchai.som@ku.th",
       roles: {
-        set: ["ADMIN", "STUDENT"],
+        set: ["ADMIN", "TEACHER" ,"STUDENT"],
       },
     },
   });
