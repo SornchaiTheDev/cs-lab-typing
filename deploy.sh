@@ -19,10 +19,11 @@ if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
 cd ../
 
 # Copy build files to server
-mkdir -p ./standalone
 cp -r ./cs-lab-typing/.next/standalone ./standalone
 cp -r ./cs-lab-typing/.next/static ./standalone/.next/static
 cp -r ./cs-lab-typing/public ./standalone
 
 # Run the server
+cd standalone/ 
+
 node server.js

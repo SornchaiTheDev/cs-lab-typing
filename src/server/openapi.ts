@@ -6,6 +6,6 @@ import { env } from "~/env.mjs";
 export const openApiDocument = generateOpenApiDocument(appRouter, {
   title: "CS-LAB Typing REST API DOCS",
   version: "0.0.1",
-  baseUrl: env.BASE_URL,
+  baseUrl: env.NEXTAUTH_URL + "/api",
   tags: ["logs"],
 });
