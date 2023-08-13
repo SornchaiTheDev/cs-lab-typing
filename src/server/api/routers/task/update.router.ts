@@ -20,11 +20,12 @@ export const updateTaskRouter = router({
         id,
       } = input;
       const _id = parseInt(id);
-      const actionUser = ctx.user.full_name;
+      const actionUser = ctx.user.student_id;
       let task;
       try {
         await createNotExistTags(ctx.prisma, tags);
 
+        // FIX THIS (cannot use full_name to find users use student_id instead)
         const _owner = await ctx.prisma.users.findFirst({
           where: {
             full_name: owner,
@@ -37,7 +38,7 @@ export const updateTaskRouter = router({
 
         const _actionUser = await ctx.prisma.users.findFirst({
           where: {
-            full_name: actionUser,
+            student_id: actionUser,
             deleted_at: null,
           },
           select: {
@@ -98,13 +99,13 @@ export const updateTaskRouter = router({
   setTaskBody: teacherAboveProcedure
     .input(z.object({ taskId: z.string(), body: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const actionUser = ctx.user.full_name;
+      const actionUser = ctx.user.student_id;
       const { taskId, body } = input;
       const _taskId = parseInt(taskId);
       try {
         const _actionUser = await ctx.prisma.users.findFirst({
           where: {
-            full_name: actionUser,
+            student_id: actionUser,
             deleted_at: null,
           },
           select: {

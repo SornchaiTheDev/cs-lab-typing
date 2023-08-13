@@ -71,7 +71,7 @@ const isTaAbove = t.middleware(async (opts) => {
 
   const isInstructors = await ctx.prisma.users.findFirst({
     where: {
-      full_name: ctx.session.user.full_name,
+      student_id: ctx.session.user.student_id,
       deleted_at: null,
     },
     select: {

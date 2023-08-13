@@ -10,11 +10,11 @@ import { useRouter } from "next/router";
 import LineChart from "./Datas/LineChart";
 import TypingTable from "./Datas/Table";
 import objectHash from "object-hash";
-import type { TypingResultWithHashType } from "~/schemas/TypingResult";
+import type { TypingExamResultWithHashType } from "~/schemas/TypingResult";
 import { useSession } from "next-auth/react";
 import type { PaginationState } from "@tanstack/react-table";
 
-function EndedGame() {
+function EndedGameExam() {
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -43,25 +43,25 @@ function EndedGame() {
 
   const { errorChar, startedAt, endedAt, totalChars } = stats;
 
-  const submitTyping = trpc.front.submitTyping.useMutation();
+  const examSubmitTyping = trpc.front.examSubmitTyping.useMutation();
 
   useEffect(() => {
     const saveTypingScore = async () => {
       if (!stats) return;
       try {
-        const result: TypingResultWithHashType = {
-          email: session?.user?.email as string,
-          sectionId: sectionId as string,
-          labId: labId as string,
-          taskId: taskId as string,
-          totalChars,
-          errorChar,
-          startedAt: startedAt as Date,
-          endedAt: endedAt as Date,
+        const result: TypingExamResultWithHashType = {
+          liame: session?.user?.email as string,
+          dInoitces: sectionId as string,
+          dIbal: labId as string,
+          dIksat: taskId as string,
+          srahClatot: totalChars,
+          rahCrorre: errorChar,
+          tAdetrats: startedAt as Date,
+          tAdedne: endedAt as Date,
         };
 
-        result.hash = objectHash(result);
-        await submitTyping.mutateAsync(result);
+        result.hsah = objectHash(result);
+        await examSubmitTyping.mutateAsync(result);
 
         await typingHistories.refetch();
       } catch (err) {}
@@ -116,4 +116,4 @@ function EndedGame() {
   );
 }
 
-export default EndedGame;
+export default EndedGameExam;

@@ -146,7 +146,13 @@ function Layout({
                       onClick={handleOnChangeTheme}
                       className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                     >
-                      Theme
+                      <div className="inline-flex gap-1">
+                        Theme
+                        <Badge type="success" className="px-2 py-0">
+                          Beta
+                        </Badge>
+                      </div>
+
                       <Icon
                         icon={
                           !isDarkMode
@@ -155,9 +161,6 @@ function Layout({
                         }
                         className="text-xl"
                       />
-                      <Badge type="success" className="px-2 py-0">
-                        Beta
-                      </Badge>
                     </button>
                     <button
                       onClick={() => router.push("/")}

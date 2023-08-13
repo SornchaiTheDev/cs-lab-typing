@@ -21,6 +21,7 @@ declare module "next-auth" {
     user?: {
       roles: string;
       full_name: string;
+      student_id: string;
     } & DefaultSession["user"];
   }
 }
@@ -32,6 +33,7 @@ declare module "next-auth/jwt" {
     full_name: string;
     email: string;
     image: string;
+    student_id: string;
   }
 }
 
@@ -131,6 +133,7 @@ export const authOptions: NextAuthOptions = {
       });
       token.roles = fetchUser?.roles.join(",") ?? "";
       token.full_name = fetchUser?.full_name as string;
+      token.student_id = fetchUser?.student_id as string;
 
       if (user) {
         token.image = user.image ?? "/assets/profile-placeholder.png";
@@ -144,6 +147,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           roles: token.roles,
           full_name: token.full_name,
+          student_id: token.student_id,
           email: token.email,
           image: token.image,
         },

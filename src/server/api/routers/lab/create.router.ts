@@ -15,7 +15,7 @@ export const createLabRouter = router({
       try {
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: ctx.user.full_name,
+            student_id: ctx.user.student_id,
             deleted_at: null,
           },
           select: {

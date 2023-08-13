@@ -48,7 +48,7 @@ export const createFrontRouter = router({
       const _labId = parseInt(labId);
       const _taskId = parseInt(taskId);
 
-      const full_name = ctx.session?.user?.full_name;
+      const student_id = ctx.session?.user?.student_id;
 
       try {
         const section = await ctx.prisma.sections.findUnique({
@@ -75,7 +75,7 @@ export const createFrontRouter = router({
 
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name,
+            student_id,
             deleted_at: null,
           },
         });
@@ -216,7 +216,7 @@ export const createFrontRouter = router({
       const _labId = parseInt(labId);
       const _taskId = parseInt(taskId);
 
-      const full_name = ctx.session?.user?.full_name;
+      const student_id = ctx.session?.user?.student_id;
 
       try {
         const section = await ctx.prisma.sections.findUnique({
@@ -243,7 +243,7 @@ export const createFrontRouter = router({
 
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name,
+            student_id,
             deleted_at: null,
           },
         });

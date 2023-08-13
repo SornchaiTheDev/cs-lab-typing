@@ -21,7 +21,7 @@ export const updateLabRouter = router({
 
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: ctx.user.full_name,
+            student_id: ctx.user.student_id,
             deleted_at: null,
           },
           select: {
@@ -81,7 +81,7 @@ export const updateLabRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { labId, tasks } = input;
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
 
       const tasks_order = tasks
         .sort((a, b) => a.order - b.order)
@@ -90,7 +90,7 @@ export const updateLabRouter = router({
       try {
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {

@@ -10,6 +10,7 @@ export const updateCoursesRouter = router({
       const { id, number, name, authors, note, comments } = input;
       const _id = parseInt(id);
       try {
+        // FIX THIS (cannot use full_name to find users use student_id instead)
         const authorsIds = await ctx.prisma.users.findMany({
           where: {
             full_name: {

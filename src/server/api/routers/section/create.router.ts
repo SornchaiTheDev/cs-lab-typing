@@ -12,14 +12,14 @@ export const createSectionsRouter = router({
         input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       const _courseId = parseInt(courseId);
 
       let section;
       try {
         const _requester = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
         });
@@ -32,7 +32,8 @@ export const createSectionsRouter = router({
           },
           take: 1,
         });
-
+        
+        // FIX THIS (cannot use full_name to find users use student_id instead)
         const instructorsId = await ctx.prisma.users.findMany({
           where: {
             full_name: {

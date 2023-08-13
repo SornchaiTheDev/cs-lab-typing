@@ -1,4 +1,4 @@
-import type { tasks } from "@prisma/client";
+import type { SectionType, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import clsx from "clsx";
 import type { GetServerSideProps } from "next";
@@ -16,12 +16,16 @@ interface Props {
   courseName: string;
   labName: string;
   tasks: string;
+  sectionType: SectionType;
 }
 
-function Labs({ courseName, labName, tasks }: Props) {
+function Labs({ courseName, labName, tasks, sectionType }: Props) {
   const router = useRouter();
 
   const _tasks: taskWithStatus[] = superjson.parse(tasks);
+  const isExam = sectionType === "Exam";
+  const LESSON_PATH = "[labId]/typing/[taskId]";
+  const EXAM_PATH = "[labId]/typing/exam/[taskId]";
 
   return (
     <FrontLayout
@@ -41,12 +45,12 @@ function Labs({ courseName, labName, tasks }: Props) {
         },
       ]}
     >
-      <div className="grid grid-cols-12 gap-6 my-10">
+      <div className="my-10 grid grid-cols-12 gap-6">
         {_tasks.map(({ id, name, status }) => (
           <Link
             key={id}
             href={{
-              pathname: router.pathname + "/typing/[taskId]",
+              pathname: isExam ? EXAM_PATH : LESSON_PATH,
               query: { ...router.query, taskId: id },
             }}
             className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
@@ -60,7 +64,7 @@ function Labs({ courseName, labName, tasks }: Props) {
               )}
             />
 
-            <div className="flex flex-col gap-2 p-2 mb-2">
+            <div className="mb-2 flex flex-col gap-2 p-2">
               <h4 className="text-xl font-medium text-sand-12">{name}</h4>
             </div>
           </Link>
@@ -86,11 +90,12 @@ export const getServerSideProps: GetServerSideProps = async ({
       sectionId: sectionId as string,
     });
     if (lab) {
-      const { courseName, labName, tasks } = lab;
+      const { courseName, labName, tasks, sectionType } = lab;
       return {
         props: {
           courseName,
           labName,
+          sectionType,
           tasks: superjson.stringify(tasks),
         },
       };

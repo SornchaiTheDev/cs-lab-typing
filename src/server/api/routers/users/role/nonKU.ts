@@ -9,6 +9,7 @@ export const addNonKUStudent = async (prisma: PrismaClient, user: string) => {
     const isExist = await prisma.users.findFirst({
       where: {
         email,
+        student_id: username,
         deleted_at: null,
       },
     });

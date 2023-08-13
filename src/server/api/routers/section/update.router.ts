@@ -16,10 +16,10 @@ export const updateSectionsRouter = router({
       const { id, instructors, name, semester, note, active, type } = input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       const _id = parseInt(id);
       try {
-        const semester = await ctx.prisma.semesters.findMany({
+        const semester = await ctx.prisma.semesters.findFirst({
           where: {
             year,
             term,
@@ -28,6 +28,9 @@ export const updateSectionsRouter = router({
           take: 1,
         });
 
+        if (!semester) throw new Error("SEMESTER_NOT_FOUND");
+
+        // FIX THIS (cannot use full_name to find users use student_id instead)
         const instructorsId = await ctx.prisma.users.findMany({
           where: {
             full_name: {
@@ -42,7 +45,7 @@ export const updateSectionsRouter = router({
 
         const _requester = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {
@@ -61,7 +64,7 @@ export const updateSectionsRouter = router({
             note,
             semester: {
               connect: {
-                id: semester[0]?.id,
+                id: semester.id,
               },
             },
             instructors: {
@@ -97,11 +100,11 @@ export const updateSectionsRouter = router({
 
     const _sectionId = parseInt(sectionId);
 
-    const requester = ctx.user.full_name;
+    const requester = ctx.user.student_id;
     try {
       const _requester = await ctx.prisma.users.findFirst({
         where: {
-          full_name: requester,
+          student_id: requester,
           deleted_at: null,
         },
         select: {
@@ -160,12 +163,12 @@ export const updateSectionsRouter = router({
   ).mutation(async ({ ctx, input }) => {
     const { sectionId, order } = input;
     const _sectionId = parseInt(sectionId);
-    const requester = ctx.user.full_name;
+    const requester = ctx.user.student_id;
 
     try {
       const _requester = await ctx.prisma.users.findFirst({
         where: {
-          full_name: requester,
+          student_id: requester,
           deleted_at: null,
         },
         select: {
@@ -227,6 +230,8 @@ export const updateSectionsRouter = router({
           status,
         },
       });
+
+      // ADD THIS ACTION TO LAB HISTORY
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -238,7 +243,7 @@ export const updateSectionsRouter = router({
     .input(z.object({ studentIds: z.array(z.string()), sectionId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { studentIds, sectionId } = input;
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       const _sectionId = parseInt(sectionId);
 
       if (!isArrayUnique(studentIds)) {
@@ -279,7 +284,7 @@ export const updateSectionsRouter = router({
       try {
         const _requester = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
         });

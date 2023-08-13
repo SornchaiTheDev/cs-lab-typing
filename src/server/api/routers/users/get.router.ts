@@ -41,7 +41,7 @@ export const getUserRouter = router({
         });
       }
     }),
-  getUserByEmail: teacherAboveProcedure
+  getUserByEmail: adminProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
       const { email } = input;
@@ -60,7 +60,7 @@ export const getUserRouter = router({
         });
       }
     }),
-  getUserObjectRelation: teacherAboveProcedure
+  getUserObjectRelation: adminProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
       const { email } = input;

@@ -5,7 +5,7 @@ import { router, authedProcedure } from "~/server/api/trpc";
 
 export const getFrontRouter = router({
   getSections: authedProcedure.query(async ({ ctx }) => {
-    const full_name = ctx.session?.user?.full_name;
+    const student_id = ctx.session?.user?.student_id;
 
     try {
       const sections = ctx.prisma.sections.findMany({
@@ -18,7 +18,7 @@ export const getFrontRouter = router({
                 {
                   students: {
                     some: {
-                      full_name,
+                      student_id,
                       deleted_at: null,
                     },
                   },
@@ -27,7 +27,9 @@ export const getFrontRouter = router({
             },
           ],
         },
-        include: {
+        select: {
+          id: true,
+          name: true,
           course: {
             select: {
               id: true,
@@ -35,6 +37,10 @@ export const getFrontRouter = router({
               name: true,
             },
           },
+          type: true,
+        },
+        orderBy: {
+          course_id: "asc",
         },
       });
 
@@ -47,7 +53,7 @@ export const getFrontRouter = router({
     }
   }),
   getTeachingSections: authedProcedure.query(async ({ ctx }) => {
-    const full_name = ctx.session?.user?.full_name;
+    const student_id = ctx.session?.user?.student_id;
 
     try {
       const sections = ctx.prisma.sections.findMany({
@@ -59,7 +65,7 @@ export const getFrontRouter = router({
                 {
                   instructors: {
                     some: {
-                      full_name,
+                      student_id,
                       deleted_at: null,
                     },
                   },
@@ -68,7 +74,9 @@ export const getFrontRouter = router({
             },
           ],
         },
-        include: {
+        select: {
+          id: true,
+          name: true,
           course: {
             select: {
               id: true,
@@ -76,6 +84,10 @@ export const getFrontRouter = router({
               name: true,
             },
           },
+          type: true,
+        },
+        orderBy: {
+          course_id: "asc",
         },
       });
 
@@ -91,7 +103,7 @@ export const getFrontRouter = router({
     .input(z.object({ sectionId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { sectionId } = input;
-      const full_name = ctx.user.full_name;
+      const student_id = ctx.user.student_id;
       const _sectionId = parseInt(sectionId);
 
       try {
@@ -117,7 +129,7 @@ export const getFrontRouter = router({
             submissions: {
               where: {
                 user: {
-                  full_name,
+                  student_id,
                   deleted_at: null,
                 },
               },
@@ -126,7 +138,7 @@ export const getFrontRouter = router({
         });
 
         const isInSection = labs?.students.some(
-          (student) => student.full_name === full_name
+          (student) => student.student_id === student_id
         );
 
         if (!isInSection) {
@@ -171,7 +183,7 @@ export const getFrontRouter = router({
       const { labId, sectionId } = input;
       const _labId = parseInt(labId);
       const _sectionId = parseInt(sectionId);
-      const full_name = ctx.user.full_name;
+      const student_id = ctx.user.student_id;
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
@@ -181,6 +193,7 @@ export const getFrontRouter = router({
             labs: true,
             students: true,
             active: true,
+            type: true,
           },
         });
 
@@ -191,7 +204,7 @@ export const getFrontRouter = router({
         );
 
         const isStudentInSection = section?.students.some(
-          (student) => student.full_name === full_name
+          (student) => student.student_id === student_id
         );
 
         if (!isLabExistInSection || !isStudentInSection || !isLabActive) {
@@ -219,7 +232,7 @@ export const getFrontRouter = router({
             submissions: {
               where: {
                 user: {
-                  full_name,
+                  student_id,
                   deleted_at: null,
                 },
                 section: {
@@ -254,6 +267,7 @@ export const getFrontRouter = router({
             courseName: lab.course.name,
             labName: lab.name,
             tasks: sortedTaskLab,
+            sectionType: section.type,
           };
         }
       } catch (err) {
@@ -281,7 +295,7 @@ export const getFrontRouter = router({
       const _labId = parseInt(labId);
       const _sectionId = parseInt(sectionId);
 
-      const full_name = ctx.user.full_name;
+      const student_id = ctx.user.student_id;
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
@@ -360,7 +374,7 @@ export const getFrontRouter = router({
 
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name,
+            student_id,
             deleted_at: null,
           },
           select: {
@@ -436,7 +450,7 @@ export const getFrontRouter = router({
       const _taskId = parseInt(taskId);
       const _labId = parseInt(labId);
 
-      const full_name = ctx.user.full_name;
+      const student_id = ctx.user.student_id;
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
@@ -463,7 +477,7 @@ export const getFrontRouter = router({
               section_id: _sectionId,
               lab_id: _labId,
               user: {
-                full_name,
+                student_id,
                 deleted_at: null,
               },
               task_id: _taskId,

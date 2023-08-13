@@ -11,7 +11,7 @@ export const deleteSectionsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
@@ -21,7 +21,7 @@ export const deleteSectionsRouter = router({
             created_by: true,
           },
         });
-        if (section?.created_by.full_name !== requester) {
+        if (section?.created_by.student_id !== requester) {
           throw new Error("UNAUTHORIZED");
         }
 
@@ -33,7 +33,7 @@ export const deleteSectionsRouter = router({
 
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {
@@ -82,11 +82,11 @@ export const deleteSectionsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { sectionId, id } = input;
       const _sectionId = parseInt(sectionId);
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       try {
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {
@@ -133,11 +133,11 @@ export const deleteSectionsRouter = router({
       const { labId, sectionId } = input;
       const _sectionId = parseInt(sectionId);
 
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       try {
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {

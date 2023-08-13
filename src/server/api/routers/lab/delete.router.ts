@@ -7,7 +7,7 @@ export const deleteLabRouter = router({
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       let lab;
       try {
         const fetchLab = await ctx.prisma.labs.findUnique({
@@ -56,7 +56,7 @@ export const deleteLabRouter = router({
 
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {
@@ -102,7 +102,7 @@ export const deleteLabRouter = router({
     .input(z.object({ labId: z.string(), taskId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { labId, taskId } = input;
-      const requester = ctx.user.full_name;
+      const requester = ctx.user.student_id;
       const _labId = parseInt(labId);
 
       try {
@@ -124,7 +124,7 @@ export const deleteLabRouter = router({
 
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {

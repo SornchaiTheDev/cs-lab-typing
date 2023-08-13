@@ -12,6 +12,7 @@ export const createTaskRouter = router({
 
       let task;
       try {
+        // FIX THIS (cannot use full_name to find users use student_id instead)
         const _owner = await ctx.prisma.users.findFirst({
           where: {
             full_name: owner,
@@ -78,6 +79,7 @@ export const createTaskRouter = router({
       const { id } = input;
       const owner_full_name = ctx.user.full_name;
       try {
+        // FIX THIS (cannot use full_name to find users use student_id instead)
         const _owner = await ctx.prisma.users.findFirst({
           where: {
             full_name: owner_full_name,
@@ -99,7 +101,7 @@ export const createTaskRouter = router({
             originalTask;
           const cloneTask = await ctx.prisma.tasks.create({
             data: {
-              name,
+              name: `${name} (clone)`,
               body,
               isPrivate,
               language,

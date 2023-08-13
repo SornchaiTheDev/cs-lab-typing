@@ -23,13 +23,18 @@ export const getCourseRouter = router({
       const { page, limit } = input;
 
       const role = getHighestRole(ctx.user.roles);
-      const full_name = ctx.user.full_name;
+      const student_id = ctx.user.student_id;
       let courses = null;
       try {
         if (role === "ADMIN") {
           courses = await getAdminCourses(ctx.prisma, page, limit);
         } else if (role === "TEACHER") {
-          courses = await getTeacherCourses(ctx.prisma, page, limit, full_name);
+          courses = await getTeacherCourses(
+            ctx.prisma,
+            page,
+            limit,
+            student_id
+          );
         }
         if (!courses) {
           return [];

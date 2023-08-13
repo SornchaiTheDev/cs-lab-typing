@@ -27,7 +27,7 @@ export const getTaskRouter = router({
                 { isPrivate: false },
                 {
                   owner: {
-                    full_name: ctx.user.full_name,
+                    student_id: ctx.user.student_id,
                   },
                 },
               ],
@@ -56,7 +56,7 @@ export const getTaskRouter = router({
 
                 {
                   owner: {
-                    full_name: ctx.user.full_name,
+                    student_id: ctx.user.student_id,
                   },
                 },
               ],
@@ -247,7 +247,7 @@ export const getTaskRouter = router({
                   { isPrivate: false },
                   {
                     owner: {
-                      full_name: ctx.user.full_name,
+                      student_id: ctx.user.student_id,
                     },
                   },
                 ],

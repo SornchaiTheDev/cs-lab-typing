@@ -1,9 +1,9 @@
-import { router, teacherAboveProcedure } from "~/server/api/trpc";
+import { router, adminProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const deleteUserRouter = router({
-  deleteUser: teacherAboveProcedure
+  deleteUser: adminProcedure
     .input(
       z.object({
         id: z.number(),

@@ -1,4 +1,4 @@
-import { teacherAboveProcedure, router } from "~/server/api/trpc";
+import { adminProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { isArrayUnique, isAllUserValid } from "~/helpers";
@@ -7,7 +7,7 @@ import { addNonKUStudent } from "./role/nonKU";
 import { addTeacher } from "./role/teacher";
 
 export const createUserRouter = router({
-  addUser: teacherAboveProcedure
+  addUser: adminProcedure
     .input(
       z.object({
         users: z.array(z.string()),

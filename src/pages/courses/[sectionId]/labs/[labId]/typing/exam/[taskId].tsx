@@ -10,6 +10,7 @@ import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import type { SectionType } from "@prisma/client";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import EndedGameExam from "~/components/Typing/EndedGameExam";
 
 interface Props {
   sectionType: SectionType;
@@ -70,7 +71,7 @@ function TypingTask({
           },
         ]}
       >
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-1 flex-col">
           {!isReadOnly && (
             <Button
               icon={
@@ -78,7 +79,7 @@ function TypingTask({
                   ? "solar:history-line-duotone"
                   : "solar:keyboard-line-duotone"
               }
-              className="self-center border w-fit border-sand-9 hover:bg-sand-6"
+              className="w-fit self-center border border-sand-9 hover:bg-sand-6"
               onClick={() =>
                 setStatus(isTypingPhase ? "History" : "NotStarted")
               }
@@ -86,13 +87,13 @@ function TypingTask({
               {isTypingPhase ? "History" : "Back to Typing"}
             </Button>
           )}
-          <div className="flex flex-col flex-1 mt-12">
+          <div className="mt-12 flex flex-1 flex-col">
             {isReadOnly ? (
               <History />
             ) : isTypingPhase ? (
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
-              <EndedGame {...{ sectionType }} />
+              <EndedGameExam />
             ) : (
               isHistoryPhase && <History />
             )}

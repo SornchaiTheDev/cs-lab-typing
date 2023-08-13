@@ -5,7 +5,7 @@ export const getStudentRelatedSections = async (
   courseId: number,
   page: number,
   limit: number,
-  full_name: string
+  student_id: string
 ) => {
   return await prisma.sections.findMany({
     where: {
@@ -13,7 +13,7 @@ export const getStudentRelatedSections = async (
       course_id: courseId,
       students: {
         some: {
-          full_name,
+          student_id,
         },
       },
     },

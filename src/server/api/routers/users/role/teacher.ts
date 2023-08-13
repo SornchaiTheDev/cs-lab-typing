@@ -7,10 +7,20 @@ export const addTeacher = async (prisma: PrismaClient, user: string) => {
     const isExist = await prisma.users.findFirst({
       where: {
         email,
+        student_id: email,
         deleted_at: null,
       },
     });
-    if (isExist) throw new Error("DUPLICATED_USER");
+    if (isExist) {
+      return await prisma.users.update({
+        where: {
+          id: isExist.id,
+        },
+        data: {
+          full_name,
+        },
+      });
+    }
 
     await prisma.users.create({
       data: {

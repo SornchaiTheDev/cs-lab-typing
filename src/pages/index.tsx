@@ -11,7 +11,7 @@ function MyCourse() {
   return (
     <FrontLayout title="My Courses">
       {allSections.isLoading ? (
-        <div className="grid grid-cols-12 gap-6 my-4">
+        <div className="my-4 grid grid-cols-12 gap-6">
           {new Array(3).fill(0).map((_, i) => (
             <Skeleton
               key={i}
@@ -21,8 +21,8 @@ function MyCourse() {
           ))}
         </div>
       ) : (allSections.data?.length as number) > 0 ? (
-        <div className="grid grid-cols-12 gap-6 my-4">
-          {allSections.data?.map(({ id, name, course }) => {
+        <div className="my-4 grid grid-cols-12 gap-6">
+          {allSections.data?.map(({ id, name, course, type }) => {
             const { name: courseName, number } = course;
             return (
               <Card
@@ -35,6 +35,7 @@ function MyCourse() {
                 badges={[
                   { title: number, type: "success" },
                   { title: name, type: "success" },
+                  { title: type, type: "info" },
                 ]}
               />
             );
@@ -47,7 +48,7 @@ function MyCourse() {
           <div className="mt-4">
             <Skeleton width="16rem" height="2rem" />
           </div>
-          <div className="grid grid-cols-12 gap-6 my-4">
+          <div className="my-4 grid grid-cols-12 gap-6">
             {new Array(3).fill(0).map((_, i) => (
               <Skeleton
                 key={i}
@@ -60,28 +61,31 @@ function MyCourse() {
       ) : (teachingAssistantSections.data?.length as number) > 0 ? (
         <>
           <div className="mt-4">
-            <h4 className="text-2xl font-medium md:text-3xl text-sand-12">
+            <h4 className="text-2xl font-medium text-sand-12 md:text-3xl">
               Teach
             </h4>
           </div>
-          <div className="grid grid-cols-12 gap-6 my-6">
-            {teachingAssistantSections.data?.map(({ id, name, course }) => {
-              const { name: courseName, number, id: courseId } = course;
-              return (
-                <Card
-                  key={id}
-                  href={{
-                    pathname: "cms/courses/[courseId]/sections/[sectionId]",
-                    query: { courseId, sectionId: id },
-                  }}
-                  title={courseName}
-                  badges={[
-                    { title: number, type: "success" },
-                    { title: name, type: "success" },
-                  ]}
-                />
-              );
-            })}
+          <div className="my-6 grid grid-cols-12 gap-6">
+            {teachingAssistantSections.data?.map(
+              ({ id, name, course, type }) => {
+                const { name: courseName, number, id: courseId } = course;
+                return (
+                  <Card
+                    key={id}
+                    href={{
+                      pathname: "cms/courses/[courseId]/sections/[sectionId]",
+                      query: { courseId, sectionId: id },
+                    }}
+                    title={courseName}
+                    badges={[
+                      { title: number, type: "success" },
+                      { title: name, type: "success" },
+                      { title: type, type: "info" },
+                    ]}
+                  />
+                );
+              }
+            )}
           </div>
         </>
       ) : null}

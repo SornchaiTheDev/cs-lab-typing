@@ -4,7 +4,7 @@ export const getTeacherCourses = async (
   prisma: PrismaClient,
   page: number,
   limit: number,
-  full_name: string
+  student_id: string
 ) => {
   return await prisma.courses.findMany({
     where: {
@@ -14,7 +14,7 @@ export const getTeacherCourses = async (
           some: {
             instructors: {
               some: {
-                full_name,
+                student_id,
                 deleted_at: null,
               },
             },

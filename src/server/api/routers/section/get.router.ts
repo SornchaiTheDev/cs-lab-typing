@@ -189,7 +189,7 @@ export const getSectionsRouter = router({
 
       const _courseId = parseInt(courseId);
       const role = getHighestRole(ctx.user.roles);
-      const full_name = ctx.user.full_name;
+      const student_id = ctx.user.student_id;
       let sections: sectionsIncludedStudentLength[] = [];
       try {
         if (role === "ADMIN") {
@@ -200,7 +200,7 @@ export const getSectionsRouter = router({
             _courseId,
             page,
             limit,
-            full_name
+            student_id
           );
         } else {
           sections = await getStudentRelatedSections(
@@ -208,10 +208,11 @@ export const getSectionsRouter = router({
             _courseId,
             page,
             limit,
-            full_name
+            student_id
           );
         }
 
+        // Don't nessary to return empty array
         if (!sections) {
           return [];
         }

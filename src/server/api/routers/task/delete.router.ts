@@ -43,10 +43,10 @@ export const deleteTaskRouter = router({
           });
         });
 
-        const requester = ctx.user.full_name;
+        const requester = ctx.user.student_id;
         const user = await ctx.prisma.users.findFirst({
           where: {
-            full_name: requester,
+            student_id: requester,
             deleted_at: null,
           },
           select: {

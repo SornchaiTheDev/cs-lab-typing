@@ -5,7 +5,7 @@ export const getTeacherRelatedSections = async (
   courseId: number,
   page: number,
   limit: number,
-  full_name: string
+  student_id: string
 ) => {
   return await prisma.sections.findMany({
     where: {
@@ -15,13 +15,13 @@ export const getTeacherRelatedSections = async (
         {
           instructors: {
             some: {
-              full_name,
+              student_id,
             },
           },
         },
         {
           created_by: {
-            full_name,
+            student_id,
           },
         },
       ],
