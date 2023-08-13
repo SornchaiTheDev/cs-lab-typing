@@ -1,5 +1,11 @@
 # CS LAB V0.0.1
 
+## TODOS
+
+- [ ] Fix Some query full_name to student_id
+- [ ] Recheck remove relation
+- [ ] Unit testing
+
 ## Environment Variables
 
 |Variable|Description|
