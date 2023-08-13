@@ -92,7 +92,7 @@ function TypingTask({
             ) : isTypingPhase ? (
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
-              <EndedGame {...{ sectionType }} />
+              <EndedGame />
             ) : (
               isHistoryPhase && <History />
             )}
