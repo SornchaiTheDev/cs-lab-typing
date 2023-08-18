@@ -37,31 +37,33 @@ function SinglePicker({
   return (
     <div className="relative" ref={dateRef}>
       <div className="flex justify-between">
-        <h4 className="block mb-2 font-semibold text-sand-12">
+        <h4 className="mb-2 block font-semibold text-sand-12">
           {title}{" "}
           {optional && <span className="text-sm text-sand-11">(optional)</span>}
         </h4>
         {isError && (
-          <h6 className="block mb-2 text-sm font-semibold text-tomato-9">
+          <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
             {error}
           </h6>
         )}
       </div>
       <div
         className={clsx(
-          "relative w-full bg-white border rounded-lg outline-none border-sand-6 min-h-[2.5rem]",
+          "relative min-h-[2.5rem] w-full rounded-lg border border-sand-6 bg-sand-1 text-sand-12 outline-none",
           isError && "border-tomato-7"
         )}
-        onClick={() => setIsShow(true)}
+        onClick={() => setIsShow(!isShow)}
       >
-        <h5 className="p-2">{value && format(value, "dd/MM/yyyy")}</h5>
+        <h5 className="select-none p-2">
+          {value && format(value, "dd/MM/yyyy")}
+        </h5>
         <Icon
           icon="solar:calendar-line-duotone"
-          className="absolute -translate-y-1/2 right-2 top-1/2"
+          className="absolute right-2 top-1/2 -translate-y-1/2"
         />
       </div>
       {isShow && (
-        <div className="absolute bg-white border rounded-lg shadow top-20 border-sand-6">
+        <div className="absolute bottom-12 select-none rounded-lg border border-sand-6 bg-sand-1 text-sand-11 shadow">
           <DayPicker mode="single" selected={value} onSelect={handleOnSelect} />
         </div>
       )}

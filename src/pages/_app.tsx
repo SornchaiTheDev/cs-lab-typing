@@ -11,9 +11,9 @@ import Nprogress from "nprogress";
 import { useEffect } from "react";
 
 import "~/styles/globals.css";
-import "react-day-picker/dist/style.css";
-import "~/styles/datepicker.css";
-import "~/styles/nprogress.css";
+// import "react-day-picker/dist/style.css";
+// import "~/styles/datepicker.css";
+// import "~/styles/nprogress.css";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
