@@ -126,7 +126,7 @@ function Labs() {
                 type: "lab-outside",
               });
             }}
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
           </button>
@@ -165,8 +165,10 @@ function Labs() {
               type: "multiple-search",
               canAddItemNotInList: true,
               optional: true,
-              options: tags.data?.map(({ name }) => name) ?? [],
-              value: [],
+              options: tags.data?.map(({ name }) => ({
+                label: name,
+                value: name,
+              })),
             },
             {
               label: "isDisabled",
@@ -187,7 +189,7 @@ function Labs() {
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:checklist-minimalistic-line-duotone"
-                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
               >
                 Add Lab
               </Button>

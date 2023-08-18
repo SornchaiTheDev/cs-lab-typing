@@ -23,12 +23,14 @@ export const updateTaskRouter = router({
       const actionUser = ctx.user.student_id;
       let task;
       try {
-        await createNotExistTags(ctx.prisma, tags);
+        await createNotExistTags(
+          ctx.prisma,
+          tags.map((tag) => tag.value)
+        );
 
-        // FIX THIS (cannot use full_name to find users use student_id instead)
         const _owner = await ctx.prisma.users.findFirst({
           where: {
-            full_name: owner,
+            student_id: owner.value,
             deleted_at: null,
           },
           select: {
@@ -53,8 +55,8 @@ export const updateTaskRouter = router({
           data: {
             name,
             tags: {
-              set: tags.map((tag) => ({
-                name: tag,
+              set: tags.map(({ value }) => ({
+                name: value,
               })),
             },
             isPrivate,

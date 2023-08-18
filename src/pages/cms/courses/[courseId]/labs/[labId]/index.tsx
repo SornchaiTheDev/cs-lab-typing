@@ -18,6 +18,7 @@ import Skeleton from "~/components/Common/Skeleton";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
+import { SearchValue } from "~/types";
 
 interface AddTaskModalProps {
   isShow: boolean;
@@ -30,38 +31,43 @@ type TaskType = "Lesson" | "Problem" | "Typing";
 const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
   const tags = trpc.tags.getTags.useQuery();
   const [search, setSearch] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<TaskType[]>([]);
+  const [selectedTags, setSelectedTags] = useState<SearchValue[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<SearchValue[]>([]);
 
   const ctx = trpc.useContext();
 
   const tasks = trpc.tasks.searchTasks.useQuery(
     {
       query: search,
-      tags: selectedTags,
-      types: selectedTypes,
+      tags: selectedTags.map(({ label }) => label),
+      types: selectedTypes.map((item) => item.label as TaskType),
       limit: 20,
     },
     { enabled: false, keepPreviousData: true }
   );
 
   useEffect(() => {
-    tasks.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleOnSearch = async () => {
-    try {
-      await tasks.refetch();
-    } catch (err) {
-      if (err instanceof TRPCClientError) {
-        callToast({
-          msg: err.message,
-          type: "error",
-        });
+    const handleOnSearch = async () => {
+      try {
+        await tasks.refetch();
+      } catch (err) {
+        if (err instanceof TRPCClientError) {
+          callToast({
+            msg: err.message,
+            type: "error",
+          });
+        }
       }
-    }
-  };
+    };
+
+    const debounce = setTimeout(() => {
+      handleOnSearch();
+    }, 1000);
+
+    return () => {
+      clearTimeout(debounce);
+    };
+  }, [search, selectedTags, selectedTypes, tasks]);
 
   const addTask = trpc.labs.addTask.useMutation();
   const addTaskToLab = async (taskId: number) => {
@@ -127,35 +133,44 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-2 border rounded-md outline-none placeholder:text-sand-8 h-fit border-sand-6 bg-sand-1"
+        className="h-fit w-full rounded-md border border-sand-6 bg-sand-1 p-2 text-sand-12 outline-none placeholder:text-sand-8"
         placeholder="eg. Typing01"
       />
       <div className="flex gap-4">
         <Multiple
-          datas={tags.data?.map((tag) => tag.name) ?? []}
+          datas={
+            tags.data?.map(({ name, id }) => ({
+              label: name,
+              value: id,
+            })) ?? []
+          }
           onChange={setSelectedTags}
           title="Tags"
           value={selectedTags}
           className="flex-1"
         />
         <Multiple
-          datas={["Lesson", "Problem", "Typing"]}
-          onChange={(value) => setSelectedTypes(value as TaskType[])}
+          datas={[
+            { label: "Lesson", value: "Lesson" },
+            { label: "Problem", value: "Problem" },
+            { label: "Typing", value: "Typing" },
+          ]}
+          onChange={(value) => setSelectedTypes(value)}
           title="Type"
           value={selectedTypes}
           className="flex-1"
         />
       </div>
 
-      <Button
+      {/* <Button
         onClick={handleOnSearch}
         icon="solar:magnifer-line-duotone"
-        className="mt-2 shadow w-fit bg-sand-12 text-sand-1 active:bg-sand-11"
+        className="mt-2 w-fit bg-sand-12 text-sand-1 shadow active:bg-sand-11"
       >
         Search
-      </Button>
+      </Button> */}
       <hr className="my-2" />
-      <div className="grid grid-cols-12 gap-4 px-2 py-4 overflow-y-auto">
+      <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
         {tasks.isLoading
           ? new Array(6)
               .fill(0)
@@ -167,7 +182,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
                 />
               ))
           : tasks.data?.map(
-              ({ id, name, tags, submission_count, note, labs }) => {
+              ({ id, name, tags, submission_count, labs, owner }) => {
                 const isAdded = labs.some((lab) => lab.id === parseInt(labId));
                 return (
                   <div
@@ -194,7 +209,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
                         {tags.map(({ name }) => (
                           <div
                             key={name}
-                            className="px-2 text-white rounded-lg w-fit bg-lime-9"
+                            className="w-fit rounded-lg bg-lime-9 px-2 text-white"
                           >
                             {name}
                           </div>
@@ -207,7 +222,9 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
                         <h6 className="text-sm text-sand-12">
                           Submissions : {convertToThousand(submission_count)}
                         </h6>
-                        <h6>{note}</h6>
+                        <h6 className="text-sm text-sand-12">
+                          Author : {owner.full_name}
+                        </h6>
                       </div>
                     </div>
                   </div>
@@ -303,7 +320,7 @@ function Lab() {
           cell: (props) => (
             <button
               onClick={() => deleteSelectRow(props.row.original.id)}
-              className="text-xl rounded-xl text-sand-12"
+              className="rounded-xl text-xl text-sand-12"
             >
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
             </button>
@@ -365,7 +382,7 @@ function Lab() {
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:checklist-minimalistic-line-duotone"
-                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
               >
                 Add Task
               </Button>
@@ -373,7 +390,7 @@ function Lab() {
                 <Button
                   onClick={handleOnSave}
                   icon="solar:diskette-line-duotone"
-                  className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                  className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
                 >
                   Save
                 </Button>

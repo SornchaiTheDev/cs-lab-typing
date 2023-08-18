@@ -27,9 +27,9 @@ export const createLabRouter = router({
           data: {
             name,
             tags: {
-              connectOrCreate: tags.map((tag) => ({
-                where: { name: tag },
-                create: { name: tag },
+              connectOrCreate: tags.map(({ value }) => ({
+                where: { name: value },
+                create: { name: value },
               })),
             },
             isDisabled,

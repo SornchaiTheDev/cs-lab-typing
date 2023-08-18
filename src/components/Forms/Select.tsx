@@ -1,8 +1,9 @@
 import clsx from "clsx";
-import { useState, useRef, KeyboardEvent, useEffect } from "react";
+import { useState, useRef, type KeyboardEvent, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useOnClickOutside } from "usehooks-ts";
 import Skeleton from "../Common/Skeleton";
+import type { SearchValue } from "~/types";
 
 interface Props {
   options: string[];
@@ -15,6 +16,7 @@ interface Props {
   optional?: boolean;
   disabled?: boolean;
   isLoading?: boolean;
+  emptyMsg?: string;
 }
 
 function Select({
@@ -28,6 +30,7 @@ function Select({
   optional,
   disabled,
   isLoading,
+  emptyMsg = "No Data"
 }: Props) {
   const [isShow, setIsShow] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -100,7 +103,7 @@ function Select({
             tabIndex={0}
             ref={selectRef}
             className={clsx(
-              "relative min-h-[2.5rem] w-full rounded-md border border-sand-6 bg-sand-1 outline-none text-sand-12",
+              "relative min-h-[2.5rem] w-full rounded-md border border-sand-6 bg-sand-1 text-sand-12 outline-none",
               isError && "border-tomato-7"
             )}
             onClick={() => {
@@ -154,7 +157,7 @@ function Select({
               </li>
             ))
           ) : (
-            <span className="cursor-not-allowed py-1 text-sand-6">No Data</span>
+            <span className="cursor-not-allowed py-1 text-sand-6 dark:text-sand-11">{emptyMsg}</span>
           )}
         </ul>
       )}

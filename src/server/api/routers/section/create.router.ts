@@ -32,12 +32,11 @@ export const createSectionsRouter = router({
           },
           take: 1,
         });
-        
-        // FIX THIS (cannot use full_name to find users use student_id instead)
+
         const instructorsId = await ctx.prisma.users.findMany({
           where: {
-            full_name: {
-              in: instructors,
+            student_id: {
+              in: instructors.map((instructor) => instructor.value as string),
             },
             deleted_at: null,
           },

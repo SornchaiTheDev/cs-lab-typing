@@ -90,6 +90,7 @@ function Sections() {
                 title: "Semester",
                 type: "select",
                 options: getAllSemester.data,
+                emptyMsg: "You need to create a semester first",
               },
               { label: "name", title: "Name", type: "text" },
               {
@@ -103,7 +104,11 @@ function Sections() {
                 label: "instructors",
                 title: "Instructors",
                 type: "multiple-search",
-                options: authorUser.data?.map((user) => user.full_name) ?? [],
+                options:
+                  authorUser.data?.map(({ full_name, student_id }) => ({
+                    label: full_name,
+                    value: student_id,
+                  })) ?? [],
               },
               { label: "note", title: "Note", type: "text", optional: true },
               {
@@ -117,7 +122,7 @@ function Sections() {
           />
         </ModalWithButton>
       </div>
-      <div className="grid grid-cols-12 gap-6 mt-4">
+      <div className="mt-4 grid grid-cols-12 gap-6">
         {sections.isLoading
           ? new Array(6)
               .fill(0)
@@ -145,7 +150,7 @@ function Sections() {
                   </div>
 
                   <div>
-                    <div className="absolute flex items-center px-1 rounded-lg right-2 top-2 w-fit bg-sand-7">
+                    <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
                       <Icon
                         icon="solar:user-hand-up-line-duotone"
                         className="text-lg"

@@ -86,10 +86,10 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
       animate={{ translateY: [20, 0], opacity: [0, 1] }}
       onHoverStart={() => setIsPause(true)}
       onHoverEnd={() => setIsPause(false)}
-      className="relative flex min-h-[4rem] w-full max-w-sm items-center gap-4 overflow-hidden rounded-lg border border-sand-6 bg-white p-4 shadow-sm"
+      className="relative flex min-h-[4rem] w-full max-w-sm items-center gap-4 overflow-hidden rounded-lg border border-sand-6 bg-sand-1 p-4 shadow-sm"
     >
       <button
-        className="absolute right-2 top-2"
+        className="absolute right-2 top-2 text-sand-12"
         onClick={() => toast.dismiss(id)}
       >
         <Icon icon="material-symbols:close-rounded" className="w-5 h-5" />

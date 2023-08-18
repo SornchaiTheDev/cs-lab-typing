@@ -10,16 +10,17 @@ import TextHighlight from "./TextHighlight";
 import { useOnClickOutside } from "usehooks-ts";
 import { Icon } from "@iconify/react";
 import Skeleton from "~/components/Common/Skeleton";
+import type { SearchValue } from "~/types";
 
 interface Props {
-  datas: string[];
+  datas: SearchValue[];
   title: string;
   isError?: boolean;
   error?: string;
   className?: string;
   optional?: boolean;
-  value: string;
-  onChange: (value: string) => void;
+  value: SearchValue;
+  onChange: (value: SearchValue) => void;
   canAddItemNotInList?: boolean;
   disabled?: boolean;
   isLoading?: boolean;
@@ -34,7 +35,7 @@ const SingleSearch = (props: Props) => {
     isError,
     error,
     canAddItemNotInList,
-    value,
+    value = { label: "", value: "" },
     onChange,
     disabled,
     isLoading,
@@ -49,7 +50,9 @@ const SingleSearch = (props: Props) => {
   useOnClickOutside(selectRef, () => setIsFocus(false));
 
   const filteredDatas = isSeaching
-    ? datas.filter((data) => data.toLowerCase().includes(search.toLowerCase()))
+    ? datas.filter((data) =>
+        data.label.toLowerCase().includes(search.toLowerCase())
+      )
     : isFocus
     ? datas
     : [];
@@ -76,7 +79,7 @@ const SingleSearch = (props: Props) => {
         break;
       case "Enter":
         e.preventDefault();
-        addItem(filteredDatas[selectedIndex]);
+        addItem(filteredDatas[selectedIndex]?.label);
         break;
       case "Backspace":
         onClear();
@@ -86,16 +89,17 @@ const SingleSearch = (props: Props) => {
 
   const addItem = (text?: string) => {
     if (!text) text = search;
-    if (!canAddItemNotInList && !datas.includes(text)) return;
-
-    onChange(text);
+    if (!canAddItemNotInList && !datas.map((data) => data.label).includes(text))
+      return;
+    const item = datas.filter((data) => data.label === text)[0] as SearchValue;
+    onChange(item);
     setSelectedIndex(0);
     setIsFocus(false);
     setSearch("");
   };
 
   const onClear = () => {
-    onChange("");
+    onChange({ label: "", value: "" });
   };
 
   useEffect(() => {
@@ -142,12 +146,12 @@ const SingleSearch = (props: Props) => {
               isError && "border-tomato-7"
             )}
           >
-            {value.length > 0 ? (
+            {value.label.length > 0 ? (
               <div
-                key={value}
+                key={value.label}
                 className="flex select-none items-center rounded-md bg-sand-12 px-2 py-1 text-sm font-semibold text-sand-1"
               >
-                {value}{" "}
+                {value.label}{" "}
                 {!disabled && (
                   <button
                     onClick={() => !disabled && onClear()}
@@ -174,15 +178,15 @@ const SingleSearch = (props: Props) => {
           {isFocus && !isEmpty && (
             <ul
               ref={optionsRef}
-              className="absolute z-50 mt-2 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-white p-2 shadow"
+              className="absolute z-50 mt-2 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-sand-1 p-2 shadow"
             >
-              {filteredDatas.map((data, i) => (
+              {filteredDatas.map(({ label }, i) => (
                 <TextHighlight
-                  key={data}
-                  search={value}
-                  text={data}
+                  key={label}
+                  search={label}
+                  text={label}
                   isSelected={selectedIndex === i}
-                  onClick={() => addItem(data)}
+                  onClick={() => addItem(label)}
                 />
               ))}
             </ul>

@@ -8,7 +8,7 @@ export const AddSectionSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be empty" }),
   type: z.literal("Lesson").or(z.literal("Exam")),
   instructors: z
-    .array(z.string())
+    .array(z.object({ label: z.string(), value: z.string() }))
     .min(1, { message: "Instructors cannot be empty" }),
   note: z.string().optional(),
   active: z.boolean().default(true),

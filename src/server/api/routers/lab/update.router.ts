@@ -17,7 +17,10 @@ export const updateLabRouter = router({
       const _courseId = parseInt(courseId);
 
       try {
-        await createNotExistTags(ctx.prisma, tags);
+        await createNotExistTags(
+          ctx.prisma,
+          tags.map((tag) => tag.value)
+        );
 
         const user = await ctx.prisma.users.findFirst({
           where: {
@@ -36,7 +39,7 @@ export const updateLabRouter = router({
           data: {
             name,
             tags: {
-              set: tags.map((tag) => ({ name: tag })),
+              set: tags.map((tag) => ({ name: tag.value })),
             },
             isDisabled,
             course: {

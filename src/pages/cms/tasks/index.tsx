@@ -13,6 +13,7 @@ import { callToast } from "~/services/callToast";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import { SearchValue } from "~/types";
 
 interface TaskRow {
   id: number;
@@ -161,7 +162,9 @@ function Tasks() {
               label: "tags",
               title: "Tags",
               type: "multiple-search",
-              options: tags.data?.map(({ name }) => name) ?? [],
+              options:
+                tags.data?.map(({ name }) => ({ label: name, value: name })) ??
+                [],
               optional: true,
               canAddItemNotInList: true,
               value: [],
@@ -170,8 +173,15 @@ function Tasks() {
               label: "owner",
               title: "Owner",
               type: "single-search",
-              options: ownerUser.data?.map(({ full_name }) => full_name) ?? [],
-              value: session?.user?.full_name as string,
+              options:
+                ownerUser.data?.map(({ full_name, student_id }) => ({
+                  label: full_name,
+                  value: student_id,
+                })) ?? [],
+              value: {
+                label: session?.user?.full_name,
+                value: session?.user?.student_id,
+              } as SearchValue,
             },
             {
               label: "isPrivate",
@@ -192,7 +202,7 @@ function Tasks() {
         <Table
           data={allTasks.data?.tasks ?? []}
           columns={columns}
-          className="flex-1 mt-6"
+          className="mt-6 flex-1"
           pageCount={allTasks.data?.pageCount ?? 0}
           onPaginationChange={setPagination}
           {...{ pagination }}
@@ -202,7 +212,7 @@ function Tasks() {
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:programming-line-duotone"
-                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
               >
                 Add Task
               </Button>

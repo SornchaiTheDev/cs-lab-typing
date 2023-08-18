@@ -11,6 +11,7 @@ import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import { useSession } from "next-auth/react";
+import type { SearchValue } from "~/types";
 
 function Courses() {
   const router = useRouter();
@@ -82,7 +83,11 @@ function Courses() {
                   label: "authors",
                   title: "Authors",
                   type: "multiple-search",
-                  options: authorUser.data?.map((user) => user.full_name) ?? [],
+                  options:
+                    (authorUser.data?.map((user) => ({
+                      label: user.full_name,
+                      value: user.student_id,
+                    })) as SearchValue[]) ?? [],
                 },
                 { label: "note", title: "Note", type: "text", optional: true },
                 {

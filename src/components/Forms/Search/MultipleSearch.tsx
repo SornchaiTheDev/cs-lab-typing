@@ -10,16 +10,17 @@ import { Icon } from "@iconify/react";
 import TextHighlight from "./TextHighlight";
 import { useOnClickOutside } from "usehooks-ts";
 import Skeleton from "~/components/Common/Skeleton";
+import type { SearchValue } from "~/types";
 
 interface Props {
-  datas: string[];
+  datas: SearchValue[];
   title: string;
   isError?: boolean;
   error?: string;
   className?: string;
   optional?: boolean;
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: SearchValue[];
+  onChange: (value: SearchValue[]) => void;
   canAddItemNotInList?: boolean;
   disabled?: boolean;
   isLoading?: boolean;
@@ -53,8 +54,8 @@ const Multiple = (props: Props) => {
   const filteredDatas = isFocus
     ? datas.filter(
         (data) =>
-          data.toLowerCase().includes(search.toLowerCase()) &&
-          !value.some((selected) => selected === data)
+          data.label.toLowerCase().includes(search.toLowerCase()) &&
+          !value.some((selected) => selected.label === data.label)
       )
     : datas;
 
@@ -83,7 +84,7 @@ const Multiple = (props: Props) => {
         break;
       case "Enter":
         e.preventDefault();
-        addItem(filteredDatas[selectedIndex]);
+        addItem(filteredDatas[selectedIndex]?.label);
         break;
       case "Backspace":
         if (search.length === 0 && isFocus) {
@@ -96,10 +97,18 @@ const Multiple = (props: Props) => {
   const addItem = (text?: string) => {
     if (disabled) return;
     if (!text) text = search;
-    if (!canAddItemNotInList && !datas.includes(text)) return;
-    if (value.map((data) => data).includes(text)) return;
+    if (!canAddItemNotInList && !datas.map((data) => data.label).includes(text))
+      return;
+    if (value.map((data) => data.label).includes(text)) return;
     if (text.length === 0) return;
-    onChange([...value, text as string]);
+    if (canAddItemNotInList) {
+      onChange([...value, { label: text, value: text }]);
+    } else {
+      const item = datas.filter(
+        (data) => data.label === text
+      )[0] as SearchValue;
+      onChange([...value, item]);
+    }
     setSearch("");
     setSelectedIndex(0);
   };
@@ -111,7 +120,7 @@ const Multiple = (props: Props) => {
   const handleDelete = (item?: string) => {
     if (disabled) return;
     if (item) {
-      onChange(value.filter((data) => data !== item));
+      onChange(value.filter((data) => data.label !== item));
       return;
     }
     onChange(value.slice(0, value.length - 1));
@@ -165,11 +174,11 @@ const Multiple = (props: Props) => {
             {value.map((value) => (
               <button
                 type="button"
-                key={value}
+                key={value.label}
                 className="flex items-center rounded-md bg-sand-12 px-2 py-1 text-sm font-semibold text-sand-1"
-                onClick={() => handleDelete(value)}
+                onClick={() => handleDelete(value.label)}
               >
-                {value} <Icon icon="material-symbols:close-rounded" />
+                {value.label} <Icon icon="material-symbols:close-rounded" />
               </button>
             ))}
             <div className="relative flex-1">
@@ -181,7 +190,7 @@ const Multiple = (props: Props) => {
                   setSearch(e.target.value)
                 }
                 onKeyDown={handleOnKeyDown}
-                className="w-full min-w-[5rem] bg-transparent outline-none"
+                className="w-full min-w-[5rem] bg-transparent text-sand-12 caret-sand-12 outline-none"
               />
             </div>
           </div>
@@ -190,13 +199,13 @@ const Multiple = (props: Props) => {
               ref={optionsRef}
               className="absolute z-50 mt-2 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-sand-1 p-2 shadow"
             >
-              {filteredDatas.map((data, i) => (
+              {filteredDatas.map(({ label }, i) => (
                 <TextHighlight
-                  key={data}
+                  key={label}
                   search={search}
-                  text={data}
+                  text={label}
                   isSelected={selectedIndex === i}
-                  onClick={() => addItem(data)}
+                  onClick={() => addItem(label)}
                 />
               ))}
             </ul>

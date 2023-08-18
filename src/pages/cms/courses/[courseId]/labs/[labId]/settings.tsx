@@ -92,8 +92,15 @@ function Settings() {
                   type: "multiple-search",
                   optional: true,
                   canAddItemNotInList: true,
-                  options: tags.data?.map(({ name }) => name) ?? [],
-                  value: lab.data?.tags.map((tag) => tag.name),
+                  options:
+                    tags.data?.map(({ name }) => ({
+                      label: name,
+                      value: name,
+                    })) ?? [],
+                  value: lab.data?.tags.map(({ name }) => ({
+                    label: name,
+                    value: name,
+                  })),
                 },
                 {
                   label: "isDisabled",
@@ -123,7 +130,7 @@ function Settings() {
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-fit"
+              className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-fit"
             >
               Delete Lab
             </Button>

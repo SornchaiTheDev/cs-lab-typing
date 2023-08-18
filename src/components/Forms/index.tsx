@@ -11,6 +11,7 @@ import TextArea from "./TextArea";
 import Button from "~/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
+import { SearchValue } from "~/types";
 
 interface ConfirmBtn {
   title: string;
@@ -31,12 +32,13 @@ type EachField<T> = {
     | "textarea"
     | "date";
   optional?: boolean;
-  options?: string[];
+  options?: string[] | SearchValue[];
   canAddItemNotInList?: boolean;
   conditional?: (data: string) => boolean;
   children?: EachField<T>;
-  value?: string | string[] | Date | boolean;
+  value?: string | string[] | Date | boolean | SearchValue | SearchValue[];
   disabled?: boolean;
+  emptyMsg?: string;
 };
 
 interface Props<T> {
@@ -63,7 +65,12 @@ function Forms<T>({
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     values: Object.fromEntries(
-      fields.map((field) => [field.label, field.value ?? ""])
+      fields.map((field) => {
+        if (field.type === "multiple-search") {
+          return [field.label, (field.value as SearchValue[]) ?? []];
+        }
+        return [field.label, field.value ?? ""];
+      })
     ) as z.infer<typeof schema>,
   });
 
@@ -92,14 +99,15 @@ function Forms<T>({
             render={({ field: { onChange, value } }) => (
               <Select
                 isLoading={isLoading}
-                options={field.options ?? []}
+                options={(field.options as string[]) ?? []}
                 title={field.title}
-                value={value as string}
+                value={value ?? ""}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
                 optional={field.optional}
                 disabled={field.disabled || isSubmitting}
+                emptyMsg={field.emptyMsg ?? ""}
               />
             )}
           />
@@ -114,9 +122,9 @@ function Forms<T>({
             render={({ field: { onChange, value } }) => (
               <SingleSearch
                 isLoading={isLoading}
-                datas={field.options ?? []}
+                datas={(field.options as SearchValue[]) ?? []}
                 title={field.title}
-                value={(value as string) ?? ""}
+                value={(value as SearchValue) ?? ""}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
@@ -136,9 +144,9 @@ function Forms<T>({
             render={({ field: { onChange, value } }) => (
               <MultipleSearch
                 isLoading={isLoading}
-                datas={field.options ?? []}
+                datas={(field.options as SearchValue[]) ?? []}
                 title={field.title}
-                value={[...(value as string)]}
+                value={value as SearchValue[]}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}

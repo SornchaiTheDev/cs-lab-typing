@@ -12,10 +12,9 @@ export const createTaskRouter = router({
 
       let task;
       try {
-        // FIX THIS (cannot use full_name to find users use student_id instead)
         const _owner = await ctx.prisma.users.findFirst({
           where: {
-            full_name: owner,
+            student_id: owner.value,
             deleted_at: null,
           },
           select: {
@@ -30,9 +29,9 @@ export const createTaskRouter = router({
             language,
             note: note ?? "",
             tags: {
-              connectOrCreate: tags?.map((tag) => ({
-                where: { name: tag },
-                create: { name: tag },
+              connectOrCreate: tags?.map(({ value }) => ({
+                where: { name: value },
+                create: { name: value },
               })),
             },
             owner: {
@@ -77,12 +76,11 @@ export const createTaskRouter = router({
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-      const owner_full_name = ctx.user.full_name;
+      const owner_student_id = ctx.user.student_id;
       try {
-        // FIX THIS (cannot use full_name to find users use student_id instead)
         const _owner = await ctx.prisma.users.findFirst({
           where: {
-            full_name: owner_full_name,
+            student_id: owner_student_id,
             deleted_at: null,
           },
         });

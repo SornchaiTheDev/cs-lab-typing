@@ -212,6 +212,51 @@ export const getTaskRouter = router({
 
       if (types.length === 0) types.push("Lesson", "Problem", "Typing");
       try {
+        if (tags.length === 0) {
+          const tasks = await ctx.prisma.tasks.findMany({
+            take: limit,
+            where: {
+              deleted_at: null,
+              AND: [
+                {
+                  name: {
+                    contains: query,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  type: {
+                    in: types,
+                  },
+                },
+                {
+                  OR: [
+                    { isPrivate: false },
+                    {
+                      owner: {
+                        student_id: ctx.user.student_id,
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            include: {
+              tags: true,
+              owner: {
+                select: {
+                  full_name: true,
+                },
+              },
+              labs: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          });
+          return tasks;
+        }
         const tasks = await ctx.prisma.tasks.findMany({
           take: limit,
           where: {
@@ -223,23 +268,20 @@ export const getTaskRouter = router({
                   mode: "insensitive",
                 },
               },
+
               {
-                OR: [
-                  {
-                    tags: {
-                      some: {
-                        name: {
-                          in: tags,
-                        },
-                      },
+                tags: {
+                  some: {
+                    name: {
+                      in: tags,
                     },
                   },
-                  {
-                    type: {
-                      in: types,
-                    },
-                  },
-                ],
+                },
+              },
+              {
+                type: {
+                  in: types,
+                },
               },
 
               {
@@ -256,6 +298,11 @@ export const getTaskRouter = router({
           },
           include: {
             tags: true,
+            owner: {
+              select: {
+                full_name: true,
+              },
+            },
             labs: {
               select: {
                 id: true,

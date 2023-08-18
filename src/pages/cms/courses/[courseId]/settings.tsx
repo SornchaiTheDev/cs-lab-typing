@@ -14,6 +14,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { createInnerTRPCContext } from "~/server/context";
+import { SearchValue } from "~/types";
 
 function Settings() {
   const { data: session } = useSession();
@@ -67,7 +68,7 @@ function Settings() {
       {selectedObj && <DeleteAffect type="course" />}
 
       <CourseLayout title={course?.name as string} isLoading={isLoading}>
-        <div className="p-4 md:w-1/2">
+        <div className="p-4 lg:w-1/2">
           <div className="w-full">
             <h4 className="text-xl text-sand-12">General</h4>
             <hr className="my-2" />
@@ -97,8 +98,15 @@ function Settings() {
                   label: "authors",
                   title: "Authors",
                   type: "multiple-search",
-                  options: authorUser.data?.map((user) => user.full_name) ?? [],
-                  value: course?.authors.map((author) => author.full_name),
+                  options:
+                    (authorUser.data?.map((user) => ({
+                      label: user.full_name,
+                      value: user.student_id,
+                    })) as SearchValue[]) ?? [],
+                  value: course?.authors.map(({ full_name, student_id }) => ({
+                    label: full_name,
+                    value: student_id,
+                  })) as SearchValue[],
                 },
                 {
                   label: "note",
@@ -132,7 +140,7 @@ function Settings() {
                   })
                 }
                 icon="solar:trash-bin-minimalistic-line-duotone"
-                className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-1/3"
+                className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 lg:w-1/3"
               >
                 Delete Course
               </Button>

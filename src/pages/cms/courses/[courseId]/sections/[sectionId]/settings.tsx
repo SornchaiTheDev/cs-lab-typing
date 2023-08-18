@@ -98,10 +98,18 @@ function Settings() {
                   label: "instructors",
                   title: "Instructors",
                   type: "multiple-search",
-                  options: authorUser.data?.map((user) => user.full_name) ?? [],
-                  value:
-                    section.data?.instructors.map((user) => user.full_name) ??
-                    [],
+                  options: authorUser.data?.map(
+                    ({ full_name, student_id }) => ({
+                      label: full_name,
+                      value: student_id,
+                    })
+                  ),
+                  value: section.data?.instructors.map(
+                    ({ full_name, student_id }) => ({
+                      label: full_name,
+                      value: student_id,
+                    })
+                  ),
                 },
                 {
                   label: "note",
@@ -138,7 +146,7 @@ function Settings() {
                 })
               }
               icon="solar:trash-bin-minimalistic-line-duotone"
-              className="w-full shadow bg-red-9 text-sand-1 active:bg-red-11 md:w-fit"
+              className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-fit"
             >
               Delete Section
             </Button>

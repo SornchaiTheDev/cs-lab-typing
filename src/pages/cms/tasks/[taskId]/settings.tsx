@@ -9,6 +9,7 @@ import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import { useDeleteAffectStore } from "~/store";
 import { useSession } from "next-auth/react";
+import { SearchValue } from "~/types";
 
 function Settings() {
   const { data: session } = useSession();
@@ -35,6 +36,10 @@ function Settings() {
   const canEdit = isOwner;
   const canDelete = isOwner || isAdmin;
 
+  const authorUser = trpc.users.getAllUsersInRole.useQuery({
+    roles: ["ADMIN", "TEACHER"],
+  });
+
   const editTask = async (formData: TAddTask) => {
     try {
       await editTaskMutation.mutateAsync({
@@ -51,10 +56,6 @@ function Settings() {
       }
     }
   };
-
-  const authorUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER"],
-  });
 
   const handleDelete = () => {
     if (!canDelete) {
@@ -92,7 +93,7 @@ function Settings() {
               confirmBtn={{
                 title: "Edit Task",
                 icon: "solar:programming-line-duotone",
-                className: "md:w-1/3 py-2",
+                className: "lg:w-1/3 py-2",
               }}
               schema={AddTaskSchema}
               onSubmit={editTask}
@@ -124,10 +125,18 @@ function Settings() {
                   label: "tags",
                   title: "Tags",
                   type: "multiple-search",
-                  options: tags.data?.map(({ name }) => name) ?? [],
+                  options:
+                    tags.data?.map(({ name }) => ({
+                      label: name,
+                      value: name,
+                    })) ?? [],
                   optional: true,
                   canAddItemNotInList: true,
-                  value: task.data?.tags.map(({ name }) => name) ?? [],
+                  value:
+                    task.data?.tags.map(({ name }) => ({
+                      label: name,
+                      value: name,
+                    })) ?? [],
                   disabled: !isOwner && !isAdmin,
                 },
                 {
@@ -135,8 +144,14 @@ function Settings() {
                   title: "Owner",
                   type: "single-search",
                   options:
-                    authorUser.data?.map(({ full_name }) => full_name) ?? [],
-                  value: task.data?.owner.full_name,
+                    authorUser.data?.map(({ full_name, student_id }) => ({
+                      label: full_name,
+                      value: student_id,
+                    })) ?? [],
+                  value: {
+                    label: task.data?.owner.full_name ?? "",
+                    value: task.data?.owner.student_id ?? "",
+                  } as SearchValue,
                   disabled: !isOwner,
                 },
                 {
@@ -164,7 +179,7 @@ function Settings() {
               <Button
                 onClick={handleDelete}
                 icon="solar:trash-bin-minimalistic-line-duotone"
-                className="w-full shadow bg-red-9 text-sand-1 md:w-fit active:bg-red-11"
+                className="w-full bg-red-9 text-sand-1 shadow active:bg-red-11 md:w-fit"
               >
                 Delete Task
               </Button>
