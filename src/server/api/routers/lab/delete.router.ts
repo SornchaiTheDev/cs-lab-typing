@@ -66,7 +66,7 @@ export const deleteLabRouter = router({
 
         await ctx.prisma.lab_histories.create({
           data: {
-            action: "Delete section",
+            action: "Delete lab",
             user: {
               connect: {
                 id: user?.id,

@@ -31,6 +31,28 @@ export const deleteSectionsRouter = router({
           },
         });
 
+        await ctx.prisma.sections.update({
+          where: {
+            id,
+          },
+          data: {
+            labs: {
+              set: [],
+            },
+            labs_order: {
+              set: [],
+            },
+            labs_status: {
+              deleteMany: {
+                sectionId: id,
+              },
+            },
+            submissions: {
+              deleteMany: {},
+            },
+          },
+        });
+
         const user = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,
