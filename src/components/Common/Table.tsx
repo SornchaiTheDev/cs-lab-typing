@@ -27,7 +27,7 @@ const DraggableRow = ({ row, reorderRow }: DragAndDropProps) => {
     drop: (draggedRow: Row<any>) => reorderRow(draggedRow.index, row.index),
   });
 
-  const [{ isDragging }, dragRef, previewRef] = useDrag({
+  const [{ isDragging }, dragRef] = useDrag({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -37,15 +37,12 @@ const DraggableRow = ({ row, reorderRow }: DragAndDropProps) => {
 
   return (
     <tr
-      ref={previewRef}
+      ref={dragRef}
       className="text-center hover:bg-sand-4"
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <td ref={dropRef}>
-        <button
-          ref={dragRef}
-          className="text-xl text-sand-10 active:text-sand-12"
-        >
+        <button className="text-xl text-sand-10 active:text-sand-12">
           <Icon icon="ic:baseline-drag-indicator" />
         </button>
       </td>
@@ -92,13 +89,11 @@ function Table({
   const [tableData, setTableData] = useState<typeof data>([]);
 
   const reorderRow = (draggedRowIndex: number, targetRowIndex: number) => {
-    tableData.splice(
-      targetRowIndex,
-      0,
-      tableData.splice(draggedRowIndex, 1)[0]
-    );
-    setTableData([...tableData]);
-    onDrag && onDrag([...tableData]);
+    const _tableData = [...tableData];
+    const [draggedItem] = _tableData.splice(draggedRowIndex, 1);
+    _tableData.splice(targetRowIndex, 0, draggedItem);
+    setTableData([..._tableData]);
+    onDrag && onDrag([..._tableData]);
   };
 
   useEffect(() => {
@@ -115,7 +110,7 @@ function Table({
         ? columns.map((column) => ({
             ...column,
             cell: (
-              <div className="w-full h-4 rounded animate-pulse bg-gradient-to-r from-sand-6 to-sand-4"></div>
+              <div className="h-4 w-full animate-pulse rounded bg-gradient-to-r from-sand-6 to-sand-4"></div>
             ),
           }))
         : columns,
@@ -166,12 +161,12 @@ function Table({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="p-3 w-fit"
+                    className="w-fit p-3"
                     style={{ width: header.getSize() }}
                   >
                     {header.isPlaceholder ? null : (
                       <button
-                        className="flex items-center justify-center w-full gap-2"
+                        className="flex w-full items-center justify-center gap-2"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(
@@ -226,7 +221,7 @@ function Table({
           </tbody>
         </table>
         {!!_pagination && (
-          <div className="flex justify-end w-full gap-2 p-2 border-t border-sand-6">
+          <div className="flex w-full justify-end gap-2 border-t border-sand-6 p-2">
             <Button
               className="hover:bg-sand-4"
               onClick={() => table.previousPage()}

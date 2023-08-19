@@ -330,9 +330,11 @@ function Lab() {
       ]),
     [adminColumns, columnHelper, deleteSelectRow]
   );
-
   const [newOrdered, setNewOrdered] = useState<tasks[]>([]);
-  const isOrderChanged = newOrdered.length > 0;
+  const isOrderChanged =
+    newOrdered.length > 0 &&
+    JSON.stringify(newOrdered) !== JSON.stringify(tableData);
+
   const saveLabTasks = trpc.labs.updateTaskOrder.useMutation();
   const handleOnSave = async () => {
     try {
