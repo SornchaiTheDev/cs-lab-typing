@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SearchValue } from "./common";
 
 export const NonKUStudent = z.object({
   student_id: z.string().refine((value) => {
@@ -8,7 +9,7 @@ export const NonKUStudent = z.object({
   password: z.string(),
   email: z.string().email(),
   full_name: z.string().min(1),
-  roles: z.array(z.string()),
+  roles: z.array(SearchValue),
 });
 
 export type TNonKUStudent = z.infer<typeof NonKUStudent>;

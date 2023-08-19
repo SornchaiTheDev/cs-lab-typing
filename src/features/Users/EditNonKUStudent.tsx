@@ -33,7 +33,7 @@ const EditNonKUStudent = () => {
     updateUser.mutate({
       email,
       full_name,
-      roles,
+      roles: roles.map((role) => role.value as string),
       password,
       student_id,
     });
@@ -99,8 +99,15 @@ const EditNonKUStudent = () => {
                     label: "roles",
                     title: "Roles",
                     type: "multiple-search",
-                    options: ["STUDENT", "TEACHER", "ADMIN"],
-                    value: user.data?.roles,
+                    options: [
+                      { label: "Student", value: "STUDENT" },
+                      { label: "Teacher", value: "TEACHER" },
+                      { label: "Admin", value: "ADMIN" },
+                    ],
+                    value: user.data?.roles.map((role) => ({
+                      label: role.charAt(0) + role.slice(1).toLowerCase(),
+                      value: role,
+                    })),
                   },
                 ]}
                 confirmBtn={{

@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { SearchValue } from "./common";
 
 export const AddLabSchema = z.object({
   name: z.string().nonempty({ message: "Name cannot be empty" }),
-  tags: z.array(z.object({ label: z.string(), value: z.string() })),
+  tags: z.array(SearchValue),
   isDisabled: z.boolean(),
 });
 

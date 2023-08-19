@@ -28,8 +28,8 @@ export const createLabRouter = router({
             name,
             tags: {
               connectOrCreate: tags.map(({ value }) => ({
-                where: { name: value },
-                create: { name: value },
+                where: { name: value as string },
+                create: { name: value as string },
               })),
             },
             isDisabled,

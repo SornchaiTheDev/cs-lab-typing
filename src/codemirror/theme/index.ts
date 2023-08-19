@@ -1,1 +1,1 @@
-export { addUserTheme } from "./addUser";
+export { addUserDarkTheme, addUserLightTheme } from "./addUser";

@@ -62,6 +62,7 @@ interface Props {
   syntaxHighlighting?: boolean;
   theme?: Extension;
   autoFocus?: boolean;
+  placeHolder?: string;
 }
 
 function CodemirrorRoot({
@@ -73,11 +74,13 @@ function CodemirrorRoot({
   syntaxHighlighting = true,
   theme,
   autoFocus = false,
+  placeHolder,
 }: Props) {
   return (
     <Codemirror
       className={className}
       minHeight={minHeight}
+      placeholder={placeHolder ? placeHolder : undefined}
       height={height}
       value={value}
       onChange={onChange}

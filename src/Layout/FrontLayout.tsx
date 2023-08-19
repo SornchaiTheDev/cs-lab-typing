@@ -5,12 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { getHighestRole, replaceSlugwithQueryPath } from "~/helpers";
+import { getHighestRole } from "~/helpers";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
 import { NextSeo } from "next-seo";
 import Badge from "~/components/Common/Badge";
+import useTheme from "~/hooks/useTheme";
 
 interface BreadCrumb {
   label: string;
@@ -34,7 +35,6 @@ function FrontLayout({
   const router = useRouter();
   const { data } = useSession();
   const profileImage = data?.user?.image;
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const isBasePath = router.pathname === "/cms" || router.pathname === "/";
 
@@ -57,25 +57,10 @@ function FrontLayout({
 
   const isStudentPath = !isBasePath && !router.pathname.startsWith("/cms");
 
-  useEffect(() => {
-    const isDarkMode = localStorage.getItem("theme") === "dark";
+  const { theme, toggleTheme } = useTheme();
 
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-      setIsDarkMode(true);
-    }
-  }, []);
+  const isDarkMode = theme === "dark";
 
-  const handleOnChangeTheme = () => {
-    if (!isDarkMode) {
-      localStorage.setItem("theme", "dark");
-      document.documentElement.classList.add("dark");
-    } else {
-      localStorage.setItem("theme", "light");
-      document.documentElement.classList.remove("dark");
-    }
-    setIsDarkMode(!isDarkMode);
-  };
   return (
     <>
       <NextSeo
@@ -156,7 +141,7 @@ function FrontLayout({
                     </div>
                     <hr />
                     <button
-                      onClick={handleOnChangeTheme}
+                      onClick={toggleTheme}
                       className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                     >
                       <div className="inline-flex gap-1">
@@ -173,7 +158,6 @@ function FrontLayout({
                         }
                         className="text-xl"
                       />
-                     
                     </button>
                     {role !== "STUDENT" && (
                       <div>

@@ -25,12 +25,12 @@ export const updateTaskRouter = router({
       try {
         await createNotExistTags(
           ctx.prisma,
-          tags.map((tag) => tag.value)
+          tags.map((tag) => tag.value as string)
         );
 
         const _owner = await ctx.prisma.users.findFirst({
           where: {
-            student_id: owner.value,
+            student_id: owner.value as string,
             deleted_at: null,
           },
           select: {
@@ -56,7 +56,7 @@ export const updateTaskRouter = router({
             name,
             tags: {
               set: tags.map(({ value }) => ({
-                name: value,
+                name: value as string,
               })),
             },
             isPrivate,

@@ -1,5 +1,5 @@
 import Codemirror from "~/codemirror";
-import { addUserTheme } from "~/codemirror/theme";
+import { addUserLightTheme, addUserDarkTheme } from "~/codemirror/theme";
 import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
 import { trpc } from "~/helpers";
@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { callToast } from "~/services/callToast";
+import useTheme from "~/hooks/useTheme";
 
 interface Props {
   sectionId: string;
@@ -20,6 +21,7 @@ function AddUser({ sectionId }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const ctx = trpc.useContext();
   const addStudent = trpc.sections.addUsersToSection.useMutation();
+  const { theme } = useTheme();
 
   const handleAddStudent = async () => {
     try {
@@ -98,7 +100,7 @@ function AddUser({ sectionId }: Props) {
         <div>
           <Codemirror
             autoFocus
-            theme={addUserTheme}
+            theme={theme === "light" ? addUserLightTheme : addUserDarkTheme}
             value={value}
             onChange={(value) => setValue(value)}
             height="20rem"

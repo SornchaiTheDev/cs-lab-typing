@@ -9,10 +9,10 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Button from "~/components/Common/Button";
-import { useOnClickOutside } from "usehooks-ts";
+import { useLocalStorage, useOnClickOutside } from "usehooks-ts";
 import Modal from "~/components/Common/Modal";
 import Codemirror from "~/codemirror";
-import { addUserTheme } from "~/codemirror/theme";
+import { addUserDarkTheme, addUserLightTheme } from "~/codemirror/theme";
 import { trpc } from "~/helpers";
 import type { users as Users } from "@prisma/client";
 import clsx from "clsx";
@@ -24,6 +24,7 @@ import { useDeleteAffectStore } from "~/store/deleteAffect";
 import { useDropzone } from "react-dropzone";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
+import useTheme from "~/hooks/useTheme";
 
 dayjs.extend(relativeTime);
 
@@ -73,7 +74,7 @@ function Users() {
                 type: getUserType(props.row.original),
               })
             }
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:pen-2-line-duotone" />
           </button>
@@ -154,6 +155,13 @@ function Users() {
       },
     });
 
+  const { theme } = useTheme();
+
+  const handleOnChange = (value: string) => {
+    setIsError(false);
+    setValue(value);
+  };
+
   return (
     <>
       {selectedObj && (
@@ -168,23 +176,22 @@ function Users() {
         isOpen={isShow}
         onClose={onClose}
         title="Add/Edit User"
-        description={
-          <>
-            <p className="text-sand-11">
-              Teacher <br /> (email,fullname) <br /> Student <br />
-              (student-id,email,ชื่อ นามสกุล) <br />
-              POSN Student <br /> (username,password,email,ชื่อ นามสกุล)
-            </p>
-          </>
-        }
         className="flex flex-col gap-4 md:w-[40rem]"
       >
         <div>
           <Codemirror
+            placeHolder={`Example format
+Teacher
+john@ku.th,John Doe
+Student
+6510405814,sornchai.som@ku.th,ศรชัย สมสกุล
+POSN Student
+posn001,passw0rd001,smart.sobdai@whatever.com,สามารถ สอบได้
+`}
             autoFocus
-            theme={addUserTheme}
+            theme={theme === "light" ? addUserLightTheme : addUserDarkTheme}
             value={value}
-            onChange={(value) => setValue(value)}
+            onChange={handleOnChange}
             height="20rem"
             className={clsx(
               "overflow-hidden rounded-md border text-sm",
@@ -194,7 +201,7 @@ function Users() {
         </div>
         <div className="flex items-center justify-center gap-2 ">
           <div className="h-[0.5px] w-full bg-sand-9"></div>
-          <h4>or</h4>
+          <h4 className="text-sand-12">or</h4>
           <div className="h-[0.5px] w-full bg-sand-9"></div>
         </div>
 
@@ -222,7 +229,7 @@ function Users() {
           onClick={handleAddUser}
           disabled={isSubmitting}
           icon="solar:user-plus-rounded-line-duotone"
-          className="shadow bg-sand-12 text-sand-1 active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
+          className="bg-sand-12 text-sand-1 shadow active:bg-sand-11 disabled:bg-sand-8 disabled:text-sand-1"
         >
           Add User
         </Button>
@@ -241,7 +248,7 @@ function Users() {
             <Button
               onClick={() => setIsShow(true)}
               icon="solar:user-plus-rounded-line-duotone"
-              className="m-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="m-2 bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add User
             </Button>

@@ -14,7 +14,7 @@ export const createTaskRouter = router({
       try {
         const _owner = await ctx.prisma.users.findFirst({
           where: {
-            student_id: owner.value,
+            student_id: owner.value as string,
             deleted_at: null,
           },
           select: {
@@ -30,8 +30,8 @@ export const createTaskRouter = router({
             note: note ?? "",
             tags: {
               connectOrCreate: tags?.map(({ value }) => ({
-                where: { name: value },
-                create: { name: value },
+                where: { name: value as string },
+                create: { name: value as string },
               })),
             },
             owner: {

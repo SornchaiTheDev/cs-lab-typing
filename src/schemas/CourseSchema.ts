@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SearchValue } from "./common";
 
 export const AddCourseSchema = z.object({
   number: z
@@ -7,7 +8,7 @@ export const AddCourseSchema = z.object({
     .default(""),
   name: z.string().nonempty({ message: "Name cannot be empty" }).default(""),
   authors: z
-    .array(z.object({ label: z.string(), value: z.number().or(z.string()) }))
+    .array(SearchValue)
     .nonempty({ message: "Authors cannot be empty" }),
   note: z.string().nullable(),
   comments: z.string().nullable(),

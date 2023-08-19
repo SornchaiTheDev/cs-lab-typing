@@ -11,6 +11,7 @@ import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
 import { NextSeo } from "next-seo";
 import Badge from "~/components/Common/Badge";
+import useTheme from "~/hooks/useTheme";
 
 interface Props {
   children?: React.ReactNode;
@@ -28,7 +29,6 @@ function Layout({
 }: Props) {
   const { data } = useSession();
   const profileImage = data?.user?.image;
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
   const isBasePath = router.pathname === "/cms";
@@ -49,25 +49,9 @@ function Layout({
     ? title.charAt(0).toUpperCase() + title.slice(1)
     : "CS-LAB";
 
-  useEffect(() => {
-    const isDarkMode = localStorage.getItem("theme") === "dark";
+  const { theme, toggleTheme } = useTheme();
 
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-      setIsDarkMode(true);
-    }
-  }, []);
-
-  const handleOnChangeTheme = () => {
-    if (!isDarkMode) {
-      localStorage.setItem("theme", "dark");
-      document.documentElement.classList.add("dark");
-    } else {
-      localStorage.setItem("theme", "light");
-      document.documentElement.classList.remove("dark");
-    }
-    setIsDarkMode(!isDarkMode);
-  };
+  const isDarkMode = theme === "dark";
 
   return (
     <>
@@ -143,7 +127,7 @@ function Layout({
                     </div>
                     <hr />
                     <button
-                      onClick={handleOnChangeTheme}
+                      onClick={toggleTheme}
                       className="flex w-full items-center justify-between px-6 py-2 text-sand-11 hover:bg-sand-4 hover:text-sand-12"
                     >
                       <div className="inline-flex gap-1">
