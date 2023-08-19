@@ -136,7 +136,7 @@ function TypingGame({ text }: Props) {
                 left: pos.left,
                 top: pos.top,
               }}
-              className={`caret border-l-2 border-black`}
+              className={`caret border-l-2 border-sand-12`}
             >
               &nbsp;
             </span>

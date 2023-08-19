@@ -87,7 +87,7 @@ const RecentTasks = ({
           </Collapse>
         ))
       ) : (
-        <div className="my-[25%] flex flex-col items-center justify-center gap-2">
+        <div className="my-[25%] flex flex-col items-center justify-center gap-2 text-sand-12">
           <Icon className="text-4xl" icon="solar:ghost-smile-line-duotone" />
           <h4 className="text-lg">No Submissions Yet</h4>
         </div>

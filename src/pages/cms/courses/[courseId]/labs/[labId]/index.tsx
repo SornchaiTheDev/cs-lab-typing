@@ -18,7 +18,8 @@ import Skeleton from "~/components/Common/Skeleton";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
-import { SearchValue } from "~/types";
+import type { SearchValue } from "~/types";
+import { debounce } from "lodash";
 
 interface AddTaskModalProps {
   isShow: boolean;
@@ -46,28 +47,27 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
     { enabled: false, keepPreviousData: true }
   );
 
-  useEffect(() => {
-    const handleOnSearch = async () => {
-      try {
-        await tasks.refetch();
-      } catch (err) {
-        if (err instanceof TRPCClientError) {
-          callToast({
-            msg: err.message,
-            type: "error",
-          });
+  const handleOnSearch = useMemo(
+    () =>
+      debounce(async () => {
+        try {
+          await tasks.refetch();
+        } catch (err) {
+          if (err instanceof TRPCClientError) {
+            callToast({
+              msg: err.message,
+              type: "error",
+            });
+          }
         }
-      }
-    };
+      }, 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
-    const debounce = setTimeout(() => {
-      handleOnSearch();
-    }, 1000);
-
-    return () => {
-      clearTimeout(debounce);
-    };
-  }, [search, selectedTags, selectedTypes, tasks]);
+  useEffect(() => {
+    handleOnSearch();
+  }, [search, selectedTags, selectedTypes, handleOnSearch]);
 
   const addTask = trpc.labs.addTask.useMutation();
   const addTaskToLab = async (taskId: number) => {
