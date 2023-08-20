@@ -45,6 +45,20 @@ export const createSectionsRouter = router({
           },
         });
 
+        const existSection = await ctx.prisma.sections.findFirst({
+          where: {
+            name,
+            type,
+            semester_id: semester[0]?.id,
+            course_id: _courseId,
+            deleted_at: null,
+          },
+        });
+
+        if (existSection) {
+          throw new Error("DUPLICATED_SECTION");
+        }
+
         section = await ctx.prisma.sections.create({
           data: {
             active,
@@ -82,6 +96,15 @@ export const createSectionsRouter = router({
           },
         });
       } catch (e) {
+        if (e instanceof Error) {
+          if (e.message === "DUPLICATED_SECTION") {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "DUPLICATED_SECTION",
+              cause: "DUPLICATED_SECTION",
+            });
+          }
+        }
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") {
             throw new TRPCError({

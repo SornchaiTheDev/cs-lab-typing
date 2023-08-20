@@ -10,6 +10,7 @@ export const getAllSections = async (
     where: {
       deleted_at: null,
       course_id: courseId,
+      active : true
     },
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,

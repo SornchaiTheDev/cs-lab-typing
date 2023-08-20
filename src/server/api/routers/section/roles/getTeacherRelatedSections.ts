@@ -11,6 +11,7 @@ export const getTeacherRelatedSections = async (
     where: {
       deleted_at: null,
       course_id: courseId,
+      active: true,
       OR: [
         {
           instructors: {

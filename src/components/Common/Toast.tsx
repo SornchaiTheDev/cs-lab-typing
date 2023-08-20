@@ -55,6 +55,10 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
       msg =
         "This task is already added. If you want to edit, go to the task setting page";
       break;
+    case "DUPLICATED_SECTION":
+      msg =
+        "This section is already added. If you want to edit, go to the section setting page";
+      break;
     case "DUPLICATED_COURSE":
       msg =
         "This course is already added. If you want to edit, Use Edit button";

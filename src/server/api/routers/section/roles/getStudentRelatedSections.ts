@@ -16,6 +16,7 @@ export const getStudentRelatedSections = async (
           student_id,
         },
       },
+      active: true,
     },
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,
