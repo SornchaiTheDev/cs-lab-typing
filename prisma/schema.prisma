@@ -255,6 +255,7 @@ model typing_histories {
   raw_speed      Float
   adjusted_speed Float
   percent_error  Float
+  score          Float       @default(0.0)
   started_at     DateTime
   ended_at       DateTime
   created_at     DateTime    @default(now())

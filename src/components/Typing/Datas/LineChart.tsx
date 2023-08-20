@@ -11,6 +11,7 @@ import {
   type ChartOptions,
 } from "chart.js";
 import { useMemo } from "react";
+import useTheme from "~/hooks/useTheme";
 
 interface Props {
   datas: typing_histories[];
@@ -24,7 +25,9 @@ ChartJS.register(
   Title,
   Tooltip
 );
+
 function LineChart({ datas }: Props) {
+  const { theme } = useTheme();
   const data = useMemo(
     () => ({
       labels: datas.map((_, i) => i + 1),
@@ -35,8 +38,8 @@ function LineChart({ datas }: Props) {
             [...datas]
               .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
               .map(({ adjusted_speed }) => adjusted_speed) ?? [], // Replace with your actual data
-          backgroundColor: "#e3e3e0", // Background color of the line
-          borderColor: "#1b1b18", // Border color of the line
+          backgroundColor: theme === "light" ? "#e3e3e0" : "#80807a", // Background color of the line
+          borderColor: theme === "light" ? "#1b1b18" : "#fdfdfc", // Border color of the line
           borderWidth: 2, // Border width of the line
         },
       ],

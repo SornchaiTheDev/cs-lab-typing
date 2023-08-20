@@ -160,12 +160,13 @@ export const getTaskRouter = router({
           },
         },
         select: {
+          id: true,
           name: true,
           submissions: {
             include: {
               typing_histories: {
                 orderBy: {
-                  created_at: "desc",
+                  score: "desc",
                 },
                 take: 1,
               },
@@ -184,11 +185,80 @@ export const getTaskRouter = router({
         return {
           name: task.name,
           history: submissions[0]?.typing_histories[0],
+          id: task.id,
         };
       });
 
       return tasksWithHistory;
     } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
+
+  getTypingHistory: TaAboveProcedure.input(
+    z.object({
+      taskId: z.number(),
+      sectionId: z.string(),
+      labId: z.number(),
+      studentId: z.string(),
+    })
+  ).query(async ({ ctx, input }) => {
+    const { sectionId, taskId, labId, studentId } = input;
+
+    const _sectionId = parseInt(sectionId);
+
+    try {
+      const section = await ctx.prisma.sections.findUnique({
+        where: {
+          id: _sectionId,
+        },
+        select: {
+          labs: {
+            where: {
+              id: labId,
+            },
+          },
+          type: true,
+        },
+      });
+
+      const isLabNotExist = section?.labs.length === 0;
+
+      if (isLabNotExist) {
+        throw new Error("NOT_FOUND");
+      }
+
+      const typingHistories = await ctx.prisma.typing_histories.findMany({
+        where: {
+          submission: {
+            section_id: _sectionId,
+            lab_id: labId,
+            user: {
+              student_id: studentId,
+              deleted_at: null,
+            },
+            task_id: taskId,
+          },
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+        take: 100,
+      });
+
+      return { section, submissions: typingHistories };
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "NOT_FOUND") {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "NOT_FOUND",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",

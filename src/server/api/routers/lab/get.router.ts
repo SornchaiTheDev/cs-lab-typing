@@ -148,6 +148,7 @@ export const getLabRouter = router({
             select: {
               task_id: true,
               status: true,
+              typing_histories: true,
             },
           },
           full_name: true,
@@ -167,7 +168,8 @@ export const getLabRouter = router({
         return { ...user, taskStatus };
       });
       const taskLength = lab?.tasks_order.length ?? 0;
-      return { usersTaskStatus, taskLength };
+      const taskOrder = lab?.tasks_order ?? [];
+      return { usersTaskStatus, taskLength, taskOrder };
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -175,6 +177,118 @@ export const getLabRouter = router({
       });
     }
   }),
+
+  getLabTaskSubmissions: teacherAboveProcedure
+    .input(z.object({ labId: z.number(), sectionId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { labId, sectionId } = input;
+
+      try {
+        const user = await ctx.prisma.sections.findUnique({
+          where: {
+            id: parseInt(sectionId),
+          },
+          select: {
+            submissions: {
+              where: {
+                lab_id: labId,
+              },
+              include: {
+                typing_histories: {
+                  orderBy: {
+                    score: "desc",
+                  },
+                  take: 1,
+                },
+              },
+            },
+          },
+        });
+
+        const typingHistories = await ctx.prisma.typing_histories.findMany({
+          where: {
+            submission: {
+              lab_id: labId,
+              section_id: parseInt(sectionId),
+            },
+          },
+          include: {
+            submission: {
+              select: {
+                user: true,
+              },
+            },
+          },
+        });
+
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: labId,
+          },
+          select: {
+            tasks_order: true,
+          },
+        });
+
+        const taskOrder = lab?.tasks_order ?? [];
+
+        const tasks = [];
+
+        for (const order of taskOrder) {
+          const users = await ctx.prisma.users.findMany({
+            where: {
+              submissions: {
+                some: {
+                  lab_id: labId,
+                  section_id: parseInt(sectionId),
+                  task_id: order,
+                },
+              },
+            },
+            include: {
+              submissions: {
+                where: {
+                  lab_id: labId,
+                  section_id: parseInt(sectionId),
+                  task_id: order,
+                },
+                select: {
+                  typing_histories: {
+                    orderBy: {
+                      score: "desc",
+                    },
+                    take: 1,
+                  },
+                },
+              },
+            },
+          });
+
+          const taskSubmissions = users
+            .map(({ submissions, student_id }) =>
+              submissions
+                .map(({ typing_histories }) =>
+                  typing_histories
+                    .map((typing_history) => ({
+                      ...typing_history,
+                      student_id,
+                      task_id: order,
+                    }))
+                    .flat()
+                )
+                .flat()
+            )
+            .flat();
+
+          tasks.push(taskSubmissions);
+        }
+
+        return { taskOrder, tasks };
+      } catch (err) {
+        if (err instanceof Error) {
+        }
+      }
+    }),
 
   getLabObjectRelation: teacherAboveProcedure
     .input(z.object({ id: z.number() }))

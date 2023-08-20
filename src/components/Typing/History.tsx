@@ -14,8 +14,6 @@ function History() {
     pageSize: 6,
   });
 
-  const { pageIndex, pageSize } = pagination;
-
   const typingHistories = trpc.front.getTypingHistory.useQuery(
     {
       sectionId: sectionId as string,
@@ -26,9 +24,6 @@ function History() {
       enabled: !!sectionId && !!taskId && !!labId,
     }
   );
-
-  const PAGE = pageIndex * pageSize;
-  const LIMIT = PAGE + pageSize;
 
   const highestSpeed = useMemo(() => {
     if (typingHistories.data === undefined) return -1;
@@ -45,7 +40,7 @@ function History() {
   }, [typingHistories.data]);
 
   return (
-    <div className="container flex flex-col flex-1 max-w-2xl gap-4 mx-auto mb-2">
+    <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col gap-4">
       <div className="flex flex-col items-center gap-4">
         <div className="h-[10rem] w-full">
           <LineChart datas={typingHistories.data ?? []} />

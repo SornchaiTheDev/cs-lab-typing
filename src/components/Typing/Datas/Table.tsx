@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import type { typing_histories } from "@prisma/client";
+import type { SectionType, typing_histories } from "@prisma/client";
 import {
   type OnChangeFn,
   type PaginationState,
@@ -16,6 +16,7 @@ interface Props {
   pagination: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
   highestSpeed: number;
+  type?: SectionType;
 }
 
 function TypingTable({
@@ -24,6 +25,7 @@ function TypingTable({
   pagination,
   onPaginationChange,
   highestSpeed,
+  type = "Lesson",
 }: Props) {
   const columnHelper = createColumnHelper<typing_histories>();
 
@@ -73,6 +75,13 @@ function TypingTable({
         accessorKey: "percent_error",
         cell: (props) => props.getValue() + "%",
       },
+      columnHelper.display({
+        id: "score",
+        header: "Score",
+        cell: (props) => {
+          return props.row.original.score;
+        },
+      }),
     ],
     [columnHelper, highestSpeed]
   );
@@ -86,7 +95,7 @@ function TypingTable({
     <Table
       isLoading={isLoading}
       data={datas?.slice(PAGE, LIMIT)}
-      columns={columns}
+      columns={type === "Lesson" ? columns.slice(0, -1) : columns}
       {...{
         pagination,
         onPaginationChange,

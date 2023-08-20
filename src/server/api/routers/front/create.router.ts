@@ -9,6 +9,7 @@ import {
   TypingExamResultWithHashSchema,
 } from "~/schemas/TypingResult";
 import { checkSameHash } from "~/server/utils/checkSameHash";
+import { evaluate } from "~/helpers/evaluateTypingScore";
 
 export const createFrontRouter = router({
   submitTyping: authedProcedure
@@ -43,6 +44,8 @@ export const createFrontRouter = router({
       );
 
       const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+
+      const score = evaluate(adjustedSpeed, errorPercentage);
 
       const _sectionId = parseInt(sectionId);
       const _labId = parseInt(labId);
@@ -126,6 +129,7 @@ export const createFrontRouter = router({
                   started_at: startedAt,
                   ended_at: endedAt,
                   percent_error: errorPercentage,
+                  score,
                 },
               },
             },
@@ -140,6 +144,7 @@ export const createFrontRouter = router({
                   started_at: startedAt,
                   ended_at: endedAt,
                   percent_error: errorPercentage,
+                  score,
                 },
               },
             },
@@ -212,6 +217,8 @@ export const createFrontRouter = router({
 
       const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
+      const score = evaluate(adjustedSpeed, errorPercentage);
+
       const _sectionId = parseInt(sectionId);
       const _labId = parseInt(labId);
       const _taskId = parseInt(taskId);
@@ -294,6 +301,7 @@ export const createFrontRouter = router({
                   started_at: startedAt,
                   ended_at: endedAt,
                   percent_error: errorPercentage,
+                  score,
                 },
               },
             },
@@ -308,6 +316,7 @@ export const createFrontRouter = router({
                   started_at: startedAt,
                   ended_at: endedAt,
                   percent_error: errorPercentage,
+                  score,
                 },
               },
             },

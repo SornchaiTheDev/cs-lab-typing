@@ -4,17 +4,77 @@ import { useRouter } from "next/router";
 import Skeleton from "~/components/Common/Skeleton";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Modal from "~/components/Common/Modal";
 import Collapse from "~/components/Common/Collapse";
 import Stats from "~/components/Typing/Stats";
 import { getDuration } from "~/components/Typing/utils/getDuration";
-import type { submission_type } from "@prisma/client";
+import { SectionType, submission_type } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
+import LineChart from "~/components/Typing/Datas/LineChart";
+import TypingTable from "~/components/Typing/Datas/Table";
+import type { PaginationState } from "@tanstack/react-table";
 
+interface TypingSubmissionProps {
+  sectionId: string;
+  taskId: number;
+  labId: number;
+  studentId: string;
+}
+const TypingSubmissions = ({
+  sectionId,
+  taskId,
+  labId,
+  studentId,
+}: TypingSubmissionProps) => {
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 6,
+  });
+  const typingHistories = trpc.tasks.getTypingHistory.useQuery(
+    {
+      sectionId,
+      taskId,
+      labId,
+      studentId,
+    },
+    {
+      enabled: !!sectionId && !!taskId && !!labId,
+    }
+  );
+
+  const highestSpeed = useMemo(() => {
+    if (typingHistories.data === undefined) return -1;
+    const cloneDatas = [...typingHistories.data.submissions];
+
+    const highestSpeed = cloneDatas.sort(
+      (prev, current) => current.adjusted_speed - prev.adjusted_speed
+    );
+    if (highestSpeed[0] !== undefined) {
+      return highestSpeed[0].adjusted_speed;
+    }
+
+    return -1;
+  }, [typingHistories.data]);
+
+  return (
+    <>
+      <div className="h-[10rem] w-full">
+        <LineChart datas={typingHistories.data?.submissions ?? []} />
+      </div>
+      <TypingTable
+        type={typingHistories.data?.section?.type ?? "Lesson"}
+        isLoading={typingHistories.isLoading}
+        datas={typingHistories.data?.submissions ?? []}
+        onPaginationChange={setPagination}
+        {...{ pagination, highestSpeed }}
+      />
+    </>
+  );
+};
 interface RecentTaskProps {
   selectedUser: {
     fullName: string;
@@ -29,14 +89,13 @@ const RecentTasks = ({
   selectedUser,
   sectionId,
   labId,
-
   onClose,
 }: RecentTaskProps) => {
   const { fullName, studentId, taskStatus } = selectedUser;
 
   const tasks = trpc.tasks.getUserTaskStatus.useQuery(
     {
-      student_id: selectedUser.studentId,
+      student_id: studentId,
       sectionId,
       labId,
     },
@@ -46,11 +105,11 @@ const RecentTasks = ({
   return (
     <Modal
       title="Recent submissions"
-      className="h-full max-h-[80%] max-w-[50rem]"
+      className="h-full max-h-[80%] max-w-[50rem] overflow-y-auto"
       onClose={onClose}
       isOpen
     >
-      <div className="flex items-center gap-2 my-4 text-sand-12">
+      <div className="my-4 flex items-center gap-2 text-sand-12">
         <div className="p-2">
           <Icon className="text-xl" icon="solar:user-line-duotone" />
         </div>
@@ -71,21 +130,30 @@ const RecentTasks = ({
           <Skeleton width="100%" height="3rem" className="my-2" />
         </>
       ) : (tasks.data?.length as number) > 0 ? (
-        tasks.data?.map(({ name, history }) => (
-          <Collapse key={name} title={name}>
-            {history ? (
-              <Stats
-                adjustedSpeed={history.adjusted_speed ?? 0}
-                duration={getDuration(
-                  history.started_at as Date,
-                  history.ended_at as Date
-                )}
-                errorPercentage={history.percent_error ?? 0}
-                rawSpeed={history.raw_speed ?? 0}
-              />
-            ) : null}
-          </Collapse>
-        ))
+        tasks.data?.map(({ name, history, id }) => {
+          if (history) {
+            return (
+              <Collapse key={name} title={name}>
+                <h4 className="mb-2 text-center text-lg font-bold">
+                  Best Score
+                </h4>
+                <Stats
+                  adjustedSpeed={history.adjusted_speed ?? 0}
+                  duration={getDuration(
+                    history.started_at as Date,
+                    history.ended_at as Date
+                  )}
+                  errorPercentage={history.percent_error ?? 0}
+                  rawSpeed={history.raw_speed ?? 0}
+                  score={history.score ?? 0}
+                />
+                <TypingSubmissions
+                  {...{ sectionId, labId, taskId: id, studentId }}
+                />
+              </Collapse>
+            );
+          }
+        })
       ) : (
         <div className="my-[25%] flex flex-col items-center justify-center gap-2 text-sand-12">
           <Icon className="text-4xl" icon="solar:ghost-smile-line-duotone" />
@@ -100,13 +168,16 @@ const LabStatus = ({
   name,
   labId,
   sectionName,
+  sectionType,
 }: {
   name: string;
   labId: number;
   sectionName: string;
+  sectionType: SectionType;
 }) => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
   const { sectionId } = router.query;
 
@@ -120,51 +191,53 @@ const LabStatus = ({
     { enabled: !!sectionId && !!labId }
   );
 
+  const submissions = trpc.labs.getLabTaskSubmissions.useQuery(
+    { sectionId: sectionId as string, labId: labId },
+    { enabled: !!sectionId && !!labId }
+  );
+
   const handleOnRefresh = async () => {
     try {
       setIsLoading(true);
       await lab.refetch();
+      await submissions.refetch();
+
       setIsLoading(false);
     } catch (err) {}
   };
 
-  const exportCSV = () => {
-    let csvString = "Student Id,";
-
-    const length = lab.data?.taskLength ?? 0;
-
-    new Array(length).fill("").forEach((_, i) => {
-      csvString += `${(i + 1).toString().padStart(2, "0")} passed`;
-      if (i !== length - 1) {
-        csvString += ",";
+  const exportCSV = async () => {
+    try {
+      let csvString = "Student Id,Task Id,Raw Speed,Adjusted Speed,Error %";
+      if (sectionType === "Exam") {
+        csvString += ",Score";
       }
-    });
-
-    csvString += "\n";
-
-    lab.data?.usersTaskStatus.forEach(({ student_id, taskStatus }) => {
-      csvString += `${student_id},`;
-      taskStatus.forEach((status, i) => {
-        let _status = 0;
-
-        if (status === "PASSED") {
-          _status = 1;
-        }
-
-        csvString += `${_status}`;
-
-        if (i !== length - 1) {
-          csvString += ",";
-        }
-      });
       csvString += "\n";
-    });
-    const csvBlob = new Blob([csvString], { type: "text/csv" });
-    const fileName = sanitizeFilename(`${sectionName}_${name}_status.csv`);
-    const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(csvBlob);
-    link.download = fileName;
-    link.click();
+      submissions.data?.tasks.map((task) =>
+        task.map(
+          ({
+            student_id,
+            raw_speed,
+            adjusted_speed,
+            percent_error,
+            score,
+            task_id,
+          }) => {
+            csvString += `${student_id},${task_id},${raw_speed},${adjusted_speed},${percent_error}`;
+            if (sectionType === "Exam") {
+              csvString += `,${score}`;
+            }
+            csvString += "\n";
+          }
+        )
+      );
+      const csvBlob = new Blob([csvString], { type: "text/csv" });
+      const fileName = sanitizeFilename(`${sectionName}_${name}_status.csv`);
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(csvBlob);
+      link.download = fileName;
+      link.click();
+    } catch (err) {}
   };
 
   const [selectedUser, setSelectedUser] = useState<{
@@ -188,7 +261,7 @@ const LabStatus = ({
           <>
             <button
               onClick={handleOnRefresh}
-              className="flex items-center gap-2 p-1 text-lg border rounded text-sand-12"
+              className="flex items-center gap-2 rounded border p-1 text-lg text-sand-12"
             >
               <Icon
                 icon="solar:refresh-line-duotone"
@@ -198,7 +271,7 @@ const LabStatus = ({
             {!isTA && (
               <button
                 onClick={exportCSV}
-                className="flex items-center gap-2 px-2 py-1 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                className="flex items-center gap-2 rounded-lg bg-sand-12 px-2 py-1 text-sand-1 shadow active:bg-sand-11"
               >
                 <Icon icon="solar:document-text-line-duotone" />
                 Export as CSV
@@ -218,8 +291,8 @@ const LabStatus = ({
           lab.data?.usersTaskStatus?.map(
             ({ full_name, student_id, taskStatus }) => (
               <div key={student_id}>
-                <div className="flex flex-wrap items-center w-full">
-                  <div className="flex items-center flex-1 w-full gap-4">
+                <div className="flex w-full flex-wrap items-center">
+                  <div className="flex w-full flex-1 items-center gap-4">
                     <div>
                       <h5 className="font-medium">{full_name}</h5>
                       <h6 className="text-sm">{student_id}</h6>
@@ -232,7 +305,7 @@ const LabStatus = ({
                           taskStatus,
                         })
                       }
-                      className="flex items-center gap-2 p-1 text-xl border rounded h-7 w-7 text-sand-12"
+                      className="flex h-7 w-7 items-center gap-2 rounded border p-1 text-xl text-sand-12"
                     >
                       <Icon
                         icon="solar:eye-line-duotone"
@@ -278,9 +351,9 @@ function LabsStatus() {
       <div className="p-4">
         {section.isLoading ? (
           <>
-            <Skeleton width="100%" height="4rem" className="p-4 my-4" />
-            <Skeleton width="100%" height="4rem" className="p-4 my-4" />
-            <Skeleton width="100%" height="4rem" className="p-4 my-4" />
+            <Skeleton width="100%" height="4rem" className="my-4 p-4" />
+            <Skeleton width="100%" height="4rem" className="my-4 p-4" />
+            <Skeleton width="100%" height="4rem" className="my-4 p-4" />
           </>
         ) : (
           section.data?.labs.map(({ name, id }) => (
@@ -289,6 +362,7 @@ function LabsStatus() {
               name={name}
               labId={id}
               sectionName={section.data?.name as string}
+              sectionType={section.data?.type as SectionType}
             />
           ))
         )}
