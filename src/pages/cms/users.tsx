@@ -5,7 +5,7 @@ import {
   type PaginationState,
   createColumnHelper,
 } from "@tanstack/react-table";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Button from "~/components/Common/Button";
@@ -25,6 +25,7 @@ import { useDropzone } from "react-dropzone";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import useTheme from "~/hooks/useTheme";
+import { debounce } from "lodash";
 
 dayjs.extend(relativeTime);
 
@@ -101,12 +102,18 @@ function Users() {
     pageSize: 20,
   });
 
+  const [searchString, setSearchString] = useState("");
+
   const { pageIndex, pageSize } = pagination;
 
-  const users = trpc.users.getUserPagination.useQuery({
-    limit: pageSize,
-    page: pageIndex,
-  });
+  const users = trpc.users.getUserPagination.useQuery(
+    {
+      limit: pageSize,
+      page: pageIndex,
+      search: searchString,
+    },
+    { enabled: false }
+  );
 
   const [isShow, setIsShow] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -147,6 +154,13 @@ function Users() {
     });
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchUser = useMemo(() => debounce(() => users.refetch(), 500), []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [searchString, fetchUser]);
+
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
       onDrop: handleFileUpload,
@@ -160,6 +174,14 @@ function Users() {
   const handleOnChange = (value: string) => {
     setIsError(false);
     setValue(value);
+  };
+
+  const handleOnSearchChange = (value: string) => {
+    setSearchString(value);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
   };
 
   return (
@@ -241,18 +263,20 @@ posn001,passw0rd001,smart.sobdai@whatever.com,สามารถ สอบได
           data={users.data?.users ?? []}
           pageCount={users.data?.pageCount ?? 0}
           columns={columns}
-          {...{ pagination }}
+          {...{
+            pagination,
+            searchString,
+          }}
           onPaginationChange={setPagination}
+          onSearchChange={handleOnSearchChange}
         >
-          <div className="flex justify-end">
-            <Button
-              onClick={() => setIsShow(true)}
-              icon="solar:user-plus-rounded-line-duotone"
-              className="m-2 bg-sand-12 text-sand-1 shadow active:bg-sand-11"
-            >
-              Add User
-            </Button>
-          </div>
+          <Button
+            onClick={() => setIsShow(true)}
+            icon="solar:user-plus-rounded-line-duotone"
+            className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+          >
+            Add User
+          </Button>
         </Table>
       </Layout>
     </>

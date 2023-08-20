@@ -67,6 +67,8 @@ interface Props {
   pagination?: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
   onDrag?: (data: any[]) => void;
+  searchString?: string;
+  onSearchChange?: (searchString: string) => void;
 }
 
 function Table({
@@ -81,6 +83,8 @@ function Table({
   pageCount = -1,
   pagination,
   onPaginationChange,
+  searchString,
+  onSearchChange,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>(
     defaultSortingState ? [defaultSortingState] : []
@@ -150,7 +154,24 @@ function Table({
         className
       )}
     >
-      {children}
+      {!!children && (
+        <div className="flex flex-col justify-between p-2 md:flex-row">
+          {searchString !== undefined && (
+            <div className="flex h-full items-center gap-2 rounded-lg border border-sand-6 p-2">
+              <Icon icon="carbon:search" className="text-sand-10" />
+              <input
+                value={searchString}
+                onChange={(e) =>
+                  onSearchChange && onSearchChange(e.target.value)
+                }
+                className="outline-none placeholder:text-sand-8"
+                placeholder="Search"
+              />
+            </div>
+          )}
+          {children}
+        </div>
+      )}
       <div className="max-w-full overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-sand-3">

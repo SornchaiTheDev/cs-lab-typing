@@ -380,11 +380,11 @@ function Lab() {
           onDrag={(data) => setNewOrdered(data)}
         >
           {isTeacher && (
-            <div className="flex justify-between p-4">
+            <div className="flex w-full justify-between">
               <Button
                 onClick={() => setIsShow(true)}
                 icon="solar:checklist-minimalistic-line-duotone"
-                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+                className="w-fit self-end bg-sand-12 text-sand-1 shadow active:bg-sand-11"
               >
                 Add Task
               </Button>
@@ -392,7 +392,7 @@ function Lab() {
                 <Button
                   onClick={handleOnSave}
                   icon="solar:diskette-line-duotone"
-                  className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+                  className="w-fit bg-sand-12 text-sand-1 shadow active:bg-sand-11"
                 >
                   Save
                 </Button>

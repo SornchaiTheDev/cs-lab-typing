@@ -13,16 +13,34 @@ export const getUserRouter = router({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit } = input;
+      const { page, limit, search = "" } = input;
 
       try {
         const [users, amount] = await ctx.prisma.$transaction([
           ctx.prisma.users.findMany({
             where: {
               deleted_at: null,
+              OR: [
+                {
+                  full_name: {
+                    contains: search,
+                  },
+                },
+                {
+                  student_id: {
+                    contains: search,
+                  },
+                },
+                {
+                  email: {
+                    contains: search,
+                  },
+                },
+              ],
             },
             skip: page * limit,
             take: limit,

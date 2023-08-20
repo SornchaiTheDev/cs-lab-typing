@@ -185,15 +185,13 @@ function Labs() {
       >
         <Table data={allLabs.data ?? []} columns={columns}>
           {isTeacher && (
-            <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-              <Button
-                onClick={() => setIsShow(true)}
-                icon="solar:checklist-minimalistic-line-duotone"
-                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
-              >
-                Add Lab
-              </Button>
-            </div>
+            <Button
+              onClick={() => setIsShow(true)}
+              icon="solar:checklist-minimalistic-line-duotone"
+              className="bg-sand-12 text-sand-1 w-fit self-end shadow active:bg-sand-11"
+            >
+              Add Lab
+            </Button>
           )}
         </Table>
       </CourseLayout>

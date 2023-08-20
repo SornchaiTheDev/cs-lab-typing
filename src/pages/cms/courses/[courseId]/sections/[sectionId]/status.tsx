@@ -17,6 +17,7 @@ import { TRPCError } from "@trpc/server";
 import LineChart from "~/components/Typing/Datas/LineChart";
 import TypingTable from "~/components/Typing/Datas/Table";
 import type { PaginationState } from "@tanstack/react-table";
+import { callToast } from "~/services/callToast";
 
 interface TypingSubmissionProps {
   sectionId: string;
@@ -203,7 +204,11 @@ const LabStatus = ({
       await submissions.refetch();
 
       setIsLoading(false);
-    } catch (err) {}
+    } catch (err) {
+      if (err instanceof TRPCError) {
+        callToast({ type: "error", msg: err.message });
+      }
+    }
   };
 
   const exportCSV = async () => {
@@ -237,7 +242,11 @@ const LabStatus = ({
       link.href = window.URL.createObjectURL(csvBlob);
       link.download = fileName;
       link.click();
-    } catch (err) {}
+    } catch (err) {
+      if (err instanceof TRPCError) {
+        callToast({ type: "error", msg: err.message });
+      }
+    }
   };
 
   const [selectedUser, setSelectedUser] = useState<{

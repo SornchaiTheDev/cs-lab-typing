@@ -184,43 +184,6 @@ export const getLabRouter = router({
       const { labId, sectionId } = input;
 
       try {
-        const user = await ctx.prisma.sections.findUnique({
-          where: {
-            id: parseInt(sectionId),
-          },
-          select: {
-            submissions: {
-              where: {
-                lab_id: labId,
-              },
-              include: {
-                typing_histories: {
-                  orderBy: {
-                    score: "desc",
-                  },
-                  take: 1,
-                },
-              },
-            },
-          },
-        });
-
-        const typingHistories = await ctx.prisma.typing_histories.findMany({
-          where: {
-            submission: {
-              lab_id: labId,
-              section_id: parseInt(sectionId),
-            },
-          },
-          include: {
-            submission: {
-              select: {
-                user: true,
-              },
-            },
-          },
-        });
-
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: labId,
@@ -286,6 +249,10 @@ export const getLabRouter = router({
         return { taskOrder, tasks };
       } catch (err) {
         if (err instanceof Error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
         }
       }
     }),

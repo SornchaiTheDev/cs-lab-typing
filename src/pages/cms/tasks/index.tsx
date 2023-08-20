@@ -208,15 +208,13 @@ function Tasks() {
           {...{ pagination }}
         >
           {isTeacher && (
-            <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-              <Button
-                onClick={() => setIsShow(true)}
-                icon="solar:programming-line-duotone"
-                className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
-              >
-                Add Task
-              </Button>
-            </div>
+            <Button
+              onClick={() => setIsShow(true)}
+              icon="solar:programming-line-duotone"
+              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+            >
+              Add Task
+            </Button>
           )}
         </Table>
       </TaskLayout>

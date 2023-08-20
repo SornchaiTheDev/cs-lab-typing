@@ -151,15 +151,13 @@ function Semesters() {
           {...{ pagination }}
           onPaginationChange={setPagination}
         >
-          <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              icon="solar:calendar-line-duotone"
-              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
-            >
-              Add Semester
-            </Button>
-          </div>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            icon="solar:calendar-line-duotone"
+            className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+          >
+            Add Semester
+          </Button>
         </Table>
       </SemesterLayout>
     </>
