@@ -4,7 +4,7 @@ import Forms from "~/components/Forms";
 import { AddCourseSchema, type TAddCourse } from "~/schemas/CourseSchema";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { getHighestRole, trpc } from "~/helpers";
 import Skeleton from "~/components/Common/Skeleton";
@@ -13,6 +13,7 @@ import { callToast } from "~/services/callToast";
 import { useSession } from "next-auth/react";
 import type { SearchValue } from "~/types";
 import { useInView } from "react-intersection-observer";
+import { debounce } from "lodash";
 
 function Courses() {
   const router = useRouter();
@@ -20,19 +21,29 @@ function Courses() {
 
   const role = getHighestRole(session?.user?.roles);
 
+  const [searchString, setSearchString] = useState("");
+
   const {
     data,
     isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = trpc.courses.getCoursePagination.useInfiniteQuery(
     {
       limit: 8,
+      search: searchString,
     },
-    { getNextPageParam: (lastPage) => lastPage.nextCursor }
+    { enabled: false, getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchSection = useMemo(() => debounce(() => refetch(), 500), []);
+
+  useEffect(() => {
+    fetchSection();
+  }, [searchString, fetchSection]);
   const authorUser = trpc.users.getAllUsersInRole.useQuery(
     {
       roles: ["ADMIN", "TEACHER"],
@@ -79,45 +90,61 @@ function Courses() {
     <Layout title="courses">
       {role === "ADMIN" && (
         <div className="mb-4">
-          <ModalWithButton
-            title="Add Course"
-            icon="solar:add-circle-line-duotone"
-            className="max-h-[90%] overflow-y-auto md:w-[40rem]"
-          >
-            <Forms
-              confirmBtn={{
-                title: "Add Course",
-                icon: "solar:add-circle-line-duotone",
-              }}
-              schema={AddCourseSchema}
-              onSubmit={addCourse}
-              fields={[
-                { label: "number", title: "Number", type: "text" },
-                {
-                  label: "name",
-                  title: "Name",
-                  type: "text",
-                },
-                {
-                  label: "authors",
-                  title: "Authors",
-                  type: "multiple-search",
-                  options:
-                    (authorUser.data?.map((user) => ({
-                      label: user.full_name,
-                      value: user.student_id,
-                    })) as SearchValue[]) ?? [],
-                },
-                { label: "note", title: "Note", type: "text", optional: true },
-                {
-                  label: "comments",
-                  title: "Comments",
-                  type: "textarea",
-                  optional: true,
-                },
-              ]}
-            />
-          </ModalWithButton>
+          <div className="flex items-center justify-between">
+            <ModalWithButton
+              title="Add Course"
+              icon="solar:add-circle-line-duotone"
+              className="max-h-[90%] overflow-y-auto md:w-[40rem]"
+            >
+              <Forms
+                confirmBtn={{
+                  title: "Add Course",
+                  icon: "solar:add-circle-line-duotone",
+                }}
+                schema={AddCourseSchema}
+                onSubmit={addCourse}
+                fields={[
+                  { label: "number", title: "Number", type: "text" },
+                  {
+                    label: "name",
+                    title: "Name",
+                    type: "text",
+                  },
+                  {
+                    label: "authors",
+                    title: "Authors",
+                    type: "multiple-search",
+                    options:
+                      (authorUser.data?.map((user) => ({
+                        label: user.full_name,
+                        value: user.student_id,
+                      })) as SearchValue[]) ?? [],
+                  },
+                  {
+                    label: "note",
+                    title: "Note",
+                    type: "text",
+                    optional: true,
+                  },
+                  {
+                    label: "comments",
+                    title: "Comments",
+                    type: "textarea",
+                    optional: true,
+                  },
+                ]}
+              />
+            </ModalWithButton>
+            <div className="flex h-full items-center gap-2 rounded-lg border border-sand-6 p-2">
+              <Icon icon="carbon:search" className="text-sand-10" />
+              <input
+                value={searchString}
+                onChange={(e) => setSearchString(e.target.value)}
+                className="w-full bg-transparent text-sand-12 outline-none placeholder:text-sand-8"
+                placeholder="Search"
+              />
+            </div>
+          </div>
         </div>
       )}
       <div className="mb-10 mt-2 grid grid-cols-12 gap-6">

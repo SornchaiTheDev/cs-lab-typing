@@ -14,7 +14,8 @@ import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 import Badge from "~/components/Common/Badge";
 import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { debounce } from "lodash";
 
 function Sections() {
   const router = useRouter();
@@ -58,17 +59,33 @@ function Sections() {
     roles: ["ADMIN", "TEACHER", "STUDENT"],
   });
 
-  const { isLoading, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    trpc.sections.getSectionPagination.useInfiniteQuery(
-      {
-        limit: 8,
-        courseId: courseId as string,
-      },
-      {
-        enabled: !!courseId,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
-      }
-    );
+  const [searchString, setSearchString] = useState("");
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchSection = useMemo(() => debounce(() => refetch(), 500), []);
+
+  useEffect(() => {
+    fetchSection();
+  }, [searchString, fetchSection]);
+
+  const {
+    isLoading,
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = trpc.sections.getSectionPagination.useInfiniteQuery(
+    {
+      limit: 8,
+      courseId: courseId as string,
+      search: searchString,
+    },
+    {
+      enabled: false,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  );
 
   const { ref, inView } = useInView();
 
@@ -85,55 +102,66 @@ function Sections() {
       isLoading={course.isLoading}
     >
       <div className="my-4">
-        <ModalWithButton
-          title="Add Section"
-          icon="solar:add-circle-line-duotone"
-          className="/overflow-y-auto max-h-[90%] md:w-[40rem]"
-        >
-          <Forms
-            confirmBtn={{
-              title: "Add Section",
-              icon: "solar:add-circle-line-duotone",
-            }}
-            schema={AddSectionSchema}
-            onSubmit={addSection}
-            fields={[
-              {
-                label: "semester",
-                title: "Semester",
-                type: "select",
-                options: getAllSemester.data,
-                emptyMsg: "You need to create a semester first",
-              },
-              { label: "name", title: "Name", type: "text" },
-              {
-                label: "type",
-                title: "Type",
-                type: "select",
-                options: ["Lesson", "Exam"],
-                value: "Lesson",
-              },
-              {
-                label: "instructors",
-                title: "Instructors",
-                type: "multiple-search",
-                options:
-                  authorUser.data?.map(({ full_name, student_id }) => ({
-                    label: full_name,
-                    value: student_id,
-                  })) ?? [],
-              },
-              { label: "note", title: "Note", type: "text", optional: true },
-              {
-                label: "active",
-                title: "Active",
-                type: "checkbox",
-                optional: true,
-                value: true,
-              },
-            ]}
-          />
-        </ModalWithButton>
+        <div className="flex justify-between items-center">
+          <ModalWithButton
+            title="Add Section"
+            icon="solar:add-circle-line-duotone"
+            className="/overflow-y-auto max-h-[90%] md:w-[40rem]"
+          >
+            <Forms
+              confirmBtn={{
+                title: "Add Section",
+                icon: "solar:add-circle-line-duotone",
+              }}
+              schema={AddSectionSchema}
+              onSubmit={addSection}
+              fields={[
+                {
+                  label: "semester",
+                  title: "Semester",
+                  type: "select",
+                  options: getAllSemester.data,
+                  emptyMsg: "You need to create a semester first",
+                },
+                { label: "name", title: "Name", type: "text" },
+                {
+                  label: "type",
+                  title: "Type",
+                  type: "select",
+                  options: ["Lesson", "Exam"],
+                  value: "Lesson",
+                },
+                {
+                  label: "instructors",
+                  title: "Instructors",
+                  type: "multiple-search",
+                  options:
+                    authorUser.data?.map(({ full_name, student_id }) => ({
+                      label: full_name,
+                      value: student_id,
+                    })) ?? [],
+                },
+                { label: "note", title: "Note", type: "text", optional: true },
+                {
+                  label: "active",
+                  title: "Active",
+                  type: "checkbox",
+                  optional: true,
+                  value: true,
+                },
+              ]}
+            />
+          </ModalWithButton>
+          <div className="flex h-full items-center gap-2 rounded-lg border border-sand-6 p-2">
+            <Icon icon="carbon:search" className="text-sand-10" />
+            <input
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+              className="w-full bg-transparent outline-none placeholder:text-sand-8 text-sand-12"
+              placeholder="Search"
+            />
+          </div>
+        </div>
       </div>
       <div className="mt-4 grid grid-cols-12 gap-6">
         {isLoading

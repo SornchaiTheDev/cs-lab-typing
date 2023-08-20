@@ -8,7 +8,6 @@ import { z } from "zod";
 import { getAllSections } from "./roles/getAllSections";
 import { getTeacherRelatedSections } from "./roles/getTeacherRelatedSections";
 import type { Prisma, labs, labs_status } from "@prisma/client";
-import { getStudentRelatedSections } from "./roles/getStudentRelatedSections";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 
@@ -200,10 +199,11 @@ export const getSectionsRouter = router({
         limit: z.number().default(10),
         courseId: z.string(),
         cursor: z.number().nullish(),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { limit, courseId, cursor } = input;
+      const { limit, courseId, cursor, search } = input;
 
       const _courseId = parseInt(courseId);
       const role = getHighestRole(ctx.user.roles);
@@ -211,22 +211,21 @@ export const getSectionsRouter = router({
       let sections: sectionsIncludedStudentLength[] = [];
       try {
         if (role === "ADMIN") {
-          sections = await getAllSections(ctx.prisma, _courseId, limit, cursor);
+          sections = await getAllSections(
+            ctx.prisma,
+            _courseId,
+            limit,
+            cursor,
+            search
+          );
         } else if (role === "TEACHER") {
           sections = await getTeacherRelatedSections(
             ctx.prisma,
             _courseId,
             limit,
             student_id,
-            cursor
-          );
-        } else {
-          sections = await getStudentRelatedSections(
-            ctx.prisma,
-            _courseId,
-            limit,
-            student_id,
-            cursor
+            cursor,
+            search
           );
         }
 
