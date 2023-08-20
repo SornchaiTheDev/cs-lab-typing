@@ -26,10 +26,16 @@ export const deleteLabRouter = router({
           },
         });
 
+        await ctx.prisma.labs_status.deleteMany({
+          where: {
+            labId: id,
+          },
+        });
+
         const sections = await ctx.prisma.sections.findMany({
           where: {
             labs: {
-              every: {
+              some: {
                 id,
               },
             },

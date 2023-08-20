@@ -173,6 +173,7 @@ export const getSectionsRouter = router({
           labs_status: true,
         },
       });
+
       if (section && section.labs.length > 0) {
         const sortedLabOrder = section.labs_order.map((id) => {
           const lab = section?.labs.find((lab) => lab.id === id) as labs;

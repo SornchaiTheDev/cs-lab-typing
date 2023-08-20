@@ -1,7 +1,7 @@
 import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
+import { Prisma, type labs } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const createLabRouter = router({
@@ -11,7 +11,6 @@ export const createLabRouter = router({
       const { isDisabled, name, tags, courseId } = input;
       const _courseId = parseInt(courseId);
 
-      let lab;
       try {
         const user = await ctx.prisma.users.findFirst({
           where: {
@@ -23,7 +22,13 @@ export const createLabRouter = router({
           },
         });
 
-        lab = await ctx.prisma.labs.create({
+        const sections = await ctx.prisma.sections.findMany({
+          where: {
+            course_id: _courseId,
+          },
+        });
+
+        const lab = await ctx.prisma.labs.create({
           data: {
             name,
             tags: {
@@ -48,8 +53,32 @@ export const createLabRouter = router({
                 },
               },
             },
+            sections: {
+              connect: sections.map(({ id }) => ({ id })),
+            },
           },
         });
+
+        await ctx.prisma.sections.updateMany({
+          where: {
+            course_id: _courseId,
+          },
+          data: {
+            labs_order: {
+              push: lab.id,
+            },
+          },
+        });
+
+        await ctx.prisma.labs_status.createMany({
+          data: sections.map(({ id }) => ({
+            sectionId: id,
+            labId: lab.id,
+            status: "ACTIVE",
+          })),
+        });
+
+        return lab;
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") {
@@ -65,7 +94,5 @@ export const createLabRouter = router({
           });
         }
       }
-
-      return lab;
     }),
 });
