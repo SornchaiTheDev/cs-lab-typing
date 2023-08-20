@@ -12,15 +12,28 @@ export const getSemesterRouter = router({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit } = input;
+      const { page, limit, search } = input;
       try {
         const [semesters, amount] = await ctx.prisma.$transaction([
           ctx.prisma.semesters.findMany({
             where: {
               deleted_at: null,
+              OR: [
+                {
+                  year: {
+                    contains: search,
+                  },
+                },
+                {
+                  term: {
+                    contains: search,
+                  },
+                },
+              ],
             },
             skip: page * limit,
             take: limit,

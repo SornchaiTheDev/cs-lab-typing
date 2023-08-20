@@ -7,7 +7,7 @@ import {
   createColumnHelper,
   type PaginationState,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Forms from "~/components/Forms";
 import Modal from "~/components/Common/Modal";
 import Button from "~/components/Common/Button";
@@ -18,6 +18,7 @@ import { useDeleteAffectStore } from "~/store";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import type { semesters } from "@prisma/client";
+import { debounce } from "lodash";
 
 function Semesters() {
   const columnHelper = createColumnHelper<semesters>();
@@ -32,12 +33,36 @@ function Semesters() {
     pageSize: 20,
   });
 
+  const [searchString, setSearchString] = useState("");
+
+  const handleOnSearchChange = (value: string) => {
+    setSearchString(value);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  };
+
+  const fetchSemester = useMemo(
+    () => debounce(() => semesters.refetch(), 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  useEffect(() => {
+    fetchSemester();
+  }, [searchString, fetchSemester]);
+
   const { pageIndex, pageSize } = pagination;
 
-  const semesters = trpc.semesters.getSemestersPagination.useQuery({
-    page: pageIndex,
-    limit: pageSize,
-  });
+  const semesters = trpc.semesters.getSemestersPagination.useQuery(
+    {
+      page: pageIndex,
+      limit: pageSize,
+      search: searchString,
+    },
+    { enabled: false }
+  );
   const addSemesterMutation = trpc.semesters.createSemester.useMutation();
 
   const addSemester = async (formData: TSemesterSchema) => {
@@ -148,8 +173,9 @@ function Semesters() {
           data={semesters.data?.semesters ?? []}
           pageCount={semesters.data?.pageCount ?? 0}
           columns={columns}
-          {...{ pagination }}
+          {...{ pagination, searchString }}
           onPaginationChange={setPagination}
+          onSearchChange={handleOnSearchChange}
         >
           <Button
             onClick={() => setIsModalOpen(true)}
