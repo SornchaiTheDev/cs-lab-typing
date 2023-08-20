@@ -237,7 +237,7 @@ const LabStatus = ({
         )
       );
       const csvBlob = new Blob([csvString], { type: "text/csv" });
-      const fileName = sanitizeFilename(`${sectionName}_${name}_status.csv`);
+      const fileName = sanitizeFilename(`${sectionName}_${name}_status`);
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(csvBlob);
       link.download = fileName;
