@@ -4,7 +4,7 @@ import Forms from "~/components/Forms";
 import Table from "~/components/Common/Table";
 import { AddTaskSchema, type TAddTask } from "~/schemas/TaskSchema";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { trpc } from "~/helpers";
 import type { tags, users } from "@prisma/client";
 import Button from "~/components/Common/Button";
@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { SearchValue } from "~/types";
+import { debounce } from "lodash";
 
 interface TaskRow {
   id: number;
@@ -38,10 +39,34 @@ function Tasks() {
 
   const { pageIndex, pageSize } = pagination;
 
-  const allTasks = trpc.tasks.getTaskPagination.useQuery({
-    page: pageIndex,
-    limit: pageSize,
-  });
+  const [searchString, setSearchString] = useState("");
+
+  const handleOnSearchChange = (value: string) => {
+    setSearchString(value);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  };
+
+  const fetchTask = useMemo(
+    () => debounce(() => allTasks.refetch(), 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  useEffect(() => {
+    fetchTask();
+  }, [searchString, fetchTask]);
+
+  const allTasks = trpc.tasks.getTaskPagination.useQuery(
+    {
+      page: pageIndex,
+      limit: pageSize,
+      search: searchString,
+    },
+    { enabled: false }
+  );
 
   const addTaskMutation = trpc.tasks.addTask.useMutation();
   const addTask = async (formData: TAddTask) => {
@@ -205,7 +230,8 @@ function Tasks() {
           className="mt-6 flex-1"
           pageCount={allTasks.data?.pageCount ?? 0}
           onPaginationChange={setPagination}
-          {...{ pagination }}
+          {...{ pagination, searchString }}
+          onSearchChange={handleOnSearchChange}
         >
           {isTeacher && (
             <Button

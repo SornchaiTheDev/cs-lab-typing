@@ -6,16 +6,30 @@ import {
 import { z } from "zod";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
+import type { task_type } from "@prisma/client";
+
 export const getTaskRouter = router({
   getTaskPagination: teacherAboveProcedure
     .input(
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit } = input;
+      const { page, limit, search } = input;
+      let task_type: task_type[] = ["Lesson", "Problem", "Typing"];
+      if (search !== undefined) {
+        const _search = search.toLowerCase();
+        const type = _search.charAt(0).toUpperCase() + _search.slice(1);
+        if (["Lesson", "Problem", "Typing"].includes(type)) {
+          task_type = [type as task_type];
+        } else {
+          task_type = [];
+        }
+      }
+
       try {
         const [tasks, amount] = await ctx.prisma.$transaction([
           ctx.prisma.tasks.findMany({
@@ -23,12 +37,31 @@ export const getTaskRouter = router({
             take: limit,
             where: {
               deleted_at: null,
-              OR: [
-                { isPrivate: false },
+              AND: [
                 {
-                  owner: {
-                    student_id: ctx.user.student_id,
-                  },
+                  OR: [
+                    { isPrivate: false },
+                    {
+                      owner: {
+                        student_id: ctx.user.student_id,
+                      },
+                    },
+                  ],
+                },
+                {
+                  OR: [
+                    {
+                      type: {
+                        in: task_type,
+                      },
+                    },
+                    {
+                      name: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
+                    },
+                  ],
                 },
               ],
             },
@@ -53,7 +86,6 @@ export const getTaskRouter = router({
               deleted_at: null,
               OR: [
                 { isPrivate: false },
-
                 {
                   owner: {
                     student_id: ctx.user.student_id,

@@ -59,7 +59,7 @@ function Logger() {
 
   useEffect(() => {
     fetchAuthLog();
-  }, [searchString, fetchAuthLog]);
+  }, [searchString, dateRange, fetchAuthLog]);
   const authLogs = trpc.loggers.getAuthLog.useQuery(
     {
       page: pageIndex,
@@ -155,21 +155,17 @@ function Logger() {
           <div className="mt-2 flex flex-col justify-between gap-2 md:flex-row">
             <RangePicker
               value={dateRange}
-              onChange={(date) => {
-                setDateRange(date);
-                authLogs.refetch();
-              }}
+              onChange={(date) => setDateRange(date)}
             />
 
             <TimePickerRange
               date={dateRange}
-              onApply={({ from, to }) => {
+              onApply={({ from, to }) =>
                 setDateRange({
                   from,
                   to,
-                });
-                authLogs.refetch();
-              }}
+                })
+              }
             />
           </div>
         </div>

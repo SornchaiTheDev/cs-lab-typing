@@ -17,7 +17,7 @@ export const getUserRouter = router({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, search = "" } = input;
+      const { page, limit, search } = input;
 
       try {
         const [users, amount] = await ctx.prisma.$transaction([
@@ -28,16 +28,19 @@ export const getUserRouter = router({
                 {
                   full_name: {
                     contains: search,
+                    mode: "insensitive",
                   },
                 },
                 {
                   student_id: {
                     contains: search,
+                    mode: "insensitive",
                   },
                 },
                 {
                   email: {
                     contains: search,
+                    mode: "insensitive",
                   },
                 },
               ],

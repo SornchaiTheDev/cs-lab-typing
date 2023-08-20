@@ -31,6 +31,7 @@ export const getSemesterRouter = router({
                 {
                   term: {
                     contains: search,
+                    mode: "insensitive",
                   },
                 },
               ],

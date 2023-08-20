@@ -33,12 +33,14 @@ export const getAuthLoggerRouter = router({
                 {
                   type: {
                     contains: search,
+                    mode: "insensitive",
                   },
                 },
                 {
                   user: {
                     email: {
                       contains: search,
+                      mode: "insensitive",
                     },
                   },
                 },
