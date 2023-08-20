@@ -197,14 +197,13 @@ export const getSectionsRouter = router({
   getSectionPagination: teacherAboveProcedure
     .input(
       z.object({
-        page: z.number().default(1),
         limit: z.number().default(10),
         courseId: z.string(),
         cursor: z.number().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, courseId, cursor } = input;
+      const { limit, courseId, cursor } = input;
 
       const _courseId = parseInt(courseId);
       const role = getHighestRole(ctx.user.roles);
@@ -212,18 +211,11 @@ export const getSectionsRouter = router({
       let sections: sectionsIncludedStudentLength[] = [];
       try {
         if (role === "ADMIN") {
-          sections = await getAllSections(
-            ctx.prisma,
-            _courseId,
-            page,
-            limit,
-            cursor
-          );
+          sections = await getAllSections(ctx.prisma, _courseId, limit, cursor);
         } else if (role === "TEACHER") {
           sections = await getTeacherRelatedSections(
             ctx.prisma,
             _courseId,
-            page,
             limit,
             student_id,
             cursor
@@ -232,7 +224,6 @@ export const getSectionsRouter = router({
           sections = await getStudentRelatedSections(
             ctx.prisma,
             _courseId,
-            page,
             limit,
             student_id,
             cursor

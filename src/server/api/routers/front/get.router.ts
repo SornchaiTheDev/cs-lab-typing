@@ -4,101 +4,124 @@ import { z } from "zod";
 import { router, authedProcedure } from "~/server/api/trpc";
 
 export const getFrontRouter = router({
-  getSections: authedProcedure.query(async ({ ctx }) => {
-    const student_id = ctx.session?.user?.student_id;
+  getSections: authedProcedure
+    .input(z.object({ limit: z.number(), cursor: z.number().nullish() }))
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor } = input;
+      const student_id = ctx.session?.user?.student_id;
 
-    try {
-      const sections = ctx.prisma.sections.findMany({
-        where: {
-          AND: [
-            { deleted_at: null },
-            { active: true },
-            {
-              OR: [
-                {
-                  students: {
-                    some: {
-                      student_id,
-                      deleted_at: null,
+      try {
+        const sections = await ctx.prisma.sections.findMany({
+          where: {
+            AND: [
+              { deleted_at: null },
+              { active: true },
+              {
+                OR: [
+                  {
+                    students: {
+                      some: {
+                        student_id,
+                        deleted_at: null,
+                      },
                     },
                   },
-                },
-              ],
-            },
-          ],
-        },
-        select: {
-          id: true,
-          name: true,
-          course: {
-            select: {
-              id: true,
-              number: true,
-              name: true,
-            },
+                ],
+              },
+            ],
           },
-          type: true,
-        },
-        orderBy: {
-          course_id: "asc",
-        },
-      });
+          select: {
+            id: true,
+            name: true,
+            course: {
+              select: {
+                id: true,
+                number: true,
+                name: true,
+              },
+            },
+            type: true,
+          },
+          take: limit + 1,
+          cursor: cursor ? { id: cursor } : undefined,
+          orderBy: {
+            id: "asc",
+          },
+        });
 
-      return sections;
-    } catch (err) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
-  getTeachingSections: authedProcedure.query(async ({ ctx }) => {
-    const student_id = ctx.session?.user?.student_id;
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (sections.length > limit) {
+          const nextItem = sections.pop();
+          nextCursor = nextItem?.id;
+        }
 
-    try {
-      const sections = ctx.prisma.sections.findMany({
-        where: {
-          AND: [
-            { deleted_at: null },
-            {
-              OR: [
-                {
-                  instructors: {
-                    some: {
-                      student_id,
-                      deleted_at: null,
+        return { sections, nextCursor };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+  getTeachingSections: authedProcedure
+    .input(z.object({ limit: z.number(), cursor: z.number().nullish() }))
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor } = input;
+
+      const student_id = ctx.session?.user?.student_id;
+
+      try {
+        const sections = await ctx.prisma.sections.findMany({
+          where: {
+            AND: [
+              { deleted_at: null },
+              {
+                OR: [
+                  {
+                    instructors: {
+                      some: {
+                        student_id,
+                        deleted_at: null,
+                      },
                     },
                   },
-                },
-              ],
-            },
-          ],
-        },
-        select: {
-          id: true,
-          name: true,
-          course: {
-            select: {
-              id: true,
-              number: true,
-              name: true,
-            },
+                ],
+              },
+            ],
           },
-          type: true,
-        },
-        orderBy: {
-          course_id: "asc",
-        },
-      });
+          select: {
+            id: true,
+            name: true,
+            course: {
+              select: {
+                id: true,
+                number: true,
+                name: true,
+              },
+            },
+            type: true,
+          },
+          take: limit + 1,
+          cursor: cursor ? { id: cursor } : undefined,
+          orderBy: {
+            id: "asc",
+          },
+        });
 
-      return sections;
-    } catch (err) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (sections.length > limit) {
+          const nextItem = sections.pop();
+          nextCursor = nextItem?.id;
+        }
+
+        return { sections, nextCursor };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
   getLabs: authedProcedure
     .input(z.object({ sectionId: z.string() }))
     .query(async ({ ctx, input }) => {

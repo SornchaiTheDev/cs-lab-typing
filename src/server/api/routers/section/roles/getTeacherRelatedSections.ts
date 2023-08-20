@@ -3,7 +3,6 @@ import type { PrismaClient } from "@prisma/client";
 export const getTeacherRelatedSections = async (
   prisma: PrismaClient,
   courseId: number,
-  page: number,
   limit: number,
   student_id: string,
   cursor: number | null | undefined

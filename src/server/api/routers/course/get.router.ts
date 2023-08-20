@@ -15,24 +15,22 @@ export const getCourseRouter = router({
   getCoursePagination: teacherAboveProcedure
     .input(
       z.object({
-        page: z.number().default(1),
         limit: z.number().default(10),
         cursor: z.number().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, cursor } = input;
+      const { limit, cursor } = input;
 
       const role = getHighestRole(ctx.user.roles);
       const student_id = ctx.user.student_id;
       let courses = null;
       try {
         if (role === "ADMIN") {
-          courses = await getAdminCourses(ctx.prisma, page, limit, cursor);
+          courses = await getAdminCourses(ctx.prisma, limit, cursor);
         } else if (role === "TEACHER") {
           courses = await getTeacherCourses(
             ctx.prisma,
-            page,
             limit,
             student_id,
             cursor

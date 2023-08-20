@@ -3,7 +3,6 @@ import type { PrismaClient } from "@prisma/client";
 export const getAllSections = async (
   prisma: PrismaClient,
   courseId: number,
-  page: number,
   limit: number,
   cursor: number | null | undefined
 ) => {

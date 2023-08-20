@@ -2,7 +2,6 @@ import type { PrismaClient } from "@prisma/client";
 
 export const getTeacherCourses = async (
   prisma: PrismaClient,
-  page: number,
   limit: number,
   student_id: string,
   cursor: number | null | undefined

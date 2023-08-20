@@ -12,9 +12,10 @@ import useTheme from "~/hooks/useTheme";
 
 interface Props {
   sectionId: string;
+  onAdded: () => void;
 }
 
-function AddUser({ sectionId }: Props) {
+function AddUser({ sectionId, onAdded }: Props) {
   const [value, setValue] = useState("");
   const [isShow, setIsShow] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -38,6 +39,7 @@ function AddUser({ sectionId }: Props) {
       setIsShow(false);
       setValue("");
       ctx.sections.invalidate();
+      onAdded();
     } catch (err) {
       if (err instanceof TRPCClientError) {
         const errMsg = err.message;
@@ -89,17 +91,18 @@ function AddUser({ sectionId }: Props) {
         isOpen={isShow}
         onClose={handleOnClose}
         title="Add Student"
-        description={
-          <p className="text-sand-10">
-            Student <br /> 651040xxxx <br />
-            Teacher <br /> john.doe@ku.th
-          </p>
-        }
         className="flex flex-col gap-4 md:w-[40rem]"
       >
         <div>
           <Codemirror
             autoFocus
+            placeHolder={`Example format
+Teacher
+john@ku.th
+Student
+6510405814
+POSN Student
+posn001`}
             theme={theme === "light" ? addUserLightTheme : addUserDarkTheme}
             value={value}
             onChange={(value) => setValue(value)}

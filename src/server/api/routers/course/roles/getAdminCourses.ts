@@ -2,7 +2,6 @@ import type { PrismaClient } from "@prisma/client";
 
 export const getAdminCourses = async (
   prisma: PrismaClient,
-  page: number,
   limit: number,
   cursor: number | null | undefined
 ) => {

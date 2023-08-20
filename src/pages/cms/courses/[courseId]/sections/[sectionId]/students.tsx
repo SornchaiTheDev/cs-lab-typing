@@ -160,8 +160,11 @@ function Students() {
           {...{ pagination, searchString }}
           onSearchChange={handleOnSearchChange}
         >
-          <div className="mt-2 flex gap-2 items-center justify-between md:mt-0">
-            <AddUser sectionId={sectionId as string} />
+          <div className="mt-2 flex items-center justify-between gap-2 md:mt-0">
+            <AddUser
+              sectionId={sectionId as string}
+              onAdded={() => studentsPagination.refetch()}
+            />
             <Button
               onClick={exportCSV}
               icon="solar:document-text-line-duotone"
