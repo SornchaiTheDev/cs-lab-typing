@@ -11,10 +11,11 @@ export const getAuthLoggerRouter = router({
           from: z.union([z.date(), z.undefined()]),
           to: z.union([z.date(), z.undefined()]).optional(),
         }),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, date } = input;
+      const { page, limit, date, search } = input;
       try {
         const [authLogger, amount] = await ctx.prisma.$transaction([
           ctx.prisma.auth_loggers.findMany({
@@ -23,6 +24,25 @@ export const getAuthLoggerRouter = router({
                 lte: date.to,
                 gte: date.from,
               },
+              OR: [
+                {
+                  ip_address: {
+                    contains: search,
+                  },
+                },
+                {
+                  type: {
+                    contains: search,
+                  },
+                },
+                {
+                  user: {
+                    email: {
+                      contains: search,
+                    },
+                  },
+                },
+              ],
             },
             skip: page * limit,
             take: limit,

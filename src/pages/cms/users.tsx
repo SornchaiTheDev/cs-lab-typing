@@ -104,6 +104,13 @@ function Users() {
 
   const [searchString, setSearchString] = useState("");
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchUser = useMemo(() => debounce(() => users.refetch(), 500), []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [searchString, fetchUser]);
+
   const { pageIndex, pageSize } = pagination;
 
   const users = trpc.users.getUserPagination.useQuery(
@@ -153,13 +160,6 @@ function Users() {
       reader.readAsText(file);
     });
   }, []);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fetchUser = useMemo(() => debounce(() => users.refetch(), 500), []);
-
-  useEffect(() => {
-    fetchUser();
-  }, [searchString, fetchUser]);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({

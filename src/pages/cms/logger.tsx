@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Layout from "~/Layout";
 import Table from "~/components/Common/Table";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
@@ -9,6 +9,7 @@ import RangePicker from "~/components/Forms/DatePicker/RangePicker";
 import { trpc } from "~/helpers";
 import type { DateRange } from "react-day-picker";
 import dayjs from "dayjs";
+import { debounce } from "lodash";
 
 interface LoggerRow {
   type: string;
@@ -48,11 +49,26 @@ function Logger() {
   });
 
   const { pageIndex, pageSize } = pagination;
-  const authLogs = trpc.loggers.getAuthLog.useQuery({
-    page: pageIndex,
-    limit: pageSize,
-    date: dateRange,
-  });
+  const [searchString, setSearchString] = useState("");
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchAuthLog = useMemo(
+    () => debounce(() => authLogs.refetch(), 500),
+    []
+  );
+
+  useEffect(() => {
+    fetchAuthLog();
+  }, [searchString, fetchAuthLog]);
+  const authLogs = trpc.loggers.getAuthLog.useQuery(
+    {
+      page: pageIndex,
+      limit: pageSize,
+      date: dateRange,
+      search: searchString,
+    },
+    { enabled: false }
+  );
 
   const columns = useMemo<ColumnDef<LoggerRow, string | { email: string }>[]>(
     () => [
@@ -125,18 +141,25 @@ function Logger() {
         defaultSortingState={{ id: "date", desc: true }}
         pageCount={authLogs.data?.pageCount ?? 0}
         onPaginationChange={setPagination}
-        {...{ pagination }}
+        {...{ pagination, searchString }}
+        onSearchChange={setSearchString}
       >
         <div className="flex flex-col items-end p-2 ">
           <button
             onClick={exportCSV}
-            className="flex items-center w-fit gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
+            className="flex w-fit items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV
           </button>
-          <div className="flex flex-col justify-between gap-2 mt-2 md:flex-row">
-            <RangePicker value={dateRange} onChange={setDateRange} />
+          <div className="mt-2 flex flex-col justify-between gap-2 md:flex-row">
+            <RangePicker
+              value={dateRange}
+              onChange={(date) => {
+                setDateRange(date);
+                authLogs.refetch();
+              }}
+            />
 
             <TimePickerRange
               date={dateRange}
@@ -145,6 +168,7 @@ function Logger() {
                   from,
                   to,
                 });
+                authLogs.refetch();
               }}
             />
           </div>
