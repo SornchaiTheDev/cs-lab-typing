@@ -59,9 +59,9 @@ function Logger() {
     }));
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchAuthLog = useMemo(
     () => debounce(() => authLogs.refetch(), 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

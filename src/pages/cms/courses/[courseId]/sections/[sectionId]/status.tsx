@@ -9,7 +9,7 @@ import Modal from "~/components/Common/Modal";
 import Collapse from "~/components/Common/Collapse";
 import Stats from "~/components/Typing/Stats";
 import { getDuration } from "~/components/Typing/utils/getDuration";
-import { SectionType, submission_type } from "@prisma/client";
+import type { SectionType, submission_type } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
