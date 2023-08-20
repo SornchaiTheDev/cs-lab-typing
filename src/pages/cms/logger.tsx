@@ -130,9 +130,9 @@ function Logger() {
     const csvBlob = new Blob([csvString], { type: "text/csv" });
     let fileName = `${startDate.format("DD_MM_YYYY")}_${endDate.format(
       "DD_MM_YYYY"
-    )}_auth_log.csv`;
+    )}_auth_log`;
     if (startDate.diff(endDate, "day") === 0) {
-      fileName = `${startDate.format("DD_MM_YYYY")}_auth_log.csv`;
+      fileName = `${startDate.format("DD_MM_YYYY")}_auth_log`;
     }
 
     const link = document.createElement("a");
@@ -162,10 +162,7 @@ function Logger() {
             Export as CSV
           </button>
           <div className="mt-2 flex flex-col justify-between gap-2 md:flex-row">
-            <RangePicker
-              value={dateRange}
-              onChange={setDateRange}
-            />
+            <RangePicker value={dateRange} onChange={setDateRange} />
 
             <TimePickerRange
               date={dateRange}

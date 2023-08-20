@@ -130,7 +130,7 @@ function Students() {
 
     const csvBlob = new Blob([csvString], { type: "text/csv" });
     const fileName = sanitizeFilename(
-      `${section.data?.name}_enrolled_students.csv`
+      `${section.data?.name}_enrolled_students`
     );
 
     const link = document.createElement("a");

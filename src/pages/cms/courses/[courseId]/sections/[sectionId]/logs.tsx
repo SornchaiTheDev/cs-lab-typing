@@ -115,11 +115,11 @@ function Logger() {
     const csvBlob = new Blob([csvString], { type: "text/csv" });
     let fileName = `${startDate.format("DD_MM_YYYY")}_${endDate.format(
       "DD_MM_YYYY"
-    )}_${sanitizeFilename(section.data?.name as string)}_lab_log.csv`;
+    )}_${sanitizeFilename(section.data?.name as string)}_lab_log`;
     if (startDate.diff(endDate, "day") === 0) {
       fileName = `${startDate.format("DD_MM_YYYY")}_${sanitizeFilename(
         section.data?.name as string
-      )}_lab_log.csv`;
+      )}_lab_log`;
     }
 
     const link = document.createElement("a");
