@@ -25,7 +25,6 @@ function Courses() {
     isLoading,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     isFetchingNextPage,
   } = trpc.courses.getCoursePagination.useInfiniteQuery(
     {

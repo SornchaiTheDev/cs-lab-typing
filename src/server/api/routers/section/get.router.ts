@@ -200,10 +200,11 @@ export const getSectionsRouter = router({
         page: z.number().default(1),
         limit: z.number().default(10),
         courseId: z.string(),
+        cursor: z.number().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, courseId } = input;
+      const { page, limit, courseId, cursor } = input;
 
       const _courseId = parseInt(courseId);
       const role = getHighestRole(ctx.user.roles);
@@ -211,14 +212,21 @@ export const getSectionsRouter = router({
       let sections: sectionsIncludedStudentLength[] = [];
       try {
         if (role === "ADMIN") {
-          sections = await getAllSections(ctx.prisma, _courseId, page, limit);
+          sections = await getAllSections(
+            ctx.prisma,
+            _courseId,
+            page,
+            limit,
+            cursor
+          );
         } else if (role === "TEACHER") {
           sections = await getTeacherRelatedSections(
             ctx.prisma,
             _courseId,
             page,
             limit,
-            student_id
+            student_id,
+            cursor
           );
         } else {
           sections = await getStudentRelatedSections(
@@ -226,15 +234,17 @@ export const getSectionsRouter = router({
             _courseId,
             page,
             limit,
-            student_id
+            student_id,
+            cursor
           );
         }
 
-        // Don't nessary to return empty array
-        if (!sections) {
-          return [];
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (sections.length > limit) {
+          const nextItem = sections.pop();
+          nextCursor = nextItem?.id;
         }
-        return sections;
+        return { sections, nextCursor };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
