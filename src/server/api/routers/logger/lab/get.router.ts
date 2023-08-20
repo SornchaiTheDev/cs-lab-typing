@@ -1,7 +1,7 @@
 import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { LabLogger } from "@prisma/client";
+import type { LabLogger } from "@prisma/client";
 
 export const getLabLogRouter = router({
   getLabLog: teacherAboveProcedure

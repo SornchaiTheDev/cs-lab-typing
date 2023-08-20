@@ -17,30 +17,37 @@ export const getCourseRouter = router({
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
+        cursor: z.number().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit } = input;
+      const { page, limit, cursor } = input;
 
       const role = getHighestRole(ctx.user.roles);
       const student_id = ctx.user.student_id;
       let courses = null;
       try {
         if (role === "ADMIN") {
-          courses = await getAdminCourses(ctx.prisma, page, limit);
+          courses = await getAdminCourses(ctx.prisma, page, limit, cursor);
         } else if (role === "TEACHER") {
           courses = await getTeacherCourses(
             ctx.prisma,
             page,
             limit,
-            student_id
+            student_id,
+            cursor
           );
         }
-        if (!courses) {
-          return [];
+        if (courses === null) {
+          throw new Error("NOT_FOUND");
         }
 
-        return courses;
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (courses.length > limit) {
+          const nextItem = courses.pop();
+          nextCursor = nextItem?.id;
+        }
+        return { courses, nextCursor };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

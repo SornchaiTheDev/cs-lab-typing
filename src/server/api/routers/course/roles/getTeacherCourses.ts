@@ -4,7 +4,8 @@ export const getTeacherCourses = async (
   prisma: PrismaClient,
   page: number,
   limit: number,
-  student_id: string
+  student_id: string,
+  cursor: number | null | undefined
 ) => {
   return await prisma.courses.findMany({
     where: {
@@ -22,8 +23,8 @@ export const getTeacherCourses = async (
         },
       },
     },
-    skip: (page - 1) * limit,
-    take: limit,
+    take: limit + 1,
+    cursor: cursor ? { id: cursor } : undefined,
     include: {
       sections: {
         select: {
