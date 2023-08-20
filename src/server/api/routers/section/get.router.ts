@@ -79,10 +79,11 @@ export const getSectionsRouter = router({
         sectionId: z.string(),
         page: z.number().default(1),
         limit: z.number().default(10),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, sectionId } = input;
+      const { page, limit, sectionId, search } = input;
       const _sectionId = parseInt(sectionId);
       try {
         const [pagination, allStudentAmount, allStudents] =
@@ -115,7 +116,24 @@ export const getSectionsRouter = router({
                 id: _sectionId,
               },
               select: {
-                students: true,
+                students: {
+                  where: {
+                    OR: [
+                      {
+                        student_id: {
+                          contains: search,
+                          mode: "insensitive",
+                        },
+                      },
+                      {
+                        full_name: {
+                          contains: search,
+                          mode: "insensitive",
+                        },
+                      },
+                    ],
+                  },
+                },
               },
             }),
           ]);

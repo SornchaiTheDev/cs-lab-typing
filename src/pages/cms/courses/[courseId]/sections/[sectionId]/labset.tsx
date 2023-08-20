@@ -99,7 +99,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
       title="Add Labs to Section"
       className="flex h-[90%] max-h-[90%] max-w-[60rem] flex-col gap-2 overflow-y-auto"
     >
-      <div className="grid grid-cols-12 gap-4 px-2 py-4 overflow-y-auto">
+      <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
         {labs.isLoading
           ? new Array(6)
               .fill(0)
@@ -139,7 +139,7 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
                       {tags.map(({ name }) => (
                         <div
                           key={name}
-                          className="px-2 text-white rounded-lg w-fit bg-lime-9"
+                          className="w-fit rounded-lg bg-lime-9 px-2 text-white"
                         >
                           {name}
                         </div>
@@ -261,7 +261,7 @@ function LabSet() {
         cell: (props) => (
           <button
             onClick={() => setSelectedLab(props.row.original.id)}
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
           </button>
@@ -313,24 +313,22 @@ function LabSet() {
           onDrag={(data) => setNewOrdered(data)}
           draggabled
         >
-          <div className="flex justify-between p-4">
+          <Button
+            onClick={() => setIsShow(true)}
+            icon="solar:checklist-minimalistic-line-duotone"
+            className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+          >
+            Add Lab
+          </Button>
+          {isOrderChanged && (
             <Button
-              onClick={() => setIsShow(true)}
-              icon="solar:checklist-minimalistic-line-duotone"
-              className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              onClick={handleOnSave}
+              icon="solar:diskette-line-duotone"
+              className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
-              Add Lab
+              Save
             </Button>
-            {isOrderChanged && (
-              <Button
-                onClick={handleOnSave}
-                icon="solar:diskette-line-duotone"
-                className="shadow bg-sand-12 text-sand-1 active:bg-sand-11"
-              >
-                Save
-              </Button>
-            )}
-          </div>
+          )}
         </Table>
       </SectionLayout>
     </>

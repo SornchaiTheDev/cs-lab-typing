@@ -6,9 +6,10 @@ import {
 } from "@tanstack/react-table";
 import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
+import { debounce } from "lodash";
 import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SectionLayout from "~/Layout/SectionLayout";
 import Alert from "~/components/Common/Alert";
 import Button from "~/components/Common/Button";
@@ -40,15 +41,35 @@ function Students() {
   });
 
   const { pageIndex, pageSize } = pagination;
+  const [searchString, setSearchString] = useState("");
+
+  const handleOnSearchChange = (value: string) => {
+    setSearchString(value);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  };
+
+  const fetchStudents = useMemo(
+    () => debounce(() => studentsPagination.refetch(), 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  useEffect(() => {
+    fetchStudents();
+  }, [searchString, fetchStudents]);
 
   const studentsPagination = trpc.sections.getStudentPagination.useQuery(
     {
       sectionId: sectionId as string,
       page: pageIndex,
       limit: pageSize,
+      search: searchString,
     },
     {
-      enabled: !!sectionId,
+      enabled: false,
     }
   );
 
@@ -89,7 +110,7 @@ function Students() {
         cell: (props) => (
           <button
             onClick={() => setSelectedUser(props.row.original.id)}
-            className="text-xl rounded-xl text-sand-12"
+            className="rounded-xl text-xl text-sand-12"
           >
             <Icon icon="solar:trash-bin-trash-line-duotone" />
           </button>
@@ -136,14 +157,15 @@ function Students() {
           data={studentsPagination.data?.students ?? []}
           pageCount={studentsPagination.data?.pageCount ?? 0}
           onPaginationChange={setPagination}
-          {...{ pagination }}
+          {...{ pagination, searchString }}
+          onSearchChange={handleOnSearchChange}
         >
-          <div className="flex items-center justify-between p-1">
+          <div className="mt-2 flex gap-2 items-center justify-between md:mt-0">
             <AddUser sectionId={sectionId as string} />
             <Button
               onClick={exportCSV}
               icon="solar:document-text-line-duotone"
-              className="p-2 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+              className="bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
             >
               Export as CSV
             </Button>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import clsx from "clsx";
@@ -14,10 +14,11 @@ import type { lab_loggers } from "@prisma/client";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
+import { debounce } from "lodash";
 
 const Type = ({ type }: { type: string }) => {
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex w-full justify-center">
       <button
         className={clsx(
           "rounded-md px-2 text-sm font-medium",
@@ -134,16 +135,33 @@ function Logger() {
 
   const { pageIndex, pageSize } = pagination;
 
+  const [searchString, setSearchString] = useState("");
+
+  const handleOnSearchChange = (value: string) => {
+    setSearchString(value);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchLabLog = useMemo(() => debounce(() => labLogs.refetch(), 500), []);
+
+  useEffect(() => {
+    fetchLabLog();
+  }, [searchString, dateRange, fetchLabLog]);
+
   const labLogs = trpc.loggers.getLabLog.useQuery(
     {
       limit: pageSize,
       page: pageIndex,
       date: dateRange,
       sectionId: sectionId as string,
+      search: searchString,
     },
     {
-      enabled: !!sectionId,
-      keepPreviousData: true,
+      enabled: false,
     }
   );
 
@@ -160,28 +178,31 @@ function Logger() {
         pageCount={labLogs.data?.pageCount ?? 0}
         pagination={pagination}
         onPaginationChange={setPagination}
+        {...{ searchString }}
+        onSearchChange={handleOnSearchChange}
       >
-        <div className="flex justify-end p-2 ">
+        <div className="flex flex-col items-end gap-2">
           <button
             onClick={exportCSV}
-            className="flex items-center gap-2 p-2 rounded-lg shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+            className="flex h-fit w-fit items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV
           </button>
-        </div>
-        <div className="flex flex-col justify-between gap-2 p-2 md:flex-row">
-          <RangePicker value={dateRange} onChange={setDateRange} />
 
-          <TimePickerRange
-            date={dateRange}
-            onApply={({ from, to }) => {
-              setDateRange({
-                from,
-                to,
-              });
-            }}
-          />
+          <div className="flex flex-col justify-between gap-2 md:flex-row">
+            <RangePicker value={dateRange} onChange={setDateRange} />
+
+            <TimePickerRange
+              date={dateRange}
+              onApply={({ from, to }) => {
+                setDateRange({
+                  from,
+                  to,
+                });
+              }}
+            />
+          </div>
         </div>
       </Table>
     </SectionLayout>

@@ -51,6 +51,14 @@ function Logger() {
   const { pageIndex, pageSize } = pagination;
   const [searchString, setSearchString] = useState("");
 
+  const handleOnSearchChange = (value: string) => {
+    setSearchString(value);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchAuthLog = useMemo(
     () => debounce(() => authLogs.refetch(), 500),
@@ -60,6 +68,7 @@ function Logger() {
   useEffect(() => {
     fetchAuthLog();
   }, [searchString, dateRange, fetchAuthLog]);
+
   const authLogs = trpc.loggers.getAuthLog.useQuery(
     {
       page: pageIndex,
@@ -142,7 +151,7 @@ function Logger() {
         pageCount={authLogs.data?.pageCount ?? 0}
         onPaginationChange={setPagination}
         {...{ pagination, searchString }}
-        onSearchChange={setSearchString}
+        onSearchChange={handleOnSearchChange}
       >
         <div className="flex flex-col items-end p-2 ">
           <button
@@ -155,7 +164,7 @@ function Logger() {
           <div className="mt-2 flex flex-col justify-between gap-2 md:flex-row">
             <RangePicker
               value={dateRange}
-              onChange={(date) => setDateRange(date)}
+              onChange={setDateRange}
             />
 
             <TimePickerRange

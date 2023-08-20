@@ -1,6 +1,7 @@
 import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { LabLogger } from "@prisma/client";
 
 export const getLabLogRouter = router({
   getLabLog: teacherAboveProcedure
@@ -13,12 +14,24 @@ export const getLabLogRouter = router({
           to: z.union([z.date(), z.undefined()]).optional(),
         }),
         sectionId: z.string(),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, date, sectionId } = input;
+      const { page, limit, date, sectionId, search } = input;
 
       const _sectionId = parseInt(sectionId);
+
+      let actionType: LabLogger[] = ["ACCESS", "SUBMIT"];
+      if (search !== undefined) {
+        const _search = search.toLowerCase();
+        const type = _search.toUpperCase();
+        if (["ACCESS", "SUBMIT"].includes(type)) {
+          actionType = [type as LabLogger];
+        } else {
+          actionType = [];
+        }
+      }
 
       try {
         const [labLoggers, amount] = await ctx.prisma.$transaction([
@@ -28,6 +41,26 @@ export const getLabLogRouter = router({
                 lte: date.to,
                 gte: date.from,
               },
+              OR: [
+                {
+                  user: {
+                    email: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+                {
+                  ip_address: {
+                    contains: search,
+                  },
+                },
+                {
+                  type: {
+                    in: actionType,
+                  },
+                },
+              ],
               sectionId: _sectionId,
             },
             skip: page * limit,

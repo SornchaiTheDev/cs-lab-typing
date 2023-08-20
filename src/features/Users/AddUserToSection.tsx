@@ -80,7 +80,7 @@ function AddUser({ sectionId }: Props) {
       <Button
         onClick={() => setIsShow(true)}
         icon="solar:user-plus-rounded-line-duotone"
-        className="m-2 bg-sand-12 text-sand-1 shadow active:bg-sand-11"
+        className="bg-sand-12 text-sand-1 shadow active:bg-sand-11"
       >
         Add Student
       </Button>
