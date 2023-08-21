@@ -103,11 +103,11 @@ function Settings() {
                   })),
                 },
                 {
-                  label: "isDisabled",
-                  title: "Disabled",
+                  label: "active",
+                  title: "Active",
                   type: "checkbox",
                   disabled: !isTeacher,
-                  value: lab.data?.isDisabled,
+                  value: lab.data?.active,
                 },
               ]}
               confirmBtn={{

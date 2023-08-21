@@ -1,14 +1,14 @@
 import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { z } from "zod";
-import { Prisma, type labs } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const createLabRouter = router({
   createLab: teacherAboveProcedure
     .input(AddLabSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const { isDisabled, name, tags, courseId } = input;
+      const { active, name, tags, courseId } = input;
       const _courseId = parseInt(courseId);
 
       try {
@@ -37,7 +37,7 @@ export const createLabRouter = router({
                 create: { name: value as string },
               })),
             },
-            isDisabled,
+            active,
             course: {
               connect: {
                 id: _courseId,

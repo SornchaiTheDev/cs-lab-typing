@@ -140,7 +140,7 @@ model labs {
   tags        tags[]          @relation("lab_tag")
   course      courses         @relation(fields: [courseId], references: [id])
   courseId    Int
-  isDisabled  Boolean
+  active      Boolean         @default(true)
   tasks_order Int[]
   tasks       tasks[]         @relation("lab_task")
   history     lab_histories[]

@@ -73,6 +73,13 @@ function Labs() {
         });
 
         setIsShow(false);
+        router.push({
+          pathname: router.pathname + "/[labId]",
+          query: {
+            ...router.query,
+            labId: lab.id,
+          },
+        });
       }
     } catch (err) {
       if (err instanceof TRPCClientError) {
@@ -171,10 +178,10 @@ function Labs() {
               })),
             },
             {
-              label: "isDisabled",
-              title: "Disabled",
+              label: "active",
+              title: "Active",
               type: "checkbox",
-              value: false,
+              value: true,
             },
           ]}
         />
@@ -188,7 +195,7 @@ function Labs() {
             <Button
               onClick={() => setIsShow(true)}
               icon="solar:checklist-minimalistic-line-duotone"
-              className="bg-sand-12 text-sand-1 w-fit self-end shadow active:bg-sand-11"
+              className="w-fit self-end bg-sand-12 text-sand-1 shadow active:bg-sand-11"
             >
               Add Lab
             </Button>
