@@ -33,6 +33,14 @@ export const getLabLogRouter = router({
         }
       }
 
+      let taskId;
+
+      if (search && search.length > 0) {
+        if (!Number.isNaN(search)) {
+          taskId = parseInt(search);
+        }
+      }
+
       try {
         const [labLoggers, amount] = await ctx.prisma.$transaction([
           ctx.prisma.lab_loggers.findMany({
@@ -59,6 +67,9 @@ export const getLabLogRouter = router({
                   type: {
                     in: actionType,
                   },
+                },
+                {
+                  taskId,
                 },
               ],
               sectionId: _sectionId,
