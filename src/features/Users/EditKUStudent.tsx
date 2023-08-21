@@ -11,7 +11,11 @@ import Forms from "~/components/Forms";
 import Button from "~/components/Common/Button";
 import { callToast } from "~/services/callToast";
 
-const EditKUStudent = () => {
+interface Props {
+  onUpdate: () => void;
+}
+
+const EditKUStudent = ({ onUpdate }: Props) => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -19,13 +23,12 @@ const EditKUStudent = () => {
   const user = trpc.users.getUserByEmail.useQuery({
     email: selectedObj?.selected.display as string,
   });
-  const ctx = trpc.useContext();
+
   const updateUser = trpc.users.updateKUStudent.useMutation({
     onSuccess: () => {
       callToast({ msg: "Edit users successfully", type: "success" });
-
       setSelectedObj(null);
-      ctx.users.invalidate();
+      onUpdate();
     },
     onError: (err) => {
       callToast({ msg: err.message, type: "error" });

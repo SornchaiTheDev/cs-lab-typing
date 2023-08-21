@@ -93,6 +93,25 @@ export const getSectionsRouter = router({
               },
               select: {
                 students: {
+                  where: {
+                    OR: [
+                      {
+                        student_id: {
+                          contains: search,
+                          mode: "insensitive",
+                        },
+                      },
+                      {
+                        full_name: {
+                          contains: search,
+                          mode: "insensitive",
+                        },
+                      },
+                    ],
+                  },
+                  orderBy: {
+                    student_id: "asc",
+                  },
                   take: limit,
                   skip: page * limit,
                 },
@@ -115,24 +134,7 @@ export const getSectionsRouter = router({
                 id: _sectionId,
               },
               select: {
-                students: {
-                  where: {
-                    OR: [
-                      {
-                        student_id: {
-                          contains: search,
-                          mode: "insensitive",
-                        },
-                      },
-                      {
-                        full_name: {
-                          contains: search,
-                          mode: "insensitive",
-                        },
-                      },
-                    ],
-                  },
-                },
+                students: true,
               },
             }),
           ]);

@@ -188,9 +188,15 @@ function Users() {
     <>
       {selectedObj && (
         <>
-          {selectedObj.type === "KUStudent" && <EditKUStudent />}
-          {selectedObj.type === "NonKUStudent" && <EditNonKUStudent />}
-          {selectedObj.type === "Teacher" && <EditTeacher />}
+          {selectedObj.type === "KUStudent" && (
+            <EditKUStudent onUpdate={() => users.refetch()} />
+          )}
+          {selectedObj.type === "NonKUStudent" && (
+            <EditNonKUStudent onUpdate={() => users.refetch()} />
+          )}
+          {selectedObj.type === "Teacher" && (
+            <EditTeacher onUpdate={() => users.refetch()} />
+          )}
         </>
       )}
 

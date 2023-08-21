@@ -48,7 +48,7 @@ export const getUserRouter = router({
             skip: page * limit,
             take: limit,
             orderBy: {
-              created_at: "desc",
+              last_logined: "asc",
             },
           }),
           ctx.prisma.users.count(),

@@ -6,8 +6,14 @@ export const addTeacher = async (prisma: PrismaClient, user: string) => {
   try {
     const isExist = await prisma.users.findFirst({
       where: {
-        email,
-        student_id: email,
+        OR: [
+          {
+            email,
+          },
+          {
+            student_id: email,
+          },
+        ],
         deleted_at: null,
       },
     });

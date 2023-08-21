@@ -9,7 +9,11 @@ import { type TTeacherSchema, TeacherSchema } from "~/schemas/TeacherSchema";
 import Skeleton from "~/components/Common/Skeleton";
 import { callToast } from "~/services/callToast";
 
-const EditTeacher = () => {
+interface Props {
+  onUpdate: () => void;
+}
+
+const EditTeacher = ({ onUpdate }: Props) => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -17,12 +21,12 @@ const EditTeacher = () => {
   const user = trpc.users.getUserByEmail.useQuery({
     email: selectedObj?.selected.display as string,
   });
-  const ctx = trpc.useContext();
+
   const updateUser = trpc.users.updateTeacher.useMutation({
     onSuccess: () => {
       callToast({ msg: "Edit users successfully", type: "success" });
       setSelectedObj(null);
-      ctx.users.invalidate();
+      onUpdate();
     },
     onError: (err) => {
       callToast({ msg: err.message, type: "error" });
