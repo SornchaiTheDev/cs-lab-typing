@@ -1,7 +1,6 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { Analytics } from "@vercel/analytics/react";
 import { trpc } from "~/helpers";
 import CommandPallete from "~/components/CommandPallete";
 import { Toaster } from "react-hot-toast";
@@ -11,9 +10,6 @@ import Nprogress from "nprogress";
 import { useEffect } from "react";
 
 import "~/styles/globals.css";
-// import "react-day-picker/dist/style.css";
-// import "~/styles/datepicker.css";
-// import "~/styles/nprogress.css";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -38,7 +34,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       {/* <CommandPallete /> */}
-      <Analytics />
       <Toaster position="top-right" />
       <DndProvider backend={HTML5Backend}>
         <Component {...pageProps} />
