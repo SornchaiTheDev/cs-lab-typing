@@ -83,6 +83,7 @@ interface RecentTaskProps {
     taskStatus: submission_type[];
   };
   sectionId: string;
+  sectionType: SectionType;
   labId: number;
   onClose: () => void;
 }
@@ -91,6 +92,7 @@ const RecentTasks = ({
   sectionId,
   labId,
   onClose,
+  sectionType,
 }: RecentTaskProps) => {
   const { fullName, studentId, taskStatus } = selectedUser;
 
@@ -146,7 +148,7 @@ const RecentTasks = ({
                   )}
                   errorPercentage={history.percent_error ?? 0}
                   rawSpeed={history.raw_speed ?? 0}
-                  score={history.score ?? 0}
+                  score={sectionType === "Lesson" ? undefined : history.score}
                 />
                 <TypingSubmissions
                   {...{ sectionId, labId, taskId: id, studentId }}
@@ -259,7 +261,7 @@ const LabStatus = ({
     <>
       {selectedUser !== null && (
         <RecentTasks
-          {...{ selectedUser, labId }}
+          {...{ selectedUser, labId, sectionType }}
           sectionId={sectionId as string}
           onClose={() => setSelectedUser(null)}
         />
