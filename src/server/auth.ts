@@ -54,36 +54,39 @@ export const authOptions: NextAuthOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials, req) {
-        if (credentials) {
-          const user = await prisma.users.findFirst({
-            where: {
-              student_id: credentials.username,
-              deleted_at: null,
-            },
-          });
-
-          if (user) {
-            const samePassword = await bcrypt.compare(
-              credentials.password,
-              user.password as string
-            );
-
-            if (samePassword) {
-              return {
-                id: user.student_id,
-                student_id: user.student_id,
-                full_name: user.full_name,
-                email: user.email,
-              };
-            }
-            await api.post("/auth-logger", {
-              type: "FAILED-LOGIN",
-              email: user.email,
-              ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
+        try {
+          if (credentials) {
+            const user = await prisma.users.findFirst({
+              where: {
+                student_id: credentials.username,
+                deleted_at: null,
+              },
             });
+
+            if (user) {
+              const samePassword = await bcrypt.compare(
+                credentials.password,
+                user.password as string
+              );
+
+              if (samePassword) {
+                return {
+                  id: user.student_id,
+                  student_id: user.student_id,
+                  full_name: user.full_name,
+                  email: user.email,
+                };
+              }
+              await api.post("/auth-logger", {
+                type: "FAILED-LOGIN",
+                email: user.email,
+                ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
+              });
+            }
+            throw new Error("wrong-credential");
           }
-          throw new Error("wrong-credential");
-        }
+        } catch (err) {}
+
         return null;
       },
     }),
@@ -125,15 +128,17 @@ export const authOptions: NextAuthOptions = {
       return baseUrl;
     },
     async jwt({ token, user }) {
-      const fetchUser = await prisma.users.findFirst({
-        where: {
-          email: token.email as string,
-          deleted_at: null,
-        },
-      });
-      token.roles = fetchUser?.roles.join(",") ?? "";
-      token.full_name = fetchUser?.full_name as string;
-      token.student_id = fetchUser?.student_id as string;
+      try {
+        const fetchUser = await prisma.users.findFirst({
+          where: {
+            email: token.email as string,
+            deleted_at: null,
+          },
+        });
+        token.roles = fetchUser?.roles.join(",") ?? "";
+        token.full_name = fetchUser?.full_name as string;
+        token.student_id = fetchUser?.student_id as string;
+      } catch (err) {}
 
       if (user) {
         token.image = user.image ?? "/assets/profile-placeholder.png";
@@ -169,19 +174,23 @@ export const withAuth = async (req: NextApiRequest, res: NextApiResponse) => {
     events: {
       async signIn(message) {
         const { user } = message;
-        await api.post("/auth-logger", {
-          type: "LOGIN",
-          email: user.email,
-          ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
-        });
+        try {
+          await api.post("/auth-logger", {
+            type: "LOGIN",
+            email: user.email,
+            ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
+          });
+        } catch (err) {}
       },
       async signOut(message) {
         const { token } = message;
-        await api.post("/auth-logger", {
-          type: "LOGOUT",
-          email: token.email,
-          ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
-        });
+        try {
+          await api.post("/auth-logger", {
+            type: "LOGOUT",
+            email: token.email,
+            ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
+          });
+        } catch (err) {}
       },
     },
   };
