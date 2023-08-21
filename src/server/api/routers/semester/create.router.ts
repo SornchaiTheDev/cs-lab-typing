@@ -13,10 +13,10 @@ export const createSemesterRouter = router({
           where: {
             year,
             term,
-            startDate,
             deleted_at: null,
           },
         });
+
         if (semester) {
           throw new Error("DUPLICATE_SEMESTER");
         }

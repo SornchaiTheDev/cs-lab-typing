@@ -39,6 +39,9 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
     case "INVALID_INPUT":
       msg = "Some fields are invalid";
       break;
+    case "BAD_NON_KU_USERNAME":
+      msg = "Non-KU Student username must not start with number";
+      break;
     case "DUPLICATED_USER":
       msg =
         "Some users are already added. If you want to edit, Use Edit button";
@@ -96,10 +99,10 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
         className="absolute right-2 top-2 text-sand-12"
         onClick={() => toast.dismiss(id)}
       >
-        <Icon icon="material-symbols:close-rounded" className="w-5 h-5" />
+        <Icon icon="material-symbols:close-rounded" className="h-5 w-5" />
       </button>
-      <div className="flex flex-col h-full">
-        <Icon icon={icon} className="w-8 h-8" style={{ color }} />
+      <div className="flex h-full flex-col">
+        <Icon icon={icon} className="h-8 w-8" style={{ color }} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -111,7 +114,7 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
         ref={progressRef}
         animate={{ width: isPause ? progressRef.current?.offsetWidth : "0%" }}
         transition={{ duration: duration / 1000 }}
-        className="absolute bottom-0 left-0 w-full h-1"
+        className="absolute bottom-0 left-0 h-1 w-full"
         style={{ background: color }}
       ></motion.div>
     </motion.div>

@@ -9,7 +9,10 @@ import { SemesterSchema, type TSemesterSchema } from "~/schemas/SemesterSchema";
 import Skeleton from "~/components/Common/Skeleton";
 import { callToast } from "~/services/callToast";
 
-const EditSemester = () => {
+interface Props {
+  onUpdate: () => void;
+}
+const EditSemester = ({ onUpdate }: Props) => {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -17,7 +20,7 @@ const EditSemester = () => {
   const semester = trpc.semesters.getSemesterByYearAndTerm.useQuery({
     yearAndTerm: selectedObj?.selected.display as string,
   });
-  const ctx = trpc.useContext();
+
   const updateSemester = trpc.semesters.updateSemester.useMutation({
     onSuccess: () => {
       callToast({
@@ -26,7 +29,7 @@ const EditSemester = () => {
       });
 
       setSelectedObj(null);
-      ctx.semesters.invalidate();
+      onUpdate();
     },
     onError: (err) => {
       callToast({
@@ -51,7 +54,7 @@ const EditSemester = () => {
   return (
     <>
       {isDelete ? (
-        <DeleteAffect type="semester" />
+        <DeleteAffect onDeleted={onUpdate} type="semester" />
       ) : (
         <Modal
           isOpen={true}

@@ -132,7 +132,7 @@ function Semesters() {
 
   return (
     <>
-      {selectedObj && <EditSemester />}
+      {selectedObj && <EditSemester onUpdate={() => semesters.refetch()} />}
       <Modal
         title="Add Semester"
         isOpen={isModalOpen}

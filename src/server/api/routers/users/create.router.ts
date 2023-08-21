@@ -42,6 +42,13 @@ export const createUserRouter = router({
                 message: "DUPLICATED_USER",
               });
             }
+
+            if (err.message === "BAD_USERNAME") {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "BAD_NON_KU_USERNAME",
+              });
+            }
           }
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
