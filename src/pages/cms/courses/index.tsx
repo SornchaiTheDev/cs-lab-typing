@@ -90,7 +90,7 @@ function Courses() {
     <Layout title="courses">
       {role === "ADMIN" && (
         <div className="mb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap gap-2 items-center justify-between">
             <ModalWithButton
               title="Add Course"
               icon="solar:add-circle-line-duotone"
@@ -135,7 +135,7 @@ function Courses() {
                 ]}
               />
             </ModalWithButton>
-            <div className="flex h-full items-center gap-2 rounded-lg border border-sand-6 p-2">
+            <div className="flex h-full w-full md:w-fit items-center gap-2 rounded-lg border border-sand-6 p-2">
               <Icon icon="carbon:search" className="text-sand-10" />
               <input
                 value={searchString}

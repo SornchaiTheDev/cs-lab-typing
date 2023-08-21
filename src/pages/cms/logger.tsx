@@ -153,10 +153,10 @@ function Logger() {
         {...{ pagination, searchString }}
         onSearchChange={handleOnSearchChange}
       >
-        <div className="flex flex-col items-end p-2 ">
+        <div className="flex flex-col mt-2 md:mt-0">
           <button
             onClick={exportCSV}
-            className="flex w-fit items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
+            className="flex w-fit items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11 self-end"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV

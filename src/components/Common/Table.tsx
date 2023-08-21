@@ -155,7 +155,7 @@ function Table({
       )}
     >
       {!!children && (
-        <div className="flex flex-col justify-between p-2 md:flex-row">
+        <div className="flex flex-col justify-between p-2 md:flex-row gap-2">
           {searchString !== undefined && (
             <div className="flex h-full items-center gap-2 rounded-lg border border-sand-6 p-2">
               <Icon icon="carbon:search" className="text-sand-10" />

@@ -102,7 +102,7 @@ function Sections() {
       isLoading={course.isLoading}
     >
       <div className="my-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <ModalWithButton
             title="Add Section"
             icon="solar:add-circle-line-duotone"
@@ -152,12 +152,12 @@ function Sections() {
               ]}
             />
           </ModalWithButton>
-          <div className="flex h-full items-center gap-2 rounded-lg border border-sand-6 p-2">
+          <div className="flex h-full w-full items-center gap-2 rounded-lg border border-sand-6 p-2 md:w-fit">
             <Icon icon="carbon:search" className="text-sand-10" />
             <input
               value={searchString}
               onChange={(e) => setSearchString(e.target.value)}
-              className="w-full bg-transparent outline-none placeholder:text-sand-8 text-sand-12"
+              className="w-full bg-transparent text-sand-12 outline-none placeholder:text-sand-8"
               placeholder="Search"
             />
           </div>
