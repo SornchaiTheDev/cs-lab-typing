@@ -36,22 +36,9 @@ export const createFrontRouter = router({
         });
       }
 
-      const duration = getDuration(startedAt as Date, endedAt as Date);
-      const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-        totalChars,
-        errorChar,
-        duration.minutes
-      );
-
-      const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
-
-      const score = evaluate(adjustedSpeed, errorPercentage);
-
       const _sectionId = parseInt(sectionId);
       const _labId = parseInt(labId);
       const _taskId = parseInt(taskId);
-
-      const student_id = ctx.session?.user?.student_id;
 
       try {
         const section = await ctx.prisma.sections.findUnique({
@@ -67,14 +54,35 @@ export const createFrontRouter = router({
           },
         });
 
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: _labId,
+          },
+        });
+
         const isSectionClose = section?.active === false;
-        const isLabClose = section?.labs_status.some((lab) =>
-          ["DISABLED", "READONLY"].includes(lab.status)
-        );
+        const isLabClose =
+          !lab?.active ||
+          section?.labs_status.some((lab) =>
+            ["DISABLED", "READONLY"].includes(lab.status)
+          );
 
         if (isSectionClose || isLabClose) {
           throw new Error("INTERNAL_SERVER_ERROR");
         }
+
+        const duration = getDuration(startedAt as Date, endedAt as Date);
+        const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
+          totalChars,
+          errorChar,
+          duration.minutes
+        );
+
+        const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+
+        const score = evaluate(adjustedSpeed, errorPercentage);
+
+        const student_id = ctx.session?.user?.student_id;
 
         const user = await ctx.prisma.users.findFirst({
           where: {
@@ -208,17 +216,6 @@ export const createFrontRouter = router({
         });
       }
 
-      const duration = getDuration(startedAt as Date, endedAt as Date);
-      const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-        totalChars,
-        errorChar,
-        duration.minutes
-      );
-
-      const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
-
-      const score = evaluate(adjustedSpeed, errorPercentage);
-
       const _sectionId = parseInt(sectionId);
       const _labId = parseInt(labId);
       const _taskId = parseInt(taskId);
@@ -239,10 +236,18 @@ export const createFrontRouter = router({
           },
         });
 
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: _labId,
+          },
+        });
+
         const isSectionClose = section?.active === false;
-        const isLabClose = section?.labs_status.some((lab) =>
-          ["DISABLED", "READONLY"].includes(lab.status)
-        );
+        const isLabClose =
+          !lab?.active ||
+          section?.labs_status.some((lab) =>
+            ["DISABLED", "READONLY"].includes(lab.status)
+          );
 
         if (isSectionClose || isLabClose) {
           throw new Error("INTERNAL_SERVER_ERROR");
@@ -254,6 +259,17 @@ export const createFrontRouter = router({
             deleted_at: null,
           },
         });
+
+        const duration = getDuration(startedAt as Date, endedAt as Date);
+        const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
+          totalChars,
+          errorChar,
+          duration.minutes
+        );
+
+        const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+
+        const score = evaluate(adjustedSpeed, errorPercentage);
 
         let status: submission_type = "FAILED";
         if (errorPercentage <= 3) {
