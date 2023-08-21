@@ -350,7 +350,7 @@ export const getFrontRouter = router({
           },
           select: {
             name: true,
-            isDisabled: true,
+            active: true,
             status: {
               where: {
                 sectionId: _sectionId,
@@ -364,7 +364,7 @@ export const getFrontRouter = router({
           throw new Error("NOT_FOUND");
         }
 
-        if (lab.status[0]?.status === "DISABLED" || lab.isDisabled) {
+        if (lab.status[0]?.status === "DISABLED" || !lab.active) {
           throw new Error("NOT_FOUND");
         }
 

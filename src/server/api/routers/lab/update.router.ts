@@ -11,7 +11,7 @@ export const updateLabRouter = router({
       AddLabSchema.and(z.object({ courseId: z.string(), labId: z.string() }))
     )
     .mutation(async ({ ctx, input }) => {
-      const { isDisabled, name, tags, courseId, labId } = input;
+      const { active, name, tags, courseId, labId } = input;
 
       const _labId = parseInt(labId);
       const _courseId = parseInt(courseId);
@@ -41,7 +41,7 @@ export const updateLabRouter = router({
             tags: {
               set: tags.map((tag) => ({ name: tag.value as string })),
             },
-            isDisabled,
+            active,
             course: {
               connect: {
                 id: _courseId,

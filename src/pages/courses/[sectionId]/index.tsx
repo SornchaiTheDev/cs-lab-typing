@@ -28,34 +28,32 @@ function Course() {
     >
       {/* <Announcement /> */}
 
-      <div className="grid grid-cols-12 gap-6 my-10">
-        {labs.data?.labs.map(
-          ({ id, name, tasksStatus, status, isDisabled }) => (
-            <Card
-              key={id}
-              disabled={status === "DISABLED" || isDisabled}
-              href={{
-                pathname: router.pathname + "/labs/[labId]",
-                query: { ...router.query, labId: id },
-              }}
-              title={name}
-              badges={[
-                {
-                  title: isDisabled ? "DISABLED" : (status as string),
-                  type: isDisabled
-                    ? "danger"
-                    : status === "ACTIVE"
-                    ? "success"
-                    : status === "READONLY"
-                    ? "warning"
-                    : "danger",
-                },
-              ]}
-            >
-              <ProgressIndicator tasksStatus={tasksStatus} />
-            </Card>
-          )
-        )}
+      <div className="my-10 grid grid-cols-12 gap-6">
+        {labs.data?.labs.map(({ id, name, tasksStatus, status, active }) => (
+          <Card
+            key={id}
+            disabled={status === "DISABLED" || !active}
+            href={{
+              pathname: router.pathname + "/labs/[labId]",
+              query: { ...router.query, labId: id },
+            }}
+            title={name}
+            badges={[
+              {
+                title: !active ? "DISABLED" : (status as string),
+                type: !active
+                  ? "danger"
+                  : status === "ACTIVE"
+                  ? "success"
+                  : status === "READONLY"
+                  ? "warning"
+                  : "danger",
+              },
+            ]}
+          >
+            <ProgressIndicator tasksStatus={tasksStatus} />
+          </Card>
+        ))}
       </div>
     </FrontLayout>
   );
