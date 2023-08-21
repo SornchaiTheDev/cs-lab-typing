@@ -14,7 +14,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { createInnerTRPCContext } from "~/server/context";
-import { SearchValue } from "~/types";
+import type { SearchValue } from "~/types";
 
 function Settings() {
   const { data: session } = useSession();

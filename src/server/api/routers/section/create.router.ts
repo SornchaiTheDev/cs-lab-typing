@@ -59,12 +59,26 @@ export const createSectionsRouter = router({
           throw new Error("DUPLICATED_SECTION");
         }
 
+        const labs = await ctx.prisma.labs.findMany({
+          where: {
+            courseId: _courseId,
+          },
+        });
+
+        console.log(labs);
+
         section = await ctx.prisma.sections.create({
           data: {
             active,
             name,
             type,
             note,
+            labs: {
+              connect: labs.map((lab) => ({ id: lab.id })),
+            },
+            labs_order: {
+              set: labs.map((lab) => lab.id),
+            },
             semester: {
               connect: {
                 id: semester[0]?.id,
@@ -95,6 +109,15 @@ export const createSectionsRouter = router({
             },
           },
         });
+        for (const lab of labs) {
+          await ctx.prisma.labs_status.create({
+            data: {
+              sectionId: section.id,
+              labId: lab.id,
+              status: "ACTIVE",
+            },
+          });
+        }
       } catch (e) {
         if (e instanceof Error) {
           if (e.message === "DUPLICATED_SECTION") {

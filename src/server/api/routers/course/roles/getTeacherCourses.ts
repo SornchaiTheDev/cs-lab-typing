@@ -39,6 +39,9 @@ export const getTeacherCourses = async (
     cursor: cursor ? { id: cursor } : undefined,
     include: {
       sections: {
+        where: {
+          deleted_at: null,
+        },
         select: {
           _count: {
             select: {

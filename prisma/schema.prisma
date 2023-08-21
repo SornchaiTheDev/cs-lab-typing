@@ -82,8 +82,8 @@ model semesters {
 
 model courses {
   id         Int        @id @default(autoincrement())
-  number     String     @unique
-  name       String     @unique
+  number     String
+  name       String
   note       String?
   comments   String?
   labs       labs[]
@@ -250,7 +250,7 @@ model submissions {
 
 model typing_histories {
   id             String      @id @unique
-  submission     submissions @relation(fields: [submission_id], references: [id])
+  submission     submissions @relation(fields: [submission_id], references: [id], onDelete: Cascade)
   submission_id  Int
   raw_speed      Float
   adjusted_speed Float

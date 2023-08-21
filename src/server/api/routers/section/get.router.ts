@@ -38,9 +38,10 @@ export const getSectionsRouter = router({
     const _id = parseInt(id);
 
     try {
-      const section = await ctx.prisma.sections.findUnique({
+      const section = await ctx.prisma.sections.findFirst({
         where: {
           id: _id,
+          deleted_at: null,
         },
         include: {
           semester: true,
@@ -54,15 +55,17 @@ export const getSectionsRouter = router({
           labs_status: true,
         },
       });
-      if (section) {
-        const sortedLabOrder = section.labs_order.map((id) => {
-          const lab = section?.labs.find((lab) => lab.id === id) as labs;
-
-          return lab;
-        });
-
-        return { ...section, labs: sortedLabOrder };
+      if (!section) {
+        throw new Error("NOT_FOUND");
       }
+      const sortedLabOrder = section.labs_order.map((id) => {
+        const lab = section?.labs.find((lab) => lab.id === id) as labs;
+
+        return lab;
+      });
+
+      return { ...section, labs: sortedLabOrder };
+
       return section;
     } catch (err) {
       throw new TRPCError({

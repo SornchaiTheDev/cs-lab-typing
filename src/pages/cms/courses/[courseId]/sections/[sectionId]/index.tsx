@@ -33,7 +33,7 @@ function Sections() {
         <div className="p-4 text-sand-12">
           <h4 className="text-2xl">Section Information</h4>
 
-          <h5 className="mt-4 mb-2 font-bold">Semester</h5>
+          <h5 className="mb-2 mt-4 font-bold">Semester</h5>
           {section.isLoading ? (
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
@@ -41,13 +41,13 @@ function Sections() {
               section.data?.semester.year as string
             }/${section.data?.semester.term as string}`}</h4>
           )}
-          <h5 className="mt-4 mb-2 font-bold">Type</h5>
+          <h5 className="mb-2 mt-4 font-bold">Type</h5>
           {section.isLoading ? (
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
             <h4 className="text-lg">{section.data?.type}</h4>
           )}
-          <h5 className="mt-4 mb-2 font-bold">Note</h5>
+          <h5 className="mb-2 mt-4 font-bold">Note</h5>
           {section.isLoading ? (
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
@@ -56,7 +56,7 @@ function Sections() {
             </h4>
           )}
 
-          <h5 className="mt-4 mb-2 font-bold">Instructor(s)</h5>
+          <h5 className="mb-2 mt-4 font-bold">Instructor(s)</h5>
           <div className="flex gap-2">
             {section.isLoading ? (
               <>

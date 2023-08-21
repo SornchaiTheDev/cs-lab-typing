@@ -79,6 +79,7 @@ export const deleteSectionsRouter = router({
           },
         });
       } catch (err) {
+        console.log(err);
         if (err instanceof Error) {
           if (err.message === "UNAUTHORIZED") {
             throw new TRPCError({

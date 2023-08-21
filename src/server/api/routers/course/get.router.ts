@@ -68,6 +68,9 @@ export const getCourseRouter = router({
           include: {
             authors: true,
             sections: {
+              where: {
+                deleted_at: null,
+              },
               select: {
                 _count: {
                   select: {
@@ -78,6 +81,7 @@ export const getCourseRouter = router({
             },
           },
         });
+
         if (!course) {
           throw new Error("NOT_FOUND");
         }
@@ -99,15 +103,20 @@ export const getCourseRouter = router({
     }
   ),
   getCourseObjectRelation: adminProcedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { name } = input;
+      const { id } = input;
       try {
         const course = await ctx.prisma.courses.findUnique({
           where: {
-            name,
+            id,
           },
           include: {
+            labs: {
+              where: {
+                deleted_at: null,
+              },
+            },
             sections: {
               where: {
                 deleted_at: null,
@@ -124,11 +133,14 @@ export const getCourseRouter = router({
           },
         });
 
-        const sections = course?.sections;
+        if (!course) {
+          throw new Error("NOT_FOUND");
+        }
+        const labs = course.labs;
+        const sections = course.sections;
         const sectionsLength = sections?.length ?? 0;
 
-        const labInCourse = sections?.map(({ labs }) => labs.length) ?? [];
-        const labInCourseLength = labInCourse.length;
+        const labInCourseLength = labs.length;
         const labInSectionsLength =
           sections
             ?.map(({ labs }) => labs.length)
@@ -148,22 +160,24 @@ export const getCourseRouter = router({
             { name: "Submissions", amount: submissionsLength },
           ],
           object: [
-            { name: "Courses", data: [{ name, data: [] }] },
+            { name: "Courses", data: [{ name: course.name, data: [] }] },
             {
               name: "Lab in course",
               data:
-                sections?.map((section) => ({
-                  name: section.name,
+                labs?.map(({ name }) => ({
+                  name: name,
                   data: [],
                 })) ?? [],
             },
             {
               name: "Lab in sections",
               data:
-                sections?.map(({ name, labs }) => ({
-                  name,
-                  data: labs.map(({ name }) => ({ name, data: [] })),
-                })) ?? [],
+                sections
+                  .filter(({ labs }) => labs.length > 0)
+                  ?.map(({ name, labs }) => ({
+                    name,
+                    data: labs.map(({ name }) => ({ name, data: [] })),
+                  })) ?? [],
             },
             {
               name: "Sections",

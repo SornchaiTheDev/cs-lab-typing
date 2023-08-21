@@ -50,7 +50,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
 
     const fetchCourseData = async () => {
       const data = await ctx.courses.getCourseObjectRelation.fetch({
-        name: selectedObject?.selected.display as string,
+        id: selectedObject?.selected.id as number,
       });
       setFetchData(data);
     };
