@@ -239,6 +239,7 @@ export const getFrontRouter = router({
             id: _labId,
           },
           select: {
+            active: true,
             course: {
               select: {
                 name: true,
@@ -271,7 +272,8 @@ export const getFrontRouter = router({
             (status) => status.labId === _labId
           );
 
-          const isLabSetDisabled = labStatus?.status === "DISABLED";
+          const isLabSetDisabled =
+            labStatus?.status === "DISABLED" || !lab.active;
 
           if (isLabSetDisabled) {
             throw new Error("NOT_FOUND");
