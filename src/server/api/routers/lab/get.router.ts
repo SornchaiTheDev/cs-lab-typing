@@ -269,7 +269,11 @@ export const getLabRouter = router({
           include: {
             tasks: {
               include: {
-                submissions: true,
+                submissions: {
+                  where: {
+                    lab_id: id,
+                  },
+                },
               },
             },
           },
