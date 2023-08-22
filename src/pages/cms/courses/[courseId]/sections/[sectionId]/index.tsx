@@ -5,7 +5,7 @@ import Skeleton from "~/components/Common/Skeleton";
 import Badge from "~/components/Common/Badge";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
-import { TRPCError } from "@trpc/server";
+import format from "date-fns/format";
 
 function Sections() {
   const router = useRouter();
@@ -46,6 +46,18 @@ function Sections() {
             <Skeleton width={"10rem"} height={"2rem"} />
           ) : (
             <h4 className="text-lg">{section.data?.type}</h4>
+          )}
+          {!!section.data?.closed_at && (
+            <>
+              <h5 className="mb-2 mt-4 font-bold">Closed at</h5>
+              {section.isLoading ? (
+                <Skeleton width={"10rem"} height={"2rem"} />
+              ) : (
+                <h4 className="text-lg">
+                  {format(section.data?.closed_at, "dd/MM/yyyy HH:mm")}
+                </h4>
+              )}
+            </>
           )}
           <h5 className="mb-2 mt-4 font-bold">Note</h5>
           {section.isLoading ? (
