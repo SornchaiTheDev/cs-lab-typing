@@ -13,6 +13,8 @@ import objectHash from "object-hash";
 import type { TypingResultWithHashType } from "~/schemas/TypingResult";
 import { useSession } from "next-auth/react";
 import type { PaginationState } from "@tanstack/react-table";
+import { callToast } from "~/services/callToast";
+import { TRPCClientError } from "@trpc/client";
 
 function EndedGame() {
   const router = useRouter();
@@ -64,7 +66,11 @@ function EndedGame() {
         await submitTyping.mutateAsync(result);
 
         await typingHistories.refetch();
-      } catch (err) {}
+      } catch (err) {
+        if (err instanceof TRPCClientError) {
+          callToast({ type: "error", msg: err.message });
+        }
+      }
     };
 
     saveTypingScore();

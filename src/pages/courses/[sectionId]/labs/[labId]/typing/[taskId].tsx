@@ -8,11 +8,9 @@ import { replaceSlugwithQueryPath } from "~/helpers";
 import Button from "~/components/Common/Button";
 import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import type { SectionType } from "@prisma/client";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 
 interface Props {
-  sectionType: SectionType;
   taskName: string;
   taskBody: string;
   courseName: string;
@@ -21,7 +19,6 @@ interface Props {
 }
 
 function TypingTask({
-  sectionType,
   taskName,
   taskBody,
   courseName,
@@ -30,14 +27,15 @@ function TypingTask({
 }: Props) {
   const router = useRouter();
 
-  const [status, setStatus] = useTypingStore((state) => [
+  const [status, setStatus, reset] = useTypingStore((state) => [
     state.status,
     state.setStatus,
+    state.reset,
   ]);
 
   useEffect(() => {
-    setStatus("NotStarted");
-  }, [setStatus]);
+    reset();
+  }, [reset]);
 
   const isTypingPhase = status === "NotStarted" || status === "Started";
   const isEndedPhase = status === "Ended";
@@ -112,7 +110,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const { helper } = await createTrpcHelper({ req, res });
   const { labId, sectionId, taskId } = ctx.query;
   try {
-    const { courseName, labName, labStatus, sectionType, taskName, taskBody } =
+    const { courseName, labName, labStatus, taskName, taskBody } =
       await helper.front.getTaskById.fetch({
         labId: labId as string,
         sectionId: sectionId as string,
@@ -124,7 +122,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         courseName,
         labName,
         labStatus,
-        sectionType,
         taskName,
         taskBody,
       },

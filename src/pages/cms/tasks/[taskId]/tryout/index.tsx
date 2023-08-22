@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import FrontLayout from "~/Layout/FrontLayout";
 import TypingGame from "~/components/Typing";
 import { useRouter } from "next/router";
@@ -12,13 +12,22 @@ import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErr
 function Tryout() {
   const router = useRouter();
   const { taskId } = router.query;
-  const [status, setStatus, stats] = useTypingStore((state) => [
-    state.status,
+  const [setStatus, stats, reset] = useTypingStore((state) => [
     state.setStatus,
     state.stats,
+    state.reset,
   ]);
 
-  const { errorChar, startedAt, endedAt, totalChars } = stats;
+  const [localStats, setLocalStats] = useState(stats);
+
+  useEffect(() => {
+    if (stats.endedAt) {
+      setLocalStats(stats);
+      reset();
+    }
+  }, [stats, reset]);
+
+  const { errorChar, startedAt, endedAt, totalChars } = localStats;
   const duration = getDuration(startedAt as Date, endedAt as Date);
   const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
     totalChars,
@@ -27,6 +36,8 @@ function Tryout() {
   );
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+
+  const isEnded = localStats.endedAt !== null;
 
   const task = trpc.tasks.getTaskById.useQuery(
     { id: taskId as string },
@@ -43,6 +54,7 @@ function Tryout() {
   useEffect(() => {
     setStatus("NotStarted");
   }, [setStatus]);
+
   return (
     <FrontLayout
       title={task.data?.name ?? ""}
@@ -50,7 +62,7 @@ function Tryout() {
       customBackPath={backPath}
     >
       <div className="flex flex-1 flex-col">
-        {status === "Ended" && (
+        {isEnded && (
           <Stats {...{ adjustedSpeed, duration, errorPercentage, rawSpeed }} />
         )}
         <TypingGame text={task.data?.body ?? ""} />

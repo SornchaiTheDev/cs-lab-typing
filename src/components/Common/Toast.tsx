@@ -86,6 +86,9 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
     case "ALREADY_DELETE":
       msg = "This item is already deleted";
       break;
+    case "ALREADY_CLOSED":
+      msg = "This task is already closed. This submission will be ignored";
+      break;
   }
 
   return (

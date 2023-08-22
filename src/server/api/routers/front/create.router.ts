@@ -68,7 +68,7 @@ export const createFrontRouter = router({
           );
 
         if (isSectionClose || isLabClose) {
-          throw new Error("INTERNAL_SERVER_ERROR");
+          throw new Error("ALREADY_CLOSED");
         }
 
         const duration = getDuration(startedAt as Date, endedAt as Date);
@@ -186,6 +186,14 @@ export const createFrontRouter = router({
           });
         }
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "ALREADY_CLOSED") {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "ALREADY_CLOSED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -250,7 +258,7 @@ export const createFrontRouter = router({
           );
 
         if (isSectionClose || isLabClose) {
-          throw new Error("INTERNAL_SERVER_ERROR");
+          throw new Error("ALREADY_CLOSED");
         }
 
         const user = await ctx.prisma.users.findFirst({
@@ -366,6 +374,14 @@ export const createFrontRouter = router({
           });
         }
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "ALREADY_CLOSED") {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "ALREADY_CLOSED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

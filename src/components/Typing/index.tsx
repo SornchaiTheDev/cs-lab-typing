@@ -104,7 +104,7 @@ function TypingGame({ text }: Props) {
         onClick={() => typingElement.current?.focus()}
       >
         <div
-          className={`pointer-events-none text-center relative select-none monospace text-3xl leading-relaxed text-sand-11 outline-none`}
+          className={`monospace pointer-events-none relative select-none text-center text-3xl leading-relaxed text-sand-11 outline-none`}
           tabIndex={0}
           ref={letterElements}
         >
@@ -143,7 +143,7 @@ function TypingGame({ text }: Props) {
           ) : null}
         </div>
 
-        <h4 className="text-sand-11 select-none">
+        <h4 className="select-none text-sand-11">
           Press{" "}
           <code className="rounded border-b-2 border-sand-11 bg-sand-6 p-1">
             esc

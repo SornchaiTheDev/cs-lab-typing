@@ -17,19 +17,22 @@ interface TypingStore {
   setStats: (status: Partial<TypingStats>) => void;
   status: gamePhase;
   setStatus: (status: gamePhase) => void;
+  reset: () => void;
 }
+
+const DEFAULT_STATS: TypingStats = {
+  correctChar: 0,
+  errorChar: 0,
+  totalChars: 0,
+  startedAt: null,
+  endedAt: null,
+};
 
 export const useTypingStore = create<TypingStore>((set) => ({
   text: "",
   setText: (text) => set({ text }),
-  stats: {
-    correctChar: 0,
-    errorChar: 0,
-    totalChars: 0,
-    startedAt: null,
-    endedAt: null,
-  },
-
+  stats: DEFAULT_STATS,
+  reset: () => set({ text: "", stats: DEFAULT_STATS, status: "NotStarted" }),
   setStats: (stats) =>
     set((state) => ({ stats: { ...state.stats, ...stats } })),
   status: "NotStarted",

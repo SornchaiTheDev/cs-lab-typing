@@ -13,6 +13,9 @@ import objectHash from "object-hash";
 import type { TypingExamResultWithHashType } from "~/schemas/TypingResult";
 import { useSession } from "next-auth/react";
 import type { PaginationState } from "@tanstack/react-table";
+import { evaluate } from "~/helpers/evaluateTypingScore";
+import { TRPCClientError } from "@trpc/client";
+import { callToast } from "~/services/callToast";
 
 function EndedGameExam() {
   const router = useRouter();
@@ -64,7 +67,11 @@ function EndedGameExam() {
         await examSubmitTyping.mutateAsync(result);
 
         await typingHistories.refetch();
-      } catch (err) {}
+      } catch (err) {
+        if (err instanceof TRPCClientError) {
+          callToast({ type: "error", msg: err.message });
+        }
+      }
     };
 
     saveTypingScore();
@@ -80,6 +87,8 @@ function EndedGameExam() {
   );
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+
+  const score = evaluate(adjustedSpeed, errorPercentage);
 
   const highestSpeed = useMemo(() => {
     if (typingHistories.data === undefined) return -1;
@@ -102,11 +111,14 @@ function EndedGameExam() {
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>
       </button>
-      <Stats {...{ adjustedSpeed, duration, errorPercentage, rawSpeed }} />
+      <Stats
+        {...{ adjustedSpeed, duration, errorPercentage, rawSpeed, score }}
+      />
       <div className="h-[10rem] w-full">
         <LineChart datas={typingHistories.data ?? []} />
       </div>
       <TypingTable
+        type="Exam"
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data ?? []}
         onPaginationChange={setPagination}

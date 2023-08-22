@@ -44,7 +44,7 @@ function LineChart({ datas }: Props) {
         },
       ],
     }),
-    [datas]
+    [datas, theme]
   );
 
   const options: ChartOptions<"line"> = {
