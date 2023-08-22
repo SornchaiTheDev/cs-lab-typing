@@ -1,7 +1,7 @@
 function Header() {
     return (
         <>
-            <h1 className="mb-2 text-4xl font-semibold text-center text-gray-900 dark:text-ascent-1">
+            <h1 className="mb-2 text-4xl font-semibold text-center text-sand-12">
                 CS LAB
             </h1>
 

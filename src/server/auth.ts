@@ -85,7 +85,9 @@ export const authOptions: NextAuthOptions = {
             }
             throw new Error("wrong-credential");
           }
-        } catch (err) {}
+        } catch (err) {
+          throw new Error("wrong-credential");
+        }
 
         return null;
       },

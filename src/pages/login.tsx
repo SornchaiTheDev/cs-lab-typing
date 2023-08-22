@@ -7,15 +7,17 @@ import Header from "~/components/Login/Header";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { callToast } from "~/services/callToast";
+import useTheme from "~/hooks/useTheme";
 
 const Login: NextPage = () => {
   const { query } = useRouter();
+
+  const { theme } = useTheme();
 
   const catchError = (error: string) => {
     if (error) {
       if (error === "not-authorize") {
         callToast({ msg: "กรุณาเข้าสู่ระบบด้วยบัญชี @ku.th", type: "error" });
-
       } else if (error === "not-found") {
         callToast({ msg: "ไม่พบผู้ใช้นี้", type: "error" });
       } else if (error === "wrong-credential") {
@@ -32,23 +34,18 @@ const Login: NextPage = () => {
     catchError(query.error as string);
   }, [query]);
   return (
-    <>
-      <Head>
-        <title>Login | CS-LAB</title>
-      </Head>
-      <div className="dark:bg-primary-1 fixed w-screen bg-sand-1">
-        <div className="flex h-screen items-center justify-center">
-          <div className="flex w-full max-w-md flex-col items-center p-4">
-            <Header />
-            <div className="mt-6 flex w-full flex-col items-center gap-6">
-              <WithGoogle />
-              <Divider />
-              <WithUsernamePassword />
-            </div>
+    <div className="fixed w-screen">
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex w-full max-w-md flex-col items-center p-4">
+          <Header />
+          <div className="mt-6 flex w-full flex-col items-center gap-6">
+            <WithGoogle />
+            <Divider />
+            <WithUsernamePassword />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

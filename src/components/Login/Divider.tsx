@@ -1,13 +1,13 @@
-import React from 'react'
+import React from "react";
 
 function Divider() {
-    return (
-        <div className="flex items-center w-1/2 gap-4">
-            <div className="h-[2px] bg-zinc-900 w-full"></div>
-            <h5 className="text-sm dark:text-ascent-1">หรือ</h5>
-            <div className="h-[2px] bg-zinc-900 w-full"></div>
-        </div>
-    )
+  return (
+    <div className="flex w-1/2 items-center gap-4">
+      <div className="h-[2px] w-full bg-sand-12"></div>
+      <h5 className="text-sm text-sand-12">หรือ</h5>
+      <div className="h-[2px] w-full bg-sand-12"></div>
+    </div>
+  );
 }
 
-export default Divider
+export default Divider;
