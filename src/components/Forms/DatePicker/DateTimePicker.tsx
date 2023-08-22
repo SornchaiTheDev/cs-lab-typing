@@ -57,8 +57,9 @@ function DateTimePicker({
 
   useEffect(() => {
     if (value) {
-      const time = value.getHours() + ":" + value.getMinutes();
-      setTime(time);
+      const hour = value.getHours().toString().padStart(2, "0");
+      const minute = value.getMinutes().toString().padStart(2, "0");
+      setTime(`${hour}:${minute}`);
     }
   }, [value]);
 

@@ -10,6 +10,7 @@ import {
 } from "~/schemas/TypingResult";
 import { checkSameHash } from "~/server/utils/checkSameHash";
 import { evaluate } from "~/helpers/evaluateTypingScore";
+import dayjs from "dayjs";
 
 export const createFrontRouter = router({
   submitTyping: authedProcedure
@@ -54,20 +55,30 @@ export const createFrontRouter = router({
           },
         });
 
+        let isSectionClose = section?.active === false;
+
+        if (section?.closed_at) {
+          const isAfterClosedAt = dayjs().isAfter(section?.closed_at);
+          isSectionClose = isSectionClose || isAfterClosedAt;
+        }
+
+        if (isSectionClose) {
+          throw new Error("ALREADY_CLOSED");
+        }
+
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,
           },
         });
 
-        const isSectionClose = section?.active === false;
         const isLabClose =
           !lab?.active ||
           section?.labs_status.some((lab) =>
             ["DISABLED", "READONLY"].includes(lab.status)
           );
 
-        if (isSectionClose || isLabClose) {
+        if (isLabClose) {
           throw new Error("ALREADY_CLOSED");
         }
 
@@ -244,20 +255,30 @@ export const createFrontRouter = router({
           },
         });
 
+        let isSectionClose = section?.active === false;
+
+        if (section?.closed_at) {
+          const isAfterClosedAt = dayjs().isAfter(section?.closed_at);
+          isSectionClose = isSectionClose || isAfterClosedAt;
+        }
+
+        if (isSectionClose) {
+          throw new Error("ALREADY_CLOSED");
+        }
+
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,
           },
         });
 
-        const isSectionClose = section?.active === false;
         const isLabClose =
           !lab?.active ||
           section?.labs_status.some((lab) =>
             ["DISABLED", "READONLY"].includes(lab.status)
           );
 
-        if (isSectionClose || isLabClose) {
+        if (isLabClose) {
           throw new Error("ALREADY_CLOSED");
         }
 
