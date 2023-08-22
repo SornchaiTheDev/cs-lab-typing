@@ -119,6 +119,7 @@ model sections {
   created_by    users               @relation(fields: [created_by_id], references: [id])
   created_by_id Int
   history       section_histories[]
+  closed_at     DateTime?
   created_at    DateTime            @default(now())
   updated_at    DateTime?           @updatedAt
   deleted_at    DateTime?

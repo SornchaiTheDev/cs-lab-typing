@@ -28,11 +28,15 @@ function TimePickerRange({ date, onApply }: Props) {
   );
 
   const handleStartTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setStartTime(event.target.value);
+    const time = event.target.value;
+    if (time.length > 5) return;
+    setStartTime(time);
   };
 
   const handleEndTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setEndTime(event.target.value);
+    const time = event.target.value;
+    if (time.length > 5) return;
+    setEndTime(time);
   };
 
   useEffect(() => {

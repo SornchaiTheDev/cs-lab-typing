@@ -8,8 +8,16 @@ export const createSectionsRouter = router({
   createSection: teacherAboveProcedure
     .input(AddSectionSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const { instructors, name, type, semester, note, courseId, active } =
-        input;
+      const {
+        instructors,
+        name,
+        type,
+        semester,
+        note,
+        courseId,
+        active,
+        closed_at,
+      } = input;
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
       const requester = ctx.user.student_id;
@@ -73,6 +81,7 @@ export const createSectionsRouter = router({
             name,
             type,
             note,
+            closed_at,
             labs: {
               connect: labs.map((lab) => ({ id: lab.id })),
             },

@@ -118,6 +118,13 @@ function Settings() {
                   value: section.data?.note ?? "",
                 },
                 {
+                  label: "closed_at",
+                  title: "Close Date",
+                  type: "dateTime",
+                  optional: true,
+                  value: section.data?.closed_at ?? undefined,
+                },
+                {
                   label: "active",
                   title: "Active",
                   type: "checkbox",

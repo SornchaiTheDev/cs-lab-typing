@@ -143,6 +143,12 @@ function Sections() {
                 },
                 { label: "note", title: "Note", type: "text", optional: true },
                 {
+                  label: "closed_at",
+                  title: "Close Date",
+                  type: "dateTime",
+                  optional: true,
+                },
+                {
                   label: "active",
                   title: "Active",
                   type: "checkbox",

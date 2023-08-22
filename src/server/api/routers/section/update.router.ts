@@ -13,7 +13,9 @@ export const updateSectionsRouter = router({
   updateSection: teacherAboveProcedure
     .input(AddSectionSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const { id, instructors, name, semester, note, active, type } = input;
+      const { id, instructors, name, semester, note, active, type, closed_at } =
+        input;
+
       const year = semester.split("/")[0] ?? "";
       const term = semester.split("/")[1] ?? "";
       const requester = ctx.user.student_id;
@@ -61,6 +63,7 @@ export const updateSectionsRouter = router({
             name,
             type,
             note,
+            closed_at,
             semester: {
               connect: {
                 id: semester.id,

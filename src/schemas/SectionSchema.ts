@@ -12,6 +12,7 @@ export const AddSectionSchema = z.object({
     .array(SearchValue)
     .min(1, { message: "Instructors cannot be empty" }),
   note: z.string().optional(),
+  closed_at: z.date().nullish(),
   active: z.boolean().default(true),
 });
 

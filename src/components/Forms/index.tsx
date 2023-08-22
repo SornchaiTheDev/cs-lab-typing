@@ -12,6 +12,7 @@ import Button from "~/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
 import { SearchValue } from "~/types";
+import DateTimePicker from "./DatePicker/DateTimePicker";
 
 interface ConfirmBtn {
   title: string;
@@ -30,7 +31,8 @@ type EachField<T> = {
     | "text"
     | "checkbox"
     | "textarea"
-    | "date";
+    | "date"
+    | "dateTime";
   optional?: boolean;
   options?: string[] | SearchValue[];
   canAddItemNotInList?: boolean;
@@ -69,7 +71,7 @@ function Forms<T>({
         if (field.type === "multiple-search") {
           return [field.label, (field.value as SearchValue[]) ?? []];
         }
-        return [field.label, field.value ?? ""];
+        return [field.label, field.value ?? undefined];
       })
     ) as z.infer<typeof schema>,
   });
@@ -195,14 +197,33 @@ function Forms<T>({
           <Controller
             key={field.label as string}
             control={control}
-            name="startDate"
+            name={field.label as string}
             render={({ field: { onChange, value } }) => (
               <SinglePicker
-                title="Start Date"
+                title={field.title}
                 value={value as Date}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
+                optional={field.optional}
+              />
+            )}
+          />
+        );
+      case "dateTime":
+        return (
+          <Controller
+            key={field.label as string}
+            control={control}
+            name={field.label as string}
+            render={({ field: { onChange, value } }) => (
+              <DateTimePicker
+                title={field.title}
+                value={value as Date}
+                onChange={onChange}
+                isError={!!errors[field.label]}
+                error={errors[field.label]?.message as string}
+                optional={field.optional}
               />
             )}
           />
