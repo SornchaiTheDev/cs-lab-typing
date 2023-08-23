@@ -9,6 +9,8 @@ import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import EndedGameExam from "~/components/Typing/EndedGameExam";
+import dayjs from "dayjs";
+import superjson from "superjson";
 
 interface Props {
   taskName: string;
@@ -27,14 +29,14 @@ function TypingTask({
 }: Props) {
   const router = useRouter();
 
-  const [status, setStatus,reset] = useTypingStore((state) => [
+  const [status, setStatus, reset] = useTypingStore((state) => [
     state.status,
     state.setStatus,
-    state.reset
+    state.reset,
   ]);
 
   useEffect(() => {
-    reset()
+    reset();
   }, [reset]);
 
   const isTypingPhase = status === "NotStarted" || status === "Started";
@@ -110,18 +112,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const { helper } = await createTrpcHelper({ req, res });
   const { labId, sectionId, taskId } = ctx.query;
   try {
-    const { courseName, labName, labStatus, taskName, taskBody } =
+    const { courseName, labName, labStatus, taskName, taskBody, closed_at } =
       await helper.front.getTaskById.fetch({
         labId: labId as string,
         sectionId: sectionId as string,
         taskId: taskId as string,
       });
+    let _labStatus = labStatus;
+    const now = dayjs();
+
+    if (dayjs(closed_at).diff(now, "second") <= 0) {
+      _labStatus = "READONLY";
+    }
 
     return {
       props: {
         courseName,
         labName,
-        labStatus,
+        labStatus: _labStatus,
         taskName,
         taskBody,
       },

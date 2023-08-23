@@ -89,6 +89,10 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
     case "ALREADY_CLOSED":
       msg = "This task is already closed. This submission will be ignored";
       break;
+    case "LAB_CLOSED":
+      msg =
+        "This lab is already closed. Please Active the lab before changing the status";
+      break;
   }
 
   return (

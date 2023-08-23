@@ -10,7 +10,7 @@ interface Props {
   title: string;
   optional?: boolean;
   value: Date;
-  onChange: (date: Date) => void;
+  onChange: (date: Date | undefined) => void;
   isError?: boolean;
   error?: string;
 }
@@ -49,19 +49,19 @@ function DateTimePicker({
     onChange(value);
   };
 
-  useEffect(() => {
-    if (time === "") {
-      setTime("00:00");
-    }
-  }, [time]);
+  const handleOnClear = () => {
+    onChange(undefined);
+    setTime("00:00");
+  };
 
   useEffect(() => {
-    if (value) {
+    if (value !== undefined && time === "00:00") {
       const hour = value.getHours().toString().padStart(2, "0");
       const minute = value.getMinutes().toString().padStart(2, "0");
+
       setTime(`${hour}:${minute}`);
     }
-  }, [value]);
+  }, [value, time]);
 
   return (
     <div className="relative" ref={dateRef}>
@@ -101,11 +101,21 @@ function DateTimePicker({
             />
           </div>
         )}
-        <input
-          value={time}
-          className="max-h-[2.5rem] w-28 rounded-lg border border-sand-6 bg-sand-1 p-2 text-sand-12 outline-none"
-          onChange={handleOnTimeChange}
-        />
+        {!!value && (
+          <>
+            <input
+              value={time}
+              className="max-h-[2.5rem] w-28 rounded-lg border border-sand-6 bg-sand-1 p-2 text-sand-12 outline-none"
+              onChange={handleOnTimeChange}
+            />
+            <button
+              onClick={handleOnClear}
+              className="text-red-9 hover:text-red-10"
+            >
+              Clear
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -63,7 +63,7 @@ export const updateSectionsRouter = router({
             name,
             type,
             note,
-            closed_at,
+            closed_at: closed_at ? closed_at : null,
             semester: {
               connect: {
                 id: semester.id,
@@ -220,6 +220,18 @@ export const updateSectionsRouter = router({
 
     const _sectionId = parseInt(sectionId);
 
+    const lab = await ctx.prisma.labs.findUnique({
+      where: {
+        id: labId,
+      },
+    });
+
+    const isLabClosed = lab?.active === false;
+
+    if (isLabClosed) {
+      throw new Error("LAB_CLOSED");
+    }
+
     try {
       await ctx.prisma.labs_status.update({
         where: {
@@ -233,8 +245,41 @@ export const updateSectionsRouter = router({
         },
       });
 
-      // ADD THIS ACTION TO LAB HISTORY
+      const requester = ctx.user.student_id;
+
+      const _requester = await ctx.prisma.users.findFirst({
+        where: {
+          student_id: requester,
+          deleted_at: null,
+        },
+      });
+
+      await ctx.prisma.sections.update({
+        where: {
+          id: _sectionId,
+        },
+        data: {
+          history: {
+            create: {
+              action: "Update lab status",
+              user: {
+                connect: {
+                  id: _requester?.id,
+                },
+              },
+            },
+          },
+        },
+      });
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "LAB_CLOSED") {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "LAB_CLOSED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",

@@ -59,6 +59,15 @@ export const updateLabRouter = router({
             },
           },
         });
+
+        await ctx.prisma.labs_status.updateMany({
+          where: {
+            labId: _labId,
+          },
+          data: {
+            status: active ? "ACTIVE" : "DISABLED",
+          },
+        });
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") {

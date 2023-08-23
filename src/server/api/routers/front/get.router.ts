@@ -1,7 +1,7 @@
 import type { labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { router, authedProcedure } from "~/server/api/trpc";
+import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
 
 export const getFrontRouter = router({
   getSections: authedProcedure
@@ -63,65 +63,65 @@ export const getFrontRouter = router({
         });
       }
     }),
-  getTeachingSections: authedProcedure
-    .input(z.object({ limit: z.number(), cursor: z.number().nullish() }))
-    .query(async ({ ctx, input }) => {
-      const { limit, cursor } = input;
+  getTeachingSections: TaAboveProcedure.input(
+    z.object({ limit: z.number(), cursor: z.number().nullish() })
+  ).query(async ({ ctx, input }) => {
+    const { limit, cursor } = input;
 
-      const student_id = ctx.session?.user?.student_id;
+    const student_id = ctx.session?.user?.student_id;
 
-      try {
-        const sections = await ctx.prisma.sections.findMany({
-          where: {
-            AND: [
-              { deleted_at: null },
-              {
-                OR: [
-                  {
-                    instructors: {
-                      some: {
-                        student_id,
-                        deleted_at: null,
-                      },
+    try {
+      const sections = await ctx.prisma.sections.findMany({
+        where: {
+          AND: [
+            { deleted_at: null },
+            {
+              OR: [
+                {
+                  instructors: {
+                    some: {
+                      student_id,
+                      deleted_at: null,
                     },
                   },
-                ],
-              },
-            ],
-          },
-          select: {
-            id: true,
-            name: true,
-            course: {
-              select: {
-                id: true,
-                number: true,
-                name: true,
-              },
+                },
+              ],
             },
-            type: true,
+          ],
+        },
+        select: {
+          id: true,
+          name: true,
+          course: {
+            select: {
+              id: true,
+              number: true,
+              name: true,
+            },
           },
-          take: limit + 1,
-          cursor: cursor ? { id: cursor } : undefined,
-          orderBy: {
-            id: "asc",
-          },
-        });
+          type: true,
+        },
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          id: "asc",
+        },
+      });
 
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (sections.length > limit) {
-          const nextItem = sections.pop();
-          nextCursor = nextItem?.id;
-        }
-
-        return { sections, nextCursor };
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (sections.length > limit) {
+        const nextItem = sections.pop();
+        nextCursor = nextItem?.id;
       }
-    }),
+
+      return { sections, nextCursor };
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
   getLabs: authedProcedure
     .input(z.object({ sectionId: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -329,6 +329,7 @@ export const getFrontRouter = router({
           select: {
             active: true,
             type: true,
+            closed_at: true,
             course: {
               select: {
                 name: true,
@@ -444,6 +445,7 @@ export const getFrontRouter = router({
           labName: lab.name,
           labStatus,
           sectionType: section.type,
+          closed_at: section.closed_at,
         };
       } catch (err) {
         if (err instanceof Error) {

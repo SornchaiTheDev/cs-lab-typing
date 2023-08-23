@@ -31,6 +31,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       router.events.off("routeChangeError", handleRouteDone);
     };
   }, [router.events]);
+
   return (
     <SessionProvider session={session}>
       {/* <CommandPallete /> */}

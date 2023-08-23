@@ -10,6 +10,7 @@ import { getTeacherRelatedSections } from "./roles/getTeacherRelatedSections";
 import type { Prisma, labs, labs_status } from "@prisma/client";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
+import dayjs from "dayjs";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
   include: {
@@ -64,9 +65,26 @@ export const getSectionsRouter = router({
         return lab;
       });
 
-      return { ...section, labs: sortedLabOrder };
+      const isSectionClosed = section.closed_at
+        ? dayjs().isAfter(section.closed_at)
+        : false;
 
-      return section;
+      if (isSectionClosed) {
+        await ctx.prisma.sections.update({
+          where: {
+            id: _id,
+          },
+          data: {
+            active: false,
+          },
+        });
+      }
+
+      return {
+        ...section,
+        active: section.active,
+        labs: sortedLabOrder,
+      };
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -270,6 +288,9 @@ export const getSectionsRouter = router({
             },
             skip: page * limit,
             take: limit,
+            orderBy: {
+              created_at: "desc",
+            },
             include: {
               user: true,
             },

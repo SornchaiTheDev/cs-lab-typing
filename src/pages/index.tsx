@@ -1,19 +1,27 @@
 import FrontLayout from "~/Layout/FrontLayout";
-import { trpc } from "~/helpers";
+import { getHighestRole, trpc } from "~/helpers";
 import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 function MyCourse() {
+  const { data: session } = useSession();
   const learn = trpc.front.getSections.useInfiniteQuery(
     { limit: 6 },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
+  const highestRole = getHighestRole(session?.user?.roles) ?? "STUDENT";
+  const isNotStudent = highestRole !== "STUDENT";
+
   const teach = trpc.front.getTeachingSections.useInfiniteQuery(
     { limit: 6 },
-    { getNextPageParam: (lastPage) => lastPage.nextCursor }
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      enabled: isNotStudent,
+    }
   );
 
   const { ref, inView } = useInView();
@@ -66,7 +74,7 @@ function MyCourse() {
         </div>
       ) : null}
 
-      {teach.isLoading ? (
+      {isNotStudent && teach.isLoading ? (
         <>
           <div className="mt-4">
             <Skeleton width="16rem" height="2rem" />
