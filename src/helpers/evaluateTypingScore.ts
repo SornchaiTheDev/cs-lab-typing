@@ -9,12 +9,17 @@ export function evaluate(adj: number, error: number) {
   const ERROR_WEIGHT = 0.3;
   const ADJ_THRESHOLD = 30.0;
   const ERROR_THRESHOLD = 3.0;
-  const MIN_ADJ = 5.0;
+  const MIN_ADJ = 10.0;
   const MAX_ERROR = 12.0;
   if (adj >= ADJ_THRESHOLD && error <= ERROR_THRESHOLD) return MAX_SCORE;
-  if (adj >= MIN_ADJ) {
+  if (adj >= MIN_ADJ && adj < ADJ_THRESHOLD) {
     adj_score = (adj / ADJ_THRESHOLD) * (MAX_SCORE * ADJ_WEIGHT);
+  } else if (adj >= ADJ_THRESHOLD) {
+    adj_score = MAX_SCORE * ADJ_WEIGHT;
+  } else {
+    adj_score = 0.0;
   }
+
   if (error <= ERROR_THRESHOLD) {
     error_score = MAX_SCORE * ERROR_WEIGHT;
   } else if (error > MAX_ERROR) {

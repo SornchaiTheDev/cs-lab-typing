@@ -219,7 +219,7 @@ function Forms<T>({
             render={({ field: { onChange, value } }) => (
               <DateTimePicker
                 title={field.title}
-                value={value as Date}
+                value={value}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}

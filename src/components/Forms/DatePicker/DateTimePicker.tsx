@@ -38,6 +38,7 @@ function DateTimePicker({
   const handleOnTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const time = e.target.value;
     if (time.length > 5) return;
+    if (!time.includes(":")) return;
     const hour = parseInt(time.split(":")[0] as string);
     const minute = parseInt(time.split(":")[1] as string);
     setTime(time);
@@ -46,6 +47,7 @@ function DateTimePicker({
 
     value.setHours(hour);
     value.setMinutes(minute);
+
     onChange(value);
   };
 
@@ -62,6 +64,10 @@ function DateTimePicker({
       setTime(`${hour}:${minute}`);
     }
   }, [value, time]);
+
+  useEffect(() => {
+    if (time === "") setTime("00:00");
+  }, [time]);
 
   return (
     <div className="relative" ref={dateRef}>
@@ -109,6 +115,7 @@ function DateTimePicker({
               onChange={handleOnTimeChange}
             />
             <button
+              type="button"
               onClick={handleOnClear}
               className="text-red-9 hover:text-red-10"
             >
