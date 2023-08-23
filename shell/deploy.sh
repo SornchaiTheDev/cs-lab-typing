@@ -22,7 +22,4 @@ cp -r ./.next/standalone ./standalone
 cp -r ./.next/static ./standalone/.next/static
 cp -r ./public ./standalone
 
-# Run the server
-cd standalone/ 
-
 # node server.js
