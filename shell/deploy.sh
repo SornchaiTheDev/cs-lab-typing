@@ -15,15 +15,14 @@ if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
  else echo "Lockfile not found." && exit 1; \
  fi
 
-# Change Working Directory
-cd ../
+
 
 # Copy build files to server
-cp -r ./cs-lab-typing/.next/standalone ./standalone
-cp -r ./cs-lab-typing/.next/static ./standalone/.next/static
-cp -r ./cs-lab-typing/public ./standalone
+cp -r ./.next/standalone ./standalone
+cp -r ./.next/static ./standalone/.next/static
+cp -r ./public ./standalone
 
 # Run the server
 cd standalone/ 
 
-node server.js
+# node server.js
