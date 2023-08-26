@@ -4,8 +4,12 @@ import LineChart from "./Datas/LineChart";
 import { useRouter } from "next/router";
 import { trpc } from "~/helpers";
 import type { PaginationState } from "@tanstack/react-table";
+import type { SectionType } from "@prisma/client";
 
-function History() {
+interface Props {
+  type?: SectionType;
+}
+function History({ type = "Lesson" }: Props) {
   const router = useRouter();
   const { sectionId, taskId, labId } = router.query;
 
@@ -46,6 +50,7 @@ function History() {
           <LineChart datas={typingHistories.data ?? []} />
         </div>
         <TypingTable
+          type={type}
           isLoading={typingHistories.isLoading}
           datas={typingHistories.data ?? []}
           onPaginationChange={setPagination}

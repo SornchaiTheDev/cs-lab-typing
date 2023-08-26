@@ -10,7 +10,6 @@ import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import EndedGameExam from "~/components/Typing/EndedGameExam";
 import dayjs from "dayjs";
-import superjson from "superjson";
 
 interface Props {
   taskName: string;
@@ -87,15 +86,13 @@ function TypingTask({
             </Button>
           )}
           <div className="mt-12 flex flex-1 flex-col">
-            {isReadOnly ? (
-              <History />
+            {isReadOnly || isHistoryPhase ? (
+              <History type="Exam" />
             ) : isTypingPhase ? (
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
               <EndedGameExam />
-            ) : (
-              isHistoryPhase && <History />
-            )}
+            ) : null}
           </div>
         </div>
       </FrontLayout>
