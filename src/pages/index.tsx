@@ -74,7 +74,7 @@ function MyCourse() {
         </div>
       ) : null}
 
-      {isNotStudent && teach.isLoading ? (
+      {/* {teach.isLoading ? (
         <>
           <div className="mt-4">
             <Skeleton width="16rem" height="2rem" />
@@ -119,7 +119,7 @@ function MyCourse() {
             )}
           </div>
         </>
-      ) : null}
+      ) : null} */}
 
       <div ref={ref} className="my-10 flex items-center justify-center gap-2">
         {learn.isFetchingNextPage ||

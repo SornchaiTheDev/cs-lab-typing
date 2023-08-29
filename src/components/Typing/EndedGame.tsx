@@ -38,9 +38,10 @@ function EndedGame() {
     }
   );
 
-  const [stats, setStatus] = useTypingStore((state) => [
+  const [stats, setStatus,reset] = useTypingStore((state) => [
     state.stats,
     state.setStatus,
+    state.reset
   ]);
 
   const { errorChar, startedAt, endedAt, totalChars } = stats;

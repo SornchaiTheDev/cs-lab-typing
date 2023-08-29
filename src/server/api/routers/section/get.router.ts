@@ -39,6 +39,22 @@ export const getSectionsRouter = router({
     const _id = parseInt(id);
 
     try {
+      const requester = await ctx.prisma.users.findFirst({
+        where: {
+          student_id: ctx.user.student_id,
+          deleted_at: null,
+          instructors: {
+            some: {
+              id: _id,
+            },
+          },
+        },
+      });
+
+      if (!requester) {
+        throw new Error("NOT_FOUND");
+      }
+
       const section = await ctx.prisma.sections.findFirst({
         where: {
           id: _id,
