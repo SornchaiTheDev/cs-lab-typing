@@ -2,8 +2,6 @@
 
 ## TODOS
 
-- [ ] Fix Some query full_name to student_id
-- [ ] Recheck remove relation
 - [ ] Unit testing
 
 ## Environment Variables
@@ -20,15 +18,17 @@ you can get those variables at `.env.example`
 
 ## Deployment
 
-in `deploy.sh` you can change destination of standalone folder
+in `shell/deploy.sh` you can change destination of standalone folder
 
 Deploy on Server
+
+> 💡 Note : if has standalone directory . Remove it first !!
 
 1. Build project and Setup Database
 
 ```sh
 chmod +x ./deploy.sh
-./deploy.sh
+./shell/deploy.sh
 ```
 
 or using Docker

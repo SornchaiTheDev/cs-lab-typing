@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useOnClickOutside } from "usehooks-ts";
 import Skeleton from "../Common/Skeleton";
 import type { SearchValue } from "~/types";
+import { twMerge } from "tailwind-merge";
 
 interface Props {
   options: string[];
@@ -30,7 +31,7 @@ function Select({
   optional,
   disabled,
   isLoading,
-  emptyMsg = "No Data"
+  emptyMsg = "No Data",
 }: Props) {
   const [isShow, setIsShow] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -102,9 +103,10 @@ function Select({
             onKeyDown={handleOnKeyDown}
             tabIndex={0}
             ref={selectRef}
-            className={clsx(
+            className={twMerge(
               "relative min-h-[2.5rem] w-full rounded-md border border-sand-6 bg-sand-1 text-sand-12 outline-none",
-              isError && "border-tomato-7"
+              isError && "border-tomato-7",
+              disabled && "cursor-not-allowed"
             )}
             onClick={() => {
               if (disabled) return;
@@ -157,7 +159,9 @@ function Select({
               </li>
             ))
           ) : (
-            <span className="cursor-not-allowed py-1 text-sand-6 dark:text-sand-11">{emptyMsg}</span>
+            <span className="cursor-not-allowed py-1 text-sand-6 dark:text-sand-11">
+              {emptyMsg}
+            </span>
           )}
         </ul>
       )}

@@ -61,7 +61,7 @@ function Tryout() {
       isLoading={task.isLoading}
       customBackPath={backPath}
     >
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col mt-10">
         {isEnded && (
           <Stats {...{ adjustedSpeed, duration, errorPercentage, rawSpeed }} />
         )}

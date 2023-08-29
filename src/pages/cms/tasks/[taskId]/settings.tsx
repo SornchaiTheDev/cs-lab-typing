@@ -110,7 +110,7 @@ function Settings() {
                   title: "Type",
                   options: ["Lesson", "Problem", "Typing"],
                   type: "select",
-                  disabled: !isOwner,
+                  disabled: true,
                   conditional: (data) =>
                     data !== undefined && data !== "Typing",
                   children: {

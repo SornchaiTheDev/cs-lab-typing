@@ -34,7 +34,10 @@ function TypingTask() {
 
   const handleOnSave = async () => {
     try {
-      const sanitizedText = text.split("\n").map(line => line.trim()).join(" ");
+      const sanitizedText = text
+        .split("\n")
+        .map((line) => line.replace(/\s+/g, " ").trim())
+        .join(" ");
 
       await saveTask.mutateAsync({
         taskId: taskId as string,
@@ -104,7 +107,7 @@ function TypingTask() {
       canAccessToSettings={isOwner || isAdmin}
       canAccessToHistory={isNotStudent}
     >
-      <div className="mt-4 flex flex-col justify-between gap-4 md:flex-row text-sand-12">
+      <div className="mt-4 flex flex-col justify-between gap-4 text-sand-12 md:flex-row">
         <div>
           <h4 className="mt-4 text-2xl">Task Information</h4>
           <h5 className="mb-2 mt-4 font-bold">Task type</h5>
@@ -160,7 +163,7 @@ function TypingTask() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             disabled={!isOwner}
-            className="min-h-[10rem] w-full rounded-md border-2 border-dashed border-sand-6 bg-transparent text-sand-12 outline-none focus:border-sand-10 focus:ring-transparent md:w-1/2"
+            className="monospace min-h-[10rem] w-full rounded-md border-2 border-dashed border-sand-6 bg-transparent text-sand-12 outline-none focus:border-sand-10 focus:ring-transparent md:w-1/2"
           />
         )}
         {isOwner && (

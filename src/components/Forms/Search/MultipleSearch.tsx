@@ -83,6 +83,8 @@ const Multiple = (props: Props) => {
         );
         break;
       case "Enter":
+      case "Tab":
+      case ",":
         e.preventDefault();
         addItem(filteredDatas[selectedIndex]?.label);
         break;
