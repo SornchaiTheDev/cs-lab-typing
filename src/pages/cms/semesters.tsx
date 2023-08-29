@@ -63,6 +63,11 @@ function Semesters() {
     },
     { enabled: false }
   );
+
+  useEffect(() => {
+    semesters.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
   const addSemesterMutation = trpc.semesters.createSemester.useMutation();
 
   const addSemester = async (formData: TSemesterSchema) => {

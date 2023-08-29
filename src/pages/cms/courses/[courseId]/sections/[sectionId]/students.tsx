@@ -73,6 +73,11 @@ function Students() {
     }
   );
 
+  useEffect(() => {
+    studentsPagination.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
 
   const deleteStudent = trpc.sections.deleteStudent.useMutation();

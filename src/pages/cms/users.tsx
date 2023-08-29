@@ -161,6 +161,11 @@ function Users() {
     });
   }, []);
 
+  useEffect(() => {
+    users.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
       onDrop: handleFileUpload,

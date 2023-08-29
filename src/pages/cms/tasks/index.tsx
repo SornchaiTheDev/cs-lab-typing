@@ -68,6 +68,12 @@ function Tasks() {
     { enabled: false }
   );
 
+
+  useEffect(() => {
+    allTasks.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
   const addTaskMutation = trpc.tasks.addTask.useMutation();
   const addTask = async (formData: TAddTask) => {
     try {

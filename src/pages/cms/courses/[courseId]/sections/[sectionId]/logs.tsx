@@ -165,6 +165,11 @@ function Logger() {
     }
   );
 
+  useEffect(() => {
+    labLogs.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
   return (
     <SectionLayout
       title={section.data?.name as string}

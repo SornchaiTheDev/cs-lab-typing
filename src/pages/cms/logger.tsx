@@ -79,6 +79,11 @@ function Logger() {
     { enabled: false }
   );
 
+  useEffect(() => {
+    authLogs.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
   const columns = useMemo<ColumnDef<LoggerRow, string | { email: string }>[]>(
     () => [
       {
@@ -153,10 +158,10 @@ function Logger() {
         {...{ pagination, searchString }}
         onSearchChange={handleOnSearchChange}
       >
-        <div className="flex flex-col mt-2 md:mt-0">
+        <div className="mt-2 flex flex-col md:mt-0">
           <button
             onClick={exportCSV}
-            className="flex w-fit items-center gap-2 rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11 self-end"
+            className="flex w-fit items-center gap-2 self-end rounded-lg bg-sand-12 p-2 text-sand-1 shadow active:bg-sand-11"
           >
             <Icon icon="solar:document-text-line-duotone" />
             Export as CSV
