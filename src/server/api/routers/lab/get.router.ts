@@ -154,6 +154,9 @@ export const getLabRouter = router({
           full_name: true,
           student_id: true,
         },
+        orderBy: {
+          student_id: "asc",
+        },
       });
 
       const usersTaskStatus = users.map((user) => {
@@ -224,6 +227,9 @@ export const getLabRouter = router({
                   },
                 },
               },
+            },
+            orderBy: {
+              student_id: "asc",
             },
           });
 
