@@ -22,11 +22,11 @@ export const createLabRouter = router({
           },
         });
 
-        const sections = await ctx.prisma.sections.findMany({
-          where: {
-            course_id: _courseId,
-          },
-        });
+        // const sections = await ctx.prisma.sections.findMany({
+        //   where: {
+        //     course_id: _courseId,
+        //   },
+        // });
 
         const lab = await ctx.prisma.labs.create({
           data: {
@@ -53,30 +53,30 @@ export const createLabRouter = router({
                 },
               },
             },
-            sections: {
-              connect: sections.map(({ id }) => ({ id })),
-            },
+            // sections: {
+            //   connect: sections.map(({ id }) => ({ id })),
+            // },
           },
         });
 
-        await ctx.prisma.sections.updateMany({
-          where: {
-            course_id: _courseId,
-          },
-          data: {
-            labs_order: {
-              push: lab.id,
-            },
-          },
-        });
+        // await ctx.prisma.sections.updateMany({
+        //   where: {
+        //     course_id: _courseId,
+        //   },
+        //   data: {
+        //     labs_order: {
+        //       push: lab.id,
+        //     },
+        //   },
+        // });
 
-        await ctx.prisma.labs_status.createMany({
-          data: sections.map(({ id }) => ({
-            sectionId: id,
-            labId: lab.id,
-            status: "ACTIVE",
-          })),
-        });
+        // await ctx.prisma.labs_status.createMany({
+        //   data: sections.map(({ id }) => ({
+        //     sectionId: id,
+        //     labId: lab.id,
+        //     status: "ACTIVE",
+        //   })),
+        // });
 
         return lab;
       } catch (e) {
