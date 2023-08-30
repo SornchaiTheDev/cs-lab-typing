@@ -18,6 +18,7 @@ import LineChart from "~/components/Typing/Datas/LineChart";
 import TypingTable from "~/components/Typing/Datas/Table";
 import type { PaginationState } from "@tanstack/react-table";
 import { callToast } from "~/services/callToast";
+import BestScoreStats from "~/components/Typing/BestScoreStats";
 
 interface TypingSubmissionProps {
   sectionId: string;
@@ -140,15 +141,15 @@ const RecentTasks = ({
                 <h4 className="mb-2 text-center text-lg font-bold">
                   Best Score
                 </h4>
-                <Stats
-                  // adjustedSpeed={history.adjusted_speed ?? 0}
-                  // duration={getDuration(
-                  //   history.started_at as Date,
-                  //   history.ended_at as Date
-                  // )}
-                  // errorPercentage={history.percent_error ?? 0}
-                  // rawSpeed={history.raw_speed ?? 0}
-                  // score={sectionType === "Lesson" ? undefined : history.score}
+                <BestScoreStats
+                  adjustedSpeed={history.adjusted_speed ?? 0}
+                  duration={getDuration(
+                    history.started_at as Date,
+                    history.ended_at as Date
+                  )}
+                  errorPercentage={history.percent_error ?? 0}
+                  rawSpeed={history.raw_speed ?? 0}
+                  score={sectionType === "Lesson" ? undefined : history.score}
                 />
                 <TypingSubmissions
                   {...{ sectionId, labId, taskId: id, studentId }}

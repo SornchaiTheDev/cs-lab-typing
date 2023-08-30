@@ -195,6 +195,13 @@ export const getTaskRouter = router({
           id: true,
           name: true,
           submissions: {
+            where: {
+              lab_id: labId,
+              section_id: _sectionId,
+              user: {
+                student_id,
+              },
+            },
             include: {
               typing_histories: {
                 orderBy: {
