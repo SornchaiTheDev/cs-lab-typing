@@ -1,17 +1,26 @@
-interface Props {
-  rawSpeed: number;
-  adjustedSpeed: number;
-  errorPercentage: number;
-  duration: { minutes: number; seconds: number };
-  score?: number;
-}
-function Stats({
-  adjustedSpeed,
-  duration,
-  errorPercentage,
-  rawSpeed,
-  score,
-}: Props) {
+import { evaluate } from "~/helpers/evaluateTypingScore";
+import { calculateErrorPercentage } from "./utils/calculateErrorPercentage";
+import { getDuration } from "./utils/getDuration";
+import { useTypingStore } from "~/store";
+import { calculateTypingSpeed } from "./utils/calculateWPM";
+
+function Stats() {
+  const stats = useTypingStore((state) => state.stats);
+
+  const { errorChar, startedAt, endedAt, totalChars } = stats;
+
+  const duration = getDuration(startedAt as Date, endedAt as Date);
+
+  const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
+    totalChars,
+    errorChar,
+    duration.minutes
+  );
+
+  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+
+  const score = evaluate(adjustedSpeed, errorPercentage);
+
   const isGreaterThanOneMinute = duration.seconds > 60;
   const _duration = isGreaterThanOneMinute
     ? duration.minutes

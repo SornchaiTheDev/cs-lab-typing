@@ -32,7 +32,7 @@ export const useTypingStore = create<TypingStore>((set) => ({
   text: "",
   setText: (text) => set({ text }),
   stats: DEFAULT_STATS,
-  reset: () => set({ text: "", stats: DEFAULT_STATS, status: "NotStarted" }),
+  reset: () => set({ text: "", stats: DEFAULT_STATS }),
   setStats: (stats) =>
     set((state) => ({ stats: { ...state.stats, ...stats } })),
   status: "NotStarted",

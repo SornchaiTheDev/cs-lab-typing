@@ -4,6 +4,24 @@ import { z } from "zod";
 import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
 
 export const getFrontRouter = router({
+  getCheckUser: authedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.users.findFirst({
+      where: {
+        student_id: ctx.user.student_id,
+        deleted_at: null,
+        instructors: {
+          some: {
+            instructors: {
+              some: {
+                student_id: ctx.user.student_id,
+              },
+            },
+          },
+        },
+      },
+    });
+    return { isTaAbove: !!user };
+  }),
   getSections: authedProcedure
     .input(z.object({ limit: z.number(), cursor: z.number().nullish() }))
     .query(async ({ ctx, input }) => {

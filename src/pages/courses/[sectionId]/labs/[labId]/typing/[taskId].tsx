@@ -34,8 +34,11 @@ function TypingTask({
   ]);
 
   useEffect(() => {
-    reset();
-  }, [reset]);
+    return () => {
+      reset();
+      setStatus("NotStarted");
+    };
+  }, [reset, setStatus]);
 
   const isTypingPhase = status === "NotStarted" || status === "Started";
   const isEndedPhase = status === "Ended";

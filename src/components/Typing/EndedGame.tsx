@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTypingStore } from "~/store";
-import { getDuration } from "./utils/getDuration";
-import { calculateTypingSpeed } from "./utils/calculateWPM";
-import { calculateErrorPercentage } from "./utils/calculateErrorPercentage";
 import { Icon } from "@iconify/react";
 import Stats from "./Stats";
 import { trpc } from "~/helpers";
@@ -38,19 +35,18 @@ function EndedGame() {
     }
   );
 
-  const [stats, setStatus,reset] = useTypingStore((state) => [
+  const [stats, setStatus, reset] = useTypingStore((state) => [
     state.stats,
     state.setStatus,
-    state.reset
+    state.reset,
   ]);
-
-  const { errorChar, startedAt, endedAt, totalChars } = stats;
 
   const submitTyping = trpc.front.submitTyping.useMutation();
 
   useEffect(() => {
     const saveTypingScore = async () => {
       if (!stats) return;
+      const { errorChar, startedAt, endedAt, totalChars } = stats;
       try {
         const result: TypingResultWithHashType = {
           email: session?.user?.email as string,
@@ -65,8 +61,8 @@ function EndedGame() {
 
         result.hash = objectHash(result);
         await submitTyping.mutateAsync(result);
-
         await typingHistories.refetch();
+        reset();
       } catch (err) {
         if (err instanceof TRPCClientError) {
           callToast({ type: "error", msg: err.message });
@@ -78,15 +74,6 @@ function EndedGame() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const duration = getDuration(startedAt as Date, endedAt as Date);
-  const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-    totalChars,
-    errorChar,
-    duration.minutes
-  );
-
-  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
   const highestSpeed = useMemo(() => {
     if (typingHistories.data === undefined) return -1;
@@ -109,7 +96,7 @@ function EndedGame() {
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>
       </button>
-      <Stats {...{ adjustedSpeed, duration, errorPercentage, rawSpeed }} />
+      <Stats />
       <div className="h-[10rem] w-full">
         <LineChart datas={typingHistories.data ?? []} />
       </div>

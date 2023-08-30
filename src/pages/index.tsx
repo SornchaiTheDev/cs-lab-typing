@@ -1,11 +1,85 @@
 import FrontLayout from "~/Layout/FrontLayout";
-import { getHighestRole, trpc } from "~/helpers";
+import { trpc } from "~/helpers";
 import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import type { Prisma } from "@prisma/client";
 
+type sections = Prisma.sectionsGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    course: {
+      select: {
+        id: true;
+        number: true;
+        name: true;
+      };
+    };
+    type: true;
+  };
+}>;
+
+interface TeachingSectionsProps {
+  isLoading: boolean;
+  pages: {
+    sections: sections[];
+  }[];
+}
+const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
+  return (
+    <>
+      {isLoading ? (
+        <>
+          <div className="mt-4">
+            <Skeleton width="16rem" height="2rem" />
+          </div>
+          <div className="my-4 grid grid-cols-12 gap-6">
+            {new Array(3).fill(0).map((_, i) => (
+              <Skeleton
+                key={i}
+                height={"12rem"}
+                className="col-span-12 md:col-span-4"
+              />
+            ))}
+          </div>
+        </>
+      ) : pages.length > 0 ? (
+        <>
+          <div className="mt-4">
+            <h4 className="text-2xl font-medium text-sand-12 md:text-3xl">
+              Teach
+            </h4>
+          </div>
+          <div className="my-6 grid grid-cols-12 gap-6">
+            {pages.map((page) =>
+              page.sections.map(({ id, name, course, type }) => {
+                const { name: courseName, number, id: courseId } = course;
+                return (
+                  <Card
+                    key={id}
+                    href={{
+                      pathname: "cms/courses/[courseId]/sections/[sectionId]",
+                      query: { courseId, sectionId: id },
+                    }}
+                    title={courseName}
+                    badges={[
+                      { title: number, type: "success" },
+                      { title: name, type: "success" },
+                      { title: type, type: "info" },
+                    ]}
+                  />
+                );
+              })
+            )}
+          </div>
+        </>
+      ) : null}
+    </>
+  );
+};
 function MyCourse() {
   const { data: session } = useSession();
   const learn = trpc.front.getSections.useInfiniteQuery(
@@ -13,14 +87,15 @@ function MyCourse() {
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
-  const highestRole = getHighestRole(session?.user?.roles) ?? "STUDENT";
-  const isNotStudent = highestRole !== "STUDENT";
+  const checkUser = trpc.front.getCheckUser.useQuery();
+
+  const isTaAbove = checkUser.data?.isTaAbove ?? false;
 
   const teach = trpc.front.getTeachingSections.useInfiniteQuery(
     { limit: 6 },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      enabled: isNotStudent,
+      enabled: isTaAbove,
     }
   );
 
@@ -74,52 +149,12 @@ function MyCourse() {
         </div>
       ) : null}
 
-      {/* {teach.isLoading ? (
-        <>
-          <div className="mt-4">
-            <Skeleton width="16rem" height="2rem" />
-          </div>
-          <div className="my-4 grid grid-cols-12 gap-6">
-            {new Array(3).fill(0).map((_, i) => (
-              <Skeleton
-                key={i}
-                height={"12rem"}
-                className="col-span-12 md:col-span-4"
-              />
-            ))}
-          </div>
-        </>
-      ) : (teach.data?.pages.length as number) > 0 ? (
-        <>
-          <div className="mt-4">
-            <h4 className="text-2xl font-medium text-sand-12 md:text-3xl">
-              Teach
-            </h4>
-          </div>
-          <div className="my-6 grid grid-cols-12 gap-6">
-            {teach.data?.pages.map((page) =>
-              page.sections.map(({ id, name, course, type }) => {
-                const { name: courseName, number, id: courseId } = course;
-                return (
-                  <Card
-                    key={id}
-                    href={{
-                      pathname: "cms/courses/[courseId]/sections/[sectionId]",
-                      query: { courseId, sectionId: id },
-                    }}
-                    title={courseName}
-                    badges={[
-                      { title: number, type: "success" },
-                      { title: name, type: "success" },
-                      { title: type, type: "info" },
-                    ]}
-                  />
-                );
-              })
-            )}
-          </div>
-        </>
-      ) : null} */}
+      {isTaAbove && (
+        <TeachingSections
+          isLoading={teach.isLoading}
+          pages={teach.data?.pages ?? []}
+        />
+      )}
 
       <div ref={ref} className="my-10 flex items-center justify-center gap-2">
         {learn.isFetchingNextPage ||

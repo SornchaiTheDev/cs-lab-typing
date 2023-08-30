@@ -1,4 +1,8 @@
-import { router, teacherAboveProcedure } from "~/server/api/trpc";
+import {
+  TaAboveProcedure,
+  router,
+  teacherAboveProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
@@ -79,7 +83,6 @@ export const deleteSectionsRouter = router({
           },
         });
       } catch (err) {
-        console.log(err);
         if (err instanceof Error) {
           if (err.message === "UNAUTHORIZED") {
             throw new TRPCError({
@@ -145,74 +148,92 @@ export const deleteSectionsRouter = router({
         });
       }
     }),
-  deleteLab: teacherAboveProcedure
-    .input(
-      z.object({
-        sectionId: z.string(),
-        labId: z.number(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { labId, sectionId } = input;
-      const _sectionId = parseInt(sectionId);
+  deleteLab: TaAboveProcedure.input(
+    z.object({
+      sectionId: z.string(),
+      labId: z.number(),
+    })
+  ).mutation(async ({ ctx, input }) => {
+    const { labId, sectionId } = input;
+    const _sectionId = parseInt(sectionId);
 
-      const requester = ctx.user.student_id;
-      try {
-        const user = await ctx.prisma.users.findFirst({
-          where: {
-            student_id: requester,
-            deleted_at: null,
-          },
-          select: {
-            id: true,
-          },
-        });
-
-        const section = await ctx.prisma.sections.findUnique({
-          where: {
-            id: _sectionId,
-          },
-        });
-
-        const newOrder = section?.labs_order.filter((lab) => lab !== labId);
-
-        await ctx.prisma.sections.update({
-          where: {
-            id: _sectionId,
-          },
-          data: {
-            labs: {
-              disconnect: {
-                id: labId,
-              },
-            },
-            labs_order: {
-              set: newOrder,
-            },
-            history: {
-              create: {
-                action: "Remove lab",
-                user: {
-                  connect: {
-                    id: user?.id,
-                  },
+    const requester = ctx.user.student_id;
+    try {
+      const user = await ctx.prisma.users.findFirst({
+        where: {
+          student_id: requester,
+          deleted_at: null,
+          instructors: {
+            some: {
+              id: _sectionId,
+              instructors: {
+                some: {
+                  student_id: requester,
                 },
               },
             },
-            labs_status: {
-              deleteMany: {
-                labId,
-                sectionId: _sectionId,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!user) throw new Error("UNAUTHORIZED");
+
+      const section = await ctx.prisma.sections.findUnique({
+        where: {
+          id: _sectionId,
+        },
+      });
+
+      const newOrder = section?.labs_order.filter((lab) => lab !== labId);
+
+      await ctx.prisma.sections.update({
+        where: {
+          id: _sectionId,
+        },
+        data: {
+          labs: {
+            disconnect: {
+              id: labId,
+            },
+          },
+          labs_order: {
+            set: newOrder,
+          },
+          history: {
+            create: {
+              action: "Remove lab",
+              user: {
+                connect: {
+                  id: user?.id,
+                },
               },
             },
           },
-        });
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
+          labs_status: {
+            deleteMany: {
+              labId,
+              sectionId: _sectionId,
+            },
+          },
+        },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
       }
-      return "Success";
-    }),
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+    return "Success";
+  }),
 });

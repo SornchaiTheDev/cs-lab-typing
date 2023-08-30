@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTypingStore } from "~/store";
-import { getDuration } from "./utils/getDuration";
-import { calculateTypingSpeed } from "./utils/calculateWPM";
-import { calculateErrorPercentage } from "./utils/calculateErrorPercentage";
 import { Icon } from "@iconify/react";
 import Stats from "./Stats";
 import { trpc } from "~/helpers";
@@ -13,7 +10,6 @@ import objectHash from "object-hash";
 import type { TypingExamResultWithHashType } from "~/schemas/TypingResult";
 import { useSession } from "next-auth/react";
 import type { PaginationState } from "@tanstack/react-table";
-import { evaluate } from "~/helpers/evaluateTypingScore";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 
@@ -80,17 +76,6 @@ function EndedGameExam() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const duration = getDuration(startedAt as Date, endedAt as Date);
-  const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-    totalChars,
-    errorChar,
-    duration.minutes
-  );
-
-  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
-
-  const score = evaluate(adjustedSpeed, errorPercentage);
-
   const highestSpeed = useMemo(() => {
     if (typingHistories.data === undefined) return -1;
     const cloneDatas = [...typingHistories.data];
@@ -103,6 +88,7 @@ function EndedGameExam() {
 
     return -1;
   }, [typingHistories.data]);
+
   return (
     <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
       <button
@@ -112,9 +98,7 @@ function EndedGameExam() {
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>
       </button>
-      <Stats
-        {...{ adjustedSpeed, duration, errorPercentage, rawSpeed, score }}
-      />
+      <Stats />
       <div className="h-[10rem] w-full">
         <LineChart datas={typingHistories.data ?? []} />
       </div>

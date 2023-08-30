@@ -13,9 +13,10 @@ interface Props {
   text: string;
 }
 function TypingGame({ text }: Props) {
-  const [setStats, setStatus] = useTypingStore((state) => [
+  const [setStats, setStatus, reset] = useTypingStore((state) => [
     state.setStats,
     state.setStatus,
+    state.reset,
   ]);
 
   const {
@@ -74,6 +75,7 @@ function TypingGame({ text }: Props) {
   ) => {
     if (letter === "Escape") {
       resetTyping();
+      reset();
     } else if (letter === "Backspace") {
       deleteTyping(control);
     } else if (letter.length === 1) {

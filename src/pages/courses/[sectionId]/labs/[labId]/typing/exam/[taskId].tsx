@@ -34,14 +34,17 @@ function TypingTask({
     state.reset,
   ]);
 
-  useEffect(() => {
-    reset();
-  }, [reset]);
-
   const isTypingPhase = status === "NotStarted" || status === "Started";
   const isEndedPhase = status === "Ended";
   const isHistoryPhase = status === "History";
   const isReadOnly = labStatus === "READONLY";
+
+  useEffect(() => {
+    return () => {
+      reset();
+      setStatus("NotStarted");
+    };
+  }, [reset, setStatus]);
 
   return (
     <>

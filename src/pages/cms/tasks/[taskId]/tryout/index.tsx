@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import FrontLayout from "~/Layout/FrontLayout";
 import TypingGame from "~/components/Typing";
 import { useRouter } from "next/router";
 import { useTypingStore } from "~/store";
 import { trpc } from "~/helpers";
 import Stats from "~/components/Typing/Stats";
-import { getDuration } from "~/components/Typing/utils/getDuration";
-import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
-import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErrorPercentage";
 
 function Tryout() {
   const router = useRouter();
@@ -18,26 +15,7 @@ function Tryout() {
     state.reset,
   ]);
 
-  const [localStats, setLocalStats] = useState(stats);
-
-  useEffect(() => {
-    if (stats.endedAt) {
-      setLocalStats(stats);
-      reset();
-    }
-  }, [stats, reset]);
-
-  const { errorChar, startedAt, endedAt, totalChars } = localStats;
-  const duration = getDuration(startedAt as Date, endedAt as Date);
-  const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-    totalChars,
-    errorChar,
-    duration.minutes
-  );
-
-  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
-
-  const isEnded = localStats.endedAt !== null;
+  const isEnded = stats.endedAt !== null;
 
   const task = trpc.tasks.getTaskById.useQuery(
     { id: taskId as string },
@@ -52,8 +30,11 @@ function Tryout() {
     .join("/");
 
   useEffect(() => {
-    setStatus("NotStarted");
-  }, [setStatus]);
+    return () => {
+      reset();
+      setStatus("NotStarted");
+    };
+  }, [setStatus, reset]);
 
   return (
     <FrontLayout
@@ -61,10 +42,8 @@ function Tryout() {
       isLoading={task.isLoading}
       customBackPath={backPath}
     >
-      <div className="flex flex-1 flex-col mt-10">
-        {isEnded && (
-          <Stats {...{ adjustedSpeed, duration, errorPercentage, rawSpeed }} />
-        )}
+      <div className="mt-10 flex flex-1 flex-col">
+        {isEnded && <Stats />}
         <TypingGame text={task.data?.body ?? ""} />
       </div>
     </FrontLayout>
