@@ -25,6 +25,7 @@ export const createFrontRouter = router({
         startedAt,
         endedAt,
         hash,
+        email,
       } = input;
       const result = Object.assign({}, input);
 
@@ -47,6 +48,7 @@ export const createFrontRouter = router({
             id: _sectionId,
           },
           include: {
+            students: true,
             labs_status: {
               where: {
                 labId: _labId,
@@ -54,6 +56,21 @@ export const createFrontRouter = router({
             },
           },
         });
+
+        const student_id = ctx.session?.user?.student_id;
+        const isSameUserEmail = ctx.session?.user?.email === email;
+
+        const isInSection = section?.students.some(
+          (student) => student.student_id === student_id
+        );
+
+        if (!isInSection) {
+          throw new Error("NOT_IN_SECTION");
+        }
+
+        if (!isSameUserEmail) {
+          throw new Error("NOT_SAME_USER_EMAIL");
+        }
 
         let isSectionClose = section?.active === false;
 
@@ -92,8 +109,6 @@ export const createFrontRouter = router({
         const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
         const score = evaluate(adjustedSpeed, errorPercentage);
-
-        const student_id = ctx.session?.user?.student_id;
 
         const user = await ctx.prisma.users.findFirst({
           where: {
@@ -205,6 +220,7 @@ export const createFrontRouter = router({
             });
           }
         }
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -223,6 +239,7 @@ export const createFrontRouter = router({
         tAdetrats: startedAt,
         tAdedne: endedAt,
         hsah: hash,
+        liame: email,
       } = input;
       const result = Object.assign({}, input);
 
@@ -241,12 +258,15 @@ export const createFrontRouter = router({
 
       const student_id = ctx.session?.user?.student_id;
 
+      const isSameUserEmail = ctx.session?.user?.email === email;
+
       try {
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
           },
           include: {
+            students: true,
             labs_status: {
               where: {
                 labId: _labId,
@@ -254,6 +274,17 @@ export const createFrontRouter = router({
             },
           },
         });
+
+        const isInSection = section?.students.some(
+          (student) => student.student_id === student_id
+        );
+
+        if (!isInSection) {
+          throw new Error("NOT_IN_SECTION");
+        }
+        if (!isSameUserEmail) {
+          throw new Error("NOT_SAME_USER_EMAIL");
+        }
 
         let isSectionClose = section?.active === false;
 

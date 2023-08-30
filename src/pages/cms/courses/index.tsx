@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import type { SearchValue } from "~/types";
 import { useInView } from "react-intersection-observer";
 import { debounce } from "lodash";
+import { twMerge } from "tailwind-merge";
 
 function Courses() {
   const router = useRouter();
@@ -88,9 +89,9 @@ function Courses() {
 
   return (
     <Layout title="courses">
-      {role === "ADMIN" && (
-        <div className="mb-4">
-          <div className="flex flex-wrap gap-2 items-center justify-between">
+      <div className="mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          {role === "ADMIN" && (
             <ModalWithButton
               title="Add Course"
               icon="solar:add-circle-line-duotone"
@@ -135,18 +136,18 @@ function Courses() {
                 ]}
               />
             </ModalWithButton>
-            <div className="flex h-full w-full md:w-fit items-center gap-2 rounded-lg border border-sand-6 p-2">
-              <Icon icon="carbon:search" className="text-sand-10" />
-              <input
-                value={searchString}
-                onChange={(e) => setSearchString(e.target.value)}
-                className="w-full bg-transparent text-sand-12 outline-none placeholder:text-sand-8"
-                placeholder="Search"
-              />
-            </div>
+          )}
+          <div className="flex h-full w-full items-center gap-2 rounded-lg border border-sand-6 p-2 md:w-fit">
+            <Icon icon="carbon:search" className="text-sand-10" />
+            <input
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+              className="w-full bg-transparent text-sand-12 outline-none placeholder:text-sand-8"
+              placeholder="Search"
+            />
           </div>
         </div>
-      )}
+      </div>
       <div className="mb-10 mt-2 grid grid-cols-12 gap-6">
         {isLoading
           ? new Array(6)

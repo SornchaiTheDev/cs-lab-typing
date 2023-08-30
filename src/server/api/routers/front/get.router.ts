@@ -5,17 +5,12 @@ import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
 
 export const getFrontRouter = router({
   getCheckUser: authedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.prisma.users.findFirst({
+    const user = await ctx.prisma.sections.findFirst({
       where: {
-        student_id: ctx.user.student_id,
         deleted_at: null,
         instructors: {
           some: {
-            instructors: {
-              some: {
-                student_id: ctx.user.student_id,
-              },
-            },
+            student_id: ctx.user.student_id,
           },
         },
       },
@@ -31,22 +26,22 @@ export const getFrontRouter = router({
       try {
         const sections = await ctx.prisma.sections.findMany({
           where: {
-            AND: [
-              { deleted_at: null },
-              { active: true },
+            deleted_at: null,
+            active: true,
+            OR: [
               {
-                OR: [
-                  {
-                    students: {
-                      some: {
-                        student_id,
-                        deleted_at: null,
-                      },
-                    },
-                  },
-                ],
+                closed_at: {
+                  gt: new Date(),
+                },
               },
+              { closed_at: null },
             ],
+            students: {
+              some: {
+                student_id,
+                deleted_at: null,
+              },
+            },
           },
           select: {
             id: true,
@@ -91,21 +86,13 @@ export const getFrontRouter = router({
     try {
       const sections = await ctx.prisma.sections.findMany({
         where: {
-          AND: [
-            { deleted_at: null },
-            {
-              OR: [
-                {
-                  instructors: {
-                    some: {
-                      student_id,
-                      deleted_at: null,
-                    },
-                  },
-                },
-              ],
+          deleted_at: null,
+          instructors: {
+            some: {
+              student_id,
+              deleted_at: null,
             },
-          ],
+          },
         },
         select: {
           id: true,
@@ -358,10 +345,19 @@ export const getFrontRouter = router({
                 id: _labId,
               },
             },
+            students: true,
           },
         });
 
-        if (!section?.active || section.labs.length === 0) {
+        const isStudentInSection = section?.students.some(
+          (student) => student.student_id === student_id
+        );
+
+        if (
+          !section?.active ||
+          section.labs.length === 0 ||
+          !isStudentInSection
+        ) {
           throw new Error("NOT_FOUND");
         }
 
@@ -507,12 +503,17 @@ export const getFrontRouter = router({
                 id: _labId,
               },
             },
+            students: true,
           },
         });
 
+        const isStudentInSection = section?.students.some(
+          (student) => student.student_id === student_id
+        );
+
         const isLabNotExist = section?.labs.length === 0;
 
-        if (isLabNotExist) {
+        if (isLabNotExist || !isStudentInSection) {
           throw new Error("NOT_FOUND");
         }
 

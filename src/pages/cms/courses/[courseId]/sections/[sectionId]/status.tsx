@@ -141,14 +141,14 @@ const RecentTasks = ({
                   Best Score
                 </h4>
                 <Stats
-                  adjustedSpeed={history.adjusted_speed ?? 0}
-                  duration={getDuration(
-                    history.started_at as Date,
-                    history.ended_at as Date
-                  )}
-                  errorPercentage={history.percent_error ?? 0}
-                  rawSpeed={history.raw_speed ?? 0}
-                  score={sectionType === "Lesson" ? undefined : history.score}
+                  // adjustedSpeed={history.adjusted_speed ?? 0}
+                  // duration={getDuration(
+                  //   history.started_at as Date,
+                  //   history.ended_at as Date
+                  // )}
+                  // errorPercentage={history.percent_error ?? 0}
+                  // rawSpeed={history.raw_speed ?? 0}
+                  // score={sectionType === "Lesson" ? undefined : history.score}
                 />
                 <TypingSubmissions
                   {...{ sectionId, labId, taskId: id, studentId }}
