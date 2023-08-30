@@ -21,7 +21,6 @@ export const getAllSections = async (
     where: {
       deleted_at: null,
       course_id: courseId,
-      active: true,
       OR: [
         {
           name: {
