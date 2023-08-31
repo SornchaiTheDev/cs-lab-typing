@@ -62,7 +62,6 @@ function EndedGameExam() {
 
         result.hsah = objectHash(result);
         await examSubmitTyping.mutateAsync(result);
-
         await typingHistories.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {

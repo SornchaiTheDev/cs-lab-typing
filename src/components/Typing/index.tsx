@@ -117,7 +117,7 @@ function TypingGame({ text }: Props) {
                 ? "text-sand-8 dark:text-sand-9"
                 : state === 1
                 ? "text-sand-12 dark:text-sand-11"
-                : "text-red-9";
+                : "text-tomato-11";
 
             return (
               <span

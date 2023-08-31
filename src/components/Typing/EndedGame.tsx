@@ -62,7 +62,6 @@ function EndedGame() {
         result.hash = objectHash(result);
         await submitTyping.mutateAsync(result);
         await typingHistories.refetch();
-        reset();
       } catch (err) {
         if (err instanceof TRPCClientError) {
           callToast({ type: "error", msg: err.message });

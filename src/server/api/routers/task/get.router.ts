@@ -204,16 +204,17 @@ export const getTaskRouter = router({
             },
             include: {
               typing_histories: {
-                orderBy: {
-                  score: "desc",
-                },
+                orderBy: [
+                  {
+                    score: "desc",
+                  },
+                  {
+                    adjusted_speed: "desc",
+                  },
+                ],
                 take: 1,
               },
             },
-            orderBy: {
-              created_at: "desc",
-            },
-            take: 1,
           },
         },
       });
@@ -230,6 +231,7 @@ export const getTaskRouter = router({
 
       return tasksWithHistory;
     } catch (err) {
+      console.log(err);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
