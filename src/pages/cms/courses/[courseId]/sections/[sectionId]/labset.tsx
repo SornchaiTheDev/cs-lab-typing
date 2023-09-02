@@ -320,7 +320,7 @@ function LabSet() {
       columnHelper.display({
         id: "status",
         header: "Status",
-        size: 40,
+        size: 20,
         cell: (props) => (
           <Select
             options={["ACTIVE", "READONLY", "DISABLED"]}
@@ -346,7 +346,7 @@ function LabSet() {
         size: 50,
       }),
     ],
-    [columnHelper, setSelectedLab, updateLabStatus]
+    [columnHelper, setSelectedLab, updateLabStatus, router.query.courseId]
   );
 
   const [newOrdered, setNewOrdered] = useState<labs[]>([]);

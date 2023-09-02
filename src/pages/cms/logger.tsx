@@ -20,18 +20,16 @@ interface LoggerRow {
 
 const Type = ({ type }: { type: string }) => {
   return (
-    <div className="flex w-full justify-center">
-      <button
-        className={clsx(
-          "rounded-md px-2 text-sm font-medium",
-          type === "LOGIN" && "bg-lime-3 text-lime-9",
-          type === "LOGOUT" && "bg-amber-3 text-amber-9",
-          type === "FAILED-LOGIN" && "bg-red-3 text-red-9"
-        )}
-      >
-        {type}
-      </button>
-    </div>
+    <button
+      className={clsx(
+        "rounded-md px-2 text-sm font-medium",
+        type === "LOGIN" && "bg-lime-3 text-lime-9",
+        type === "LOGOUT" && "bg-amber-3 text-amber-9",
+        type === "FAILED-LOGIN" && "bg-red-3 text-red-9"
+      )}
+    >
+      {type}
+    </button>
   );
 };
 

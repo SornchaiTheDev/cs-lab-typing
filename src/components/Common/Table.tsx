@@ -38,7 +38,7 @@ const DraggableRow = ({ row, reorderRow }: DragAndDropProps) => {
   return (
     <tr
       ref={dragRef}
-      className="text-center hover:bg-sand-4"
+      className="hover:bg-sand-4"
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <td ref={dropRef}>
@@ -187,7 +187,7 @@ function Table({
                   >
                     {header.isPlaceholder ? null : (
                       <button
-                        className="flex w-full items-center justify-center gap-2"
+                        className="flex w-full items-center  gap-2"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(
@@ -227,7 +227,7 @@ function Table({
                 );
 
               return (
-                <tr key={row.id} className="text-center hover:bg-sand-4">
+                <tr key={row.id} className="hover:bg-sand-4">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="p-3">
                       {flexRender(

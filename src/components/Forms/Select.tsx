@@ -81,21 +81,22 @@ function Select({
   return (
     <div ref={componentRef}>
       <div {...{ className }}>
-        <div className="flex justify-between">
-          {title && title.length > 0 && (
+        {title && title.length > 0 && (
+          <div className="flex justify-between">
             <h4 className="mb-2 block font-semibold text-sand-12">
               {title}{" "}
               {optional && (
                 <span className="text-sm text-sand-11">(optional)</span>
               )}
             </h4>
-          )}
-          {isError && (
-            <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
-              {error}
-            </h6>
-          )}
-        </div>
+
+            {isError && (
+              <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
+                {error}
+              </h6>
+            )}
+          </div>
+        )}
         {isLoading ? (
           <Skeleton width="100%" height="2.5rem" />
         ) : (
@@ -128,7 +129,7 @@ function Select({
       {isShow && (
         <ul
           ref={optionRef}
-          className="absolute z-20 flex max-h-[14rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-sand-1 p-2 shadow"
+          className="absolute z-20 flex max-h-[14rem] min-w-[10rem] w-full flex-col gap-2 overflow-y-auto break-words rounded-lg border border-sand-6 bg-sand-1 p-2 shadow"
           style={
             selectRef.current
               ? {

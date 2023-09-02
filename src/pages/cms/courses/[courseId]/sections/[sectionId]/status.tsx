@@ -48,18 +48,21 @@ const TypingSubmissions = ({
     }
   );
 
-  const highestSpeed = useMemo(() => {
-    if (typingHistories.data === undefined) return -1;
+  const highestSpeedAndScore = useMemo(() => {
+    if (typingHistories.data === undefined) return null;
     const cloneDatas = [...typingHistories.data.submissions];
 
-    const highestSpeed = cloneDatas.sort(
-      (prev, current) => current.adjusted_speed - prev.adjusted_speed
+    const highestSpeedAndScore = cloneDatas.sort(
+      (prev, current) =>
+        current.adjusted_speed +
+        current.score -
+        (prev.adjusted_speed + prev.score)
     );
-    if (highestSpeed[0] !== undefined) {
-      return highestSpeed[0].adjusted_speed;
+    if (highestSpeedAndScore[0] !== undefined) {
+      return highestSpeedAndScore[0].id;
     }
 
-    return -1;
+    return null;
   }, [typingHistories.data]);
 
   return (
@@ -72,7 +75,7 @@ const TypingSubmissions = ({
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data?.submissions ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestSpeed }}
+        {...{ pagination, highestSpeedAndScore }}
       />
     </>
   );
