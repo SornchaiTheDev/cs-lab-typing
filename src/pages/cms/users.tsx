@@ -189,6 +189,8 @@ function Users() {
     }));
   };
 
+  const usersAmount = trpc.users.getAllUsersAmount.useQuery();
+
   return (
     <>
       {selectedObj && (
@@ -268,7 +270,7 @@ posn001,passw0rd001,smart.sobdai@whatever.com,สามารถ สอบได
         </Button>
       </Modal>
 
-      <Layout title="Users">
+      <Layout title={`Users (${usersAmount.data ?? 0})`}>
         <Table
           isLoading={users.isLoading}
           data={users.data?.users ?? []}

@@ -4,7 +4,10 @@ import { getDuration } from "./utils/getDuration";
 import { useTypingStore } from "~/store";
 import { calculateTypingSpeed } from "./utils/calculateWPM";
 
-function Stats() {
+interface Props {
+  type?: "Lesson" | "Exam";
+}
+function Stats({ type = "Lesson" }: Props) {
   const stats = useTypingStore((state) => state.stats);
 
   const { errorChar, startedAt, endedAt, totalChars } = stats;
@@ -19,7 +22,8 @@ function Stats() {
 
   const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
 
-  const score = evaluate(adjustedSpeed, errorPercentage);
+  const score =
+    type === "Exam" ? evaluate(adjustedSpeed, errorPercentage) : undefined;
 
   const isGreaterThanOneMinute = duration.seconds > 60;
   const _duration = isGreaterThanOneMinute

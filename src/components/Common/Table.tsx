@@ -172,7 +172,7 @@ function Table({
           {children}
         </div>
       )}
-      <div className="max-w-full overflow-x-auto">
+      <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-sand-3">
             {table.getHeaderGroups().map((headerGroup) => (

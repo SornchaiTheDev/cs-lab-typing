@@ -74,17 +74,21 @@ function EndedGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const highestSpeed = useMemo(() => {
-    if (typingHistories.data === undefined) return -1;
+  const highestSpeedAndScore = useMemo(() => {
+    if (typingHistories.data === undefined) return null;
     const cloneDatas = [...typingHistories.data];
-    const highestSpeed = cloneDatas.sort(
-      (prev, current) => current.adjusted_speed - prev.adjusted_speed
+
+    const highestSpeedAndScore = cloneDatas.sort(
+      (prev, current) =>
+        current.adjusted_speed +
+        current.score -
+        (prev.adjusted_speed + prev.score)
     );
-    if (highestSpeed[0] !== undefined) {
-      return highestSpeed[0].adjusted_speed;
+    if (highestSpeedAndScore[0] !== undefined) {
+      return highestSpeedAndScore[0].id;
     }
 
-    return -1;
+    return null;
   }, [typingHistories.data]);
   return (
     <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
@@ -103,7 +107,7 @@ function EndedGame() {
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestSpeed }}
+        {...{ pagination, highestSpeedAndScore }}
       />
     </div>
   );

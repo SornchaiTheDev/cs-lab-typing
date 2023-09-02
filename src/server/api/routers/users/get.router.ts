@@ -170,4 +170,19 @@ export const getUserRouter = router({
         });
       }
     }),
+  getAllUsersAmount: adminProcedure.query(async ({ ctx }) => {
+    try {
+      const amount = await ctx.prisma.users.count({
+        where: {
+          deleted_at: null,
+        },
+      });
+      return amount;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
 });

@@ -13,24 +13,24 @@ function Badge({ children, type = "default", className }: Props) {
   let color;
   switch (type) {
     case "info":
-      color = "bg-blue-10";
+      color = "text-sand-1 bg-blue-10";
       break;
     case "success":
-      color = "bg-lime-10";
+      color = "text-sand-12 bg-lime-10";
       break;
     case "warning":
-      color = "bg-yellow-10";
+      color = "text-sand-4 bg-yellow-10";
       break;
     case "danger":
-      color = "bg-red-10";
+      color = "text-sand-4 bg-red-10";
       break;
     default:
-      color = "bg-sand-12";
+      color = "text-sand-4 bg-sand-12";
   }
   return (
     <div
       className={twMerge(
-        "flex w-fit items-center rounded-md px-2 py-1 text-sm font-semibold text-sand-4",
+        "flex w-fit items-center rounded-md px-2 py-1 text-sm font-semibold",
         color,
         className
       )}

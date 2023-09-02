@@ -15,7 +15,7 @@ interface Props {
   isLoading: boolean;
   pagination: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
-  highestSpeed: number;
+  highestSpeedAndScore: string | null;
   type?: SectionType;
 }
 
@@ -24,7 +24,7 @@ function TypingTable({
   isLoading,
   pagination,
   onPaginationChange,
-  highestSpeed,
+  highestSpeedAndScore,
   type = "Lesson",
 }: Props) {
   const columnHelper = createColumnHelper<typing_histories>();
@@ -35,8 +35,7 @@ function TypingTable({
         id: "round",
         size: 10,
         cell: (props) => {
-          const isHighestSpeed =
-            props.row.original.adjusted_speed === highestSpeed;
+          const isHighestSpeed = props.row.original.id === highestSpeedAndScore;
           return (
             <div
               className={twMerge(
@@ -83,7 +82,7 @@ function TypingTable({
         },
       }),
     ],
-    [columnHelper, highestSpeed]
+    [columnHelper, highestSpeedAndScore]
   );
 
   const { pageIndex, pageSize } = pagination;

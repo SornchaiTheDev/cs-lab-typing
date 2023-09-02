@@ -109,6 +109,36 @@ export const getSectionsRouter = router({
     }
   }),
 
+  getStudentsBySectionId: TaAboveProcedure.input(
+    z.object({
+      sectionId: z.string(),
+    })
+  ).query(async ({ ctx, input }) => {
+    const { sectionId } = input;
+    const _sectionId = parseInt(sectionId);
+    try {
+      const section = await ctx.prisma.sections.findUnique({
+        where: {
+          id: _sectionId,
+        },
+        select: {
+          _count: {
+            select: {
+              students: true,
+            },
+          },
+        },
+      });
+
+      return section?._count.students;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
+    }
+  }),
+
   getStudentPagination: teacherAboveProcedure
     .input(
       z.object({

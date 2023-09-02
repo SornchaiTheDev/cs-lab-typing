@@ -75,17 +75,21 @@ function EndedGameExam() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const highestSpeed = useMemo(() => {
-    if (typingHistories.data === undefined) return -1;
+  const highestSpeedAndScore = useMemo(() => {
+    if (typingHistories.data === undefined) return null;
     const cloneDatas = [...typingHistories.data];
-    const highestSpeed = cloneDatas.sort(
-      (prev, current) => current.adjusted_speed - prev.adjusted_speed
+
+    const highestSpeedAndScore = cloneDatas.sort(
+      (prev, current) =>
+        current.adjusted_speed +
+        current.score -
+        (prev.adjusted_speed + prev.score)
     );
-    if (highestSpeed[0] !== undefined) {
-      return highestSpeed[0].adjusted_speed;
+    if (highestSpeedAndScore[0] !== undefined) {
+      return highestSpeedAndScore[0].id;
     }
 
-    return -1;
+    return null;
   }, [typingHistories.data]);
 
   return (
@@ -97,7 +101,7 @@ function EndedGameExam() {
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>
       </button>
-      <Stats />
+      <Stats type="Exam" />
       <div className="h-[10rem] w-full">
         <LineChart datas={typingHistories.data ?? []} />
       </div>
@@ -106,7 +110,7 @@ function EndedGameExam() {
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestSpeed }}
+        {...{ pagination, highestSpeedAndScore }}
       />
     </div>
   );
