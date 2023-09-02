@@ -231,7 +231,6 @@ export const getTaskRouter = router({
 
       return tasksWithHistory;
     } catch (err) {
-      console.log(err);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",

@@ -8,19 +8,126 @@ import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export const getLabRouter = router({
-  getAllLabInCourse: TaAboveProcedure.input(
+  getLabPagination: teacherAboveProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        limit: z.number().default(10),
+        search: z.string().optional(),
+        courseId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { page, limit, courseId, search } = input;
+      try {
+        const [labs, amount] = await ctx.prisma.$transaction([
+          ctx.prisma.labs.findMany({
+            where: {
+              courseId: parseInt(courseId),
+              OR: [
+                {
+                  name: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  tags: {
+                    some: {
+                      name: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            orderBy: {
+              created_at: "asc",
+            },
+            skip: page * limit,
+            take: limit,
+            include: {
+              tags: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          }),
+          ctx.prisma.labs.count({
+            where: {
+              courseId: parseInt(courseId),
+              OR: [
+                {
+                  name: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  tags: {
+                    some: {
+                      name: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            orderBy: {
+              created_at: "asc",
+            },
+          }),
+        ]);
+
+        return { labs, pageCount: Math.ceil(amount / limit) };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+  getLabsInfiniteScroll: TaAboveProcedure.input(
     z.object({
+      limit: z.number().default(10),
+      cursor: z.number().nullish(),
+      search: z.string().optional(),
+      tags: z.array(z.number()),
       courseId: z.string(),
     })
   ).query(async ({ ctx, input }) => {
-    const { courseId } = input;
+    const { courseId, cursor, limit, search, tags } = input;
+
+    const hasTags = tags.length > 0;
     try {
       const labs = await ctx.prisma.labs.findMany({
         where: {
           deleted_at: null,
           courseId: parseInt(courseId),
+          name: {
+            contains: search,
+            mode: "insensitive",
+          },
+          tags: hasTags
+            ? {
+                some: {
+                  id: {
+                    in: tags,
+                  },
+                },
+              }
+            : undefined,
         },
-
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          created_at: "asc",
+        },
         include: {
           sections: true,
           tags: {
@@ -31,7 +138,13 @@ export const getLabRouter = router({
         },
       });
 
-      return labs;
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (labs.length > limit) {
+        const nextItem = labs.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return { labs, nextCursor };
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",

@@ -2,8 +2,12 @@ import CourseLayout from "~/Layout/CourseLayout";
 import Table from "~/components/Common/Table";
 import { AddLabSchema, type TAddLabSchema } from "~/schemas/LabSchema";
 import { Icon } from "@iconify/react";
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import {
+  type ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from "@tanstack/react-table";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Forms from "~/components/Forms";
@@ -19,6 +23,7 @@ import { useSession } from "next-auth/react";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
+import { debounce } from "lodash";
 interface LabsRow {
   id: number;
   name: string;
@@ -49,14 +54,41 @@ function Labs() {
 
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
-  const allLabs = trpc.labs.getAllLabInCourse.useQuery(
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { pageIndex, pageSize } = pagination;
+
+  const [searchString, setSearchString] = useState("");
+
+  const handleOnSearchChange = (value: string) => {
+    setSearchString(value);
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  };
+
+  const allLabs = trpc.labs.getLabPagination.useQuery(
     {
       courseId: courseId as string,
+      limit: pageSize,
+      page: pageIndex,
+      search: searchString,
     },
     {
       enabled: !!courseId,
     }
   );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchLabs = useMemo(() => debounce(() => allLabs.refetch(), 500), []);
+
+  useEffect(() => {
+    fetchLabs();
+  }, [searchString, fetchLabs]);
 
   const addLabMutation = trpc.labs.createLab.useMutation();
   const addLab = async (formData: TAddLabSchema) => {
@@ -115,7 +147,7 @@ function Labs() {
         accessorKey: "tags",
         size: 60,
         cell: (props) => {
-          const tags = props.getValue() as labs[];
+          const tags = (props.getValue() as labs[]) ?? [];
           return tags.map(({ name }) => name).join(",");
         },
       },
@@ -190,7 +222,16 @@ function Labs() {
         title={course.data?.name as string}
         isLoading={course.isLoading}
       >
-        <Table data={allLabs.data ?? []} columns={columns}>
+        <Table
+          isLoading={allLabs.isLoading}
+          pagination={pagination}
+          pageCount={allLabs.data?.pageCount ?? 0}
+          onPaginationChange={setPagination}
+          data={allLabs.data?.labs ?? []}
+          columns={columns}
+          {...{ searchString }}
+          onSearchChange={handleOnSearchChange}
+        >
           {isTeacher && (
             <Button
               onClick={() => setIsShow(true)}

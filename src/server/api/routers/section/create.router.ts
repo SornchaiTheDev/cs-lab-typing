@@ -73,8 +73,6 @@ export const createSectionsRouter = router({
           },
         });
 
-        console.log(labs);
-
         section = await ctx.prisma.sections.create({
           data: {
             active,
@@ -82,12 +80,6 @@ export const createSectionsRouter = router({
             type,
             note,
             closed_at,
-            labs: {
-              connect: labs.map((lab) => ({ id: lab.id })),
-            },
-            labs_order: {
-              set: labs.map((lab) => lab.id),
-            },
             semester: {
               connect: {
                 id: semester[0]?.id,
@@ -118,15 +110,6 @@ export const createSectionsRouter = router({
             },
           },
         });
-        for (const lab of labs) {
-          await ctx.prisma.labs_status.create({
-            data: {
-              sectionId: section.id,
-              labId: lab.id,
-              status: "ACTIVE",
-            },
-          });
-        }
       } catch (e) {
         if (e instanceof Error) {
           if (e.message === "DUPLICATED_SECTION") {

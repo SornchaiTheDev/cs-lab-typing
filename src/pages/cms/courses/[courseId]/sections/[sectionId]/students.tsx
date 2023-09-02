@@ -143,7 +143,7 @@ function Students() {
     link.download = fileName;
     link.click();
   };
-  console.log(studentsPagination.data);
+  
   return (
     <>
       <Alert
