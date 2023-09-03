@@ -297,6 +297,7 @@ function Lab() {
                 pathname: "/cms/tasks/[taskId]",
                 query: { taskId: props.row.original.id },
               }}
+              className="font-bold"
             >
               {props.row.original.name as string}
             </Link>

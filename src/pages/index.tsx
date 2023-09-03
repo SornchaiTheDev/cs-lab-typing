@@ -56,7 +56,7 @@ const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
           <div className="my-6 grid grid-cols-12 gap-6">
             {pages.map((page) =>
               page.sections.map(({ id, name, course, type }) => {
-                const { name: courseName, number, id: courseId } = course;
+                const { name: courseName, number, id: courseId , } = course;
                 return (
                   <Card
                     key={id}
@@ -66,6 +66,7 @@ const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
                     }}
                     title={courseName}
                     badges={[
+                      { title: number, type: "success" },
                       { title: number, type: "success" },
                       { title: name, type: "success" },
                       { title: type, type: "info" },
@@ -128,7 +129,7 @@ function MyCourse() {
         <div className="my-4 grid grid-cols-12 gap-6">
           {learn.data?.pages?.map((page) =>
             page.sections.map(({ id, name, course, type }) => {
-              const { name: courseName, number } = course;
+              const { name: courseName, number ,  } = course;
               return (
                 <Card
                   key={id}

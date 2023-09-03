@@ -46,6 +46,7 @@ export const getFrontRouter = router({
           select: {
             id: true,
             name: true,
+            semester: true,
             course: {
               select: {
                 id: true,
@@ -97,6 +98,7 @@ export const getFrontRouter = router({
         select: {
           id: true,
           name: true,
+          semester: true,
           course: {
             select: {
               id: true,

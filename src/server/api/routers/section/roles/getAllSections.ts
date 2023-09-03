@@ -38,6 +38,7 @@ export const getAllSections = async (
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,
     include: {
+      semester: true,
       _count: {
         select: {
           students: true,

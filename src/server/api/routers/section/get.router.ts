@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
   include: {
+    semester: true;
     _count: {
       select: {
         students: true;

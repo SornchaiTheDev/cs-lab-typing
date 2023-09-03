@@ -310,6 +310,7 @@ function LabSet() {
                   labId: props.row.original.id,
                 },
               }}
+              className="font-bold"
             >
               {props.row.original.name as string}
             </Link>

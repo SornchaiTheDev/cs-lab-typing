@@ -135,6 +135,7 @@ function Labs() {
                 pathname: router.pathname + "/[labId]",
                 query: { ...router.query, labId: props.row.original.id },
               }}
+              className="font-bold"
             >
               {props.getValue() as string}
             </Link>

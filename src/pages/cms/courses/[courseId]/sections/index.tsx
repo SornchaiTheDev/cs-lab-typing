@@ -181,42 +181,47 @@ function Sections() {
                 />
               ))
           : data?.pages.map((page) =>
-              page.sections.map(({ name, type, note, id, _count }) => (
-                <Link
-                  key={id}
-                  href={{
-                    pathname: "sections/[sectionId]",
-                    query: { ...router.query, sectionId: id },
-                  }}
-                  shallow={true}
-                  className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
-                >
-                  <div className="flex flex-col gap-2 p-2">
-                    <div className="flex gap-2">
-                      <Badge type="success">{name}</Badge>
-                      <Badge type="info">{type}</Badge>
-                    </div>
+              page.sections.map(
+                ({ name, type, semester, note, id, _count }) => (
+                  <Link
+                    key={id}
+                    href={{
+                      pathname: "sections/[sectionId]",
+                      query: { ...router.query, sectionId: id },
+                    }}
+                    shallow={true}
+                    className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
+                  >
+                    <div className="flex flex-col gap-2 p-2">
+                      <div className="flex gap-1">
+                        <Badge type="success">{`${semester.term}/${semester.year}`}</Badge>
+                        <Badge type="success">{type}</Badge>
+                      </div>
+                      <h4 className="text-xl font-medium text-sand-12">
+                        {name}
+                      </h4>
 
-                    <div>
-                      <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
-                        <Icon
-                          icon="solar:user-hand-up-line-duotone"
-                          className="text-lg"
-                        />
-                        <h6 className="text-sand-12">
-                          <span className="font-bold">{_count.students}</span>{" "}
-                          student{_count.students > 1 ? "s" : ""}
-                        </h6>
-                      </div>
-                      <div className="min-h-[1.5rem]">
-                        <h6 className="text-sand-10">
-                          {note?.length === 0 ? "-" : note}
-                        </h6>
+                      <div>
+                        <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
+                          <Icon
+                            icon="solar:user-hand-up-line-duotone"
+                            className="text-lg"
+                          />
+                          <h6 className="text-sand-12">
+                            <span className="font-bold">{_count.students}</span>{" "}
+                            student{_count.students > 1 ? "s" : ""}
+                          </h6>
+                        </div>
+                        <div className="min-h-[1.5rem]">
+                          <h6 className="text-sand-10">
+                            {note?.length === 0 ? "-" : note}
+                          </h6>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))
+                  </Link>
+                )
+              )
             )}
       </div>
 

@@ -110,6 +110,7 @@ function Tasks() {
                 pathname: router.pathname + "/[taskId]",
                 query: { ...router.query, taskId: props.row.original.id },
               }}
+              className="font-bold"
             >
               {props.getValue() as string}
             </Link>
