@@ -36,8 +36,12 @@ function TypingTask() {
     try {
       const sanitizedText = text
         .split("\n")
+        .filter((line) => !["", " "].includes(line))
         .map((line) => line.replace(/\s+/g, " ").trim())
         .join(" ");
+
+      console.log(text.split("\n"));
+      console.log(sanitizedText);
 
       await saveTask.mutateAsync({
         taskId: taskId as string,

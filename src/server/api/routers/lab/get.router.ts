@@ -238,6 +238,9 @@ export const getLabRouter = router({
             where: {
               labId: _labId,
             },
+            orderBy: {
+              created_at: "desc",
+            },
             skip: page * limit,
             take: limit,
             include: {

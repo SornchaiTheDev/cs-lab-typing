@@ -149,6 +149,9 @@ export const getTaskRouter = router({
             where: {
               tasksId: _taskId,
             },
+            orderBy: {
+              created_at: "desc",
+            },
             skip: page * limit,
             take: limit,
             include: {

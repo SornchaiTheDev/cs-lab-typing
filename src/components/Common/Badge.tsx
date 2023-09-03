@@ -16,7 +16,7 @@ function Badge({ children, type = "default", className }: Props) {
       color = "text-sand-1 bg-blue-10";
       break;
     case "success":
-      color = "text-sand-12 bg-lime-10";
+      color = "text-sand-12 dark:text-sand-1 bg-lime-10";
       break;
     case "warning":
       color = "text-sand-12 bg-yellow-10";
