@@ -370,6 +370,9 @@ export const getTaskRouter = router({
                 },
               ],
             },
+            orderBy: {
+              created_at: "asc",
+            },
             include: {
               tags: true,
               owner: {
@@ -424,6 +427,9 @@ export const getTaskRouter = router({
                 ],
               },
             ],
+          },
+          orderBy: {
+            created_at: "asc",
           },
           include: {
             tags: true,
