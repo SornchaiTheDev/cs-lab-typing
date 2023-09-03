@@ -2,7 +2,7 @@ import { AddCourseSchema } from "~/schemas/CourseSchema";
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
+import { isUserInThisCourse } from "~/server/utils/checkUser";
 
 export const updateCoursesRouter = router({
   updateCourse: teacherAboveProcedure

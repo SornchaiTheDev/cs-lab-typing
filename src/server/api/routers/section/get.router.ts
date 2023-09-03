@@ -11,6 +11,10 @@ import type { Prisma, labs, labs_status } from "@prisma/client";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
+import {
+  isUserInThisCourse,
+  isUserInThisSection,
+} from "~/server/utils/checkUser";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
   include: {
@@ -37,28 +41,14 @@ export const getSectionsRouter = router({
         message: "SOMETHING_WENT_WRONG",
       });
     }
-    const _id = parseInt(id);
+    const _sectionId = parseInt(id);
 
     try {
-      const requester = await ctx.prisma.users.findFirst({
-        where: {
-          student_id: ctx.user.student_id,
-          deleted_at: null,
-          instructors: {
-            some: {
-              id: _id,
-            },
-          },
-        },
-      });
-
-      if (!requester) {
-        throw new Error("NOT_FOUND");
-      }
+      await isUserInThisSection(ctx.user.student_id, _sectionId);
 
       const section = await ctx.prisma.sections.findFirst({
         where: {
-          id: _id,
+          id: _sectionId,
           deleted_at: null,
         },
         include: {
@@ -89,7 +79,7 @@ export const getSectionsRouter = router({
       if (isSectionClosed) {
         await ctx.prisma.sections.update({
           where: {
-            id: _id,
+            id: _sectionId,
           },
           data: {
             active: false,
@@ -103,6 +93,14 @@ export const getSectionsRouter = router({
         labs: sortedLabOrder,
       };
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
@@ -118,6 +116,8 @@ export const getSectionsRouter = router({
     const { sectionId } = input;
     const _sectionId = parseInt(sectionId);
     try {
+      await isUserInThisSection(ctx.user.student_id, _sectionId);
+
       const section = await ctx.prisma.sections.findUnique({
         where: {
           id: _sectionId,
@@ -133,6 +133,14 @@ export const getSectionsRouter = router({
 
       return section?._count.students;
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
@@ -153,6 +161,8 @@ export const getSectionsRouter = router({
       const { page, limit, sectionId, search } = input;
       const _sectionId = parseInt(sectionId);
       try {
+        await isUserInThisSection(ctx.user.student_id, _sectionId);
+
         const [pagination, allStudentAmount, allStudents] =
           await ctx.prisma.$transaction([
             ctx.prisma.sections.findUnique({
@@ -216,6 +226,14 @@ export const getSectionsRouter = router({
           pageCount: Math.ceil(studentAmount / limit),
         };
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -229,11 +247,13 @@ export const getSectionsRouter = router({
     })
   ).query(async ({ ctx, input }) => {
     const { id } = input;
-    const _id = parseInt(id);
+    const _sectionId = parseInt(id);
     try {
+      await isUserInThisSection(ctx.user.student_id, _sectionId);
+
       const section = await ctx.prisma.sections.findUnique({
         where: {
-          id: _id,
+          id: _sectionId,
         },
         include: {
           semester: true,
@@ -258,6 +278,14 @@ export const getSectionsRouter = router({
       }
       return section;
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
@@ -281,6 +309,7 @@ export const getSectionsRouter = router({
       const student_id = ctx.user.student_id;
       let sections: sectionsIncludedStudentLength[] = [];
       try {
+        await isUserInThisCourse(student_id, _courseId);
         if (role === "ADMIN") {
           sections = await getAllSections(
             ctx.prisma,
@@ -307,6 +336,14 @@ export const getSectionsRouter = router({
         }
         return { sections, nextCursor };
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -328,6 +365,8 @@ export const getSectionsRouter = router({
       const _sectionId = parseInt(sectionId);
 
       try {
+        await isUserInThisSection(ctx.user.student_id, _sectionId);
+
         const [sectionHistory, amount] = await ctx.prisma.$transaction([
           ctx.prisma.section_histories.findMany({
             where: {
@@ -351,6 +390,14 @@ export const getSectionsRouter = router({
 
         return { sectionHistory, pageCount: Math.ceil(amount / limit) };
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -363,6 +410,8 @@ export const getSectionsRouter = router({
     .query(async ({ ctx, input }) => {
       const { id } = input;
       try {
+        await isUserInThisSection(ctx.user.student_id, id);
+
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id,
@@ -406,6 +455,14 @@ export const getSectionsRouter = router({
 
         return relation;
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

@@ -1,4 +1,6 @@
+import { getHighestRole } from "~/helpers";
 import { prisma } from "../db";
+import { roles } from "@prisma/client";
 export const isUserInThisCourse = async (
   student_id: string,
   course_id: number
@@ -25,5 +27,13 @@ export const isUserInThisCourse = async (
     },
   });
 
+  const user = await prisma.users.findFirst({
+    where: {
+      student_id,
+      deleted_at: null,
+    },
+  });
+
+  if (getHighestRole(user?.roles.join(",")) === "ADMIN") return;
   if (!(asInstructor || asAuthor)) throw new Error("UNAUTHORIZED");
 };

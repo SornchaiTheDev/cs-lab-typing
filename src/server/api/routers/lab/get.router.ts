@@ -6,8 +6,10 @@ import {
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisSection } from "~/server/utils/checkIfUserIsInstructorInThisSection";
-import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
+import {
+  isUserInThisCourse,
+  isUserInThisSection,
+} from "~/server/utils/checkUser";
 
 export const getLabRouter = router({
   getLabPagination: teacherAboveProcedure

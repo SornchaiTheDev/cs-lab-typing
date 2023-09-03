@@ -8,6 +8,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { isArrayUnique } from "~/helpers";
+import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 
 export const updateSectionsRouter = router({
   updateSection: teacherAboveProcedure
@@ -16,11 +17,12 @@ export const updateSectionsRouter = router({
       const { id, instructors, name, semester, note, active, type, closed_at } =
         input;
 
-      const year = semester.split("/")[0] ?? "";
-      const term = semester.split("/")[1] ?? "";
+      const [year, term] = semester.split("/");
+
       const requester = ctx.user.student_id;
       const _id = parseInt(id);
       try {
+        await isUserInThisSection(requester, _id);
         const semester = await ctx.prisma.semesters.findFirst({
           where: {
             year,
@@ -85,6 +87,14 @@ export const updateSectionsRouter = router({
           },
         });
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SAME_YEAR_AND_TERM",
@@ -104,6 +114,8 @@ export const updateSectionsRouter = router({
 
     const requester = ctx.user.student_id;
     try {
+      await isUserInThisSection(requester, _sectionId);
+
       const _requester = await ctx.prisma.users.findFirst({
         where: {
           student_id: requester,
@@ -150,6 +162,14 @@ export const updateSectionsRouter = router({
         },
       });
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
@@ -168,6 +188,8 @@ export const updateSectionsRouter = router({
     const requester = ctx.user.student_id;
 
     try {
+      await isUserInThisSection(requester, _sectionId);
+
       const _requester = await ctx.prisma.users.findFirst({
         where: {
           student_id: requester,
@@ -199,6 +221,14 @@ export const updateSectionsRouter = router({
         },
       });
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
@@ -218,6 +248,7 @@ export const updateSectionsRouter = router({
   ).mutation(async ({ ctx, input }) => {
     const { sectionId, labId, status } = input;
 
+    const requester = ctx.user.student_id;
     const _sectionId = parseInt(sectionId);
 
     const lab = await ctx.prisma.labs.findUnique({
@@ -233,6 +264,8 @@ export const updateSectionsRouter = router({
     }
 
     try {
+      await isUserInThisSection(requester, _sectionId);
+
       await ctx.prisma.labs_status.update({
         where: {
           labId_sectionId: {
@@ -244,8 +277,6 @@ export const updateSectionsRouter = router({
           status,
         },
       });
-
-      const requester = ctx.user.student_id;
 
       const _requester = await ctx.prisma.users.findFirst({
         where: {
@@ -273,6 +304,13 @@ export const updateSectionsRouter = router({
       });
     } catch (err) {
       if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+
         if (err.message === "LAB_CLOSED") {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
@@ -300,6 +338,8 @@ export const updateSectionsRouter = router({
         });
       }
       try {
+        await isUserInThisSection(requester, _sectionId);
+
         const sectionUsers = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -374,6 +414,12 @@ export const updateSectionsRouter = router({
         });
       } catch (err) {
         if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "USER_NOT_FOUND",

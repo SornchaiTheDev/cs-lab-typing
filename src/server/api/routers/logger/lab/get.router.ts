@@ -2,7 +2,7 @@ import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import type { LabLogger } from "@prisma/client";
-import { isUserInThisSection } from "~/server/utils/checkIfUserIsInstructorInThisSection";
+import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 
 export const getLabLogRouter = router({
   getLabLog: teacherAboveProcedure

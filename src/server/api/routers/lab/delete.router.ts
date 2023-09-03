@@ -1,7 +1,7 @@
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
+import { isUserInThisCourse } from "~/server/utils/checkUser";
 
 export const deleteLabRouter = router({
   deleteLab: teacherAboveProcedure

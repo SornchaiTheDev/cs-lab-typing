@@ -2,7 +2,7 @@ import type { labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
-import { isUserIsStudentInThisSection } from "~/server/utils/checkUser";
+import { isUserInThisSection } from "~/server/utils/checkUser";
 
 export const getFrontRouter = router({
   getCheckUser: authedProcedure.query(async ({ ctx }) => {
@@ -138,7 +138,7 @@ export const getFrontRouter = router({
       const _sectionId = parseInt(sectionId);
 
       try {
-        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+        await isUserInThisSection(ctx.user.student_id, _sectionId);
 
         const labs = await ctx.prisma.sections.findUnique({
           where: {
@@ -218,7 +218,7 @@ export const getFrontRouter = router({
       const _sectionId = parseInt(sectionId);
       const student_id = ctx.user.student_id;
       try {
-        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+        await isUserInThisSection(ctx.user.student_id, _sectionId);
 
         const section = await ctx.prisma.sections.findUnique({
           where: {
@@ -340,7 +340,7 @@ export const getFrontRouter = router({
 
       const student_id = ctx.user.student_id;
       try {
-        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+        await isUserInThisSection(ctx.user.student_id, _sectionId);
 
         const section = await ctx.prisma.sections.findUnique({
           where: {
@@ -506,7 +506,7 @@ export const getFrontRouter = router({
 
       const student_id = ctx.user.student_id;
       try {
-        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+        await isUserInThisSection(ctx.user.student_id, _sectionId);
 
         const section = await ctx.prisma.sections.findUnique({
           where: {

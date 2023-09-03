@@ -10,7 +10,7 @@ import { getAdminCourses } from "./roles/getAdminCourses";
 import { getTeacherCourses } from "./roles/getTeacherCourses";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
+import { isUserInThisCourse } from "~/server/utils/checkUser";
 
 export const getCourseRouter = router({
   getCoursePagination: teacherAboveProcedure

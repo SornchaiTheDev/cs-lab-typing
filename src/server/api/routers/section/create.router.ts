@@ -3,6 +3,7 @@ import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
 
 export const createSectionsRouter = router({
   createSection: teacherAboveProcedure
@@ -18,13 +19,13 @@ export const createSectionsRouter = router({
         active,
         closed_at,
       } = input;
-      const year = semester.split("/")[0] ?? "";
-      const term = semester.split("/")[1] ?? "";
+      const [year, term] = semester.split("/");
       const requester = ctx.user.student_id;
       const _courseId = parseInt(courseId);
 
       let section;
       try {
+        await isUserInThisCourse(requester, _courseId);
         const _requester = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,
@@ -67,12 +68,6 @@ export const createSectionsRouter = router({
           throw new Error("DUPLICATED_SECTION");
         }
 
-        const labs = await ctx.prisma.labs.findMany({
-          where: {
-            courseId: _courseId,
-          },
-        });
-
         section = await ctx.prisma.sections.create({
           data: {
             active,
@@ -110,18 +105,25 @@ export const createSectionsRouter = router({
             },
           },
         });
-      } catch (e) {
-        if (e instanceof Error) {
-          if (e.message === "DUPLICATED_SECTION") {
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "DUPLICATED_SECTION") {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "DUPLICATED_SECTION",
               cause: "DUPLICATED_SECTION",
             });
           }
+
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          if (e.code === "P2002") {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === "P2002") {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "DUPLICATED_SECTION",

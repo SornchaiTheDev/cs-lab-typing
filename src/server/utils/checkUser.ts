@@ -1,2 +1,2 @@
-export { isUserInThisSection } from "./checkIfUserIsInstructorInThisSection";
-export { isUserIsStudentInThisSection } from "./checkIfUserIsStudentInThisSection";
+export { isUserInThisCourse } from "./checkIfUserInThisCourse";
+export { isUserInThisSection } from "./checkIfUserIsInThisSection";

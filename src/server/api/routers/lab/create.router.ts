@@ -3,7 +3,7 @@ import { AddLabSchema } from "~/schemas/LabSchema";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
+import { isUserInThisCourse } from "~/server/utils/checkUser";
 
 export const createLabRouter = router({
   createLab: teacherAboveProcedure

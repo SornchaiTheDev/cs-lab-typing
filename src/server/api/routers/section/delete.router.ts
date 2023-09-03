@@ -5,6 +5,7 @@ import {
 } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 
 export const deleteSectionsRouter = router({
   deleteSection: teacherAboveProcedure
@@ -17,6 +18,7 @@ export const deleteSectionsRouter = router({
       const { id } = input;
       const requester = ctx.user.student_id;
       try {
+        await isUserInThisSection(requester, id);
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id,
@@ -110,6 +112,8 @@ export const deleteSectionsRouter = router({
       const _sectionId = parseInt(sectionId);
       const requester = ctx.user.student_id;
       try {
+        await isUserInThisSection(requester, _sectionId);
+
         const user = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,
@@ -142,6 +146,14 @@ export const deleteSectionsRouter = router({
           },
         });
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -159,6 +171,8 @@ export const deleteSectionsRouter = router({
 
     const requester = ctx.user.student_id;
     try {
+      await isUserInThisSection(requester, _sectionId);
+
       const user = await ctx.prisma.users.findFirst({
         where: {
           student_id: requester,
