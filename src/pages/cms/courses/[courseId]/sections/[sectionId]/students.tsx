@@ -80,6 +80,7 @@ function Students() {
 
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
 
+  const ctx = trpc.useContext();
   const deleteStudent = trpc.sections.deleteStudent.useMutation();
   const deleteSelectRow = async () => {
     try {
@@ -88,6 +89,7 @@ function Students() {
         id: selectedUser as number,
       });
       await studentsPagination.refetch();
+      await ctx.sections.getStudentsBySectionId.invalidate()
       callToast({
         msg: "Delete Student from Section successfully",
         type: "success",
