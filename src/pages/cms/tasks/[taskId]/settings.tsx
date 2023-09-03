@@ -9,7 +9,7 @@ import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
 import { useDeleteAffectStore } from "~/store";
 import { useSession } from "next-auth/react";
-import { SearchValue } from "~/types";
+import type { SearchValue } from "~/types";
 
 function Settings() {
   const { data: session } = useSession();

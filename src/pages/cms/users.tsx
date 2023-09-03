@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Button from "~/components/Common/Button";
-import { useLocalStorage, useOnClickOutside } from "usehooks-ts";
+import { useOnClickOutside } from "usehooks-ts";
 import Modal from "~/components/Common/Modal";
 import Codemirror from "~/codemirror";
 import { addUserDarkTheme, addUserLightTheme } from "~/codemirror/theme";

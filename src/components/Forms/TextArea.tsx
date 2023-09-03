@@ -1,5 +1,5 @@
 import React from "react";
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import type { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import Skeleton from "../Common/Skeleton";
 
 interface Props<T extends FieldValues> {
@@ -29,12 +29,12 @@ const TextArea = <T extends FieldValues>(props: Props<T>) => {
   return (
     <div {...{ className }}>
       <div className="flex justify-between">
-        <h4 className="block mb-2 font-semibold text-sand-12">
+        <h4 className="mb-2 block font-semibold text-sand-12">
           {title}{" "}
           {optional && <span className="text-sm text-sand-11">(optional)</span>}
         </h4>
         {isError && (
-          <h6 className="block mb-2 text-sm font-semibold text-tomato-9">
+          <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
             {error}
           </h6>
         )}
@@ -45,7 +45,7 @@ const TextArea = <T extends FieldValues>(props: Props<T>) => {
         <textarea
           disabled={disabled}
           rows={5}
-          className="w-full p-2 border rounded-lg text-sand-12 outline-none bg-sand-1 border-sand-6 caret-sand-12"
+          className="w-full rounded-lg border border-sand-6 bg-sand-1 p-2 text-sand-12 caret-sand-12 outline-none"
           {...{ ...register(label) }}
         />
       )}

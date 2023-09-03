@@ -7,7 +7,6 @@ import { Icon } from "@iconify/react";
 import { useMemo, useState } from "react";
 import Modal from "~/components/Common/Modal";
 import Collapse from "~/components/Common/Collapse";
-import Stats from "~/components/Typing/Stats";
 import { getDuration } from "~/components/Typing/utils/getDuration";
 import type { SectionType, submission_type } from "@prisma/client";
 import { useSession } from "next-auth/react";

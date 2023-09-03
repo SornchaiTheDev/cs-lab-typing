@@ -1,6 +1,5 @@
 import { getHighestRole } from "~/helpers";
 import { prisma } from "../db";
-import { roles } from "@prisma/client";
 export const isUserInThisCourse = async (
   student_id: string,
   course_id: number

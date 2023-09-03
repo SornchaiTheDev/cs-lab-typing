@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import Card from "~/components/Common/Card";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
 import { trpc } from "~/helpers";
-import Announcement from "~/components/Common/Announcement";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";

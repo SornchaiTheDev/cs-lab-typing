@@ -1,4 +1,4 @@
-import { useState, useRef, ReactNode, useEffect } from "react";
+import { useState, useRef, type ReactNode, useEffect } from "react";
 import Button from "./Button";
 import { useOnClickOutside } from "usehooks-ts";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,32 +57,32 @@ function ModalWithButton({
       <Button
         onClick={() => setIsShow(true)}
         icon={icon}
-        className={clsx("shadow  text-sand-1 active:bg-sand-11", color)}
+        className={clsx("text-sand-1  shadow active:bg-sand-11", color)}
       >
         {title}
       </Button>
       <AnimatePresence>
         {isShow && (
-          <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-screen bg-sand-12 bg-opacity-30 backdrop-blur-sm">
+          <div className="fixed left-0 top-0 z-50 flex h-screen w-full items-center justify-center bg-sand-12 bg-opacity-30 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, translateY: "10px" }}
               animate={{ opacity: 1, translateY: 0 }}
               ref={modalRef}
               className={clsx(
-                "absolute p-4 bg-sand-1 max-w-full rounded-md shadow w-[95%]",
+                "absolute w-[95%] max-w-full rounded-md bg-sand-1 p-4 shadow",
                 className
               )}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-xl text-sand-12 font-bold">{title}</h4>
+                  <h4 className="text-xl font-bold text-sand-12">{title}</h4>
                   {!!description && (
                     <p className="text-sand-9">{description}</p>
                   )}
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-2 text-xl rounded-full hover:bg-sand-3 active:bg-sand-4 text-sand-12"
+                  className="rounded-full p-2 text-xl text-sand-12 hover:bg-sand-3 active:bg-sand-4"
                 >
                   <Icon icon="material-symbols:close-rounded" />
                 </button>
@@ -93,7 +93,7 @@ function ModalWithButton({
                   onClick={handleOnConfirmClick}
                   isLoading={false}
                   icon={confirmBtn.icon}
-                  className="w-full py-3 mt-4 shadow bg-sand-12 text-sand-1 active:bg-sand-11"
+                  className="mt-4 w-full bg-sand-12 py-3 text-sand-1 shadow active:bg-sand-11"
                 >
                   {confirmBtn.title}
                 </Button>

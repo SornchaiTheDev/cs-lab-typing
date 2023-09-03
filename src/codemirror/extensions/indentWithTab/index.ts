@@ -1,11 +1,9 @@
-import {
+import { EditorState, countColumn, EditorSelection } from "@codemirror/state";
+import type {
   StateCommand,
-  EditorState,
-  countColumn,
   Line,
   ChangeSet,
   ChangeSpec,
-  EditorSelection,
   SelectionRange,
 } from "@codemirror/state";
 import { indentMore } from "@codemirror/commands";
@@ -53,7 +51,7 @@ export const indentWithTabLess: StateCommand = ({ state, dispatch }) => {
   dispatch(
     state.update(
       changeBySelectedLine(state, (line: Line, changes: ChangeSpec[]) => {
-        const space = /^\s*/.exec(line.text)![0];
+        const space = /^\s*/.exec(line.text)?.[0];
         if (!space) return;
         const col = countColumn(space, state.tabSize);
         let keep = 0;

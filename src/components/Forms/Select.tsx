@@ -3,7 +3,6 @@ import { useState, useRef, type KeyboardEvent, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useOnClickOutside } from "usehooks-ts";
 import Skeleton from "../Common/Skeleton";
-import type { SearchValue } from "~/types";
 import { twMerge } from "tailwind-merge";
 
 interface Props {

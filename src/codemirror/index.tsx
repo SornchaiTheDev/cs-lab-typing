@@ -4,7 +4,7 @@ import { createTheme } from "@uiw/codemirror-themes";
 import { tags as t } from "@lezer/highlight";
 import { EditorView, keymap } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript";
-import { Extension } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
 import {
   indentWithTab,
   indentWithTabLess,
@@ -54,7 +54,7 @@ const baseTheme = EditorView.baseTheme({
 });
 
 interface Props {
-  onChange?: (value: string, viewUpdate: any) => void;
+  onChange?: (value: string, viewUpdate: unknown) => void;
   value?: string;
   height?: string;
   minHeight?: string;

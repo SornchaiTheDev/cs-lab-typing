@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import WithUsernamePassword from "~/components/Login/WithUsernamePassword";
 import Divider from "~/components/Login/Divider";
 import WithGoogle from "~/components/Login/WithGoogle";
@@ -12,7 +11,7 @@ import useTheme from "~/hooks/useTheme";
 const Login: NextPage = () => {
   const { query } = useRouter();
 
-  const { theme } = useTheme();
+  const {} = useTheme();
 
   const catchError = (error: string) => {
     if (error) {

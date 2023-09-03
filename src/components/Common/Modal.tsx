@@ -1,6 +1,5 @@
 import { type ReactNode, useRef } from "react";
 import { motion } from "framer-motion";
-import clsx from "clsx";
 import { useOnClickOutside } from "usehooks-ts";
 import { Icon } from "@iconify/react";
 import { twMerge } from "tailwind-merge";

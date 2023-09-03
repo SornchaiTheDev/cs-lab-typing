@@ -13,7 +13,7 @@ import { callToast } from "~/services/callToast";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { SearchValue } from "~/types";
+import type { SearchValue } from "~/types";
 import { debounce } from "lodash";
 
 interface TaskRow {
@@ -67,7 +67,6 @@ function Tasks() {
     },
     { enabled: false }
   );
-
 
   useEffect(() => {
     allTasks.refetch();

@@ -2,7 +2,7 @@ import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { trpc } from "~/helpers";
-import CommandPallete from "~/components/CommandPallete";
+// import CommandPallete from "~/components/CommandPallete";
 import { Toaster } from "react-hot-toast";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";

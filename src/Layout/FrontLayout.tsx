@@ -3,7 +3,6 @@ import { Icon } from "@iconify/react";
 import * as Popover from "@radix-ui/react-popover";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getHighestRole } from "~/helpers";
 import { signOut, useSession } from "next-auth/react";

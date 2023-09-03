@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import type { HTMLInputTypeAttribute } from "react";
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import type { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import Skeleton from "../Common/Skeleton";
 
 interface Props<T extends FieldValues> {
@@ -34,12 +34,12 @@ const Input = <T extends FieldValues>(props: Props<T>) => {
   return (
     <div {...{ className }}>
       <div className="flex justify-between">
-        <h4 className="block mb-2 font-semibold text-sand-12">
+        <h4 className="mb-2 block font-semibold text-sand-12">
           {title}{" "}
           {optional && <span className="text-sm text-sand-11">(optional)</span>}
         </h4>
         {isError && (
-          <h6 className="block mb-2 text-sm font-semibold text-tomato-9">
+          <h6 className="mb-2 block text-sm font-semibold text-tomato-9">
             {error}
           </h6>
         )}
@@ -50,7 +50,7 @@ const Input = <T extends FieldValues>(props: Props<T>) => {
         <input
           disabled={disabled}
           className={clsx(
-            "w-full p-2 border border-sand-6 rounded-md text-sand-12 outline-none bg-sand-1 caret-sand-12",
+            "w-full rounded-md border border-sand-6 bg-sand-1 p-2 text-sand-12 caret-sand-12 outline-none",
             isError && "border-tomato-7"
           )}
           {...{ type, placeholder, ...register(label) }}

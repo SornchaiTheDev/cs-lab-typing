@@ -1,13 +1,12 @@
 import { Icon } from "@iconify/react";
 import clsx from "clsx";
-import { useState, KeyboardEvent } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/router";
-import { motion } from "framer-motion";
 
 interface Command {
   name: string;
   icon: string;
-  action: { type: string; payload: any };
+  action: { type: string; payload: unknown };
 }
 
 interface CommandList {
@@ -130,13 +129,13 @@ function CommandPallete() {
 
   const executeCommand = (command: Command) => {
     if (command.action.type === "navigate") {
-      router.push(command.action.payload);
+      router.push(command.action.payload as string);
     }
   };
 
   return (
-    <div className="fixed z-50 w-full h-screen bg-opacity-20 bg-sand-12">
-      <div className="shadow absolute max-w-[90%] md:max-w-[40rem] top-[20%] max-h-[30rem] overflow-auto left-1/2 -translate-x-1/2 w-[40rem] rounded-lg bg-white px-4">
+    <div className="fixed z-50 h-screen w-full bg-sand-12 bg-opacity-20">
+      <div className="absolute left-1/2 top-[20%] max-h-[30rem] w-[40rem] max-w-[90%] -translate-x-1/2 overflow-auto rounded-lg bg-white px-4 shadow md:max-w-[40rem]">
         <div className="flex items-center gap-2">
           <Icon icon="solar:magnifer-line-duotone" className="text-xl" />
           <input
@@ -144,17 +143,17 @@ function CommandPallete() {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleKeyDown}
             autoFocus
-            className="w-full p-2 text-lg border-b outline-none"
+            className="w-full border-b p-2 text-lg outline-none"
             placeholder="Enter a command"
           />
         </div>
-        <div className="flex items-center justify-end gap-2 my-4">
-          <div className="px-3 py-1 text-xs border-b-2 rounded-lg bg-sand-4 border-sand-10">
+        <div className="my-4 flex items-center justify-end gap-2">
+          <div className="rounded-lg border-b-2 border-sand-10 bg-sand-4 px-3 py-1 text-xs">
             <Icon icon="mi:enter" className="text-sm" />
           </div>
           <p className="text-xs">to Select</p>
 
-          <div className="px-3 py-1 text-xs border-b-2 rounded-lg bg-sand-4 border-sand-10">
+          <div className="rounded-lg border-b-2 border-sand-10 bg-sand-4 px-3 py-1 text-xs">
             <code className="text-xs">esc</code>
           </div>
           <p className="text-xs">to Close</p>
@@ -186,7 +185,7 @@ function CommandPallete() {
                       onClick={() => executeCommand(command)}
                       key={command.name}
                       className={clsx(
-                        "flex items-center w-full gap-2 p-2 rounded-lg hover:bg-sand-2",
+                        "flex w-full items-center gap-2 rounded-lg p-2 hover:bg-sand-2",
                         commandIndex === selectedIndex && "bg-sand-2"
                       )}
                     >

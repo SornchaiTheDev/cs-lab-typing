@@ -6,7 +6,6 @@ import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import type { Prisma } from "@prisma/client";
-import Badge from "~/components/Common/Badge";
 
 type sections = Prisma.sectionsGetPayload<{
   select: {
@@ -85,7 +84,7 @@ const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
   );
 };
 function MyCourse() {
-  const { data: session } = useSession();
+  const {} = useSession();
   const learn = trpc.front.getSections.useInfiniteQuery(
     { limit: 6 },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }

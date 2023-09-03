@@ -1,6 +1,6 @@
-import { ChangeEvent, useState, useEffect } from "react";
+import { type ChangeEvent, useState, useEffect } from "react";
 import { validateTimeRange } from "./timeValidate";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 
 interface Props {
   date: DateRange;

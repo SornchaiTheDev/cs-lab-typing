@@ -2,11 +2,8 @@ import CourseLayout from "~/Layout/CourseLayout";
 import Table from "~/components/Common/Table";
 import { AddLabSchema, type TAddLabSchema } from "~/schemas/LabSchema";
 import { Icon } from "@iconify/react";
-import {
-  type ColumnDef,
-  createColumnHelper,
-  PaginationState,
-} from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";

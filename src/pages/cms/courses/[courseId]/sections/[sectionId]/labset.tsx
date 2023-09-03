@@ -19,7 +19,7 @@ import { TRPCError } from "@trpc/server";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import Multiple from "~/components/Forms/Search/MultipleSearch";
-import { SearchValue } from "~/types";
+import type { SearchValue } from "~/types";
 import { useInView } from "react-intersection-observer";
 import { debounce } from "lodash";
 

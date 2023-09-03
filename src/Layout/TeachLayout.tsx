@@ -10,7 +10,7 @@ interface Props {
 }
 
 function TeachLayout({ title, children, isLoading }: Props) {
-  const { isAdmin, isTeacher, isStudent } = useRole();
+  const { isAdmin, isTeacher } = useRole();
 
   const menus = [
     { name: "Overview", path: "" },

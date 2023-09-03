@@ -11,7 +11,7 @@ import TextArea from "./TextArea";
 import Button from "~/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
-import { SearchValue } from "~/types";
+import type { SearchValue } from "~/types";
 import DateTimePicker from "./DatePicker/DateTimePicker";
 
 interface ConfirmBtn {

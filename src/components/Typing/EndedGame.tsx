@@ -35,10 +35,9 @@ function EndedGame() {
     }
   );
 
-  const [stats, setStatus, reset] = useTypingStore((state) => [
+  const [stats, setStatus] = useTypingStore((state) => [
     state.stats,
     state.setStatus,
-    state.reset,
   ]);
 
   const submitTyping = trpc.front.submitTyping.useMutation();

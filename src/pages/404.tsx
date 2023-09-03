@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import useTheme from "~/hooks/useTheme";
 
 function NotFound() {
-  const { theme } = useTheme();
+  const {} = useTheme();
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-2 text-sand-12">
