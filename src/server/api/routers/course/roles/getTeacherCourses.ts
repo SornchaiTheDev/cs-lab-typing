@@ -10,30 +10,48 @@ export const getTeacherCourses = async (
   return await prisma.courses.findMany({
     where: {
       deleted_at: null,
-      OR: [
+      AND: [
         {
-          name: {
-            contains: search,
-            mode: "insensitive",
-          },
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              number: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
         },
         {
-          number: {
-            contains: search,
-            mode: "insensitive",
-          },
+          OR: [
+            {
+              authors: {
+                some: {
+                  student_id,
+                },
+              },
+            },
+            {
+              sections: {
+                some: {
+                  deleted_at: null,
+                  instructors: {
+                    some: {
+                      student_id,
+                      deleted_at: null,
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
       ],
-      sections: {
-        some: {
-          instructors: {
-            some: {
-              student_id,
-              deleted_at: null,
-            },
-          },
-        },
-      },
     },
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,

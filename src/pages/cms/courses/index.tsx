@@ -14,7 +14,6 @@ import { useSession } from "next-auth/react";
 import type { SearchValue } from "~/types";
 import { useInView } from "react-intersection-observer";
 import { debounce } from "lodash";
-import { twMerge } from "tailwind-merge";
 
 function Courses() {
   const router = useRouter();

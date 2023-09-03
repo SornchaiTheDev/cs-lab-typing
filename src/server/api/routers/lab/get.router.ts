@@ -6,6 +6,8 @@ import {
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { isUserInThisSection } from "~/server/utils/checkIfUserInThisSection";
+import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
 
 export const getLabRouter = router({
   getLabPagination: teacherAboveProcedure
@@ -105,6 +107,7 @@ export const getLabRouter = router({
 
     const hasTags = tags.length > 0;
     try {
+      await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
       const labs = await ctx.prisma.labs.findMany({
         where: {
           deleted_at: null,
@@ -146,6 +149,14 @@ export const getLabRouter = router({
 
       return { labs, nextCursor };
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
@@ -234,6 +245,7 @@ export const getLabRouter = router({
     const { sectionId, labId } = input;
     const _sectionId = parseInt(sectionId);
     try {
+      await isUserInThisSection(ctx.user.student_id, _sectionId);
       const lab = await ctx.prisma.labs.findUnique({
         where: {
           id: labId,
@@ -287,6 +299,14 @@ export const getLabRouter = router({
       const taskOrder = lab?.tasks_order ?? [];
       return { usersTaskStatus, taskLength, taskOrder };
     } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",

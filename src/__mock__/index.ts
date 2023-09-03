@@ -1,1 +1,0 @@
-export { semesters } from "./semesters";

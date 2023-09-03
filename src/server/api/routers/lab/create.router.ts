@@ -3,6 +3,7 @@ import { AddLabSchema } from "~/schemas/LabSchema";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
 
 export const createLabRouter = router({
   createLab: teacherAboveProcedure
@@ -12,6 +13,7 @@ export const createLabRouter = router({
       const _courseId = parseInt(courseId);
 
       try {
+        await isUserInThisCourse(ctx.user.student_id, _courseId);
         const user = await ctx.prisma.users.findFirst({
           where: {
             student_id: ctx.user.student_id,
@@ -79,9 +81,17 @@ export const createLabRouter = router({
         // });
 
         return lab;
-      } catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          if (e.code === "P2002") {
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === "P2002") {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "DUPLICATED_LAB",

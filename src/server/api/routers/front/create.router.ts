@@ -1,16 +1,11 @@
-import type { submission_type } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErrorPercentage";
-import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
-import { getDuration } from "~/components/Typing/utils/getDuration";
 import { router, authedProcedure } from "~/server/api/trpc";
-import {
-  TypingResultWithHashSchema,
-  TypingExamResultWithHashSchema,
-} from "~/schemas/TypingResult";
 import { checkSameHash } from "~/server/utils/checkSameHash";
-import { evaluate } from "~/helpers/evaluateTypingScore";
-import dayjs from "dayjs";
+import {
+  TypingExamResultWithHashSchema,
+  TypingResultWithHashSchema,
+} from "~/schemas/TypingResult";
+import { saveSubmission } from "./saveSubmission";
 
 export const createFrontRouter = router({
   submitTyping: authedProcedure
@@ -25,7 +20,6 @@ export const createFrontRouter = router({
         startedAt,
         endedAt,
         hash,
-        email,
       } = input;
       const result = Object.assign({}, input);
 
@@ -38,185 +32,31 @@ export const createFrontRouter = router({
         });
       }
 
-      const _sectionId = parseInt(sectionId);
-      const _labId = parseInt(labId);
-      const _taskId = parseInt(taskId);
-
       try {
-        const section = await ctx.prisma.sections.findUnique({
-          where: {
-            id: _sectionId,
-          },
-          include: {
-            students: true,
-            labs_status: {
-              where: {
-                labId: _labId,
-              },
-            },
-          },
-        });
-
-        const student_id = ctx.session?.user?.student_id;
-        const isSameUserEmail = ctx.session?.user?.email === email;
-
-        const isInSection = section?.students.some(
-          (student) => student.student_id === student_id
-        );
-
-        if (!isInSection) {
-          throw new Error("NOT_IN_SECTION");
-        }
-
-        if (!isSameUserEmail) {
-          throw new Error("NOT_SAME_USER_EMAIL");
-        }
-
-        let isSectionClose = section?.active === false;
-
-        if (section?.closed_at) {
-          const isAfterClosedAt = dayjs().isAfter(section?.closed_at);
-          isSectionClose = isSectionClose || isAfterClosedAt;
-        }
-
-        if (isSectionClose) {
-          throw new Error("ALREADY_CLOSED");
-        }
-
-        const lab = await ctx.prisma.labs.findUnique({
-          where: {
-            id: _labId,
-          },
-        });
-
-        const isLabClose =
-          !lab?.active ||
-          section?.labs_status.some((lab) =>
-            ["DISABLED", "READONLY"].includes(lab.status)
-          );
-
-        if (isLabClose) {
-          throw new Error("ALREADY_CLOSED");
-        }
-
-        const duration = getDuration(startedAt as Date, endedAt as Date);
-        const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-          totalChars,
+        await saveSubmission({
+          endedAt,
           errorChar,
-          duration.minutes
-        );
-
-        const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
-
-        const score = evaluate(adjustedSpeed, errorPercentage);
-
-        const user = await ctx.prisma.users.findFirst({
-          where: {
-            student_id,
-            deleted_at: null,
-          },
+          totalChars,
+          hash,
+          ip: ctx.ip as string,
+          labId,
+          sectionId,
+          startedAt,
+          student_id: ctx.session?.user?.student_id as string,
+          taskId,
         });
-
-        let status: submission_type = "FAILED";
-        if (errorPercentage <= 3) {
-          status = "PASSED";
-        }
-
-        if (user) {
-          await ctx.prisma.submissions.upsert({
-            where: {
-              user_id_task_id_section_id_lab_id: {
-                user_id: user.id,
-                section_id: _sectionId,
-                lab_id: _labId,
-                task_id: _taskId,
-              },
-            },
-            create: {
-              section: {
-                connect: {
-                  id: _sectionId,
-                },
-              },
-              lab: {
-                connect: {
-                  id: _labId,
-                },
-              },
-              task: {
-                connect: {
-                  id: _taskId,
-                },
-              },
-              user: {
-                connect: {
-                  id: user.id,
-                },
-              },
-              status,
-              task_type: "Typing",
-              typing_histories: {
-                create: {
-                  id: hash as string,
-                  raw_speed: rawSpeed,
-                  adjusted_speed: adjustedSpeed,
-                  started_at: startedAt,
-                  ended_at: endedAt,
-                  percent_error: errorPercentage,
-                  score,
-                },
-              },
-            },
-            update: {
-              status: status,
-              task_type: "Typing",
-              typing_histories: {
-                create: {
-                  id: hash as string,
-                  raw_speed: rawSpeed,
-                  adjusted_speed: adjustedSpeed,
-                  started_at: startedAt,
-                  ended_at: endedAt,
-                  percent_error: errorPercentage,
-                  score,
-                },
-              },
-            },
-          });
-
-          await ctx.prisma.tasks.update({
-            where: {
-              id: _taskId,
-            },
-            data: {
-              submission_count: {
-                increment: 1,
-              },
-              lab_loggers: {
-                create: {
-                  type: "SUBMIT",
-                  ip_address: ctx.ip as string,
-                  user: {
-                    connect: {
-                      id: user.id,
-                    },
-                  },
-                  section: {
-                    connect: {
-                      id: _sectionId,
-                    },
-                  },
-                },
-              },
-            },
-          });
-        }
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === "ALREADY_CLOSED") {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "ALREADY_CLOSED",
+            });
+          }
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
             });
           }
         }
@@ -239,7 +79,6 @@ export const createFrontRouter = router({
         tAdetrats: startedAt,
         tAdedne: endedAt,
         hsah: hash,
-        liame: email,
       } = input;
       const result = Object.assign({}, input);
 
@@ -252,179 +91,26 @@ export const createFrontRouter = router({
         });
       }
 
-      const _sectionId = parseInt(sectionId);
-      const _labId = parseInt(labId);
-      const _taskId = parseInt(taskId);
-
-      const student_id = ctx.session?.user?.student_id;
-
-      const isSameUserEmail = ctx.session?.user?.email === email;
+      if (!checkSameHash(result, hash as string)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "INVALID_INPUT",
+        });
+      }
 
       try {
-        const section = await ctx.prisma.sections.findUnique({
-          where: {
-            id: _sectionId,
-          },
-          include: {
-            students: true,
-            labs_status: {
-              where: {
-                labId: _labId,
-              },
-            },
-          },
-        });
-
-        const isInSection = section?.students.some(
-          (student) => student.student_id === student_id
-        );
-
-        if (!isInSection) {
-          throw new Error("NOT_IN_SECTION");
-        }
-        if (!isSameUserEmail) {
-          throw new Error("NOT_SAME_USER_EMAIL");
-        }
-
-        let isSectionClose = section?.active === false;
-
-        if (section?.closed_at) {
-          const isAfterClosedAt = dayjs().isAfter(section?.closed_at);
-          isSectionClose = isSectionClose || isAfterClosedAt;
-        }
-
-        if (isSectionClose) {
-          throw new Error("ALREADY_CLOSED");
-        }
-
-        const lab = await ctx.prisma.labs.findUnique({
-          where: {
-            id: _labId,
-          },
-        });
-
-        const isLabClose =
-          !lab?.active ||
-          section?.labs_status.some((lab) =>
-            ["DISABLED", "READONLY"].includes(lab.status)
-          );
-
-        if (isLabClose) {
-          throw new Error("ALREADY_CLOSED");
-        }
-
-        const user = await ctx.prisma.users.findFirst({
-          where: {
-            student_id,
-            deleted_at: null,
-          },
-        });
-
-        const duration = getDuration(startedAt as Date, endedAt as Date);
-        const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
-          totalChars,
+        await saveSubmission({
+          endedAt,
           errorChar,
-          duration.minutes
-        );
-
-        const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
-
-        const score = evaluate(adjustedSpeed, errorPercentage);
-
-        let status: submission_type = "FAILED";
-        if (errorPercentage <= 3) {
-          status = "PASSED";
-        }
-
-        if (user) {
-          await ctx.prisma.submissions.upsert({
-            where: {
-              user_id_task_id_section_id_lab_id: {
-                user_id: user.id,
-                section_id: _sectionId,
-                lab_id: _labId,
-                task_id: _taskId,
-              },
-            },
-            create: {
-              section: {
-                connect: {
-                  id: _sectionId,
-                },
-              },
-              lab: {
-                connect: {
-                  id: _labId,
-                },
-              },
-              task: {
-                connect: {
-                  id: _taskId,
-                },
-              },
-              user: {
-                connect: {
-                  id: user.id,
-                },
-              },
-              status,
-              task_type: "Typing",
-              typing_histories: {
-                create: {
-                  id: hash as string,
-                  raw_speed: rawSpeed,
-                  adjusted_speed: adjustedSpeed,
-                  started_at: startedAt,
-                  ended_at: endedAt,
-                  percent_error: errorPercentage,
-                  score,
-                },
-              },
-            },
-            update: {
-              status: status,
-              task_type: "Typing",
-              typing_histories: {
-                create: {
-                  id: hash as string,
-                  raw_speed: rawSpeed,
-                  adjusted_speed: adjustedSpeed,
-                  started_at: startedAt,
-                  ended_at: endedAt,
-                  percent_error: errorPercentage,
-                  score,
-                },
-              },
-            },
-          });
-
-          await ctx.prisma.tasks.update({
-            where: {
-              id: _taskId,
-            },
-            data: {
-              submission_count: {
-                increment: 1,
-              },
-              lab_loggers: {
-                create: {
-                  type: "SUBMIT",
-                  ip_address: ctx.ip as string,
-                  user: {
-                    connect: {
-                      id: user.id,
-                    },
-                  },
-                  section: {
-                    connect: {
-                      id: _sectionId,
-                    },
-                  },
-                },
-              },
-            },
-          });
-        }
+          totalChars,
+          hash,
+          ip: ctx.ip as string,
+          labId,
+          sectionId,
+          startedAt,
+          student_id: ctx.session?.user?.student_id as string,
+          taskId,
+        });
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === "ALREADY_CLOSED") {
@@ -433,7 +119,14 @@ export const createFrontRouter = router({
               message: "ALREADY_CLOSED",
             });
           }
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

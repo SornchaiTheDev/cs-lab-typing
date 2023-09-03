@@ -10,6 +10,7 @@ import { getAdminCourses } from "./roles/getAdminCourses";
 import { getTeacherCourses } from "./roles/getTeacherCourses";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
+import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
 
 export const getCourseRouter = router({
   getCoursePagination: teacherAboveProcedure
@@ -60,6 +61,7 @@ export const getCourseRouter = router({
       const { id } = input;
       const _id = parseInt(id);
       try {
+        await isUserInThisCourse(ctx.user.student_id, _id);
         const course = await ctx.prisma.courses.findFirst({
           where: {
             id: _id,
@@ -92,6 +94,12 @@ export const getCourseRouter = router({
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "NOT_FOUND",
+            });
+          }
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
             });
           }
         }
