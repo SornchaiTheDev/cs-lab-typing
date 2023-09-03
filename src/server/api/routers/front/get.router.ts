@@ -2,6 +2,7 @@ import type { labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
+import { isUserIsStudentInThisSection } from "~/server/utils/checkUser";
 
 export const getFrontRouter = router({
   getCheckUser: authedProcedure.query(async ({ ctx }) => {
@@ -137,6 +138,8 @@ export const getFrontRouter = router({
       const _sectionId = parseInt(sectionId);
 
       try {
+        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+
         const labs = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -167,14 +170,6 @@ export const getFrontRouter = router({
           },
         });
 
-        const isInSection = labs?.students.some(
-          (student) => student.student_id === student_id
-        );
-
-        if (!isInSection) {
-          throw new Error("NOT_FOUND");
-        }
-
         if (labs) {
           const sortedLab = labs.labs_order.map((id) => {
             const lab = labs?.labs.find((lab) => lab.id === id) as labs;
@@ -201,6 +196,14 @@ export const getFrontRouter = router({
           return { ...labs, labs: labsAddedSubmissionsAndStatus };
         }
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -215,6 +218,8 @@ export const getFrontRouter = router({
       const _sectionId = parseInt(sectionId);
       const student_id = ctx.user.student_id;
       try {
+        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -310,6 +315,12 @@ export const getFrontRouter = router({
               message: "NOT_FOUND",
             });
           }
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -329,6 +340,8 @@ export const getFrontRouter = router({
 
       const student_id = ctx.user.student_id;
       try {
+        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -351,15 +364,7 @@ export const getFrontRouter = router({
           },
         });
 
-        const isStudentInSection = section?.students.some(
-          (student) => student.student_id === student_id
-        );
-
-        if (
-          !section?.active ||
-          section.labs.length === 0 ||
-          !isStudentInSection
-        ) {
+        if (!section?.active || section.labs.length === 0) {
           throw new Error("NOT_FOUND");
         }
 
@@ -471,6 +476,12 @@ export const getFrontRouter = router({
               message: "TASK_NOT_FOUND",
             });
           }
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -495,6 +506,8 @@ export const getFrontRouter = router({
 
       const student_id = ctx.user.student_id;
       try {
+        await isUserIsStudentInThisSection(ctx.user.student_id, _sectionId);
+
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -544,6 +557,12 @@ export const getFrontRouter = router({
             throw new TRPCError({
               code: "NOT_FOUND",
               message: "NOT_FOUND",
+            });
+          }
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
             });
           }
         }

@@ -1,4 +1,4 @@
-import { isUserInThisSection } from "~/server/utils/checkIfUserInThisSection";
+import { isUserInThisSection } from "~/server/utils/checkIfUserIsInstructorInThisSection";
 import { prisma } from "~/server/db";
 import { getDuration } from "~/components/Typing/utils/getDuration";
 import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
