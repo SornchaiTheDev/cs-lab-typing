@@ -24,12 +24,18 @@ import { debounce } from "lodash";
 interface AddTaskModalProps {
   isShow: boolean;
   onClose: () => void;
+  courseId: string;
   labId: string;
 }
 
 type TaskType = "Lesson" | "Problem" | "Typing";
 
-const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
+const AddTaskModal = ({
+  isShow,
+  onClose,
+  labId,
+  courseId,
+}: AddTaskModalProps) => {
   const tags = trpc.tags.getTags.useQuery();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<SearchValue[]>([]);
@@ -72,7 +78,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
   const addTask = trpc.labs.addTask.useMutation();
   const addTaskToLab = async (taskId: number) => {
     try {
-      await addTask.mutateAsync({ labId, taskId });
+      await addTask.mutateAsync({ labId, taskId, courseId });
       tasks.refetch();
       await ctx.labs.invalidate();
       callToast({
@@ -92,7 +98,7 @@ const AddTaskModal = ({ isShow, onClose, labId }: AddTaskModalProps) => {
   const removeTask = trpc.labs.removeTask.useMutation();
   const removeTaskFromLab = async (taskId: number) => {
     try {
-      await removeTask.mutateAsync({ labId, taskId });
+      await removeTask.mutateAsync({ courseId, labId, taskId });
       tasks.refetch();
       await ctx.labs.invalidate();
       callToast({
@@ -244,13 +250,14 @@ function Lab() {
 
   const router = useRouter();
 
-  const { labId } = router.query;
+  const { labId, courseId } = router.query;
 
   const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
 
   const lab = trpc.labs.getLabById.useQuery(
     {
-      id: labId as string,
+      labId: labId as string,
+      courseId: courseId as string,
     },
     {
       enabled: !!labId,
@@ -270,6 +277,7 @@ function Lab() {
         await deleteTask.mutateAsync({
           taskId: id,
           labId: labId as string,
+          courseId: courseId as string,
         });
         await lab.refetch();
         callToast({
@@ -345,6 +353,7 @@ function Lab() {
           id: id,
           order: index + 1,
         })),
+        courseId: courseId as string,
       });
       callToast({ msg: "Update Tasks order successfully", type: "success" });
       setNewOrdered([]);
@@ -366,6 +375,7 @@ function Lab() {
           isShow={isShow}
           onClose={() => setIsShow(false)}
           labId={labId as string}
+          courseId={courseId as string}
         />
       )}
       <LabLayout

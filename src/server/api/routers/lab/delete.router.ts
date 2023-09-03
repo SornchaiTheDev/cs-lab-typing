@@ -1,6 +1,7 @@
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
 
 export const deleteLabRouter = router({
   deleteLab: teacherAboveProcedure
@@ -10,6 +11,7 @@ export const deleteLabRouter = router({
       const requester = ctx.user.student_id;
       let lab;
       try {
+        await isUserInThisCourse(requester, id);
         const fetchLab = await ctx.prisma.labs.findUnique({
           where: {
             id,
@@ -90,6 +92,12 @@ export const deleteLabRouter = router({
         }
       } catch (err) {
         if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
           if (err.message === "ALREADY_DELETE") {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
@@ -105,13 +113,17 @@ export const deleteLabRouter = router({
       return lab;
     }),
   deleteTaskFromLab: teacherAboveProcedure
-    .input(z.object({ labId: z.string(), taskId: z.number() }))
+    .input(
+      z.object({ courseId: z.string(), labId: z.string(), taskId: z.number() })
+    )
     .mutation(async ({ ctx, input }) => {
-      const { labId, taskId } = input;
+      const { courseId, labId, taskId } = input;
       const requester = ctx.user.student_id;
       const _labId = parseInt(labId);
+      const _courseId = parseInt(courseId);
 
       try {
+        await isUserInThisCourse(requester, _courseId);
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,
@@ -164,6 +176,14 @@ export const deleteLabRouter = router({
           },
         });
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

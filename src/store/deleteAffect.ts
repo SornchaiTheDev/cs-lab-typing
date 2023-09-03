@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 interface selectedItem {
   display: string;
-  id: number;
+  id: number | string;
 }
 
 interface selectedObj {

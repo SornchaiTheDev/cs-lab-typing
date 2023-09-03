@@ -91,13 +91,6 @@ export const createFrontRouter = router({
         });
       }
 
-      if (!checkSameHash(result, hash as string)) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "INVALID_INPUT",
-        });
-      }
-
       try {
         await saveSubmission({
           endedAt,

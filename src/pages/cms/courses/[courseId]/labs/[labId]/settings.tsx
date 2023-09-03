@@ -28,7 +28,8 @@ function Settings() {
 
   const lab = trpc.labs.getLabById.useQuery(
     {
-      id: labId as string,
+      labId: labId as string,
+      courseId: courseId as string,
     },
     {
       enabled: !!labId,
@@ -124,7 +125,7 @@ function Settings() {
                 setSelectedObj({
                   selected: {
                     display: lab.data?.name as string,
-                    id: lab.data?.id as number,
+                    id: `${labId}/${courseId}`,
                   },
                   type: "lab",
                 })

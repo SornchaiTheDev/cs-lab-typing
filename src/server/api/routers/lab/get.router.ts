@@ -22,6 +22,7 @@ export const getLabRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit, courseId, search } = input;
       try {
+        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
         const [labs, amount] = await ctx.prisma.$transaction([
           ctx.prisma.labs.findMany({
             where: {
@@ -88,6 +89,12 @@ export const getLabRouter = router({
 
         return { labs, pageCount: Math.ceil(amount / limit) };
       } catch (err) {
+        if (err instanceof Error) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -163,55 +170,67 @@ export const getLabRouter = router({
       });
     }
   }),
-  getLabById: TaAboveProcedure.input(z.object({ id: z.string() })).query(
-    async ({ ctx, input }) => {
-      const { id } = input;
-      const _id = parseInt(id);
-      try {
-        const lab = await ctx.prisma.labs.findFirst({
-          where: {
-            id: _id,
-            deleted_at: null,
-          },
-          include: {
-            tags: true,
-            tasks: true,
-          },
-        });
+  getLabById: TaAboveProcedure.input(
+    z.object({ labId: z.string(), courseId: z.string() })
+  ).query(async ({ ctx, input }) => {
+    const { labId, courseId } = input;
+    const _labId = parseInt(labId);
+    try {
+      await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
 
-        if (lab) {
-          const sortedTaskLab = lab.tasks_order.map((id) => {
-            const task = lab?.tasks.find((task) => task.id === id) as tasks;
-            return task;
-          });
+      const lab = await ctx.prisma.labs.findFirst({
+        where: {
+          id: _labId,
+          courseId: parseInt(courseId),
+          deleted_at: null,
+        },
+        include: {
+          tags: true,
+          tasks: true,
+        },
+      });
 
-          return { ...lab, tasks: sortedTaskLab };
-        }
-
-        return null;
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
+      if (!lab) {
+        throw new Error("UNAUTHORIZED");
       }
+      const sortedTaskLab = lab.tasks_order.map((id) => {
+        const task = lab?.tasks.find((task) => task.id === id) as tasks;
+        return task;
+      });
+
+      return { ...lab, tasks: sortedTaskLab };
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "UNAUTHORIZED",
+          });
+        }
+      }
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "SOMETHING_WENT_WRONG",
+      });
     }
-  ),
+  }),
 
   getLabHistoryPagination: teacherAboveProcedure
     .input(
       z.object({
         page: z.number().default(1),
         limit: z.number().default(10),
+        courseId: z.string(),
         labId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, labId } = input;
+      const { page, limit, labId, courseId } = input;
 
       const _labId = parseInt(labId);
 
       try {
+        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
         const [labHistory, amount] = await ctx.prisma.$transaction([
           ctx.prisma.lab_histories.findMany({
             where: {
@@ -320,21 +339,7 @@ export const getLabRouter = router({
     const { labId, sectionId } = input;
 
     try {
-      const requester = await ctx.prisma.users.findFirst({
-        where: {
-          student_id: ctx.user.student_id,
-          deleted_at: null,
-          instructors: {
-            some: {
-              id: parseInt(sectionId),
-            },
-          },
-        },
-      });
-
-      if (!requester) {
-        throw new Error("UNAUTHORIZED");
-      }
+      await isUserInThisSection(ctx.user.student_id, parseInt(sectionId));
 
       const lab = await ctx.prisma.labs.findUnique({
         where: {
@@ -419,26 +424,32 @@ export const getLabRouter = router({
   }),
 
   getLabObjectRelation: teacherAboveProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ labId: z.string(), courseId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { id } = input;
+      const { labId, courseId } = input;
       try {
-        const lab = await ctx.prisma.labs.findUnique({
+        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
+        const lab = await ctx.prisma.labs.findFirst({
           where: {
-            id,
+            id: parseInt(labId),
+            courseId: parseInt(courseId),
           },
           include: {
             tasks: {
               include: {
                 submissions: {
                   where: {
-                    lab_id: id,
+                    lab_id: parseInt(labId),
                   },
                 },
               },
             },
           },
         });
+
+        if (!lab) {
+          throw new Error("UNAUTHORIZED");
+        }
 
         const assignmentLength = lab?.tasks.length ?? 0;
 
@@ -478,6 +489,14 @@ export const getLabRouter = router({
 
         return relation;
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

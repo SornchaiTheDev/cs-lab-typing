@@ -4,6 +4,7 @@ import { z } from "zod";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { Prisma } from "@prisma/client";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
+import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
 
 export const updateLabRouter = router({
   updateLab: teacherAboveProcedure
@@ -17,6 +18,7 @@ export const updateLabRouter = router({
       const _courseId = parseInt(courseId);
 
       try {
+        await isUserInThisCourse(ctx.user.student_id, _courseId);
         await createNotExistTags(
           ctx.prisma,
           tags.map((tag) => tag.value as string)
@@ -68,9 +70,17 @@ export const updateLabRouter = router({
             status: active ? "ACTIVE" : "DISABLED",
           },
         });
-      } catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          if (e.code === "P2002") {
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === "P2002") {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "DUPLICATED_LAB",
@@ -89,10 +99,11 @@ export const updateLabRouter = router({
       z.object({
         labId: z.string(),
         tasks: z.array(z.object({ id: z.number(), order: z.number() })),
+        courseId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { labId, tasks } = input;
+      const { courseId, labId, tasks } = input;
       const requester = ctx.user.student_id;
 
       const tasks_order = tasks
@@ -100,6 +111,8 @@ export const updateLabRouter = router({
         .map((t) => t.id);
 
       try {
+        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
+
         const user = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,
@@ -131,6 +144,14 @@ export const updateLabRouter = router({
           },
         });
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -138,12 +159,15 @@ export const updateLabRouter = router({
       }
     }),
   addTask: teacherAboveProcedure
-    .input(z.object({ labId: z.string(), taskId: z.number() }))
+    .input(
+      z.object({ labId: z.string(), taskId: z.number(), courseId: z.string() })
+    )
     .mutation(async ({ ctx, input }) => {
-      const { labId, taskId } = input;
+      const { labId, taskId, courseId } = input;
       const _labId = parseInt(labId);
-
+      const _courseId = parseInt(courseId);
       try {
+        await isUserInThisCourse(ctx.user.student_id, _courseId);
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,
@@ -183,6 +207,14 @@ export const updateLabRouter = router({
         });
         return "Success";
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -190,12 +222,15 @@ export const updateLabRouter = router({
       }
     }),
   removeTask: teacherAboveProcedure
-    .input(z.object({ labId: z.string(), taskId: z.number() }))
+    .input(
+      z.object({ courseId: z.string(), labId: z.string(), taskId: z.number() })
+    )
     .mutation(async ({ ctx, input }) => {
-      const { labId, taskId } = input;
+      const { courseId, labId, taskId } = input;
       const _labId = parseInt(labId);
 
       try {
+        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,
@@ -225,6 +260,14 @@ export const updateLabRouter = router({
           },
         });
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

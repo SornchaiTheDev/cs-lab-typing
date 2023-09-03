@@ -63,8 +63,12 @@ function DeleteAffect({ type, onDeleted }: Props) {
     };
 
     const fetchLabData = async () => {
+      const [labId, courseId] = (selectedObject?.selected.id as string).split(
+        "/"
+      );
       const data = await ctx.labs.getLabObjectRelation.fetch({
-        id: selectedObject?.selected.id as number,
+        labId: labId as string,
+        courseId: courseId as string,
       });
       setFetchData(data);
     };
@@ -106,7 +110,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteUser.mutateAsync({
-        id: selectedObject.selected.id,
+        id: selectedObject.selected.id as number,
       });
 
       callToast({
@@ -129,7 +133,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteSemester.mutateAsync({
-        id: selectedObject.selected.id,
+        id: selectedObject.selected.id as number,
       });
 
       callToast({ msg: "Delete Semester successfully", type: "success" });
@@ -149,7 +153,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteCourse.mutateAsync({
-        id: selectedObject.selected.id,
+        id: selectedObject.selected.id as number,
       });
 
       callToast({ msg: "Delete Course successfully", type: "success" });
@@ -164,7 +168,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteSection.mutateAsync({
-        id: selectedObject.selected.id,
+        id: selectedObject.selected.id as number,
       });
 
       callToast({ msg: "Delete Section successfully", type: "success" });
@@ -185,12 +189,12 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteLab.mutateAsync({
-        id: selectedObject.selected.id,
+        id: selectedObject.selected.id as number,
       });
 
       callToast({ msg: "Delete Lab successfully", type: "success" });
       if (type === "lab-outside") {
-        await ctx.labs.getAllLabInCourse.invalidate();
+        await ctx.labs.getLabPagination.invalidate();
       } else {
         await router.replace({
           pathname: "/cms/courses/[courseId]/labs",
@@ -211,7 +215,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteTask.mutateAsync({
-        id: selectedObject.selected.id,
+        id: selectedObject.selected.id as number,
       });
 
       await router.replace({

@@ -3,7 +3,7 @@ export const isUserInThisSection = async (
   student_id: string,
   section_id: number
 ) => {
-  const user = await prisma.users.findFirst({
+  const asInstructor = await prisma.users.findFirst({
     where: {
       student_id,
       deleted_at: null,
@@ -18,10 +18,24 @@ export const isUserInThisSection = async (
         },
       },
     },
-    select: {
-      id: true,
+  });
+
+  const asStudent = await prisma.users.findFirst({
+    where: {
+      student_id,
+      deleted_at: null,
+      instructors: {
+        some: {
+          id: section_id,
+          instructors: {
+            some: {
+              student_id,
+            },
+          },
+        },
+      },
     },
   });
 
-  if (!user) throw new Error("UNAUTHORIZED");
+  if (!(asStudent || asInstructor)) throw new Error("UNAUTHORIZED");
 };

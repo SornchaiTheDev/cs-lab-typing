@@ -24,10 +24,10 @@ interface HistoryRow {
 function LabHistory() {
   const router = useRouter();
   const { data: session } = useSession();
-  const labId = router.query.labId as string;
+  const { labId, courseId } = router.query;
 
   const lab = trpc.labs.getLabById.useQuery(
-    { id: labId },
+    { labId: labId as string, courseId: courseId as string },
     {
       enabled: !!labId,
     }
@@ -42,6 +42,7 @@ function LabHistory() {
 
   const history = trpc.labs.getLabHistoryPagination.useQuery(
     {
+      courseId: courseId as string,
       labId: labId as string,
       limit: pageSize,
       page: pageIndex,
