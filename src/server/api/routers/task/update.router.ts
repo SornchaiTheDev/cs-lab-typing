@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { AddTaskSchema } from "~/schemas/TaskSchema";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
+import { getHighestRole } from "~/helpers";
 
 export const updateTaskRouter = router({
   updateTask: teacherAboveProcedure
@@ -22,7 +23,28 @@ export const updateTaskRouter = router({
       const _id = parseInt(id);
       const actionUser = ctx.user.student_id;
       let task;
+      const role = getHighestRole(ctx.user.roles);
+
       try {
+        task = await ctx.prisma.tasks.findUnique({
+          where: {
+            id: _id,
+          },
+          select: {
+            owner: true,
+          },
+        });
+        if (task && role !== "ADMIN") {
+          if (task.owner) {
+            if (task.owner.student_id !== ctx.user.student_id) {
+              throw new TRPCError({
+                code: "UNAUTHORIZED",
+                message: "UNAUTHORIZED",
+              });
+            }
+          }
+        }
+
         await createNotExistTags(
           ctx.prisma,
           tags.map((tag) => tag.value as string)
@@ -105,6 +127,22 @@ export const updateTaskRouter = router({
       const { taskId, body } = input;
       const _taskId = parseInt(taskId);
       try {
+        const task = await ctx.prisma.tasks.findUnique({
+          where: {
+            id: _taskId,
+          },
+          select: {
+            owner: true,
+          },
+        });
+        if (task) {
+          if (task.owner) {
+            if (task.owner.student_id !== ctx.user.student_id) {
+              throw new Error("UNAUTHORIZED");
+            }
+          }
+        }
+
         const _actionUser = await ctx.prisma.users.findFirst({
           where: {
             student_id: actionUser,
@@ -133,6 +171,14 @@ export const updateTaskRouter = router({
           },
         });
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

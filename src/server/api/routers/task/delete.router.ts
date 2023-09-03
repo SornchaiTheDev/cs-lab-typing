@@ -1,19 +1,33 @@
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { getHighestRole } from "~/helpers";
 
 export const deleteTaskRouter = router({
   deleteTask: teacherAboveProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-
+      const role = getHighestRole(ctx.user.roles);
       try {
-        const task = await ctx.prisma.tasks.delete({
+        const task = await ctx.prisma.tasks.findUnique({
           where: {
             id,
           },
+          select: {
+            owner: true,
+          },
         });
+        if (task && role !== "ADMIN") {
+          if (task.owner) {
+            if (task.owner.student_id !== ctx.user.student_id) {
+              throw new TRPCError({
+                code: "UNAUTHORIZED",
+                message: "UNAUTHORIZED",
+              });
+            }
+          }
+        }
 
         const labs = await ctx.prisma.labs.findMany({
           where: {
@@ -25,7 +39,7 @@ export const deleteTaskRouter = router({
           },
         });
 
-        labs.forEach(async (lab) => {
+        for (const lab of labs) {
           await ctx.prisma.labs.update({
             where: {
               id: lab.id,
@@ -41,7 +55,7 @@ export const deleteTaskRouter = router({
               },
             },
           });
-        });
+        }
 
         const requester = ctx.user.student_id;
         const user = await ctx.prisma.users.findFirst({
@@ -63,14 +77,12 @@ export const deleteTaskRouter = router({
             },
             tasks: {
               connect: {
-                id: task.id,
+                id,
               },
             },
           },
         });
-        if (!task) {
-          return null;
-        }
+
         return task;
       } catch (err) {
         throw new TRPCError({
