@@ -6,11 +6,13 @@ import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import type { Prisma } from "@prisma/client";
+import Badge from "~/components/Common/Badge";
 
 type sections = Prisma.sectionsGetPayload<{
   select: {
     id: true;
     name: true;
+    semester: true;
     course: {
       select: {
         id: true;
@@ -55,8 +57,10 @@ const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
           </div>
           <div className="my-6 grid grid-cols-12 gap-6">
             {pages.map((page) =>
-              page.sections.map(({ id, name, course, type }) => {
-                const { name: courseName, number, id: courseId , } = course;
+              page.sections.map(({ id, name, course, type, semester }) => {
+                const { name: courseName, number, id: courseId } = course;
+                const { term, year } = semester;
+
                 return (
                   <Card
                     key={id}
@@ -64,10 +68,9 @@ const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
                       pathname: "cms/courses/[courseId]/sections/[sectionId]",
                       query: { courseId, sectionId: id },
                     }}
-                    title={courseName}
+                    title={`${courseName}`}
                     badges={[
-                      { title: number, type: "success" },
-                      { title: number, type: "success" },
+                      { title: `${number} (${term}/${year})`, type: "success" },
                       { title: name, type: "success" },
                       { title: type, type: "info" },
                     ]}
@@ -128,8 +131,9 @@ function MyCourse() {
       ) : (learn.data?.pages?.length as number) > 0 ? (
         <div className="my-4 grid grid-cols-12 gap-6">
           {learn.data?.pages?.map((page) =>
-            page.sections.map(({ id, name, course, type }) => {
-              const { name: courseName, number ,  } = course;
+            page.sections.map(({ id, name, course, semester }) => {
+              const { name: courseName, number } = course;
+              const { term, year } = semester;
               return (
                 <Card
                   key={id}
@@ -137,11 +141,11 @@ function MyCourse() {
                     pathname: "/courses/[sectionId]",
                     query: { sectionId: id },
                   }}
-                  title={courseName}
+                  title={`${courseName}`}
                   badges={[
-                    { title: number, type: "success" },
+                    { title: `${number} (${term}/${year})`, type: "success" },
+                    // { title: `${term}/${year}`, type: "success" },
                     { title: name, type: "success" },
-                    { title: type, type: "info" },
                   ]}
                 />
               );
