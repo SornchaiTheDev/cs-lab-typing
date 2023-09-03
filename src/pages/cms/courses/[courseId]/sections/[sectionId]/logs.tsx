@@ -36,7 +36,7 @@ const today = new Date();
 
 function Logger() {
   const router = useRouter();
-  const { sectionId } = router.query;
+  const { sectionId, courseId } = router.query;
 
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(today.setHours(0, 0, 0, 0)),

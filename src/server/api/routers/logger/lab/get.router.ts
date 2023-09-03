@@ -2,6 +2,7 @@ import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import type { LabLogger } from "@prisma/client";
+import { isUserInThisSection } from "~/server/utils/checkIfUserIsInstructorInThisSection";
 
 export const getLabLogRouter = router({
   getLabLog: teacherAboveProcedure
@@ -20,28 +21,29 @@ export const getLabLogRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit, date, sectionId, search } = input;
 
-      const _sectionId = parseInt(sectionId);
-
-      let actionType: LabLogger[] = ["ACCESS", "SUBMIT"];
-      if (search !== undefined) {
-        const _search = search.toLowerCase();
-        const type = _search.toUpperCase();
-        if (["ACCESS", "SUBMIT"].includes(type)) {
-          actionType = [type as LabLogger];
-        } else {
-          actionType = [];
-        }
-      }
-
-      let taskId;
-
-      if (search && search.length > 0) {
-        if (!Number.isNaN(search)) {
-          taskId = parseInt(search);
-        }
-      }
-
       try {
+        await isUserInThisSection(ctx.user.student_id, parseInt(sectionId));
+        const _sectionId = parseInt(sectionId);
+
+        let actionType: LabLogger[] = ["ACCESS", "SUBMIT"];
+        if (search !== undefined) {
+          const _search = search.toLowerCase();
+          const type = _search.toUpperCase();
+          if (["ACCESS", "SUBMIT"].includes(type)) {
+            actionType = [type as LabLogger];
+          } else {
+            actionType = [];
+          }
+        }
+
+        let taskId;
+
+        if (search && search.length > 0) {
+          if (!Number.isNaN(search)) {
+            taskId = parseInt(search);
+          }
+        }
+
         const [labLoggers, amount] = await ctx.prisma.$transaction([
           ctx.prisma.lab_loggers.findMany({
             where: {
@@ -106,6 +108,14 @@ export const getLabLogRouter = router({
 
         return { logger: labLoggers, pageCount: Math.ceil(amount / limit) };
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
@@ -128,6 +138,8 @@ export const getLabLogRouter = router({
       const _sectionId = parseInt(sectionId);
 
       try {
+        await isUserInThisSection(ctx.user.student_id, _sectionId);
+
         const labLoggers = await ctx.prisma.lab_loggers.findMany({
           where: {
             date: {
@@ -156,6 +168,14 @@ export const getLabLogRouter = router({
 
         return labLoggers;
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
