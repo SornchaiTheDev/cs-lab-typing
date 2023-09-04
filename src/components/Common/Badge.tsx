@@ -19,7 +19,7 @@ function Badge({ children, type = "default", className }: Props) {
       color = "text-sand-12 dark:text-sand-1 bg-lime-10";
       break;
     case "warning":
-      color = "text-sand-12 bg-yellow-10";
+      color = "text-sand-12 dark:text-sand-1 bg-yellow-10";
       break;
     case "danger":
       color = "text-sand-4 bg-red-10";
