@@ -234,15 +234,17 @@ export const getTaskRouter = router({
         tasks.find((task) => task.id === taskId)
       ) as typeof tasks;
 
-      const tasksWithHistory = sortedTaskByTaskOrder.map((task) => {
-        const { submissions } = task;
+      const tasksWithHistory = sortedTaskByTaskOrder
+        .filter((task) => !!task)
+        .map((task) => {
+          const { submissions } = task;
 
-        return {
-          name: task.name,
-          history: submissions[0]?.typing_histories[0],
-          id: task.id,
-        };
-      });
+          return {
+            name: task.name,
+            history: submissions[0]?.typing_histories[0],
+            id: task.id,
+          };
+        });
 
       return tasksWithHistory;
     } catch (err) {
