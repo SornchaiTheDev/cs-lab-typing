@@ -384,6 +384,7 @@ function Lab() {
         canAccessToSuperUserMenus={!isStudent}
       >
         <Table
+          isLoading={lab.isLoading}
           data={tableData}
           columns={isTeacher ? teacherColumns : adminColumns}
           draggabled={isTeacher}

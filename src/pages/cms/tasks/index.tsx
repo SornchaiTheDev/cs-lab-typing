@@ -124,6 +124,7 @@ function Tasks() {
         header: "Tags",
         accessorKey: "tags",
         cell: (props) => {
+          if (props.getValue() === undefined) return null;
           const tags = props.getValue() as tags[];
           const isEmpty = tags.length === 0;
           return isEmpty ? "-" : tags.map(({ name }) => name).join(",");
@@ -145,6 +146,8 @@ function Tasks() {
         header: "Owner",
         accessorKey: "owner",
         cell: (props) => {
+          if (props.getValue() === undefined) return null;
+
           const owner = props.getValue() as users;
           return owner.full_name;
         },
@@ -231,6 +234,7 @@ function Tasks() {
       </Modal>
       <TaskLayout title="Tasks">
         <Table
+          isLoading={allTasks.isLoading}
           data={allTasks.data?.tasks ?? []}
           columns={columns}
           className="mt-6 flex-1"

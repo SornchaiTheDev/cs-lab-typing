@@ -66,7 +66,7 @@ function LabHistory() {
       },
       columnHelper.accessor("user", {
         header: "Username",
-        cell: (props) => props.getValue().full_name,
+        cell: (props) => (props.getValue() ? props.getValue().full_name : null),
       }),
       {
         header: "Action",
@@ -86,6 +86,7 @@ function LabHistory() {
       canAccessToSuperUserMenus={!isStudent}
     >
       <Table
+        isLoading={history.isLoading}
         data={history.data?.labHistory ?? []}
         pageCount={history.data?.pageCount ?? 0}
         columns={columns}

@@ -67,7 +67,11 @@ function TaskHistory() {
       },
       columnHelper.accessor("user", {
         header: "Username",
-        cell: (props) => props.getValue().full_name,
+        cell: (props) => {
+          if (props.getValue() === undefined) return null;
+
+          return props.getValue().full_name;
+        },
       }),
       {
         header: "Action",
@@ -85,6 +89,7 @@ function TaskHistory() {
       canAccessToHistory={isNotStudent}
     >
       <Table
+        isLoading={history.isLoading}
         data={history.data?.taskHistory ?? []}
         columns={columns}
         defaultSortingState={{ id: "created_at", desc: true }}

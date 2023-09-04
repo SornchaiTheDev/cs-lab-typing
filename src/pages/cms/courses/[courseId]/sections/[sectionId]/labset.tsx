@@ -385,6 +385,7 @@ function LabSet() {
         isLoading={section.isLoading}
       >
         <Table
+          isLoading={section.isLoading}
           data={section.data?.labs ?? []}
           columns={columns}
           className="mt-6"

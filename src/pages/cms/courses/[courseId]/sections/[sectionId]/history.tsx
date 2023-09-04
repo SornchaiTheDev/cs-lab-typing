@@ -65,7 +65,7 @@ function SectionHistory() {
       },
       columnHelper.accessor("user", {
         header: "Username",
-        cell: (props) => props.getValue().full_name,
+        cell: (props) => (props.getValue() ? props.getValue().full_name : null),
       }),
       {
         header: "Action",
@@ -81,6 +81,7 @@ function SectionHistory() {
       isLoading={section.isLoading}
     >
       <Table
+        isLoading={history.isLoading}
         data={history.data?.sectionHistory ?? []}
         columns={columns}
         defaultSortingState={{ id: "created_at", desc: true }}
