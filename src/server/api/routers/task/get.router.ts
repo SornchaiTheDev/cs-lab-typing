@@ -183,7 +183,7 @@ export const getTaskRouter = router({
     const { student_id, sectionId, labId } = input;
     const _sectionId = parseInt(sectionId);
     try {
-      await isUserInThisSection(student_id, _sectionId);
+      await isUserInThisSection(ctx.user.student_id, _sectionId);
       const tasks = await ctx.prisma.tasks.findMany({
         where: {
           submissions: {

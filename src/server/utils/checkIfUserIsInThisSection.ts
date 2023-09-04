@@ -11,11 +11,6 @@ export const isUserInThisSection = async (
       instructors: {
         some: {
           id: section_id,
-          instructors: {
-            some: {
-              student_id,
-            },
-          },
         },
       },
     },
@@ -25,14 +20,9 @@ export const isUserInThisSection = async (
     where: {
       student_id,
       deleted_at: null,
-      instructors: {
+      students: {
         some: {
           id: section_id,
-          instructors: {
-            some: {
-              student_id,
-            },
-          },
         },
       },
     },
