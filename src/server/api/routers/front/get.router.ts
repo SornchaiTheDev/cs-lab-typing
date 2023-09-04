@@ -172,7 +172,7 @@ export const getFrontRouter = router({
               select: {
                 id: true,
                 tasks_order: true,
-                active : true
+                active: true,
               },
             },
             submissions: {
@@ -286,7 +286,12 @@ export const getFrontRouter = router({
             },
             name: true,
             tasks_order: true,
-            tasks: true,
+            tasks: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
             submissions: {
               where: {
                 user: {
