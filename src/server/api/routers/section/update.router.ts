@@ -356,12 +356,17 @@ export const updateSectionsRouter = router({
         });
 
         if (sectionUsers && sectionUsers?.students.length > 0) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "DUPLICATED_USER",
-          });
+          throw new Error("DUPLICATED_USER");
         }
       } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "DUPLICATED_USER") {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "ALREADY_IN_SECTION",
+            });
+          }
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",

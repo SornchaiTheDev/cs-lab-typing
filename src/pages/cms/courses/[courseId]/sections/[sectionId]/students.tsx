@@ -35,6 +35,10 @@ function Students() {
     }
   );
 
+  const students = trpc.sections.getStudentsBySectionId.useQuery({
+    sectionId: sectionId as string,
+  });
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -59,7 +63,7 @@ function Students() {
 
   useEffect(() => {
     fetchStudents();
-  }, [searchString, fetchStudents]);
+  }, [searchString, fetchStudents, pagination]);
 
   const studentsPagination = trpc.sections.getStudentPagination.useQuery(
     {
@@ -73,11 +77,6 @@ function Students() {
     }
   );
 
-  useEffect(() => {
-    studentsPagination.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination]);
-
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
 
   const ctx = trpc.useContext();
@@ -89,7 +88,7 @@ function Students() {
         id: selectedUser as number,
       });
       await studentsPagination.refetch();
-      await ctx.sections.getStudentsBySectionId.invalidate()
+      await ctx.sections.getStudentsBySectionId.invalidate();
       callToast({
         msg: "Delete Student from Section successfully",
         type: "success",
@@ -127,11 +126,11 @@ function Students() {
     [columnHelper]
   );
 
-  const students = studentsPagination.data?.allStudents ?? [];
+  const allStudents = studentsPagination.data?.allStudents ?? [];
 
   const exportCSV = () => {
     let csvString = "Student Id,Full Name\n";
-    students.forEach(({ student_id, full_name }) => {
+    allStudents.forEach(({ student_id, full_name }) => {
       csvString += `${student_id},${full_name}\n`;
     });
 
@@ -145,7 +144,7 @@ function Students() {
     link.download = fileName;
     link.click();
   };
-  
+
   return (
     <>
       <Alert
@@ -158,8 +157,10 @@ function Students() {
         title={section.data?.name as string}
         isLoading={section.isLoading}
       >
+        <h4 className="mt-4 text-2xl font-bold text-sand-12">
+          Students ({students.data ?? 0})
+        </h4>
         <Table
-          className="mx-4"
           columns={columns}
           isLoading={section.isLoading}
           data={studentsPagination.data?.students ?? []}

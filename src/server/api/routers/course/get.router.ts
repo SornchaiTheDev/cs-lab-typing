@@ -68,18 +68,16 @@ export const getCourseRouter = router({
             id: _id,
             deleted_at: null,
           },
-          include: {
-            authors: true,
-            sections: {
-              where: {
-                deleted_at: null,
-              },
+          select: {
+            id: true,
+            number: true,
+            name: true,
+            note: true,
+            comments: true,
+            authors: {
               select: {
-                _count: {
-                  select: {
-                    students: true,
-                  },
-                },
+                student_id: true,
+                full_name: true,
               },
             },
           },

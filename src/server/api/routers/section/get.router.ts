@@ -223,6 +223,7 @@ export const getSectionsRouter = router({
         return {
           students,
           allStudents: allStudents?.students ?? [],
+          studentAmount,
           pageCount: Math.ceil(studentAmount / limit),
         };
       } catch (err) {
