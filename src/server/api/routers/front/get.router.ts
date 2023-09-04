@@ -540,6 +540,7 @@ export const getFrontRouter = router({
             id: _sectionId,
           },
           select: {
+            type: true,
             labs: {
               where: {
                 id: _labId,
@@ -549,13 +550,9 @@ export const getFrontRouter = router({
           },
         });
 
-        const isStudentInSection = section?.students.some(
-          (student) => student.student_id === student_id
-        );
-
         const isLabNotExist = section?.labs.length === 0;
 
-        if (isLabNotExist || !isStudentInSection) {
+        if (isLabNotExist) {
           throw new Error("NOT_FOUND");
         }
 
@@ -570,6 +567,16 @@ export const getFrontRouter = router({
               },
               task_id: _taskId,
             },
+          },
+          select: {
+            id: true,
+            raw_speed: true,
+            adjusted_speed: true,
+            percent_error: true,
+            score: section?.type === "Exam" ? true : false,
+            started_at: true,
+            ended_at: true,
+            created_at: true,
           },
           orderBy: {
             created_at: "desc",

@@ -4,11 +4,25 @@ import LineChart from "./Datas/LineChart";
 import { useRouter } from "next/router";
 import { trpc } from "~/helpers";
 import type { PaginationState } from "@tanstack/react-table";
-import type { SectionType } from "@prisma/client";
+import type { Prisma, SectionType } from "@prisma/client";
 
 interface Props {
   type?: SectionType;
 }
+
+export type typing_histories = Prisma.typing_historiesGetPayload<{
+  select: {
+    id: true;
+    raw_speed: true;
+    adjusted_speed: true;
+    percent_error: true;
+    score: true;
+    started_at: true;
+    ended_at: true;
+    created_at: true;
+  };
+}>;
+
 function History({ type = "Lesson" }: Props) {
   const router = useRouter();
   const { sectionId, taskId, labId } = router.query;

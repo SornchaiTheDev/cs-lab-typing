@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import type { SectionType, typing_histories } from "@prisma/client";
+import type { SectionType } from "@prisma/client";
 import {
   type OnChangeFn,
   type PaginationState,
@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import { getDuration } from "../utils/getDuration";
 import Table from "~/components/Common/Table";
 import { twMerge } from "tailwind-merge";
+import type { typing_histories } from "../History";
 
 interface Props {
   datas: typing_histories[];
