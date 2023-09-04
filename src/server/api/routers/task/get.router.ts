@@ -184,6 +184,12 @@ export const getTaskRouter = router({
     const _sectionId = parseInt(sectionId);
     try {
       await isUserInThisSection(ctx.user.student_id, _sectionId);
+      const lab = await ctx.prisma.labs.findUnique({
+        where: {
+          id: labId,
+        },
+      });
+
       const tasks = await ctx.prisma.tasks.findMany({
         where: {
           submissions: {
@@ -224,7 +230,11 @@ export const getTaskRouter = router({
         },
       });
 
-      const tasksWithHistory = tasks.map((task) => {
+      const sortedTaskByTaskOrder = lab?.tasks_order.map((taskId) =>
+        tasks.find((task) => task.id === taskId)
+      ) as typeof tasks;
+
+      const tasksWithHistory = sortedTaskByTaskOrder.map((task) => {
         const { submissions } = task;
 
         return {
