@@ -11,7 +11,7 @@ function Course() {
   const router = useRouter();
   const { sectionId } = router.query;
 
-  const labs = trpc.front.getLabs.useQuery(
+  const section = trpc.front.getLabs.useQuery(
     { sectionId: sectionId as string },
     {
       enabled: !!sectionId,
@@ -20,15 +20,15 @@ function Course() {
 
   return (
     <FrontLayout
-      title={labs.data?.course.name ?? ""}
-      isLoading={labs.isLoading}
+      title={section.data?.courseName ?? ""}
+      isLoading={section.isLoading}
       customBackPath="/"
       breadcrumbs={[{ label: "My Course", path: "/" }]}
     >
       {/* <Announcement /> */}
 
       <div className="my-10 grid grid-cols-12 gap-6">
-        {labs.data?.labs.map(({ id, name, tasksStatus, status, active }) => (
+        {section.data?.labs.map(({ id, name, tasksStatus, status, active }) => (
           <Card
             key={id}
             disabled={status === "DISABLED" || !active}

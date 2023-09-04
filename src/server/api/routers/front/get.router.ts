@@ -47,7 +47,12 @@ export const getFrontRouter = router({
           select: {
             id: true,
             name: true,
-            semester: true,
+            semester: {
+              select: {
+                year: true,
+                term: true,
+              },
+            },
             course: {
               select: {
                 id: true,
@@ -99,7 +104,12 @@ export const getFrontRouter = router({
         select: {
           id: true,
           name: true,
-          semester: true,
+          semester: {
+            select: {
+              year: true,
+              term: true,
+            },
+          },
           course: {
             select: {
               id: true,
@@ -140,7 +150,7 @@ export const getFrontRouter = router({
       try {
         await isUserInThisSection(ctx.user.student_id, _sectionId);
 
-        const labs = await ctx.prisma.sections.findUnique({
+        const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
           },
@@ -151,14 +161,20 @@ export const getFrontRouter = router({
               },
             },
             active: true,
-            labs_status: true,
-            labs_order: true,
-            labs: {
-              include: {
-                tasks: true,
+            labs_status: {
+              select: {
+                labId: true,
+                status: true,
               },
             },
-            students: true,
+            labs_order: true,
+            labs: {
+              select: {
+                id: true,
+                tasks_order: true,
+                active : true
+              },
+            },
             submissions: {
               where: {
                 user: {
@@ -170,15 +186,15 @@ export const getFrontRouter = router({
           },
         });
 
-        if (labs) {
-          const sortedLab = labs.labs_order.map((id) => {
-            const lab = labs?.labs.find((lab) => lab.id === id) as labs;
+        if (section) {
+          const sortedLab = section.labs_order.map((id) => {
+            const lab = section?.labs.find((lab) => lab.id === id) as labs;
             return lab;
           });
 
           const labsAddedSubmissionsAndStatus = sortedLab.map((lab) => {
             const tasksStatus = lab.tasks_order.map((taskId) => {
-              const submission = labs.submissions.find((submission) => {
+              const submission = section.submissions.find((submission) => {
                 const isSameTask = submission.task_id === taskId;
                 const isSameLab = submission.lab_id === lab.id;
                 return isSameTask && isSameLab;
@@ -187,15 +203,21 @@ export const getFrontRouter = router({
               return submission?.status ?? "NOT_SUBMITTED";
             });
 
-            const labStatus = labs.labs_status.find(
+            const labStatus = section.labs_status.find(
               (status) => status.labId === lab.id
             )?.status;
 
-            return { ...lab, tasksStatus: tasksStatus, status: labStatus };
+            return { ...lab, tasksStatus, status: labStatus };
           });
-          return { ...labs, labs: labsAddedSubmissionsAndStatus };
+          const returnObject = {
+            labs: labsAddedSubmissionsAndStatus,
+            active: section.active,
+            courseName: section.course.name,
+          };
+          return returnObject;
         }
       } catch (err) {
+        console.log(err);
         if (err instanceof Error) {
           if (err.message === "UNAUTHORIZED") {
             throw new TRPCError({
