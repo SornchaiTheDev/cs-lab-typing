@@ -40,9 +40,6 @@ function TypingTask() {
         .map((line) => line.replace(/\s+/g, " ").trim())
         .join(" ");
 
-      console.log(text.split("\n"));
-      console.log(sanitizedText);
-
       await saveTask.mutateAsync({
         taskId: taskId as string,
         body: sanitizedText,

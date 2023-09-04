@@ -3,6 +3,7 @@ import Layout from ".";
 import HorizontalMenu from "~/components/Common/HorizontalMenu";
 import useRole from "~/hooks/useRole";
 import { trpc } from "~/helpers/trpc";
+import { useRouter } from "next/router";
 
 interface Props {
   title: string;
@@ -12,9 +13,11 @@ interface Props {
 
 function SectionLayout({ title, children, isLoading }: Props) {
   const { isAdmin, isTeacher, isStudent } = useRole();
+  const router = useRouter();
+  const { sectionId } = router.query;
 
   const students = trpc.sections.getStudentsBySectionId.useQuery({
-    sectionId: "1",
+    sectionId: sectionId as string,
   });
 
   const menus = [
