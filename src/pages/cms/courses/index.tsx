@@ -159,7 +159,7 @@ function Courses() {
                 />
               ))
           : data?.pages.map((page) =>
-              page.courses.map(({ id, name, note, number, sections }) => {
+              page.courses.map(({ id, name, note, number, students }) => {
                 return (
                   <Link
                     key={id}
@@ -183,9 +183,7 @@ function Courses() {
                             className="text-lg"
                           />
                           <h6 className="text-sand-12">
-                            <span className="font-bold">
-                              {sections[0]?._count.students ?? 0}
-                            </span>{" "}
+                            <span className="font-bold">{students ?? 0}</span>{" "}
                             students
                           </h6>
                         </div>

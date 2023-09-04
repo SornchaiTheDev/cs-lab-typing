@@ -48,6 +48,7 @@ export const getCourseRouter = router({
           const nextItem = courses.pop();
           nextCursor = nextItem?.id;
         }
+
         return { courses, nextCursor };
       } catch (err) {
         throw new TRPCError({

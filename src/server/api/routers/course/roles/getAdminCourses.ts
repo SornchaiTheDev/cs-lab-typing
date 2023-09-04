@@ -6,7 +6,7 @@ export const getAdminCourses = async (
   cursor: number | null | undefined,
   search?: string
 ) => {
-  return await prisma.courses.findMany({
+  const courses = await prisma.courses.findMany({
     where: {
       deleted_at: null,
       OR: [
@@ -41,4 +41,13 @@ export const getAdminCourses = async (
       },
     },
   });
+
+  const courseWithTotalStudentAmount = courses.map((course) => ({
+    ...course,
+    students: course.sections.reduce(
+      (acc, section) => acc + section._count.students,
+      0
+    ),
+  }));
+  return courseWithTotalStudentAmount;
 };
