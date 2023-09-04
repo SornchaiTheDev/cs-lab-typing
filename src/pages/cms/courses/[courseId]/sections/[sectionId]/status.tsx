@@ -182,8 +182,8 @@ const LabStatus = ({
   sectionType: SectionType;
 }) => {
   const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const router = useRouter();
   const { sectionId } = router.query;
 
@@ -194,7 +194,7 @@ const LabStatus = ({
       sectionId: sectionId as string,
       labId,
     },
-    { enabled: !!sectionId && !!labId }
+    { enabled: !!sectionId && !!labId && isOpen }
   );
 
   const submissions = trpc.labs.getLabTaskSubmissions.useQuery(
@@ -270,6 +270,7 @@ const LabStatus = ({
         />
       )}
       <Collapse
+        onChange={setIsOpen}
         title={name}
         titleBtn={
           <>
