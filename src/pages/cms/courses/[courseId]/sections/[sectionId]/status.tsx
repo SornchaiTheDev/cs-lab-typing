@@ -18,6 +18,7 @@ import TypingTable from "~/components/Typing/Datas/Table";
 import type { PaginationState } from "@tanstack/react-table";
 import { callToast } from "~/services/callToast";
 import BestScoreStats from "~/components/Typing/BestScoreStats";
+import { twMerge } from "tailwind-merge";
 
 interface TypingSubmissionProps {
   sectionId: string;
@@ -184,6 +185,8 @@ const LabStatus = ({
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingTasks, setIsFetchingTasks] = useState(false);
+
   const router = useRouter();
   const { sectionId } = router.query;
 
@@ -199,7 +202,7 @@ const LabStatus = ({
 
   const submissions = trpc.labs.getLabTaskSubmissions.useQuery(
     { sectionId: sectionId as string, labId: labId },
-    { enabled: !!sectionId && !!labId }
+    { enabled: false }
   );
 
   const handleOnRefresh = async () => {
@@ -218,12 +221,15 @@ const LabStatus = ({
 
   const exportCSV = async () => {
     try {
+      setIsFetchingTasks(true);
+      const { data } = await submissions.refetch();
+      if (!data) throw new Error("SOMETHING_WENT_WRONG");
       let csvString = "Student Id,Task Id,Raw Speed,Adjusted Speed,Error %";
       if (sectionType === "Exam") {
         csvString += ",Score";
       }
       csvString += "\n";
-      submissions.data?.tasks.map((task) =>
+      data.tasks.map((task) =>
         task.map(
           ({
             student_id,
@@ -248,10 +254,11 @@ const LabStatus = ({
       link.download = fileName;
       link.click();
     } catch (err) {
-      if (err instanceof TRPCError) {
+      if (err instanceof TRPCError || err instanceof Error) {
         callToast({ type: "error", msg: err.message });
       }
     }
+    setIsFetchingTasks(false);
   };
 
   const [selectedUser, setSelectedUser] = useState<{
@@ -286,10 +293,20 @@ const LabStatus = ({
             {!isTA && (
               <button
                 onClick={exportCSV}
-                className="flex items-center gap-2 rounded-lg bg-sand-12 px-2 py-1 text-sand-1 shadow active:bg-sand-11"
+                disabled={isFetchingTasks}
+                className={twMerge(
+                  "flex items-center gap-2 rounded-lg bg-sand-12 px-2 py-1 text-sand-1 shadow active:bg-sand-11",
+                  isFetchingTasks && "cursor-not-allowed opacity-40"
+                )}
               >
-                <Icon icon="solar:document-text-line-duotone" />
-                Export as CSV
+                <Icon
+                  icon={
+                    isFetchingTasks
+                      ? "line-md:loading-twotone-loop"
+                      : "solar:document-text-line-duotone"
+                  }
+                />
+                {isFetchingTasks ? "Exporting..." : "Export as CSV"}
               </button>
             )}
           </>
