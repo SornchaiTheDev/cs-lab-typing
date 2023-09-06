@@ -171,6 +171,7 @@ export const getFrontRouter = router({
             labs: {
               select: {
                 id: true,
+                name: true,
                 tasks_order: true,
                 active: true,
               },
