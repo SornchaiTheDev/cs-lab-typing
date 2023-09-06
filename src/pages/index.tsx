@@ -11,7 +11,12 @@ type sections = Prisma.sectionsGetPayload<{
   select: {
     id: true;
     name: true;
-    semester: true;
+    semester: {
+      select: {
+        term: true;
+        year: true;
+      };
+    };
     course: {
       select: {
         id: true;
@@ -27,6 +32,7 @@ interface TeachingSectionsProps {
   isLoading: boolean;
   pages: {
     sections: sections[];
+    nextCursor: number | undefined;
   }[];
 }
 const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
