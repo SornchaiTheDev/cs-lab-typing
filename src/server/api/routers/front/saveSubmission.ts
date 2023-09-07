@@ -115,7 +115,10 @@ export const saveSubmission = async ({
 
     let status: submission_type = "FAILED";
 
-    if (submission?.status === "PASSED" || errorPercentage <= 3) {
+    if (
+      submission?.status === "PASSED" ||
+      (errorPercentage <= 3 && adjustedSpeed >= 30)
+    ) {
       status = "PASSED";
     }
 
