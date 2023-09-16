@@ -81,7 +81,7 @@ function Layout({
               {isLoading ? (
                 <Skeleton width="20rem" height="3rem" />
               ) : (
-                <h2 className="text-2xl font-bold capitalize text-sand-12 md:text-4xl">
+                <h2 className="text-2xl font-bold text-sand-12 md:text-4xl">
                   {title}
                 </h2>
               )}
