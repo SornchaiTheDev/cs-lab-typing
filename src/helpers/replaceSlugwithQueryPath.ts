@@ -3,12 +3,8 @@ export const replaceSlugwithQueryPath = (
   query: Record<string, any>
 ) => {
   let result = slug;
-
   Object.keys(query).forEach((key) => {
-    if (slug.includes(key)) {
-      result = query[key];
-    }
+    result = result.replace(`[${key}]`, query[key]);
   });
-
   return result;
 };

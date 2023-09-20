@@ -10,6 +10,9 @@ import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import EndedGameExam from "~/components/Typing/EndedGameExam";
 import dayjs from "dayjs";
+import superjson from "superjson";
+import ProblemList from "~/components/Typing/ProblemList";
+import { taskWithStatus } from "~/types";
 
 interface Props {
   taskName: string;
@@ -17,6 +20,8 @@ interface Props {
   courseName: string;
   labName: string;
   labStatus: string;
+  stringifyTasks: string | null;
+  sectionType: string | null;
 }
 
 function TypingTask({
@@ -25,6 +30,8 @@ function TypingTask({
   courseName,
   labName,
   labStatus,
+  stringifyTasks,
+  sectionType,
 }: Props) {
   const router = useRouter();
 
@@ -38,6 +45,10 @@ function TypingTask({
   const isEndedPhase = status === "Ended";
   const isHistoryPhase = status === "History";
   const isReadOnly = labStatus === "READONLY";
+
+  const tasks: taskWithStatus[] = !!stringifyTasks
+    ? superjson.parse(stringifyTasks)
+    : [];
 
   useEffect(() => {
     return () => {
@@ -94,7 +105,10 @@ function TypingTask({
             ) : isTypingPhase ? (
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
-              <EndedGameExam />
+              <>
+                <ProblemList {...{ tasks, sectionType }} />
+                <EndedGameExam />
+              </>
             ) : null}
           </div>
         </div>
@@ -125,6 +139,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       _labStatus = "READONLY";
     }
 
+    const lab = await helper.front.getTasks.fetch({
+      labId: labId as string,
+      sectionId: sectionId as string,
+    });
+
+    let stringifyTasks = null;
+    let sectionType = null;
+    if (lab) {
+      stringifyTasks = superjson.stringify(lab.tasks);
+      sectionType = lab.sectionType;
+    }
+
     return {
       props: {
         courseName,
@@ -132,6 +158,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         labStatus: _labStatus,
         taskName,
         taskBody,
+        stringifyTasks,
+        sectionType,
       },
     };
   } catch (err) {

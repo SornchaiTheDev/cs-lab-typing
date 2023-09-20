@@ -9,7 +9,7 @@ import Button from "~/components/Common/Button";
 import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
-import ProblemList from "~/components/ProblemList";
+import ProblemList from "~/components/Typing/ProblemList";
 import superjson from "superjson";
 import type { taskWithStatus } from "~/types";
 
@@ -19,7 +19,7 @@ interface Props {
   courseName: string;
   labName: string;
   labStatus: string;
-  tasks: string | null;
+  stringifyTasks: string | null;
   sectionType: string | null;
 }
 
@@ -29,7 +29,7 @@ function TypingTask({
   courseName,
   labName,
   labStatus,
-  tasks: stringifyTasks,
+  stringifyTasks,
   sectionType,
 }: Props) {
   const router = useRouter();
@@ -140,10 +140,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       sectionId: sectionId as string,
     });
 
-    let tasks = null;
+    let stringifyTasks = null;
     let sectionType = null;
     if (lab) {
-      tasks = superjson.stringify(lab.tasks);
+      stringifyTasks = superjson.stringify(lab.tasks);
       sectionType = lab.sectionType;
     }
 
@@ -154,7 +154,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         labStatus,
         taskName,
         taskBody,
-        tasks,
+        stringifyTasks,
         sectionType,
       },
     };
