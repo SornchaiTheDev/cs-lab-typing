@@ -5,12 +5,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-        - name: SSH Remote Commands
-          uses: appleboy/ssh-action@v1.0.0
-          with: 
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.USERNAME }}
-            password: ${{ secrets.PASSWORD }}
-            port: ${{ secrets.PORT }}
-            script: whoami
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.0.0
+        with: 
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: whoami
       - run: echo "${{ job.status }} to deploy cs-lab"
