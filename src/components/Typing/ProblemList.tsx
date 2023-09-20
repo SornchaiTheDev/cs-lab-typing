@@ -2,6 +2,9 @@ import { twMerge } from "tailwind-merge";
 import type { taskWithStatus } from "~/types";
 import { useRouter } from "next/router";
 import { replaceSlugwithQueryPath } from "~/helpers";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { Icon } from "@iconify/react";
 
 interface Props {
   tasks: taskWithStatus[];
@@ -9,6 +12,7 @@ interface Props {
 }
 function ProblemList({ tasks, sectionType }: Props) {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(true);
   const isExam = sectionType === "Exam";
   const LESSON_PATH = replaceSlugwithQueryPath(
     "/courses/[sectionId]/labs/[labId]/typing",
@@ -20,8 +24,24 @@ function ProblemList({ tasks, sectionType }: Props) {
   );
 
   return (
-    <div className="fixed left-0 top-0 h-full w-[20rem] rounded-r-2xl border border-sand-6 bg-sand-1 p-4 shadow">
+    <motion.div
+      animate={{ left: isOpen ? 0 : -320 }}
+      className="fixed top-0 h-full w-[20rem] rounded-r-2xl border border-sand-6 bg-sand-1 p-4"
+    >
       <h3 className="text-2xl font-bold text-sand-12">Tasks List</h3>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="absolute -right-[2.8rem] text-sand-12 bottom-12 rounded-r-xl border-r border-t border-b border-sand-6 bg-sand-1 p-3 text-xl"
+      >
+        <Icon
+          icon={
+            isOpen
+              ? "solar:alt-arrow-left-line-duotone"
+              : "solar:alt-arrow-right-line-duotone"
+          }
+        />
+      </button>
+
       <div className="mt-4 h-full overflow-y-auto px-2">
         {tasks.map(({ id, name, status }) => (
           <a
@@ -44,7 +64,7 @@ function ProblemList({ tasks, sectionType }: Props) {
           </a>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
