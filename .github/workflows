@@ -2,7 +2,7 @@ name: GitHub Actions Demo
 run-name: Deploy to server 🚀
 on: [push]
 jobs:
-  Deploy cs-lab to server:
+  deploy:
     runs-on: ubuntu-latest
     steps:
         - name: SSH Remote Commands
