@@ -9,6 +9,9 @@ import Button from "~/components/Common/Button";
 import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import ProblemList from "~/components/ProblemList";
+import superjson from "superjson";
+import type { taskWithStatus } from "~/types";
 
 interface Props {
   taskName: string;
@@ -16,6 +19,8 @@ interface Props {
   courseName: string;
   labName: string;
   labStatus: string;
+  tasks: string | null;
+  sectionType: string | null;
 }
 
 function TypingTask({
@@ -24,6 +29,8 @@ function TypingTask({
   courseName,
   labName,
   labStatus,
+  tasks: stringifyTasks,
+  sectionType,
 }: Props) {
   const router = useRouter();
 
@@ -44,6 +51,10 @@ function TypingTask({
   const isEndedPhase = status === "Ended";
   const isHistoryPhase = status === "History";
   const isReadOnly = labStatus === "READONLY";
+
+  const tasks: taskWithStatus[] = !!stringifyTasks
+    ? superjson.parse(stringifyTasks)
+    : [];
 
   return (
     <>
@@ -87,13 +98,17 @@ function TypingTask({
               {isTypingPhase ? "History" : "Back to Typing"}
             </Button>
           )}
-          <div className="mt-12 flex flex-1 flex-col">
+
+          <div className="mt-12 flex-1">
             {isReadOnly ? (
               <History />
             ) : isTypingPhase ? (
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
-              <EndedGame />
+              <>
+                <ProblemList {...{ tasks, sectionType }} />
+                <EndedGame />
+              </>
             ) : (
               isHistoryPhase && <History />
             )}
@@ -120,6 +135,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         taskId: taskId as string,
       });
 
+    const lab = await helper.front.getTasks.fetch({
+      labId: labId as string,
+      sectionId: sectionId as string,
+    });
+
+    let tasks = null;
+    let sectionType = null;
+    if (lab) {
+      tasks = superjson.stringify(lab.tasks);
+      sectionType = lab.sectionType;
+    }
+
     return {
       props: {
         courseName,
@@ -127,6 +154,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         labStatus,
         taskName,
         taskBody,
+        tasks,
+        sectionType,
       },
     };
   } catch (err) {

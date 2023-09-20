@@ -12,6 +12,8 @@ import { useSession } from "next-auth/react";
 import type { PaginationState } from "@tanstack/react-table";
 import { callToast } from "~/services/callToast";
 import { TRPCClientError } from "@trpc/client";
+import Link from "next/link";
+import { twMerge } from "tailwind-merge";
 
 function EndedGame() {
   const router = useRouter();
@@ -24,6 +26,9 @@ function EndedGame() {
     pageSize: 6,
   });
 
+  const LESSON_PATH = "[labId]/typing/[taskId]";
+  const EXAM_PATH = "[labId]/typing/exam/[taskId]";
+
   const typingHistories = trpc.front.getTypingHistory.useQuery(
     {
       sectionId: sectionId as string,
@@ -34,6 +39,11 @@ function EndedGame() {
       enabled: !!sectionId && !!taskId && !!labId,
     }
   );
+
+  const { data, isLoading } = trpc.front.getTasks.useQuery({
+    labId: labId as string,
+    sectionId: sectionId as string,
+  });
 
   const [stats, setStatus] = useTypingStore((state) => [
     state.stats,
@@ -90,7 +100,7 @@ function EndedGame() {
     return null;
   }, [typingHistories.data]);
   return (
-    <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
+    <div className="mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
       <button
         onClick={() => setStatus("NotStarted")}
         className="flex w-fit flex-col items-center rounded-md p-2 text-sand-12 outline-none ring-sand-6 ring-offset-2 hover:bg-sand-3 focus:ring-2"

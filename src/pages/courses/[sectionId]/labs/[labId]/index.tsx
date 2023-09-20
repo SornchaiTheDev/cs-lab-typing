@@ -1,4 +1,4 @@
-import type { SectionType, tasks } from "@prisma/client";
+import type { SectionType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import clsx from "clsx";
 import type { GetServerSideProps } from "next";
@@ -9,8 +9,7 @@ import FrontLayout from "~/Layout/FrontLayout";
 import { replaceSlugwithQueryPath } from "~/helpers";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import superjson from "superjson";
-
-type taskWithStatus = tasks & { status: "PASSED" | "FAILED" | "NOT_SUBMITTED" };
+import type { taskWithStatus } from "~/types";
 
 interface Props {
   courseName: string;
@@ -53,7 +52,7 @@ function Labs({ courseName, labName, tasks, sectionType }: Props) {
               pathname: isExam ? EXAM_PATH : LESSON_PATH,
               query: { ...router.query, taskId: id },
             }}
-            className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
+            className="relative col-span-12 flex h-[8rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
           >
             <div
               className={clsx(

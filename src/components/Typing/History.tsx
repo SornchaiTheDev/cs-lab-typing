@@ -61,7 +61,7 @@ function History({ type = "Lesson" }: Props) {
   }, [typingHistories.data]);
 
   return (
-    <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col gap-4">
+    <div className="container mx-auto mb-2 flex max-w-2xl flex-col gap-4">
       <div className="flex flex-col items-center gap-4">
         <div className="h-[10rem] w-full">
           <LineChart datas={typingHistories.data ?? []} />

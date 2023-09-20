@@ -114,17 +114,17 @@ function TypingGame({ text }: Props) {
             const state = charsState[index];
             const color =
               state === 0
-                ? "text-sand-8 dark:text-sand-9"
+                ? "text-sand-8 dark:text-sand-6"
                 : state === 1
-                ? "text-sand-12 dark:text-sand-11"
-                : "text-tomato-11";
+                ? "text-sand-12 dark:text-sand-12"
+                : "text-tomato-11 dark:text-tomato-9";
 
             return (
               <span
                 key={letter + index}
                 className={clsx(
                   color,
-                  state === 2 && letter === " " && "border-b-2 border-b-red-9"
+                  state === 2 && "border-b-2 border-tomato-11 dark:border-tomato-9"
                 )}
               >
                 {letter === " " ? " " : letter}
