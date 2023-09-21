@@ -44,6 +44,8 @@ function EndedGameExam() {
 
   const examSubmitTyping = trpc.front.examSubmitTyping.useMutation();
 
+  const ctx = trpc.useContext();
+
   useEffect(() => {
     const saveTypingScore = async () => {
       if (!stats) return;
@@ -62,6 +64,7 @@ function EndedGameExam() {
         result.hsah = objectHash(result);
         await examSubmitTyping.mutateAsync(result);
         await typingHistories.refetch();
+        await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
           callToast({ type: "error", msg: err.message });

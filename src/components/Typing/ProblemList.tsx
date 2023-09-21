@@ -1,19 +1,23 @@
 import { twMerge } from "tailwind-merge";
-import type { taskWithStatus } from "~/types";
 import { useRouter } from "next/router";
 import { replaceSlugwithQueryPath } from "~/helpers";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
+import { trpc } from "~/helpers";
 
-interface Props {
-  tasks: taskWithStatus[];
-  sectionType: string | null;
-}
-function ProblemList({ tasks, sectionType }: Props) {
+function ProblemList() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
-  const isExam = sectionType === "Exam";
+
+  const { labId, sectionId } = router.query;
+
+  const lab = trpc.front.getTasks.useQuery({
+    labId: labId as string,
+    sectionId: sectionId as string,
+  });
+
+  const isExam = lab.data?.sectionType === "Exam";
   const LESSON_PATH = replaceSlugwithQueryPath(
     "/courses/[sectionId]/labs/[labId]/typing",
     router.query
@@ -22,7 +26,6 @@ function ProblemList({ tasks, sectionType }: Props) {
     "/courses/[sectionId]/labs/[labId]/typing/exam",
     router.query
   );
-
   return (
     <motion.div
       animate={{ left: isOpen ? 0 : -320 }}
@@ -31,7 +34,7 @@ function ProblemList({ tasks, sectionType }: Props) {
       <h3 className="text-2xl font-bold text-sand-12">Tasks List</h3>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -right-[2.8rem] text-sand-12 bottom-12 rounded-r-xl border-r border-t border-b border-sand-6 bg-sand-1 p-3 text-xl"
+        className="absolute -right-[2.8rem] bottom-12 rounded-r-xl border-b border-r border-t border-sand-6 bg-sand-1 p-3 text-xl text-sand-12"
       >
         <Icon
           icon={
@@ -42,8 +45,8 @@ function ProblemList({ tasks, sectionType }: Props) {
         />
       </button>
 
-      <div className="mt-4 h-full overflow-y-auto px-2">
-        {tasks.map(({ id, name, status }) => (
+      <div className="mt-4 h-full overflow-y-auto px-2 pb-16">
+        {lab.data?.tasks.map(({ id, name, status }) => (
           <a
             key={id}
             href={isExam ? `${EXAM_PATH}/${id}` : `${LESSON_PATH}/${id}`}

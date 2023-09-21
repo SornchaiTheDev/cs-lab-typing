@@ -19,8 +19,6 @@ interface Props {
   courseName: string;
   labName: string;
   labStatus: string;
-  stringifyTasks: string | null;
-  sectionType: string | null;
 }
 
 function TypingTask({
@@ -29,8 +27,6 @@ function TypingTask({
   courseName,
   labName,
   labStatus,
-  stringifyTasks,
-  sectionType,
 }: Props) {
   const router = useRouter();
 
@@ -51,10 +47,6 @@ function TypingTask({
   const isEndedPhase = status === "Ended";
   const isHistoryPhase = status === "History";
   const isReadOnly = labStatus === "READONLY";
-
-  const tasks: taskWithStatus[] = !!stringifyTasks
-    ? superjson.parse(stringifyTasks)
-    : [];
 
   return (
     <>
@@ -106,7 +98,7 @@ function TypingTask({
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
               <>
-                <ProblemList {...{ tasks, sectionType }} />
+                <ProblemList />
                 <EndedGame />
               </>
             ) : (
@@ -135,18 +127,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         taskId: taskId as string,
       });
 
-    const lab = await helper.front.getTasks.fetch({
-      labId: labId as string,
-      sectionId: sectionId as string,
-    });
-
-    let stringifyTasks = null;
-    let sectionType = null;
-    if (lab) {
-      stringifyTasks = superjson.stringify(lab.tasks);
-      sectionType = lab.sectionType;
-    }
-
     return {
       props: {
         courseName,
@@ -154,8 +134,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         labStatus,
         taskName,
         taskBody,
-        stringifyTasks,
-        sectionType,
       },
     };
   } catch (err) {

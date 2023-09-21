@@ -51,6 +51,7 @@ function EndedGame() {
   ]);
 
   const submitTyping = trpc.front.submitTyping.useMutation();
+  const ctx = trpc.useContext();
 
   useEffect(() => {
     const saveTypingScore = async () => {
@@ -71,6 +72,7 @@ function EndedGame() {
         result.hash = objectHash(result);
         await submitTyping.mutateAsync(result);
         await typingHistories.refetch();
+        await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
           callToast({ type: "error", msg: err.message });
