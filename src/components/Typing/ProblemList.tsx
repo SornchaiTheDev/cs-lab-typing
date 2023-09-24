@@ -26,6 +26,7 @@ function ProblemList() {
     "/courses/[sectionId]/labs/[labId]/typing/exam",
     router.query
   );
+
   return (
     <motion.div
       animate={{ left: isOpen ? 0 : -320 }}
@@ -44,29 +45,38 @@ function ProblemList() {
           }
         />
       </button>
+      {lab.isLoading ? (
+        <div className="flex h-full flex-col items-center justify-center gap-2">
+          <Icon
+            icon="solar:traffic-line-duotone"
+            className="animate-spin text-3xl text-sand-12"
+          />
+          <h6 className="text-sand-12">Tasks is loading . . .</h6>
+        </div>
+      ) : (
+        <div className="mt-4 h-full overflow-y-auto px-2 pb-16">
+          {lab.data?.tasks.map(({ id, name, status }) => (
+            <a
+              key={id}
+              href={isExam ? `${EXAM_PATH}/${id}` : `${LESSON_PATH}/${id}`}
+              className="relative col-span-12 mb-2 flex h-[8rem] w-full flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
+            >
+              <div
+                className={twMerge(
+                  "absolute -bottom-1 h-4 w-full p-1",
+                  status === "PASSED" && "bg-lime-9",
+                  status === "FAILED" && "bg-red-9",
+                  status === "NOT_SUBMITTED" && "bg-sand-9"
+                )}
+              />
 
-      <div className="mt-4 h-full overflow-y-auto px-2 pb-16">
-        {lab.data?.tasks.map(({ id, name, status }) => (
-          <a
-            key={id}
-            href={isExam ? `${EXAM_PATH}/${id}` : `${LESSON_PATH}/${id}`}
-            className="relative col-span-12 mb-2 flex h-[8rem] w-full flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
-          >
-            <div
-              className={twMerge(
-                "absolute -bottom-1 h-4 w-full p-1",
-                status === "PASSED" && "bg-lime-9",
-                status === "FAILED" && "bg-red-9",
-                status === "NOT_SUBMITTED" && "bg-sand-9"
-              )}
-            />
-
-            <div className="mb-2 flex flex-col gap-2 p-2">
-              <h4 className="text-xl font-medium text-sand-12">{name}</h4>
-            </div>
-          </a>
-        ))}
-      </div>
+              <div className="mb-2 flex flex-col gap-2 p-2">
+                <h4 className="text-xl font-medium text-sand-12">{name}</h4>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }
