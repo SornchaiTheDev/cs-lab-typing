@@ -12,9 +12,10 @@ import {
 import { useMemo } from "react";
 import useTheme from "~/hooks/useTheme";
 import type { typing_histories } from "../History";
+import type { FrontTypingHistory } from "~/types/Front";
 
 interface Props {
-  datas: typing_histories[];
+  datas: (typing_histories | FrontTypingHistory)[];
 }
 
 ChartJS.register(

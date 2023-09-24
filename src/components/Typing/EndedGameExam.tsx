@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTypingStore } from "~/store";
 import { Icon } from "@iconify/react";
 import Stats from "./Stats";
@@ -24,7 +24,7 @@ function EndedGameExam() {
     pageSize: 6,
   });
 
-  const typingHistories = trpc.front.getTypingHistory.useQuery(
+  const { data, isLoading, refetch } = trpc.front.getTypingHistory.useQuery(
     {
       sectionId: sectionId as string,
       taskId: taskId as string,
@@ -63,7 +63,7 @@ function EndedGameExam() {
 
         result.hsah = objectHash(result);
         await examSubmitTyping.mutateAsync(result);
-        await typingHistories.refetch();
+        await refetch();
         await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
@@ -77,23 +77,6 @@ function EndedGameExam() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const highestSpeedAndScore = useMemo(() => {
-    if (typingHistories.data === undefined) return null;
-    const cloneDatas = [...typingHistories.data];
-
-    const highestSpeedAndScore = cloneDatas.sort(
-      (prev, current) =>
-        current.adjusted_speed +
-        current.score -
-        (prev.adjusted_speed + prev.score)
-    );
-    if (highestSpeedAndScore[0] !== undefined) {
-      return highestSpeedAndScore[0].id;
-    }
-
-    return null;
-  }, [typingHistories.data]);
-
   return (
     <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
       <button
@@ -105,14 +88,14 @@ function EndedGameExam() {
       </button>
       <Stats type="Exam" />
       <div className="h-[10rem] w-full">
-        <LineChart datas={typingHistories.data ?? []} />
+        <LineChart datas={data?.history ?? []} />
       </div>
       <TypingTable
         type="Exam"
-        isLoading={typingHistories.isLoading}
-        datas={typingHistories.data ?? []}
+        isLoading={isLoading}
+        datas={data?.history ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestSpeedAndScore }}
+        {...{ pagination, highestScore: data?.highestScore ?? null }}
       />
     </div>
   );

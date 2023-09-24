@@ -48,17 +48,20 @@ const TypingSubmissions = ({
     }
   );
 
+  const highestScore = typingHistories.data?.highestScore ?? null;
+
   return (
     <>
       <div className="h-[10rem] w-full">
         <LineChart datas={typingHistories.data?.submissions ?? []} />
       </div>
+
       <TypingTable
         type={typingHistories.data?.section?.type ?? "Lesson"}
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data?.submissions ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination }}
+        {...{ pagination, highestScore }}
       />
     </>
   );

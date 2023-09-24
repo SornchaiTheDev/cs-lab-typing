@@ -32,7 +32,7 @@ function History({ type = "Lesson" }: Props) {
     pageSize: 6,
   });
 
-  const typingHistories = trpc.front.getTypingHistory.useQuery(
+  const { data, isLoading } = trpc.front.getTypingHistory.useQuery(
     {
       sectionId: sectionId as string,
       taskId: taskId as string,
@@ -47,14 +47,14 @@ function History({ type = "Lesson" }: Props) {
     <div className="container mx-auto mb-2 flex max-w-2xl flex-col gap-4">
       <div className="flex flex-col items-center gap-4">
         <div className="h-[10rem] w-full">
-          <LineChart datas={typingHistories.data ?? []} />
+          <LineChart datas={data?.history ?? []} />
         </div>
         <TypingTable
           type={type}
-          isLoading={typingHistories.isLoading}
-          datas={typingHistories.data ?? []}
+          isLoading={isLoading}
+          datas={data?.history ?? []}
           onPaginationChange={setPagination}
-          {...{ pagination }}
+          {...{ pagination, highestScore: data?.highestScore ?? null }}
         />
       </div>
     </div>

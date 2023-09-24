@@ -10,8 +10,8 @@ export const findHighestSpeedAndScore = (arr: HigestSpeedAndScoreType[]) => {
   clonedArr.sort(
     (prev, current) =>
       current.adjusted_speed +
-      current.percent_error -
-      (prev.adjusted_speed + prev.percent_error)
+      current.score -
+      (prev.adjusted_speed + prev.score)
   );
 
   if (clonedArr.length === 0 || clonedArr[0] === undefined) return null;
