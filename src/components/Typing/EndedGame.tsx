@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTypingStore } from "~/store";
 import { Icon } from "@iconify/react";
 import Stats from "./Stats";
@@ -12,8 +12,6 @@ import { useSession } from "next-auth/react";
 import type { PaginationState } from "@tanstack/react-table";
 import { callToast } from "~/services/callToast";
 import { TRPCClientError } from "@trpc/client";
-import Link from "next/link";
-import { twMerge } from "tailwind-merge";
 
 function EndedGame() {
   const router = useRouter();
@@ -85,22 +83,6 @@ function EndedGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const highestSpeedAndScore = useMemo(() => {
-    if (typingHistories.data === undefined) return null;
-    const cloneDatas = [...typingHistories.data];
-
-    const highestSpeedAndScore = cloneDatas.sort(
-      (prev, current) =>
-        current.adjusted_speed +
-        current.score -
-        (prev.adjusted_speed + prev.score)
-    );
-    if (highestSpeedAndScore[0] !== undefined) {
-      return highestSpeedAndScore[0].id;
-    }
-
-    return null;
-  }, [typingHistories.data]);
   return (
     <div className="mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
       <button
@@ -118,7 +100,7 @@ function EndedGame() {
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestSpeedAndScore }}
+        {...{ pagination }}
       />
     </div>
   );

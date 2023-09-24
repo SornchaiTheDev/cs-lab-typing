@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import TypingTable from "./Datas/Table";
 import LineChart from "./Datas/LineChart";
 import { useRouter } from "next/router";
@@ -43,23 +43,6 @@ function History({ type = "Lesson" }: Props) {
     }
   );
 
-  const highestSpeedAndScore = useMemo(() => {
-    if (typingHistories.data === undefined) return null;
-    const cloneDatas = [...typingHistories.data];
-
-    const highestSpeedAndScore = cloneDatas.sort(
-      (prev, current) =>
-        current.adjusted_speed +
-        current.score -
-        (prev.adjusted_speed + prev.score)
-    );
-    if (highestSpeedAndScore[0] !== undefined) {
-      return highestSpeedAndScore[0].id;
-    }
-
-    return null;
-  }, [typingHistories.data]);
-
   return (
     <div className="container mx-auto mb-2 flex max-w-2xl flex-col gap-4">
       <div className="flex flex-col items-center gap-4">
@@ -71,7 +54,7 @@ function History({ type = "Lesson" }: Props) {
           isLoading={typingHistories.isLoading}
           datas={typingHistories.data ?? []}
           onPaginationChange={setPagination}
-          {...{ pagination, highestSpeedAndScore }}
+          {...{ pagination }}
         />
       </div>
     </div>

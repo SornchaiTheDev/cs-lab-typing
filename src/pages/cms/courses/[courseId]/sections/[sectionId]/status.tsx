@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import Skeleton from "~/components/Common/Skeleton";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
 import { Icon } from "@iconify/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Modal from "~/components/Common/Modal";
 import Collapse from "~/components/Common/Collapse";
 import { getDuration } from "~/components/Typing/utils/getDuration";
@@ -48,23 +48,6 @@ const TypingSubmissions = ({
     }
   );
 
-  const highestSpeedAndScore = useMemo(() => {
-    if (typingHistories.data === undefined) return null;
-    const cloneDatas = [...typingHistories.data.submissions];
-
-    const highestSpeedAndScore = cloneDatas.sort(
-      (prev, current) =>
-        current.adjusted_speed +
-        current.score -
-        (prev.adjusted_speed + prev.score)
-    );
-    if (highestSpeedAndScore[0] !== undefined) {
-      return highestSpeedAndScore[0].id;
-    }
-
-    return null;
-  }, [typingHistories.data]);
-
   return (
     <>
       <div className="h-[10rem] w-full">
@@ -75,7 +58,7 @@ const TypingSubmissions = ({
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data?.submissions ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestSpeedAndScore }}
+        {...{ pagination }}
       />
     </>
   );

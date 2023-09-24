@@ -8,6 +8,7 @@ import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 import type { task_type } from "@prisma/client";
 import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
+import { findHighestSpeedAndScore } from "~/helpers";
 
 export const getTaskRouter = router({
   getTaskPagination: teacherAboveProcedure
@@ -214,17 +215,7 @@ export const getTaskRouter = router({
               },
             },
             include: {
-              typing_histories: {
-                orderBy: [
-                  {
-                    score: "desc",
-                  },
-                  {
-                    adjusted_speed: "desc",
-                  },
-                ],
-                take: 1,
-              },
+              typing_histories: true,
             },
           },
         },
@@ -238,10 +229,10 @@ export const getTaskRouter = router({
         .filter((task) => !!task)
         .map((task) => {
           const { submissions } = task;
-
+          const bestSubmission = findHighestSpeedAndScore(submissions[0]?.typing_histories ?? []);
           return {
             name: task.name,
-            history: submissions[0]?.typing_histories[0],
+            history: bestSubmission,
             id: task.id,
           };
         });

@@ -10,6 +10,7 @@ import {
   isUserInThisCourse,
   isUserInThisSection,
 } from "~/server/utils/checkUser";
+import { findHighestSpeedAndScore } from "~/helpers";
 
 export const getLabRouter = router({
   getLabPagination: teacherAboveProcedure
@@ -378,12 +379,7 @@ export const getLabRouter = router({
                 task_id: order,
               },
               select: {
-                typing_histories: {
-                  orderBy: {
-                    score: "desc",
-                  },
-                  take: 1,
-                },
+                typing_histories: true,
               },
             },
           },
@@ -395,19 +391,19 @@ export const getLabRouter = router({
         const taskSubmissions = users
           .map(({ submissions, student_id }) =>
             submissions
-              .map(({ typing_histories }) =>
-                typing_histories
-                  .map((typing_history) => ({
-                    ...typing_history,
-                    student_id,
-                    task_id: order,
-                  }))
-                  .flat()
-              )
+              .map(({ typing_histories }) => {
+                const higestSpeedAndScore = findHighestSpeedAndScore(
+                  typing_histories ?? []
+                );
+                return {
+                  ...higestSpeedAndScore,
+                  student_id,
+                  task_id: order,
+                };
+              })
               .flat()
           )
           .flat();
-
         tasks.push(taskSubmissions);
       }
 

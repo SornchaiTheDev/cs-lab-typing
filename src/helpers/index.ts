@@ -15,3 +15,4 @@ export {
 export { getHighestRole } from "./getHighestRole";
 export { convertToThousand } from "./convertToThousand";
 export { sanitizeFilename } from "./sanitizeFilename";
+export { findHighestSpeedAndScore } from "./findHighestSpeedAndScore";
