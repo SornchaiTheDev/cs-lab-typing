@@ -47,12 +47,13 @@ function History({ type = "Lesson" }: Props) {
     <div className="container mx-auto mb-2 flex max-w-2xl flex-col gap-4">
       <div className="flex flex-col items-center gap-4">
         <div className="h-[10rem] w-full">
-          <LineChart datas={typingHistories.data ?? []} />
+          <LineChart datas={typingHistories.data?.histories ?? []} />
         </div>
         <TypingTable
           type={type}
           isLoading={typingHistories.isLoading}
-          datas={typingHistories.data ?? []}
+          datas={typingHistories.data?.histories ?? []}
+          highestScore={typingHistories.data?.highestScore ?? null}
           onPaginationChange={setPagination}
           {...{ pagination }}
         />

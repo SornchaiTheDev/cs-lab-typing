@@ -229,7 +229,9 @@ export const getTaskRouter = router({
         .filter((task) => !!task)
         .map((task) => {
           const { submissions } = task;
-          const bestSubmission = findHighestSpeedAndScore(submissions[0]?.typing_histories ?? []);
+          const bestSubmission = findHighestSpeedAndScore(
+            submissions[0]?.typing_histories ?? []
+          );
           return {
             name: task.name,
             history: bestSubmission,
@@ -307,7 +309,9 @@ export const getTaskRouter = router({
         take: 100,
       });
 
-      return { section, submissions: typingHistories };
+      const highestScore = findHighestSpeedAndScore(typingHistories);
+
+      return { section, submissions: typingHistories, highestScore };
     } catch (err) {
       if (err instanceof Error) {
         if (err.message === "NOT_FOUND") {

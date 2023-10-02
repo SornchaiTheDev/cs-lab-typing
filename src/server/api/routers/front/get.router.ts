@@ -1,6 +1,7 @@
 import type { labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { findHighestSpeedAndScore } from "~/helpers";
 import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
 import { isUserInThisSection } from "~/server/utils/checkUser";
 
@@ -573,7 +574,7 @@ export const getFrontRouter = router({
             raw_speed: true,
             adjusted_speed: true,
             percent_error: true,
-            score: section?.type === "Exam" ? true : false,
+            score: true,
             started_at: true,
             ended_at: true,
             created_at: true,
@@ -581,10 +582,43 @@ export const getFrontRouter = router({
           orderBy: {
             created_at: "desc",
           },
-          take: 100,
         });
 
-        return typingHistories;
+        const highestScore = findHighestSpeedAndScore(typingHistories);
+
+        const returnedTypingHistories = typingHistories.map((history) => {
+          const {
+            id,
+            adjusted_speed,
+            created_at,
+            ended_at,
+            percent_error,
+            raw_speed,
+            started_at,
+            score,
+          } = history;
+          const typingHistory = {
+            id,
+            adjusted_speed,
+            created_at,
+            started_at,
+            ended_at,
+            percent_error,
+            raw_speed,
+          };
+          if (section?.type === "Exam") {
+            return {
+              ...typingHistory,
+              score,
+            };
+          }
+          return typingHistory;
+        });
+
+        return {
+          histories: returnedTypingHistories,
+          highestScore,
+        };
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === "NOT_FOUND") {

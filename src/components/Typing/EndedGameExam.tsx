@@ -77,23 +77,6 @@ function EndedGameExam() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const highestSpeedAndScore = useMemo(() => {
-    if (typingHistories.data === undefined) return null;
-    const cloneDatas = [...typingHistories.data];
-
-    const highestSpeedAndScore = cloneDatas.sort(
-      (prev, current) =>
-        current.adjusted_speed +
-        current.score -
-        (prev.adjusted_speed + prev.score)
-    );
-    if (highestSpeedAndScore[0] !== undefined) {
-      return highestSpeedAndScore[0].id;
-    }
-
-    return null;
-  }, [typingHistories.data]);
-
   return (
     <div className="container mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
       <button
@@ -105,14 +88,15 @@ function EndedGameExam() {
       </button>
       <Stats type="Exam" />
       <div className="h-[10rem] w-full">
-        <LineChart datas={typingHistories.data ?? []} />
+        <LineChart datas={typingHistories.data?.histories ?? []} />
       </div>
       <TypingTable
         type="Exam"
         isLoading={typingHistories.isLoading}
-        datas={typingHistories.data ?? []}
+        datas={typingHistories.data?.histories ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestSpeedAndScore }}
+        highestScore={typingHistories.data?.highestScore ?? null}
+        {...{ pagination }}
       />
     </div>
   );

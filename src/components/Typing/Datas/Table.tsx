@@ -10,14 +10,16 @@ import { getDuration } from "../utils/getDuration";
 import Table from "~/components/Common/Table";
 import { twMerge } from "tailwind-merge";
 import type { typing_histories } from "../History";
-import { findHighestSpeedAndScore } from "~/helpers";
+import type { TypingHistoryOmitScore } from "~/types";
+import type { HigestSpeedAndScoreType } from "~/helpers/findHighestSpeedAndScore";
 
 interface Props {
-  datas: typing_histories[];
+  datas: TypingHistoryOmitScore[];
   isLoading: boolean;
   pagination: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
   type?: SectionType;
+  highestScore: HigestSpeedAndScoreType | null;
 }
 
 function TypingTable({
@@ -26,10 +28,9 @@ function TypingTable({
   pagination,
   onPaginationChange,
   type = "Lesson",
+  highestScore,
 }: Props) {
   const columnHelper = createColumnHelper<typing_histories>();
-
-  const highestSpeedAndScore = findHighestSpeedAndScore(datas);
 
   const columns = useMemo(
     () => [
@@ -37,10 +38,8 @@ function TypingTable({
         id: "round",
         size: 10,
         cell: (props) => {
-          if (highestSpeedAndScore === null) return null;
-
-          const isHighestSpeed =
-            props.row.original.id === highestSpeedAndScore.id;
+          if (highestScore === null) return null;
+          const isHighestSpeed = props.row.original.id === highestScore.id;
 
           return (
             <div
@@ -88,7 +87,7 @@ function TypingTable({
         },
       }),
     ],
-    [columnHelper, highestSpeedAndScore]
+    [columnHelper, highestScore]
   );
 
   const { pageIndex, pageSize } = pagination;
