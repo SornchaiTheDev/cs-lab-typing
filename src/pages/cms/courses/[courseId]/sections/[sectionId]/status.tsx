@@ -61,7 +61,8 @@ const TypingSubmissions = ({
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data?.submissions ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestScore }}
+        highestScore={typingHistories.data?.highestScore ?? null}
+        {...{ pagination }}
       />
     </>
   );

@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma, typing_histories } from "@prisma/client";
 
 export type taskWithStatus = Prisma.tasksGetPayload<{
   select: {
@@ -6,3 +6,5 @@ export type taskWithStatus = Prisma.tasksGetPayload<{
     name: true;
   };
 }> & { status: "PASSED" | "FAILED" | "NOT_SUBMITTED" };
+
+export type TypingHistoryOmitScore = Omit<typing_histories, "submission_id" | "score" | "updated_at">;

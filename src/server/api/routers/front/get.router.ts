@@ -583,28 +583,43 @@ export const getFrontRouter = router({
           orderBy: {
             created_at: "desc",
           },
-          take: 100,
-        });
-
-        const sanitizeHistories = typingHistories.map((history) => {
-          const _history: FrontTypingHistory = {
-            id: history.id,
-            raw_speed: history.raw_speed,
-            adjusted_speed: history.adjusted_speed,
-            percent_error: history.percent_error,
-            started_at: history.started_at,
-            ended_at: history.ended_at,
-            created_at: history.created_at,
-          };
-          if (section?.type === "Exam") {
-            _history.score = history.score;
-          }
-          return _history;
         });
 
         const highestScore = findHighestSpeedAndScore(typingHistories);
 
-        return { history: sanitizeHistories, highestScore };
+        const returnedTypingHistories = typingHistories.map((history) => {
+          const {
+            id,
+            adjusted_speed,
+            created_at,
+            ended_at,
+            percent_error,
+            raw_speed,
+            started_at,
+            score,
+          } = history;
+          const typingHistory = {
+            id,
+            adjusted_speed,
+            created_at,
+            started_at,
+            ended_at,
+            percent_error,
+            raw_speed,
+          };
+          if (section?.type === "Exam") {
+            return {
+              ...typingHistory,
+              score,
+            };
+          }
+          return typingHistory;
+        });
+
+        return {
+          histories: returnedTypingHistories,
+          highestScore,
+        };
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === "NOT_FOUND") {

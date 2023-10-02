@@ -11,11 +11,10 @@ import {
 } from "chart.js";
 import { useMemo } from "react";
 import useTheme from "~/hooks/useTheme";
-import type { typing_histories } from "../History";
-import type { FrontTypingHistory } from "~/types/Front";
+import type { TypingHistoryOmitScore } from "~/types";
 
 interface Props {
-  datas: (typing_histories | FrontTypingHistory)[];
+  datas: TypingHistoryOmitScore[];
 }
 
 ChartJS.register(

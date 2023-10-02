@@ -24,10 +24,7 @@ function EndedGame() {
     pageSize: 6,
   });
 
-  const LESSON_PATH = "[labId]/typing/[taskId]";
-  const EXAM_PATH = "[labId]/typing/exam/[taskId]";
-
-  const { data, isLoading, refetch } = trpc.front.getTypingHistory.useQuery(
+  const typingHistories = trpc.front.getTypingHistory.useQuery(
     {
       sectionId: sectionId as string,
       taskId: taskId as string,
@@ -64,7 +61,7 @@ function EndedGame() {
 
         result.hash = objectHash(result);
         await submitTyping.mutateAsync(result);
-        await refetch();
+        await typingHistories.refetch();
         await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
@@ -89,13 +86,14 @@ function EndedGame() {
       </button>
       <Stats />
       <div className="h-[10rem] w-full">
-        <LineChart datas={data?.history ?? []} />
+        <LineChart datas={typingHistories.data?.histories ?? []} />
       </div>
       <TypingTable
-        isLoading={isLoading}
-        datas={data?.history ?? []}
+        isLoading={typingHistories.isLoading}
+        datas={typingHistories.data?.histories ?? []}
         onPaginationChange={setPagination}
-        {...{ pagination, highestScore: data?.highestScore ?? null }}
+        highestScore={typingHistories.data?.highestScore ?? null}
+        {...{ pagination }}
       />
     </div>
   );

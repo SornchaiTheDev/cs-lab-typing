@@ -10,11 +10,11 @@ import { getDuration } from "../utils/getDuration";
 import Table from "~/components/Common/Table";
 import { twMerge } from "tailwind-merge";
 import type { typing_histories } from "../History";
+import type { TypingHistoryOmitScore } from "~/types";
 import type { HigestSpeedAndScoreType } from "~/helpers/findHighestSpeedAndScore";
-import type { FrontTypingHistory } from "~/types/Front";
 
 interface Props {
-  datas: (typing_histories | FrontTypingHistory)[];
+  datas: TypingHistoryOmitScore[];
   isLoading: boolean;
   pagination: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState> | undefined;
@@ -39,7 +39,6 @@ function TypingTable({
         size: 10,
         cell: (props) => {
           if (highestScore === null) return null;
-
           const isHighestSpeed = props.row.original.id === highestScore.id;
 
           return (
