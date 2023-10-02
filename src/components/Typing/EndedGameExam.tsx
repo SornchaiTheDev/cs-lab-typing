@@ -67,6 +67,7 @@ function EndedGameExam() {
         await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
+          router.push("/")
           callToast({ type: "error", msg: err.message });
         }
       }
