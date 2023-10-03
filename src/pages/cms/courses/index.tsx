@@ -87,7 +87,7 @@ function Courses() {
   }, [inView, fetchNextPage, hasNextPage]);
 
   return (
-    <Layout title="courses">
+    <Layout title="Courses">
       <div className="mb-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           {role === "ADMIN" && (

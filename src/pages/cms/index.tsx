@@ -20,7 +20,7 @@ interface Props {
 
 function Dashboard({ menus }: Props) {
   return (
-    <Layout title="dashboard">
+    <Layout title="Dashboard">
       <div className="mt-20 grid grid-cols-12 gap-6">
         {menus &&
           menus.map(({ name, icon, description, path }) => (
