@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { getHighestRole, trpc } from "~/helpers";
+import { convertToCompact, getHighestRole, trpc } from "~/helpers";
 import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
@@ -183,7 +183,9 @@ function Courses() {
                             className="text-lg"
                           />
                           <h6 className="text-sand-12">
-                            <span className="font-bold">{students ?? 0}</span>{" "}
+                            <span className="font-bold">
+                              {convertToCompact(students ?? 0)}
+                            </span>{" "}
                             students
                           </h6>
                         </div>

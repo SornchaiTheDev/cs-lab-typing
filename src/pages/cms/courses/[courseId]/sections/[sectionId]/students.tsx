@@ -15,7 +15,7 @@ import Alert from "~/components/Common/Alert";
 import Button from "~/components/Common/Button";
 import Table from "~/components/Common/Table";
 import AddUser from "~/features/Users/AddUserToSection";
-import { sanitizeFilename, trpc } from "~/helpers";
+import { convertToThousand, sanitizeFilename, trpc } from "~/helpers";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { callToast } from "~/services/callToast";
 
@@ -158,7 +158,7 @@ function Students() {
         isLoading={section.isLoading}
       >
         <h4 className="mt-4 text-2xl font-bold text-sand-12">
-          Students ({students.data ?? 0})
+          Students ({convertToThousand(students.data ?? 0)})
         </h4>
         <Table
           columns={columns}

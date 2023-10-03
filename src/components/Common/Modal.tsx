@@ -10,6 +10,7 @@ interface Props {
   isOpen?: boolean;
   onClose: () => void;
   title: string;
+  afterTitle?: ReactNode;
   description?: string | ReactNode;
 }
 
@@ -19,6 +20,7 @@ const Modal = ({
   onClose,
   isOpen,
   title,
+  afterTitle,
   description,
 }: Props) => {
   const modalRef = useRef<HTMLDivElement>(null);
@@ -39,7 +41,10 @@ const Modal = ({
       >
         <div className="flex items-start justify-between text-sand-12">
           <div>
-            <h4 className="text-xl font-bold capitalize">{title}</h4>
+            <div className="flex items-center gap-2">
+              <h4 className="text-xl font-bold capitalize">{title}</h4>
+              {afterTitle}
+            </div>
             {!!description && typeof description === "string" ? (
               <p className="text-sand-9">{description}</p>
             ) : (

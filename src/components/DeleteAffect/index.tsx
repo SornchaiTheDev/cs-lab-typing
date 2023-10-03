@@ -2,7 +2,7 @@ import Modal from "../Common/Modal";
 import Button from "../Common/Button";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { useDeleteAffectStore } from "~/store";
-import { trpc } from "~/helpers";
+import { convertToCompact, trpc } from "~/helpers";
 import { useRouter } from "next/router";
 import { callToast } from "~/services/callToast";
 import type { Relation } from "~/types/Relation";
@@ -298,7 +298,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
           <ul className="list-inside list-disc">
             {fetchData?.summary.map(({ name, amount }) => (
               <li key={name}>
-                {name} : {amount}
+                {name} : {convertToCompact(amount)}
               </li>
             ))}
           </ul>

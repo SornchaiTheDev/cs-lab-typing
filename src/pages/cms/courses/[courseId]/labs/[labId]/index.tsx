@@ -4,7 +4,12 @@ import { Icon } from "@iconify/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { convertToThousand, getHighestRole, trpc } from "~/helpers";
+import {
+  convertToCompact,
+  convertToThousand,
+  getHighestRole,
+  trpc,
+} from "~/helpers";
 import { useSession } from "next-auth/react";
 import type { tasks } from "@prisma/client";
 import { TRPCClientError } from "@trpc/client";
@@ -315,6 +320,9 @@ function Lab() {
       {
         header: "Submission Count",
         accessorKey: "submission_count",
+        cell: (props) => {
+          return convertToCompact(props.getValue());
+        },
       },
     ],
     []

@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import ModalWithButton from "~/components/Common/ModalWithButton";
 import { AddSectionSchema, type TAddSection } from "~/schemas/SectionSchema";
 import Forms from "~/components/Forms";
-import { trpc } from "~/helpers";
+import { convertToCompact, trpc } from "~/helpers";
 import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
@@ -208,7 +208,9 @@ function Sections() {
                             className="text-lg"
                           />
                           <h6 className="text-sand-12">
-                            <span className="font-bold">{_count.students}</span>{" "}
+                            <span className="font-bold">
+                              {convertToCompact(_count.students)}
+                            </span>{" "}
                             student{_count.students > 1 ? "s" : ""}
                           </h6>
                         </div>

@@ -5,7 +5,7 @@ import Table from "~/components/Common/Table";
 import { AddTaskSchema, type TAddTask } from "~/schemas/TaskSchema";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
-import { trpc } from "~/helpers";
+import { convertToCompact, trpc } from "~/helpers";
 import type { tags, users } from "@prisma/client";
 import Button from "~/components/Common/Button";
 import { TRPCClientError } from "@trpc/client";
@@ -141,6 +141,9 @@ function Tasks() {
       {
         header: "Submission Count",
         accessorKey: "submission_count",
+        cell: (props) => {
+          return convertToCompact(props.getValue() as string);
+        },
       },
       {
         header: "Owner",
