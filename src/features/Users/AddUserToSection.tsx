@@ -5,15 +5,68 @@ import Modal from "~/components/Common/Modal";
 import { trpc } from "~/helpers";
 import { TRPCClientError } from "@trpc/client";
 import clsx from "clsx";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { callToast } from "~/services/callToast";
 import useTheme from "~/hooks/useTheme";
+import { motion, useAnimation } from "framer-motion";
+import { Icon } from "@iconify/react";
 
 interface Props {
   sectionId: string;
   onAdded: () => void;
 }
+
+const UserHint = () => {
+  const [isHover, setIsHover] = useState(false);
+  const control = useAnimation();
+
+  const variants = {
+    visible: { opacity: 1 },
+    hidden: { opacity: 0 },
+  };
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    if (isHover) {
+      control.start("visible");
+    } else {
+      timeout = setTimeout(() => {
+        control.start("hidden");
+      }, 1000);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [isHover, control]);
+  return (
+    <div className="relative z-50">
+      <Icon
+        className="text-2xl text-sand-12"
+        icon="solar:question-circle-bold-duotone"
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
+      />
+      <motion.div
+        initial="hidden"
+        variants={variants}
+        animate={control}
+        className="absolute min-w-[16rem] top-8 overflow-x-auto rounded-lg border border-yellow-6  bg-yellow-3 p-2 text-yellow-12"
+      >
+        <h4 className="text-lg font-bold">Example format </h4>
+        <p className="leading-snug">
+          <span className="font-bold underline">Teacher</span> <br />
+          john@ku.th
+          <br />
+          <span className="font-bold underline">Student</span> <br />
+          6510405814 <br />
+          <span className="font-bold underline">POSN Student</span> <br />
+          posn001
+        </p>
+      </motion.div>
+    </div>
+  );
+};
 
 function AddUser({ sectionId, onAdded }: Props) {
   const [value, setValue] = useState("");
@@ -91,18 +144,12 @@ function AddUser({ sectionId, onAdded }: Props) {
         isOpen={isShow}
         onClose={handleOnClose}
         title="Add Student"
+        afterTitle={<UserHint />}
         className="flex flex-col gap-4 md:w-[40rem]"
       >
         <div>
           <Codemirror
             autoFocus
-            placeHolder={`Example format
-Teacher
-john@ku.th
-Student
-6510405814
-POSN Student
-posn001`}
             theme={theme === "light" ? addUserLightTheme : addUserDarkTheme}
             value={value}
             onChange={(value) => setValue(value)}
