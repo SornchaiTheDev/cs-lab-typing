@@ -21,7 +21,7 @@ function Alert({ isOpen, onConfirm, onCancel, type }: Props) {
       <div className="mt-10 flex gap-2">
         <Button
           onClick={onConfirm}
-          className="flex-1 bg-red-9 text-sand-1 hover:bg-red-10 text-sand-12"
+          className="flex-1 bg-red-9 hover:bg-red-10 text-sand-12"
         >
           Remove
         </Button>

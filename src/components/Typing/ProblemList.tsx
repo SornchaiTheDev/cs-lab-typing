@@ -29,6 +29,7 @@ function ProblemList() {
 
   return (
     <motion.div
+      initial={{ left: -320 }}
       animate={{ left: isOpen ? 0 : -320 }}
       className="fixed top-0 h-full w-[20rem] rounded-r-2xl border border-sand-6 bg-sand-1 p-4"
     >
