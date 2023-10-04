@@ -69,7 +69,7 @@ function Sections() {
           )}
 
           <h5 className="mb-2 mt-4 font-bold">Instructor(s)</h5>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {section.isLoading ? (
               <>
                 <Skeleton width={"10rem"} height={"2rem"} />
