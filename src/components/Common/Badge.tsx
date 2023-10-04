@@ -30,7 +30,7 @@ function Badge({ children, type = "default", className }: Props) {
   return (
     <div
       className={twMerge(
-        "flex w-fit items-center rounded-md px-2 py-1 text-sm font-semibold truncate",
+        "flex w-fit items-center rounded-md px-2 py-1 text-sm font-semibold",
         color,
         className
       )}
