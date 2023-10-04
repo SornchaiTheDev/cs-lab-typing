@@ -160,7 +160,7 @@ function Users() {
 
   useEffect(() => {
     fetchUser();
-  }, [searchString, fetchUser]);
+  }, [searchString, fetchUser, pagination]);
 
   const { pageIndex, pageSize } = pagination;
 
@@ -211,11 +211,6 @@ function Users() {
       reader.readAsText(file);
     });
   }, []);
-
-  useEffect(() => {
-    users.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination]);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({

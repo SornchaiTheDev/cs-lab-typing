@@ -70,8 +70,12 @@ function Logger() {
       },
       {
         header: "Email / Username",
-        accessorKey: "user.email",
-        cell: (props) => <span>{props.getValue() as string}</span>,
+        accessorKey: "user",
+        cell: (props) => {
+          if (props.getValue() !== undefined) {
+            return <span>{props.getValue() as string}</span>;
+          }
+        },
       },
       {
         header: "TaskId",
@@ -150,7 +154,7 @@ function Logger() {
 
   useEffect(() => {
     fetchLabLog();
-  }, [searchString, dateRange, fetchLabLog]);
+  }, [searchString, dateRange, fetchLabLog, pagination]);
 
   const labLogs = trpc.loggers.getLabLog.useQuery(
     {
@@ -164,11 +168,6 @@ function Logger() {
       enabled: false,
     }
   );
-
-  useEffect(() => {
-    labLogs.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination]);
 
   return (
     <SectionLayout

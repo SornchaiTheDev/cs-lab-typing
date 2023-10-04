@@ -76,7 +76,7 @@ function Labs() {
       search: searchString,
     },
     {
-      enabled: !!courseId,
+      enabled: false,
     }
   );
 
@@ -85,7 +85,7 @@ function Labs() {
 
   useEffect(() => {
     fetchLabs();
-  }, [searchString, fetchLabs]);
+  }, [searchString, fetchLabs,pagination]);
 
   const addLabMutation = trpc.labs.createLab.useMutation();
   const addLab = async (formData: TAddLabSchema) => {

@@ -39,7 +39,7 @@ export const getLabLogRouter = router({
         let taskId;
 
         if (search && search.length > 0) {
-          if (!Number.isNaN(search)) {
+          if (!isNaN(Number(search))) {
             taskId = parseInt(search);
           }
         }

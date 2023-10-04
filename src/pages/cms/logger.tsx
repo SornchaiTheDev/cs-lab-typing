@@ -65,7 +65,7 @@ function Logger() {
 
   useEffect(() => {
     fetchAuthLog();
-  }, [searchString, dateRange, fetchAuthLog]);
+  }, [searchString, dateRange, fetchAuthLog, pagination]);
 
   const authLogs = trpc.loggers.getAuthLog.useQuery(
     {
@@ -76,11 +76,6 @@ function Logger() {
     },
     { enabled: false }
   );
-
-  useEffect(() => {
-    authLogs.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination]);
 
   const columns = useMemo<ColumnDef<LoggerRow, string | { email: string }>[]>(
     () => [

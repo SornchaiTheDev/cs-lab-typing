@@ -162,7 +162,7 @@ function Students() {
         </h4>
         <Table
           columns={columns}
-          isLoading={section.isLoading}
+          isLoading={studentsPagination.isLoading}
           data={studentsPagination.data?.students ?? []}
           pageCount={studentsPagination.data?.pageCount ?? 0}
           onPaginationChange={setPagination}
