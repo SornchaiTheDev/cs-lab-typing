@@ -7,6 +7,7 @@ import { evaluate } from "~/helpers/evaluateTypingScore";
 import type { submission_type } from "@prisma/client";
 import dayjs from "dayjs";
 import type { TypingResultWithHashType } from "~/schemas/TypingResult";
+import { getErrorsCharacters } from "~/server/utils/getErrorCharacters";
 
 interface Params {
   sectionId: string;
@@ -24,10 +25,9 @@ export const saveSubmission = async ({
   student_id,
   endedAt,
   startedAt,
-  errorChar,
-  totalChars,
   hash,
   ip,
+  keyStrokes,
 }: Params & TypingResultWithOutEmailType) => {
   const _sectionId = parseInt(sectionId);
   const _labId = parseInt(labId);
@@ -83,14 +83,27 @@ export const saveSubmission = async ({
     throw new Error("ALREADY_CLOSED");
   }
 
+  const problem = await prisma.tasks.findUnique({
+    where: {
+      id: _taskId,
+    },
+    select: {
+      body: true,
+    },
+  });
+
+  const problemKeys = problem?.body?.split("") ?? [];
+  const totalChars = problemKeys.length;
+
   const duration = getDuration(startedAt as Date, endedAt as Date);
+  const errorChars = getErrorsCharacters({ keyStrokes, problemKeys });
   const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
     totalChars,
-    errorChar,
+    errorChars,
     duration.minutes
   );
 
-  const errorPercentage = calculateErrorPercentage(totalChars, errorChar);
+  const errorPercentage = calculateErrorPercentage(totalChars, errorChars);
 
   const score = evaluate(adjustedSpeed, errorPercentage);
 

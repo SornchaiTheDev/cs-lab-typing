@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import type { z } from "zod";
+import type { KeyStroke } from "~/schemas/TypingResult";
 
 interface TypingStats {
   correctChar: number;
@@ -11,8 +13,8 @@ interface TypingStats {
 type gamePhase = "NotStarted" | "Started" | "Ended" | "History";
 
 interface TypingStore {
-  text: string;
-  setText: (text: string) => void;
+  keyStrokes: z.infer<typeof KeyStroke>[];
+  setKeyStrokes: (keyStrokes: z.infer<typeof KeyStroke>) => void;
   stats: TypingStats;
   setStats: (status: Partial<TypingStats>) => void;
   status: gamePhase;
@@ -29,10 +31,14 @@ const DEFAULT_STATS: TypingStats = {
 };
 
 export const useTypingStore = create<TypingStore>((set) => ({
-  text: "",
-  setText: (text) => set({ text }),
+  keyStrokes: [],
+  setKeyStrokes: (keyStrokes) =>
+    set((state) => ({
+      keyStrokes: [...state.keyStrokes, keyStrokes],
+    })),
   stats: DEFAULT_STATS,
-  reset: () => set({ text: "", stats: DEFAULT_STATS }),
+  reset: () =>
+    set({ keyStrokes: [], stats: DEFAULT_STATS, status: "NotStarted" }),
   setStats: (stats) =>
     set((state) => ({ stats: { ...state.stats, ...stats } })),
   status: "NotStarted",

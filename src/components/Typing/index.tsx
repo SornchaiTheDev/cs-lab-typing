@@ -13,14 +13,18 @@ interface Props {
   text: string;
 }
 function TypingGame({ text }: Props) {
-  const [setStats, setStatus, reset] = useTypingStore((state) => [
-    state.setStats,
-    state.setStatus,
-    state.reset,
-  ]);
+  const [setStats, setStatus, reset, setKeyStrokes] = useTypingStore(
+    (state) => [
+      state.setStats,
+      state.setStatus,
+      state.reset,
+      state.setKeyStrokes,
+    ]
+  );
 
   const {
     states: {
+      currChar,
       charsState,
       currIndex,
       phase,
@@ -85,6 +89,15 @@ function TypingGame({ text }: Props) {
     }
   };
 
+  useEffect(() => {
+    if (currIndex !== -1) {
+      setKeyStrokes({
+        letter: currChar,
+        status: charsState[currIndex] as number,
+      });
+    }
+  }, [currChar, charsState, currIndex, setKeyStrokes]);
+
   // initial typing
   useEffect(() => {
     typingElement.current?.focus();
@@ -124,7 +137,8 @@ function TypingGame({ text }: Props) {
                 key={letter + index}
                 className={clsx(
                   color,
-                  state === 2 && "border-b-2 border-tomato-11 dark:border-tomato-9"
+                  state === 2 &&
+                    "border-b-2 border-tomato-11 dark:border-tomato-9"
                 )}
               >
                 {letter === " " ? " " : letter}

@@ -35,9 +35,10 @@ function EndedGame() {
     }
   );
 
-  const [stats, setStatus] = useTypingStore((state) => [
+  const [stats, keyStrokes, reset] = useTypingStore((state) => [
     state.stats,
-    state.setStatus,
+    state.keyStrokes,
+    state.reset,
   ]);
 
   const submitTyping = trpc.front.submitTyping.useMutation();
@@ -46,17 +47,16 @@ function EndedGame() {
   useEffect(() => {
     const saveTypingScore = async () => {
       if (!stats) return;
-      const { errorChar, startedAt, endedAt, totalChars } = stats;
+      const { startedAt, endedAt } = stats;
       try {
         const result: TypingResultWithHashType = {
           email: session?.user?.email as string,
           sectionId: sectionId as string,
           labId: labId as string,
           taskId: taskId as string,
-          totalChars,
-          errorChar,
           startedAt: startedAt as Date,
           endedAt: endedAt as Date,
+          keyStrokes,
         };
 
         result.hash = objectHash(result);
@@ -65,7 +65,7 @@ function EndedGame() {
         await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
-          router.push("/");
+          // router.push("/");
           callToast({ type: "error", msg: err.message });
         }
       }
@@ -79,7 +79,7 @@ function EndedGame() {
   return (
     <div className="mx-auto mb-2 flex max-w-2xl flex-1 flex-col items-center gap-4">
       <button
-        onClick={() => setStatus("NotStarted")}
+        onClick={reset}
         className="flex w-fit flex-col items-center rounded-md p-2 text-sand-12 outline-none ring-sand-6 ring-offset-2 hover:bg-sand-3 focus:ring-2"
       >
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />

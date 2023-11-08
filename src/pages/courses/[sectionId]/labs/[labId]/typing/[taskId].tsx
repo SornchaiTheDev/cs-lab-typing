@@ -10,8 +10,6 @@ import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import ProblemList from "~/components/Typing/ProblemList";
-import superjson from "superjson";
-import type { taskWithStatus } from "~/types";
 
 interface Props {
   taskName: string;
@@ -35,13 +33,11 @@ function TypingTask({
     state.setStatus,
     state.reset,
   ]);
-
   useEffect(() => {
     return () => {
       reset();
-      setStatus("NotStarted");
     };
-  }, [reset, setStatus]);
+  }, [reset]);
 
   const isTypingPhase = status === "NotStarted" || status === "Started";
   const isEndedPhase = status === "Ended";

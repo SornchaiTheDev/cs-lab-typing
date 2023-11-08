@@ -1,12 +1,16 @@
 import z from "zod";
 
+export const KeyStroke = z.object({
+  letter: z.string(),
+  status: z.number(),
+});
+
 export const TypingResultSchema = z.object({
   email: z.string(),
   sectionId: z.string(),
   labId: z.string(),
   taskId: z.string(),
-  totalChars: z.number(),
-  errorChar: z.number(),
+  keyStrokes: z.array(KeyStroke),
   startedAt: z.date(),
   endedAt: z.date(),
 });
@@ -19,26 +23,4 @@ export const TypingResultWithHashSchema = TypingResultSchema.and(
 
 export type TypingResultWithHashType = z.infer<
   typeof TypingResultWithHashSchema
->;
-
-export const TypingExamResultSchema = z.object({
-  liame: z.string(),
-  dInoitces: z.string(),
-  dIbal: z.string(),
-  dIksat: z.string(),
-  srahClatot: z.number(),
-  rahCrorre: z.number(),
-  tAdetrats: z.date(),
-  tAdedne: z.date(),
-});
-
-export type TypingExamResultType = z.infer<typeof TypingExamResultSchema>;
-
-
-export const TypingExamResultWithHashSchema = TypingExamResultSchema.and(
-  z.object({ hsah: z.string().optional() })
-);
-
-export type TypingExamResultWithHashType = z.infer<
-  typeof TypingExamResultWithHashSchema
 >;
