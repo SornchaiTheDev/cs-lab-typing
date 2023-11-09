@@ -84,7 +84,6 @@ export const getLabLogRouter = router({
               type: true,
               user: {
                 select: {
-                  email: true,
                   student_id: true,
                 },
               },

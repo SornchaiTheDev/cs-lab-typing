@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
-import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import clsx from "clsx";
+import type { PaginationState } from "@tanstack/react-table";
 import TimePickerRange from "~/components/TimePickerRange";
 import { Icon } from "@iconify/react";
 import RangePicker from "~/components/Forms/DatePicker/RangePicker";
@@ -10,27 +9,11 @@ import type { DateRange } from "react-day-picker";
 import dayjs from "dayjs";
 import SectionLayout from "~/Layout/SectionLayout";
 import { useRouter } from "next/router";
-import type { lab_loggers } from "@prisma/client";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 import { debounce } from "lodash";
-
-const Type = ({ type }: { type: string }) => {
-  return (
-    <div className="flex w-full justify-center">
-      <button
-        className={clsx(
-          "rounded-md px-2 text-sm font-medium",
-          type === "ACCESS" && "bg-lime-3 text-lime-9",
-          type === "SUBMIT" && "bg-amber-3 text-amber-9"
-        )}
-      >
-        {type}
-      </button>
-    </div>
-  );
-};
+import { sectionLogsColumns } from "~/columns";
 
 const today = new Date();
 
@@ -50,49 +33,6 @@ function Logger() {
     {
       enabled: !!sectionId,
     }
-  );
-
-  const columns = useMemo<ColumnDef<lab_loggers, string>[]>(
-    () => [
-      {
-        header: "Type",
-        accessorKey: "type",
-        cell: (props) => <Type type={props.getValue() as string} />,
-        size: 40,
-      },
-      {
-        header: "Date",
-        accessorKey: "date",
-        cell: (props) =>
-          dayjs(props.getValue() as unknown as Date).format(
-            "DD/MM/YYYY HH:mm:ss"
-          ),
-      },
-      {
-        header: "Email / Username",
-        accessorKey: "user",
-        cell: (props) => {
-          if (props.getValue() !== undefined) {
-            return <span>{props.getValue() as string}</span>;
-          }
-        },
-      },
-      {
-        header: "TaskId",
-        accessorKey: "taskId",
-        cell: (props) => <span>{props.getValue() as string}</span>,
-      },
-      {
-        header: "SectionId",
-        accessorKey: "sectionId",
-        cell: (props) => <span>{props.getValue() as string}</span>,
-      },
-      {
-        header: "IP Address",
-        accessorKey: "ip_address",
-      },
-    ],
-    []
   );
 
   const labLogsCSV = trpc.loggers.exportLabLoggerCSV.useQuery(
@@ -177,7 +117,7 @@ function Logger() {
       <Table
         isLoading={labLogs.isLoading}
         data={labLogs.data?.logger ?? []}
-        columns={columns}
+        columns={sectionLogsColumns}
         defaultSortingState={{ id: "date", desc: true }}
         pageCount={labLogs.data?.pageCount ?? 0}
         pagination={pagination}

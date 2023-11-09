@@ -1,0 +1,1 @@
+export { sectionLogsColumns } from "./sectionLogs";
