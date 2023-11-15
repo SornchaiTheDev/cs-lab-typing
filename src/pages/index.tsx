@@ -3,9 +3,10 @@ import { trpc } from "~/helpers";
 import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";
 import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import type { Prisma } from "@prisma/client";
+import Select from "~/components/Forms/Select";
 
 type sections = Prisma.sectionsGetPayload<{
   select: {
@@ -28,17 +29,37 @@ type sections = Prisma.sectionsGetPayload<{
   };
 }>;
 
-interface TeachingSectionsProps {
-  isLoading: boolean;
-  pages: {
-    sections: sections[];
-    nextCursor: number | undefined;
-  }[];
-}
-const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
+
+const TeachingSections = () => {
+  const allSemesters = trpc.semesters.getAllSemesters.useQuery();
+  const [semester, setSemester] = useState("Loading...");
+
+  const teach = trpc.front.getTeachingSections.useInfiniteQuery(
+    { limit: 6, semester },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+
+    }
+  );
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (teach.hasNextPage) {
+      teach.fetchNextPage();
+    }
+  }, [inView, teach])
+
+  useEffect(() => {
+    if (!!allSemesters.data) {
+      setSemester(allSemesters.data[0] ?? "Loading...")
+    }
+  }, [allSemesters.data, setSemester])
+
+
   return (
     <>
-      {isLoading ? (
+      {teach.isLoading ? (
         <>
           <div className="mt-4">
             <Skeleton width="16rem" height="2rem" />
@@ -53,15 +74,17 @@ const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
             ))}
           </div>
         </>
-      ) : pages.length > 0 ? (
+      ) : teach.data && teach.data.pages.length > 0 ? (
         <>
-          <div className="mt-4">
+          <div className="mt-4 flex justify-between items-center">
             <h4 className="text-2xl font-medium text-sand-12 md:text-3xl">
               Teach
             </h4>
+            <Select options={allSemesters.data ?? []} className="flex-1 min-w-[12rem]" value={semester} onChange={setSemester} />
+
           </div>
           <div className="my-6 grid grid-cols-12 gap-6">
-            {pages.map((page) =>
+            {teach.data?.pages.map((page) =>
               page.sections.map(({ id, name, course, type, semester }) => {
                 const { name: courseName, number, id: courseId } = course;
                 const { term, year } = semester;
@@ -84,13 +107,21 @@ const TeachingSections = ({ isLoading, pages }: TeachingSectionsProps) => {
               })
             )}
           </div>
+          <div ref={ref} className="my-10 flex items-center justify-center gap-2">
+            {teach.isFetchingNextPage && (
+              <>
+                <div className="h-2 w-2 animate-ping rounded-full bg-green-9"></div>
+                <h4>Loading</h4>
+              </>
+            )}
+          </div>
         </>
       ) : null}
     </>
   );
 };
 function MyCourse() {
-  const {} = useSession();
+  const { } = useSession();
   const learn = trpc.front.getSections.useInfiniteQuery(
     { limit: 6 },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
@@ -100,13 +131,7 @@ function MyCourse() {
 
   const isTaAbove = checkUser.data?.isTaAbove ?? false;
 
-  const teach = trpc.front.getTeachingSections.useInfiniteQuery(
-    { limit: 6 },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      enabled: isTaAbove,
-    }
-  );
+
 
   const { ref, inView } = useInView();
 
@@ -115,11 +140,8 @@ function MyCourse() {
       if (learn.hasNextPage) {
         learn.fetchNextPage();
       }
-      if (teach.hasNextPage) {
-        teach.fetchNextPage();
-      }
     }
-  }, [inView, learn, teach]);
+  }, [inView, learn]);
 
   return (
     <FrontLayout title="My Courses">
@@ -161,19 +183,17 @@ function MyCourse() {
 
       {isTaAbove && (
         <TeachingSections
-          isLoading={teach.isLoading}
-          pages={teach.data?.pages ?? []}
+
         />
       )}
 
       <div ref={ref} className="my-10 flex items-center justify-center gap-2">
-        {learn.isFetchingNextPage ||
-          (teach.isFetchingNextPage && (
-            <>
-              <div className="h-2 w-2 animate-ping rounded-full bg-green-9"></div>
-              <h4>Loading</h4>
-            </>
-          ))}
+        {learn.isFetchingNextPage && (
+          <>
+            <div className="h-2 w-2 animate-ping rounded-full bg-green-9"></div>
+            <h4>Loading</h4>
+          </>
+        )}
       </div>
     </FrontLayout>
   );

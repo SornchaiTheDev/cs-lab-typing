@@ -86,9 +86,15 @@ export const getFrontRouter = router({
       }
     }),
   getTeachingSections: TaAboveProcedure.input(
-    z.object({ limit: z.number(), cursor: z.number().nullish() })
+    z.object({
+      limit: z.number(),
+      cursor: z.number().nullish(),
+      semester: z.string(),
+    })
   ).query(async ({ ctx, input }) => {
-    const { limit, cursor } = input;
+    const { limit, cursor, semester } = input;
+    const term = semester.split(" ")[0];
+    const year = semester.split(" ")[1];
 
     const student_id = ctx.session?.user?.student_id;
 
@@ -96,6 +102,11 @@ export const getFrontRouter = router({
       const sections = await ctx.prisma.sections.findMany({
         where: {
           deleted_at: null,
+          semester: {
+            year,
+            term,
+          },
+          active: true,
           instructors: {
             some: {
               student_id,
