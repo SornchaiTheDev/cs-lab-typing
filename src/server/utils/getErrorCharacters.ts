@@ -1,25 +1,23 @@
-import type { z } from "zod";
-import type { KeyStroke } from "~/schemas/TypingResult";
-import { isEqual } from "lodash";
-
 interface Params {
-  keyStrokes: z.infer<typeof KeyStroke>[];
+  keyStrokes: string[];
   problemKeys: string[];
 }
 
 export const getErrorsCharacters = ({ keyStrokes, problemKeys }: Params) => {
-  const isSameProblem = isEqual(
-    keyStrokes.map((keyStroke) => keyStroke.letter),
-    problemKeys
-  );
+  let j = 0;
+  let errorChars = 0;
+  for (let i = 0; i < keyStrokes.length && j < problemKeys.length; i++) {
+    if (keyStrokes[i] === "DEL") {
+      j--;
+      continue;
+    }
 
-  if (!isSameProblem) {
-    throw new Error("NOT_SAME_PROBLEM");
+    if (keyStrokes[i] !== problemKeys[j]) {
+      errorChars++;
+    }
+
+    j++;
   }
-
-  const errorChars = keyStrokes.filter(
-    (keyStroke) => keyStroke.status === 2
-  ).length;
 
   return errorChars;
 };

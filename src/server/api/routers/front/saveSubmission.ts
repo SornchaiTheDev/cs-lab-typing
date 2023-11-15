@@ -8,6 +8,7 @@ import type { submission_type } from "@prisma/client";
 import dayjs from "dayjs";
 import type { TypingResultWithHashType } from "~/schemas/TypingResult";
 import { getErrorsCharacters } from "~/server/utils/getErrorCharacters";
+import { isSameProblem } from "~/server/utils/isSameProblem";
 
 interface Params {
   sectionId: string;
@@ -95,8 +96,13 @@ export const saveSubmission = async ({
   const problemKeys = problem?.body?.split("") ?? [];
   const totalChars = problemKeys.length;
 
+  if (!isSameProblem({ keyStrokes, problemKeys })) {
+    throw new Error("NOT_SAME_PROBLEM");
+  }
+
   const duration = getDuration(startedAt as Date, endedAt as Date);
   const errorChars = getErrorsCharacters({ keyStrokes, problemKeys });
+  console.log("errorChars", errorChars);
   const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
     totalChars,
     errorChars,

@@ -13,18 +13,10 @@ interface Props {
   text: string;
 }
 function TypingGame({ text }: Props) {
-  const [setStats, setStatus, reset, setKeyStrokes] = useTypingStore(
-    (state) => [
-      state.setStats,
-      state.setStatus,
-      state.reset,
-      state.setKeyStrokes,
-    ]
-  );
+  const { setStats, setStatus, reset, addKeyStroke } = useTypingStore();
 
   const {
     states: {
-      currChar,
       charsState,
       currIndex,
       phase,
@@ -82,21 +74,15 @@ function TypingGame({ text }: Props) {
       reset();
     } else if (letter === "Backspace") {
       deleteTyping(control);
+      addKeyStroke("DEL")
     } else if (letter.length === 1) {
       insertTyping(letter);
+      addKeyStroke(letter)
     } else if (letter === "Tab") {
       event.preventDefault();
     }
   };
 
-  useEffect(() => {
-    if (currIndex !== -1) {
-      setKeyStrokes({
-        letter: currChar,
-        status: charsState[currIndex] as number,
-      });
-    }
-  }, [currChar, charsState, currIndex, setKeyStrokes]);
 
   // initial typing
   useEffect(() => {
@@ -129,8 +115,8 @@ function TypingGame({ text }: Props) {
               state === 0
                 ? "text-sand-8 dark:text-sand-6"
                 : state === 1
-                ? "text-sand-12 dark:text-sand-12"
-                : "text-tomato-11 dark:text-tomato-9";
+                  ? "text-sand-12 dark:text-sand-12"
+                  : "text-tomato-11 dark:text-tomato-9";
 
             return (
               <span
@@ -138,7 +124,7 @@ function TypingGame({ text }: Props) {
                 className={clsx(
                   color,
                   state === 2 &&
-                    "border-b-2 border-tomato-11 dark:border-tomato-9"
+                  "border-b-2 border-tomato-11 dark:border-tomato-9"
                 )}
               >
                 {letter === " " ? " " : letter}

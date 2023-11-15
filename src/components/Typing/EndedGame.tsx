@@ -56,8 +56,9 @@ function EndedGame() {
           taskId: taskId as string,
           startedAt: startedAt as Date,
           endedAt: endedAt as Date,
-          keyStrokes,
+          keyStrokes
         };
+
 
         result.hash = objectHash(result);
         await submitTyping.mutateAsync(result);

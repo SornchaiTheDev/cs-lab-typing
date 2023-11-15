@@ -48,7 +48,6 @@ export const createFrontRouter = router({
             });
           }
         }
-
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
