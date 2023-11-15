@@ -1,12 +1,20 @@
 import type { PrismaClient, SectionType } from "@prisma/client";
 
-export const getAllSections = async (
-  prisma: PrismaClient,
-  courseId: number,
-  limit: number,
-  cursor: number | null | undefined,
-  search?: string
-) => {
+interface Params {
+  prisma: PrismaClient;
+  courseId: number;
+  limit: number;
+  cursor: number | null | undefined;
+  semester: string;
+  search?: string;
+  status?: string;
+}
+export const getAllSections = async (params: Params) => {
+  const { prisma, courseId, limit, cursor, semester, search, status } = params;
+  const active =
+    status === "All" ? undefined : status === "Active" ? true : false;
+  const term = semester.split(" ")[0];
+  const year = semester.split(" ")[1];
   let sectionType: SectionType[] = ["Lesson", "Exam"];
   if (search !== undefined) {
     const _search = search.toLowerCase();
@@ -21,6 +29,7 @@ export const getAllSections = async (
     where: {
       deleted_at: null,
       course_id: courseId,
+      active,
       OR: [
         {
           name: {
@@ -34,6 +43,10 @@ export const getAllSections = async (
           },
         },
       ],
+      semester: {
+        term,
+        year,
+      },
     },
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,

@@ -19,7 +19,7 @@ export const createSectionsRouter = router({
         active,
         closed_at,
       } = input;
-      const [year, term] = semester.split("/");
+      const [term, year] = semester.split(" ");
       const requester = ctx.user.student_id;
       const _courseId = parseInt(courseId);
 

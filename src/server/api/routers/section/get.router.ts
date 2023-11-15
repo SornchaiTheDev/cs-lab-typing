@@ -300,10 +300,12 @@ export const getSectionsRouter = router({
         courseId: z.string(),
         cursor: z.number().nullish(),
         search: z.string().optional(),
+        semester: z.string(),
+        status: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { limit, courseId, cursor, search } = input;
+      const { limit, courseId, cursor, search, semester, status } = input;
 
       const _courseId = parseInt(courseId);
       const role = getHighestRole(ctx.user.roles);
@@ -312,22 +314,26 @@ export const getSectionsRouter = router({
       try {
         await isUserInThisCourse(student_id, _courseId);
         if (role === "ADMIN") {
-          sections = await getAllSections(
-            ctx.prisma,
-            _courseId,
+          sections = await getAllSections({
+            prisma: ctx.prisma,
+            courseId: _courseId,
             limit,
             cursor,
-            search
-          );
+            search,
+            semester,
+            status,
+          });
         } else if (role === "TEACHER") {
-          sections = await getTeacherRelatedSections(
-            ctx.prisma,
-            _courseId,
+          sections = await getTeacherRelatedSections({
+            prisma: ctx.prisma,
+            courseId: _courseId,
             limit,
             student_id,
             cursor,
-            search
-          );
+            search,
+            semester,
+            status,
+          });
         }
 
         let nextCursor: typeof cursor | undefined = undefined;

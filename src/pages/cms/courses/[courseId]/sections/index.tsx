@@ -16,6 +16,7 @@ import Badge from "~/components/Common/Badge";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
 import { debounce } from "lodash";
+import Select from "~/components/Forms/Select";
 
 function Sections() {
   const router = useRouter();
@@ -59,14 +60,24 @@ function Sections() {
     roles: ["ADMIN", "TEACHER", "STUDENT"],
   });
 
+  const allSemesters = trpc.semesters.getAllSemesters.useQuery();
+
   const [searchString, setSearchString] = useState("");
+  const [semester, setSemester] = useState("Loading...");
+  const [sectionStatus, setSectionStatus] = useState("All");
+
+  useEffect(() => {
+    if (!!allSemesters.data) {
+      setSemester(allSemesters.data[0] ?? "Loading...")
+    }
+  }, [allSemesters.data, setSemester])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchSection = useMemo(() => debounce(() => refetch(), 500), []);
 
   useEffect(() => {
     fetchSection();
-  }, [searchString, fetchSection]);
+  }, [searchString, fetchSection, semester, sectionStatus]);
 
   const {
     isLoading,
@@ -80,6 +91,8 @@ function Sections() {
       limit: 8,
       courseId: courseId as string,
       search: searchString,
+      semester,
+      status: sectionStatus,
     },
     {
       enabled: false,
@@ -158,73 +171,78 @@ function Sections() {
               ]}
             />
           </ModalWithButton>
-          <div className="flex h-full w-full items-center gap-2 rounded-lg border border-sand-6 p-2 md:w-fit">
-            <Icon icon="carbon:search" className="text-sand-10" />
-            <input
-              value={searchString}
-              onChange={(e) => setSearchString(e.target.value)}
-              className="w-full bg-transparent text-sand-12 outline-none placeholder:text-sand-8"
-              placeholder="Search"
-            />
+          <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+            <Select options={["All", "Active", "Archive"]} className="flex-1 min-w-[8rem]" value={sectionStatus} onChange={setSectionStatus} />
+            <Select options={allSemesters.data ?? []} className="flex-1 min-w-[12rem]" value={semester} onChange={setSemester} />
+            <div className="flex h-full w-full items-center gap-2 rounded-lg border border-sand-6 p-2 md:w-fit">
+              <Icon icon="carbon:search" className="text-sand-10" />
+              <input
+                value={searchString}
+                onChange={(e) => setSearchString(e.target.value)}
+                className="w-full bg-transparent text-sand-12 outline-none placeholder:text-sand-8"
+                placeholder="Search"
+              />
+            </div>
           </div>
         </div>
+
       </div>
+
       <div className="mt-4 grid grid-cols-12 gap-6">
         {isLoading
           ? new Array(6)
-              .fill(0)
-              .map((_, i) => (
-                <Skeleton
-                  key={i}
-                  height={"12rem"}
-                  className="col-span-12 md:col-span-4"
-                />
-              ))
+            .fill(0)
+            .map((_, i) => (
+              <Skeleton
+                key={i}
+                height={"12rem"}
+                className="col-span-12 md:col-span-4"
+              />
+            ))
           : data?.pages.map((page) =>
-              page.sections.map(
-                ({ name, type, semester, note, id, _count }) => (
-                  <Link
-                    key={id}
-                    href={{
-                      pathname: "sections/[sectionId]",
-                      query: { ...router.query, sectionId: id },
-                    }}
-                    shallow={true}
-                    className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
-                  >
-                    <div className="flex flex-col gap-2 p-2">
-                      <div className="flex gap-1">
-                        <Badge type="success">{`${semester.term}/${semester.year}`}</Badge>
-                        <Badge type="success">{type}</Badge>
-                      </div>
-                      <h4 className="text-xl font-medium text-sand-12">
-                        {name}
-                      </h4>
+            page.sections.map(
+              ({ name, semester, note, id, _count }) => (
+                <Link
+                  key={id}
+                  href={{
+                    pathname: "sections/[sectionId]",
+                    query: { ...router.query, sectionId: id },
+                  }}
+                  shallow={true}
+                  className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
+                >
+                  <div className="flex flex-col gap-2 p-2">
+                    <div className="flex gap-1">
+                      <Badge type="success">{`${semester.term} ${semester.year}`}</Badge>
+                    </div>
+                    <h4 className="text-xl font-medium text-sand-12">
+                      {name}
+                    </h4>
 
-                      <div>
-                        <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
-                          <Icon
-                            icon="solar:user-hand-up-line-duotone"
-                            className="text-lg"
-                          />
-                          <h6 className="text-sand-12">
-                            <span className="font-bold">
-                              {convertToCompact(_count.students)}
-                            </span>{" "}
-                            student{_count.students > 1 ? "s" : ""}
-                          </h6>
-                        </div>
-                        <div className="min-h-[1.5rem]">
-                          <h6 className="text-sand-10">
-                            {note?.length === 0 ? "-" : note}
-                          </h6>
-                        </div>
+                    <div>
+                      <div className="absolute right-2 top-2 flex w-fit items-center rounded-lg bg-sand-7 px-1">
+                        <Icon
+                          icon="solar:user-hand-up-line-duotone"
+                          className="text-lg"
+                        />
+                        <h6 className="text-sand-12">
+                          <span className="font-bold">
+                            {convertToCompact(_count.students)}
+                          </span>{" "}
+                          student{_count.students > 1 ? "s" : ""}
+                        </h6>
+                      </div>
+                      <div className="min-h-[1.5rem]">
+                        <h6 className="text-sand-10">
+                          {note?.length === 0 ? "-" : note}
+                        </h6>
                       </div>
                     </div>
-                  </Link>
-                )
+                  </div>
+                </Link>
               )
-            )}
+            )
+          )}
       </div>
 
       <div ref={ref} className="my-10 flex items-center justify-center gap-2">

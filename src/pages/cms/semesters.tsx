@@ -64,6 +64,7 @@ function Semesters() {
     { enabled: false }
   );
 
+
   const addSemesterMutation = trpc.semesters.createSemester.useMutation();
 
   const addSemester = async (formData: TSemesterSchema) => {
@@ -113,7 +114,7 @@ function Semesters() {
             onClick={() =>
               setSelectedObj({
                 selected: {
-                  display: `${props.row.getValue("year")}/${props.row.getValue(
+                  display: `${props.row.getValue("year")} ${props.row.getValue(
                     "term"
                   )}`,
                   id: props.row.original.id,

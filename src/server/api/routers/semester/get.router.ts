@@ -36,6 +36,14 @@ export const getSemesterRouter = router({
                 },
               ],
             },
+            orderBy: [
+              {
+                year: "desc",
+              },
+              {
+                term: "desc",
+              },
+            ],
             skip: page * limit,
             take: limit,
           }),
@@ -62,8 +70,8 @@ export const getSemesterRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { yearAndTerm } = input;
-      const year = yearAndTerm.split("/")[0] ?? "";
-      const term = yearAndTerm.split("/")[1] ?? "";
+      const year = yearAndTerm.split(" ")[0] ?? "";
+      const term = yearAndTerm.split(" ")[1] ?? "";
       try {
         const semester = await ctx.prisma.semesters.findMany({
           where: {
@@ -85,8 +93,8 @@ export const getSemesterRouter = router({
     .input(z.object({ yearAndTerm: z.string() }))
     .query(async ({ ctx, input }) => {
       const { yearAndTerm } = input;
-      const year = yearAndTerm.split("/")[0] ?? "";
-      const term = yearAndTerm.split("/")[1] ?? "";
+      const year = yearAndTerm.split(" ")[0] ?? "";
+      const term = yearAndTerm.split(" ")[1] ?? "";
       try {
         const semesters = await ctx.prisma.semesters.findFirst({
           where: {
@@ -144,7 +152,7 @@ export const getSemesterRouter = router({
           object: [
             {
               name: "Semester",
-              data: [{ name: `${semester?.year}/${semester?.term}`, data: [] }],
+              data: [{ name: `${semester?.term} ${semester?.year}`, data: [] }],
             },
             {
               name: "Section",
@@ -184,11 +192,16 @@ export const getSemesterRouter = router({
         where: {
           deleted_at: null,
         },
-        orderBy: {
-          year: "desc",
-        },
+        orderBy: [
+          {
+            year: "desc",
+          },
+          {
+            term: "desc",
+          },
+        ],
       });
-      return semesters.map((semester) => `${semester.year}/${semester.term}`);
+      return semesters.map((semester) => `${semester.term} ${semester.year}`);
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",

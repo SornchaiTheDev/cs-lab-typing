@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { useState, useRef, type KeyboardEvent, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useOnClickOutside } from "usehooks-ts";
@@ -132,12 +131,12 @@ function Select({
           style={
             selectRef.current
               ? {
-                  width: selectRef.current?.offsetWidth,
-                  top:
-                    selectRef.current?.offsetTop +
-                    selectRef.current?.offsetHeight +
-                    4,
-                }
+                width: selectRef.current?.offsetWidth,
+                top:
+                  selectRef.current?.offsetTop +
+                  selectRef.current?.offsetHeight +
+                  4,
+              }
               : undefined
           }
         >
@@ -150,7 +149,7 @@ function Select({
                   setIsShow(false);
                 }}
                 key={data}
-                className={clsx(
+                className={twMerge(
                   "cursor-pointer rounded-lg p-2 text-sand-11 hover:bg-sand-2",
                   selectedIndex === i && "selected bg-sand-4 text-sand-12"
                 )}

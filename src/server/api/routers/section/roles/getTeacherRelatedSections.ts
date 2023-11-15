@@ -1,13 +1,31 @@
 import type { PrismaClient, SectionType } from "@prisma/client";
 
-export const getTeacherRelatedSections = async (
-  prisma: PrismaClient,
-  courseId: number,
-  limit: number,
-  student_id: string,
-  cursor: number | null | undefined,
-  search?: string
-) => {
+interface Params {
+  prisma: PrismaClient;
+  courseId: number;
+  limit: number;
+  student_id: string;
+  cursor: number | null | undefined;
+  search?: string;
+  semester: string;
+  status?: string;
+}
+export const getTeacherRelatedSections = async (params: Params) => {
+  const {
+    prisma,
+    courseId,
+    limit,
+    student_id,
+    cursor,
+    search,
+    semester,
+    status,
+  } = params;
+  const active =
+    status === "Active" ? true : status === "Archive" ? false : undefined;
+  const term = semester.split(" ")[0];
+  const year = semester.split(" ")[1];
+
   let sectionType: SectionType[] = ["Lesson", "Exam"];
   if (search !== undefined) {
     const _search = search.toLowerCase();
@@ -18,10 +36,16 @@ export const getTeacherRelatedSections = async (
       sectionType = [];
     }
   }
+
   return await prisma.sections.findMany({
     where: {
       deleted_at: null,
       course_id: courseId,
+      active,
+      semester: {
+        term,
+        year,
+      },
       AND: [
         {
           OR: [
