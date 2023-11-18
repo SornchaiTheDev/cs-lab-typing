@@ -48,7 +48,7 @@ function FrontLayout({
   //       .join("/")}`,
   //   }));
 
-  const role = getHighestRole(data?.user?.roles);
+  const role = getHighestRole(data?.user.roles ?? []);
 
   const pageTitle = title
     ? title.charAt(0).toUpperCase() + title.slice(1)

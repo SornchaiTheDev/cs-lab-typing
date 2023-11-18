@@ -9,10 +9,9 @@ interface CreateInnerContextOptions extends Partial<CreateNextContextOptions> {
   ip: string | string[];
 }
 
-export const createInnerTRPCContext = (opts?: CreateInnerContextOptions) => {
+export const createInnerTRPCContext = (opts: CreateInnerContextOptions) => {
   return {
-    session: opts?.session,
-    ip: opts?.ip,
+    ...opts,
     prisma,
   };
 };
@@ -24,10 +23,7 @@ export const createContext = async (opts: CreateNextContextOptions) => {
 
   const ip = req.headers["x-forwarded-for"] || "localhost";
 
-  return createInnerTRPCContext({
-    session,
-    ip,
-  });
+  return await createInnerTRPCContext({ ...opts, session, ip });
 };
 
 export type Context = inferAsyncReturnType<typeof createInnerTRPCContext>;

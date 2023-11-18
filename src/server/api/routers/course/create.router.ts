@@ -7,7 +7,6 @@ export const createCourseRouter = router({
     .input(AddCourseSchema)
     .mutation(async ({ ctx, input }) => {
       const { number, name, authors, note, comments } = input;
-      let course;
       try {
         const courseExist = await ctx.prisma.courses.findFirst({
           where: {
@@ -15,6 +14,7 @@ export const createCourseRouter = router({
               {
                 number,
               },
+              { name },
             ],
             deleted_at: null,
           },
@@ -23,41 +23,36 @@ export const createCourseRouter = router({
         if (courseExist) {
           throw new Error("DUPLICATED_COURSE");
         }
-        const users = await ctx.prisma.users.findMany({
-          where: {
-            student_id: {
-              in: authors.map((author) => author.value) as string[],
-            },
-            deleted_at: null,
-          },
-        });
 
-        course = await ctx.prisma.courses.create({
+        const course = await ctx.prisma.courses.create({
           data: {
             number,
             name,
             authors: {
-              connect: users.map((user) => ({ id: user.id })),
+              connect: authors.map((author) => ({
+                email: author.value as string,
+              })),
             },
             note,
             comments,
           },
         });
+
+        return course;
       } catch (e) {
         if (e instanceof Error) {
           if (e.message === "DUPLICATED_COURSE") {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "DUPLICATED_COURSE",
-              cause: "DUPLICATED_COURSE",
             });
           }
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "SOMETHING_WENT_WRONG",
-          });
         }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      return course;
     }),
 });

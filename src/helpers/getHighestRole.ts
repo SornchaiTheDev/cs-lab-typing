@@ -1,9 +1,6 @@
-export const getHighestRole = (
-  roleString: string | undefined
-): "ADMIN" | "TEACHER" | "STUDENT" | null => {
-  if (roleString === undefined) return null;
+import { roles } from "@prisma/client";
 
-  const roles = roleString.split(",");
+export const getHighestRole = (roles: roles[]) => {
   const isAdmin = roles.includes("ADMIN");
   const isTeacher = roles.includes("TEACHER");
   if (isAdmin) return "ADMIN";

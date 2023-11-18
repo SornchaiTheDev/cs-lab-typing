@@ -3,7 +3,7 @@ import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
+// import { isUserInThisCourse } from "~/server/utils/isRelationWithThisCourse";
 
 export const createSectionsRouter = router({
   createSection: teacherAboveProcedure
@@ -25,7 +25,7 @@ export const createSectionsRouter = router({
 
       let section;
       try {
-        await isUserInThisCourse(requester, _courseId);
+        // await isUserInThisCourse(requester, _courseId);
         const _requester = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,

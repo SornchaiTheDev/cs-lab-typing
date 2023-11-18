@@ -12,7 +12,6 @@ import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
 import {
-  isUserInThisCourse,
   isUserInThisSection,
 } from "~/server/utils/checkUser";
 
@@ -312,7 +311,7 @@ export const getSectionsRouter = router({
       const student_id = ctx.user.student_id;
       let sections: sectionsIncludedStudentLength[] = [];
       try {
-        await isUserInThisCourse(student_id, _courseId);
+        // await isUserInThisCourse(student_id, _courseId);
         if (role === "ADMIN") {
           sections = await getAllSections({
             prisma: ctx.prisma,

@@ -12,24 +12,25 @@ import { prisma } from "~/server/db";
 import bcrypt from "bcrypt";
 import { api } from "~/services/Axios";
 import NextAuth from "next-auth/next";
+import { roles } from "@prisma/client";
 
 declare module "next-auth" {
   /**
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
-  interface Session {
-    user?: {
-      roles: string;
+  interface Session extends DefaultSession {
+    user: DefaultSession["user"] & {
+      roles: roles[];
       full_name: string;
       student_id: string;
-    } & DefaultSession["user"];
+    };
   }
 }
 
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
-    roles: string;
+    roles: roles[];
     full_name: string;
     email: string;
     image: string;
@@ -144,7 +145,7 @@ export const authOptions: NextAuthOptions = {
             deleted_at: null,
           },
         });
-        token.roles = fetchUser?.roles.join(",") ?? "";
+        token.roles = fetchUser?.roles as roles[];
         token.full_name = fetchUser?.full_name as string;
         token.student_id = fetchUser?.student_id as string;
       } catch (err) {}

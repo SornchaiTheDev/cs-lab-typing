@@ -15,11 +15,11 @@ export const createTrpcHelper = async ({
 }) => {
   const session = await getServerAuthSession({ req, res });
   const ip = req.headers["x-forwarded-for"] as string;
-  const role = getHighestRole(session?.user?.roles);
-  
+  const role = getHighestRole(session?.user.roles ?? []);
+
   const helper = createServerSideHelpers({
     router: appRouter,
-    ctx: createInnerTRPCContext({ session, ip }),
+    ctx: await createInnerTRPCContext({ session, ip }),
     transformer,
   });
   return { helper, user: { ...session?.user, role } };

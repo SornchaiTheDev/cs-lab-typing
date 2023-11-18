@@ -97,7 +97,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const isAdmin = session.user && session.user.roles.includes("ADMIN");
 
-  const roles = session.user?.roles.split(",");
+  const roles = session.user.roles;
 
   if (!isAdmin) {
     menus = menus.filter((menu) => {

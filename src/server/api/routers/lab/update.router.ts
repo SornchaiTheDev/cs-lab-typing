@@ -4,7 +4,7 @@ import { z } from "zod";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { Prisma } from "@prisma/client";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
-import { isUserInThisCourse } from "~/server/utils/checkIfUserInThisCourse";
+import { isRelationWithThisCourse } from "~/server/utils/isRelationWithThisCourse";
 
 export const updateLabRouter = router({
   updateLab: teacherAboveProcedure
@@ -18,7 +18,15 @@ export const updateLabRouter = router({
       const _courseId = parseInt(courseId);
 
       try {
-        await isUserInThisCourse(ctx.user.student_id, _courseId);
+        const isRelateWithThisCourse = await isRelationWithThisCourse(
+          ctx.user.student_id,
+          _courseId
+        );
+
+        if (!isRelateWithThisCourse) {
+          throw new Error("UNAUTHORIZED");
+        }
+
         await createNotExistTags(
           ctx.prisma,
           tags.map((tag) => tag.value as string)

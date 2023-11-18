@@ -1,12 +1,13 @@
 import { getHighestRole } from "~/helpers";
 import { prisma } from "../db";
-export const isUserInThisCourse = async (
+export const isRelationWithThisCourse = async (
   student_id: string,
-  course_id: number
+  course_id: number | string
 ) => {
+  const parsedCourseId = parseInt(course_id as string);
   const asInstructor = await prisma.sections.findFirst({
     where: {
-      course_id,
+      course_id: parsedCourseId,
       instructors: {
         some: {
           student_id,
@@ -17,7 +18,7 @@ export const isUserInThisCourse = async (
 
   const asAuthor = await prisma.courses.findFirst({
     where: {
-      id: course_id,
+      id: parsedCourseId,
       authors: {
         some: {
           student_id,
@@ -33,6 +34,6 @@ export const isUserInThisCourse = async (
     },
   });
 
-  if (getHighestRole(user?.roles.join(",")) === "ADMIN") return;
-  if (!(asInstructor || asAuthor)) throw new Error("UNAUTHORIZED");
+  if (getHighestRole(user?.roles ?? []) === "ADMIN") return true;
+  return asInstructor || asAuthor;
 };

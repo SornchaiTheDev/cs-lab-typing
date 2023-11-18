@@ -1,16 +1,13 @@
 import {
-  TaAboveProcedure,
   adminProcedure,
+  taAboveAndRelatedToCourseProcedure,
   router,
   teacherAboveProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
-import { getHighestRole } from "~/helpers";
-import { getAdminCourses } from "./roles/getAdminCourses";
-import { getTeacherCourses } from "./roles/getTeacherCourses";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisCourse } from "~/server/utils/checkUser";
+import { getCoursesPaginationByRole } from "./utils/getCoursesPaginationByRole";
 
 export const getCourseRouter = router({
   getCoursePagination: teacherAboveProcedure
@@ -23,33 +20,19 @@ export const getCourseRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { limit, cursor, search } = input;
-
-      const role = getHighestRole(ctx.user.roles);
       const student_id = ctx.user.student_id;
-      let courses = null;
+      const prisma = ctx.prisma;
+      const role = ctx.user.roles;
+
       try {
-        if (role === "ADMIN") {
-          courses = await getAdminCourses(ctx.prisma, limit, cursor, search);
-        } else if (role === "TEACHER") {
-          courses = await getTeacherCourses(
-            ctx.prisma,
-            limit,
-            student_id,
-            cursor,
-            search
-          );
-        }
-        if (courses === null) {
-          throw new Error("NOT_FOUND");
-        }
-
-        let nextCursor: typeof cursor | undefined = undefined;
-        if (courses.length > limit) {
-          const nextItem = courses.pop();
-          nextCursor = nextItem?.id;
-        }
-
-        return { courses, nextCursor };
+        return await getCoursesPaginationByRole({
+          cursor,
+          limit,
+          prisma,
+          role,
+          search,
+          student_id,
+        });
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -57,12 +40,12 @@ export const getCourseRouter = router({
         });
       }
     }),
-  getCourseById: TaAboveProcedure.input(z.object({ id: z.string() })).query(
-    async ({ ctx, input }) => {
+  getCourseById: taAboveAndRelatedToCourseProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
       const { id } = input;
       const _id = parseInt(id);
       try {
-        await isUserInThisCourse(ctx.user.student_id, _id);
         const course = await ctx.prisma.courses.findFirst({
           where: {
             id: _id,
@@ -95,20 +78,13 @@ export const getCourseRouter = router({
               message: "NOT_FOUND",
             });
           }
-          if (err.message === "UNAUTHORIZED") {
-            throw new TRPCError({
-              code: "UNAUTHORIZED",
-              message: "UNAUTHORIZED",
-            });
-          }
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
         });
       }
-    }
-  ),
+    }),
   getCourseObjectRelation: adminProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -143,11 +119,12 @@ export const getCourseRouter = router({
         if (!course) {
           throw new Error("NOT_FOUND");
         }
+
         const labs = course.labs;
         const sections = course.sections;
-        const sectionsLength = sections?.length ?? 0;
-
+        const sectionsLength = sections.length;
         const labInCourseLength = labs.length;
+
         const labInSectionsLength =
           sections
             ?.map(({ labs }) => labs.length)

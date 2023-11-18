@@ -4,6 +4,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import type { Context } from "../context";
 import { getHighestRole } from "~/helpers";
+import { isRelationWithThisCourse } from "../utils/isRelationWithThisCourse";
 
 const t = initTRPC
   .meta<OpenApiMeta>()
@@ -26,31 +27,10 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 export const mergeRouter = t.mergeRouters;
 
-const isAdmin = t.middleware(async (opts) => {
+const isAuthed = t.middleware(async (opts) => {
   const { ctx, next } = opts;
 
-  if (
-    !(ctx.session?.user && getHighestRole(ctx.session?.user.roles) === "ADMIN")
-  ) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      user: ctx.session.user,
-    },
-  });
-});
-
-const isTeacherAbove = t.middleware(async (opts) => {
-  const { ctx, next } = opts;
-
-  if (
-    !(
-      ctx.session?.user &&
-      (ctx.session?.user.roles.includes("TEACHER") ||
-        ctx.session?.user.roles.includes("ADMIN"))
-    )
-  ) {
+  if (ctx.session?.user === undefined) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -61,17 +41,43 @@ const isTeacherAbove = t.middleware(async (opts) => {
   });
 });
 
-const isTaAbove = t.middleware(async (opts) => {
+const isTeacher = isAuthed.unstable_pipe(async (opts) => {
   const { ctx, next } = opts;
-  const role = getHighestRole(ctx.session?.user?.roles);
 
-  if (!ctx.session?.user) {
+  const isTeacher = getHighestRole(ctx.user.roles) === "TEACHER";
+  if (!isTeacher) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+  return next();
+});
+
+const isTeacherAbove = isAuthed.unstable_pipe(async (opts) => {
+  const { ctx, next } = opts;
+
+  const isTeacher = ctx.user.roles.includes("TEACHER");
+  const isAdmin = ctx.user.roles.includes("ADMIN");
+
+  if (!isAdmin && !isTeacher) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      user: {
+        ...ctx.user,
+        roles: ctx.user.roles as ("ADMIN" | "TEACHER")[],
+      },
+    },
+  });
+});
+
+const isTaAbove = isAuthed.unstable_pipe(async (opts) => {
+  const { ctx, next } = opts;
+  const role = getHighestRole(ctx.user.roles);
 
   const isInstructors = await ctx.prisma.users.findFirst({
     where: {
-      student_id: ctx.session.user.student_id,
+      student_id: ctx.user.student_id,
       deleted_at: null,
     },
     select: {
@@ -83,45 +89,43 @@ const isTaAbove = t.middleware(async (opts) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  return next({
-    ctx: {
-      user: ctx.session.user,
-    },
-  });
+  return next();
 });
 
-const isTeacher = t.middleware(async (opts) => {
+const isAdmin = isAuthed.unstable_pipe(async (opts) => {
   const { ctx, next } = opts;
 
-  if (
-    !(
-      ctx.session?.user && getHighestRole(ctx.session?.user.roles) === "TEACHER"
-    )
-  ) {
+  const isAdmin = ctx.user.roles.includes("ADMIN");
+
+  if (!isAdmin) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  return next({
-    ctx: {
-      user: ctx.session.user,
-    },
-  });
+
+  return next();
 });
 
-const isAuthed = t.middleware(async (opts) => {
-  const { ctx, next } = opts;
+const isRelateWithCourse = isAuthed.unstable_pipe(async (opts) => {
+  const { ctx, next, rawInput } = opts;
+  const _rawInput = rawInput as { id: string };
 
-  if (!(ctx.session?.user && ctx.session?.user.roles.includes("STUDENT"))) {
+  const isRelated = await isRelationWithThisCourse(
+    ctx.user.student_id,
+    _rawInput.id
+  );
+
+  if (!isRelated) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  return next({
-    ctx: {
-      user: ctx.session.user,
-    },
-  });
+
+  return next();
 });
 
-export const TaAboveProcedure = publicProcedure.use(isTaAbove);
-export const teacherProcedure = publicProcedure.use(isTeacher);
-export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
-export const adminProcedure = publicProcedure.use(isAdmin);
 export const authedProcedure = publicProcedure.use(isAuthed);
+export const TaAboveProcedure = publicProcedure.use(isTaAbove);
+export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
+export const teacherAboveAndInstructorProcedure =
+  publicProcedure.use(isRelateWithCourse);
+export const taAboveAndRelatedToCourseProcedure =
+  publicProcedure.use(isRelateWithCourse);
+export const teacherProcedure = publicProcedure.use(isTeacher);
+export const adminProcedure = publicProcedure.use(isAdmin);

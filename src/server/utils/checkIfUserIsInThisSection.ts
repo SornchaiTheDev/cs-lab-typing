@@ -35,7 +35,7 @@ export const isUserInThisSection = async (
     },
   });
 
-  if (getHighestRole(user?.roles.join(",")) === "ADMIN") return;
+  if (getHighestRole(user?.roles ?? []) === "ADMIN") return;
 
   if (!(asStudent || asInstructor)) throw new Error("UNAUTHORIZED");
 };
