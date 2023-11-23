@@ -3,7 +3,7 @@ import { getHighestRole } from "~/helpers";
 
 function useRole() {
   const { data: session } = useSession();
-  const role = getHighestRole(session?.user?.roles);
+  const role = getHighestRole(session?.user?.roles ?? []);
   const isAdmin = role === "ADMIN";
   const isTeacher = role === "TEACHER";
   const isStudent = role === "STUDENT";
