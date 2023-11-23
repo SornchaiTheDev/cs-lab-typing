@@ -108,14 +108,14 @@ const isAdmin = isAuthed.unstable_pipe(async (opts) => {
 const isTaAboveRelateWithCourse = isTaAbove.unstable_pipe(async (opts) => {
   const { ctx, next, rawInput } = opts;
   const _rawInput = rawInput as { courseId: string | number };
-
-  if (typeof _rawInput.courseId === "number") {
-    _rawInput.courseId = _rawInput.courseId.toString();
+  let courseId = _rawInput.courseId;
+  if (typeof courseId === "number") {
+    courseId = courseId.toString();
   }
 
   const isRelated = await isRelationWithThisCourse(
     ctx.user.student_id,
-    _rawInput.courseId
+    courseId
   );
 
   if (!isRelated) {
@@ -130,13 +130,14 @@ const isTeacherAboveRelateWithCourse = isTeacherAbove.unstable_pipe(
     const { ctx, next, rawInput } = opts;
     const _rawInput = rawInput as { courseId: string | number };
 
-    if (typeof _rawInput.courseId === "number") {
-      _rawInput.courseId = _rawInput.courseId.toString();
+    let courseId = _rawInput.courseId;
+    if (typeof courseId === "number") {
+      courseId = courseId.toString();
     }
 
     const isRelated = await isRelationWithThisCourse(
       ctx.user.student_id,
-      _rawInput.courseId
+      courseId
     );
 
     if (!isRelated) {
@@ -151,15 +152,12 @@ const isTeacherAboveRelateWithSection = isTeacherAbove.unstable_pipe(
   async (opts) => {
     const { ctx, next, rawInput } = opts;
     const _rawInput = rawInput as { sectionId: string | number };
-
-    if (typeof _rawInput.sectionId === "string") {
-      _rawInput.sectionId = parseInt(_rawInput.sectionId);
+    let sectionId = _rawInput.sectionId;
+    if (typeof sectionId === "string") {
+      sectionId = parseInt(sectionId as string);
     }
 
-    const isRelated = await isUserInThisSection(
-      ctx.user.student_id,
-      _rawInput.sectionId
-    );
+    const isRelated = await isUserInThisSection(ctx.user.student_id, sectionId);
 
     if (!isRelated) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -173,14 +171,12 @@ const isTaAboveRelateWithSection = isTaAbove.unstable_pipe(async (opts) => {
   const { ctx, next, rawInput } = opts;
   const _rawInput = rawInput as { sectionId: string | number };
 
-  if (typeof _rawInput.sectionId === "string") {
-    _rawInput.sectionId = parseInt(_rawInput.sectionId);
+  let sectionId = _rawInput.sectionId;
+  if (typeof sectionId === "string") {
+    sectionId = parseInt(sectionId as string);
   }
 
-  const isRelated = await isUserInThisSection(
-    ctx.user.student_id,
-    _rawInput.sectionId
-  );
+  const isRelated = await isUserInThisSection(ctx.user.student_id, sectionId);
 
   if (!isRelated) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -193,14 +189,12 @@ const isAuthedAndRelatedToSection = isAuthed.unstable_pipe(async (opts) => {
   const { ctx, next, rawInput } = opts;
   const _rawInput = rawInput as { sectionId: string | number };
 
-  if (typeof _rawInput.sectionId === "string") {
-    _rawInput.sectionId = parseInt(_rawInput.sectionId);
+  let sectionId = _rawInput.sectionId;
+  if (typeof sectionId === "string") {
+    sectionId = parseInt(sectionId as string);
   }
 
-  const isRelated = await isUserInThisSection(
-    ctx.user.student_id,
-    _rawInput.sectionId
-  );
+  const isRelated = await isUserInThisSection(ctx.user.student_id, sectionId);
 
   if (!isRelated) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -210,7 +204,9 @@ const isAuthedAndRelatedToSection = isAuthed.unstable_pipe(async (opts) => {
 });
 
 export const authedProcedure = publicProcedure.use(isAuthed);
-export const authedAndRelateToSectionProcedure = publicProcedure.use(isAuthedAndRelatedToSection);
+export const authedAndRelateToSectionProcedure = publicProcedure.use(
+  isAuthedAndRelatedToSection
+);
 export const TaAboveProcedure = publicProcedure.use(isTaAbove);
 export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
 export const teacherAboveAndRelatedToCourseProcedure = publicProcedure.use(

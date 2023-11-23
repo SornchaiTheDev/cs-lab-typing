@@ -29,6 +29,12 @@ export const deleteTaskRouter = router({
           }
         }
 
+        await ctx.prisma.tasks.delete({
+          where: {
+            id,
+          },
+        });
+
         const labs = await ctx.prisma.labs.findMany({
           where: {
             tasks: {

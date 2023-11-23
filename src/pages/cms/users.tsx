@@ -186,6 +186,7 @@ function Users() {
       callToast({ msg: "Added users successfully", type: "success" });
 
       await users.refetch();
+      await usersAmount.refetch();
       setValue("");
       setIsShow(false);
       setIsError(false);
