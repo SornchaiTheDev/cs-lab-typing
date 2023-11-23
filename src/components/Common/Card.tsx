@@ -30,7 +30,7 @@ function Card({
       <div className="flex flex-col flex-wrap gap-2 p-2">
         <div className="flex flex-wrap gap-2">
           {badges?.map(({ title, type }) => (
-            <Badge key={title} type={type}>
+            <Badge key={title + type} type={type}>
               {title}
             </Badge>
           ))}

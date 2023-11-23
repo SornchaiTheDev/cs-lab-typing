@@ -48,8 +48,6 @@ const TypingSubmissions = ({
     }
   );
 
-  const highestScore = typingHistories.data?.highestScore ?? null;
-
   return (
     <>
       <div className="h-[10rem] w-full">

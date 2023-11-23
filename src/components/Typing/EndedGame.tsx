@@ -13,7 +13,10 @@ import type { PaginationState } from "@tanstack/react-table";
 import { callToast } from "~/services/callToast";
 import { TRPCClientError } from "@trpc/client";
 
-function EndedGame() {
+interface Props {
+  sectionType: "Lesson" | "Exam";
+}
+function EndedGame({ sectionType }: Props) {
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -91,6 +94,7 @@ function EndedGame() {
         <LineChart datas={typingHistories.data?.histories ?? []} />
       </div>
       <TypingTable
+        type={sectionType}
         isLoading={typingHistories.isLoading}
         datas={typingHistories.data?.histories ?? []}
         onPaginationChange={setPagination}

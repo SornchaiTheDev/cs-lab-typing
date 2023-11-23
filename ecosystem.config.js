@@ -3,7 +3,9 @@ module.exports = {
     name   : "lab.cs",
     port : '3000',
     exec_mode : "cluster",
-    instances : 1,
-    script : "./standalone/server.js",
+    instances : 4,
+    interpreter: '/bin/bash',
+    script    : 'node_modules/next/dist/bin/next',
+    args      : 'start',
   }]
 }

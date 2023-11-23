@@ -21,7 +21,7 @@ const EditSemester = ({ onUpdate }: Props) => {
     yearAndTerm: selectedObj?.selected.display as string,
   });
 
-  console.log(semester.data)
+
 
   const updateSemester = trpc.semesters.updateSemester.useMutation({
     onSuccess: () => {

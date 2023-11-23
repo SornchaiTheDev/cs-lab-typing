@@ -1,10 +1,9 @@
-import type { labs, tasks } from "@prisma/client";
+import type { SectionType, labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { findHighestSpeedAndScore } from "~/helpers";
 import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
 import { isUserInThisSection } from "~/server/utils/checkUser";
-import type { FrontTypingHistory } from "~/types/Front";
 
 export const getFrontRouter = router({
   getCheckUser: authedProcedure.query(async ({ ctx }) => {
@@ -90,18 +89,25 @@ export const getFrontRouter = router({
       limit: z.number(),
       cursor: z.number().nullish(),
       semester: z.string(),
+      sectionType: z
+        .literal("All")
+        .or(z.literal("Lesson"))
+        .or(z.literal("Exam")),
     })
   ).query(async ({ ctx, input }) => {
-    const { limit, cursor, semester } = input;
+    const { limit, cursor, semester, sectionType } = input;
     const term = semester.split(" ")[0];
     const year = semester.split(" ")[1];
 
     const student_id = ctx.session?.user?.student_id;
 
+    const _sectionType = sectionType === "All" ? undefined : sectionType;
+
     try {
       const sections = await ctx.prisma.sections.findMany({
         where: {
           deleted_at: null,
+          type: _sectionType,
           semester: {
             year,
             term,

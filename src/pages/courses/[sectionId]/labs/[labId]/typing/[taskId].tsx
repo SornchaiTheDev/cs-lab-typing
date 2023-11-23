@@ -10,6 +10,7 @@ import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/helpers/createTrpcHelper";
 import ProblemList from "~/components/Typing/ProblemList";
+import dayjs from "dayjs";
 
 interface Props {
   taskName: string;
@@ -17,6 +18,7 @@ interface Props {
   courseName: string;
   labName: string;
   labStatus: string;
+  sectionType: "Lesson" | "Exam";
 }
 
 function TypingTask({
@@ -25,6 +27,7 @@ function TypingTask({
   courseName,
   labName,
   labStatus,
+  sectionType
 }: Props) {
   const router = useRouter();
 
@@ -43,6 +46,7 @@ function TypingTask({
   const isEndedPhase = status === "Ended";
   const isHistoryPhase = status === "History";
   const isReadOnly = labStatus === "READONLY";
+
 
   return (
     <>
@@ -89,13 +93,13 @@ function TypingTask({
 
           <div className="mt-12 flex-1">
             {isReadOnly ? (
-              <History />
+              <History type={sectionType} />
             ) : isTypingPhase ? (
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
               <>
                 <ProblemList />
-                <EndedGame />
+                <EndedGame {...{ sectionType }} />
               </>
             ) : (
               isHistoryPhase && <History />
@@ -116,20 +120,30 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const { helper } = await createTrpcHelper({ req, res });
   const { labId, sectionId, taskId } = ctx.query;
   try {
-    const { courseName, labName, labStatus, taskName, taskBody } =
+
+    const { courseName, labName, labStatus, taskName, taskBody, closed_at, sectionType } =
       await helper.front.getTaskById.fetch({
         labId: labId as string,
         sectionId: sectionId as string,
         taskId: taskId as string,
       });
 
+
+    let _labStatus = labStatus;
+    const now = dayjs();
+
+    if (dayjs(closed_at).diff(now, "second") <= 0) {
+      _labStatus = "READONLY";
+    }
+
     return {
       props: {
         courseName,
         labName,
-        labStatus,
+        labStatus: _labStatus,
         taskName,
         taskBody,
+        sectionType
       },
     };
   } catch (err) {

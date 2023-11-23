@@ -5,37 +5,16 @@ import Skeleton from "~/components/Common/Skeleton";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import type { Prisma } from "@prisma/client";
 import Select from "~/components/Forms/Select";
-
-type sections = Prisma.sectionsGetPayload<{
-  select: {
-    id: true;
-    name: true;
-    semester: {
-      select: {
-        term: true;
-        year: true;
-      };
-    };
-    course: {
-      select: {
-        id: true;
-        number: true;
-        name: true;
-      };
-    };
-    type: true;
-  };
-}>;
-
+import type { SectionType } from "@prisma/client";
 
 const TeachingSections = () => {
   const allSemesters = trpc.semesters.getAllSemesters.useQuery();
   const [semester, setSemester] = useState("Loading...");
+  const [sectionType, setSectionType] = useState("All")
 
   const teach = trpc.front.getTeachingSections.useInfiniteQuery(
-    { limit: 6, semester },
+    { limit: 6, semester, sectionType: sectionType as SectionType },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
 
@@ -80,7 +59,10 @@ const TeachingSections = () => {
             <h4 className="text-2xl font-medium text-sand-12 md:text-3xl">
               Teach
             </h4>
-            <Select options={allSemesters.data ?? []} className="flex-1 min-w-[12rem]" value={semester} onChange={setSemester} />
+            <div className="flex gap-2">
+              <Select options={["All", "Lesson", "Exam"]} className="flex-1 min-w-[8rem]" value={sectionType} preMessage="Type" onChange={setSectionType} />
+              <Select options={allSemesters.data ?? []} className="flex-1 min-w-[12rem]" preMessage="Semester" value={semester} onChange={setSemester} />
+            </div>
 
           </div>
           <div className="my-6 grid grid-cols-12 gap-6">
@@ -98,7 +80,7 @@ const TeachingSections = () => {
                     }}
                     title={`${courseName}`}
                     badges={[
-                      { title: `${number} (${term}/${year})`, type: "success" },
+                      { title: `${number} (${term} ${year})`, type: "success" },
                       { title: name, type: "success" },
                       { title: type, type: "info" },
                     ]}
@@ -170,8 +152,7 @@ function MyCourse() {
                   }}
                   title={`${courseName}`}
                   badges={[
-                    { title: `${number} (${term}/${year})`, type: "success" },
-                    // { title: `${term}/${year}`, type: "success" },
+                    { title: `${number} (${term} ${year})`, type: "success" },
                     { title: name, type: "success" },
                   ]}
                 />
@@ -182,9 +163,7 @@ function MyCourse() {
       ) : null}
 
       {isTaAbove && (
-        <TeachingSections
-
-        />
+        <TeachingSections />
       )}
 
       <div ref={ref} className="my-10 flex items-center justify-center gap-2">

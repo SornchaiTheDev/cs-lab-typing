@@ -1,4 +1,3 @@
-import type { SectionType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import clsx from "clsx";
 import type { GetServerSideProps } from "next";
@@ -15,16 +14,13 @@ interface Props {
   courseName: string;
   labName: string;
   tasks: string;
-  sectionType: SectionType;
 }
 
-function Labs({ courseName, labName, tasks, sectionType }: Props) {
+function Labs({ courseName, labName, tasks }: Props) {
   const router = useRouter();
 
   const _tasks: taskWithStatus[] = superjson.parse(tasks);
-  const isExam = sectionType === "Exam";
-  const LESSON_PATH = "[labId]/typing/[taskId]";
-  const EXAM_PATH = "[labId]/typing/exam/[taskId]";
+
 
   return (
     <FrontLayout
@@ -49,7 +45,7 @@ function Labs({ courseName, labName, tasks, sectionType }: Props) {
           <Link
             key={id}
             href={{
-              pathname: isExam ? EXAM_PATH : LESSON_PATH,
+              pathname: "[labId]/typing/[taskId]",
               query: { ...router.query, taskId: id },
             }}
             className="relative col-span-12 flex h-[8rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
@@ -89,12 +85,11 @@ export const getServerSideProps: GetServerSideProps = async ({
       sectionId: sectionId as string,
     });
     if (lab) {
-      const { courseName, labName, tasks, sectionType } = lab;
+      const { courseName, labName, tasks } = lab;
       return {
         props: {
           courseName,
           labName,
-          sectionType,
           tasks: superjson.stringify(tasks),
         },
       };

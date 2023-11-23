@@ -102,7 +102,7 @@ export const saveSubmission = async ({
 
   const duration = getDuration(startedAt as Date, endedAt as Date);
   const errorChars = getErrorsCharacters({ keyStrokes, problemKeys });
-  console.log("errorChars", errorChars);
+
   const { rawSpeed, adjustedSpeed } = calculateTypingSpeed(
     totalChars,
     errorChars,

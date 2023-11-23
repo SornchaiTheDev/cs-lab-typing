@@ -9,6 +9,7 @@ interface Params {
   search?: string;
   semester: string;
   status?: string;
+  sectionType?: SectionType;
 }
 export const getTeacherRelatedSections = async (params: Params) => {
   const {
@@ -20,22 +21,12 @@ export const getTeacherRelatedSections = async (params: Params) => {
     search,
     semester,
     status,
+    sectionType,
   } = params;
   const active =
     status === "Active" ? true : status === "Archive" ? false : undefined;
   const term = semester.split(" ")[0];
   const year = semester.split(" ")[1];
-
-  let sectionType: SectionType[] = ["Lesson", "Exam"];
-  if (search !== undefined) {
-    const _search = search.toLowerCase();
-    const type = _search.charAt(0).toUpperCase() + _search.slice(1);
-    if (["Lesson", "Exam"].includes(type)) {
-      sectionType = [type as SectionType];
-    } else {
-      sectionType = [];
-    }
-  }
 
   return await prisma.sections.findMany({
     where: {
@@ -46,6 +37,7 @@ export const getTeacherRelatedSections = async (params: Params) => {
         term,
         year,
       },
+      type: sectionType,
       AND: [
         {
           OR: [
@@ -64,19 +56,10 @@ export const getTeacherRelatedSections = async (params: Params) => {
           ],
         },
         {
-          OR: [
-            {
-              name: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
-            {
-              type: {
-                in: sectionType,
-              },
-            },
-          ],
+          name: {
+            contains: search,
+            mode: "insensitive",
+          },
         },
       ],
     },

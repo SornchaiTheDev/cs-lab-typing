@@ -16,6 +16,7 @@ interface Props {
   disabled?: boolean;
   isLoading?: boolean;
   emptyMsg?: string;
+  preMessage?: string;
 }
 
 function Select({
@@ -30,6 +31,7 @@ function Select({
   disabled,
   isLoading,
   emptyMsg = "No Data",
+  preMessage
 }: Props) {
   const [isShow, setIsShow] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -120,7 +122,7 @@ function Select({
               }
               className="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2"
             />
-            <h6 className="select-none p-2">{value}</h6>
+            <h6 className="select-none p-2 mr-5">{!!preMessage && `${preMessage} : `}{value}</h6>
           </div>
         )}
       </div>

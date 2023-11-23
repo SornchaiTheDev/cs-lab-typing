@@ -301,14 +301,22 @@ export const getSectionsRouter = router({
         search: z.string().optional(),
         semester: z.string(),
         status: z.string(),
+        sectionType: z
+          .literal("All")
+          .or(z.literal("Lesson"))
+          .or(z.literal("Exam")),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { limit, courseId, cursor, search, semester, status } = input;
+      const { limit, courseId, cursor, search, semester, status, sectionType } =
+        input;
 
       const _courseId = parseInt(courseId);
       const role = getHighestRole(ctx.user.roles);
       const student_id = ctx.user.student_id;
+
+      const _sectionType = sectionType === "All" ? undefined : sectionType;
+
       let sections: sectionsIncludedStudentLength[] = [];
       try {
         // await isUserInThisCourse(student_id, _courseId);
@@ -321,6 +329,7 @@ export const getSectionsRouter = router({
             search,
             semester,
             status,
+            sectionType: _sectionType,
           });
         } else if (role === "TEACHER") {
           sections = await getTeacherRelatedSections({
@@ -332,6 +341,7 @@ export const getSectionsRouter = router({
             search,
             semester,
             status,
+            sectionType: _sectionType,
           });
         }
 

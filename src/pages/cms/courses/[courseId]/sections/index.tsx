@@ -17,6 +17,7 @@ import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import Select from "~/components/Forms/Select";
+import { SectionType } from "@prisma/client";
 
 function Sections() {
   const router = useRouter();
@@ -65,6 +66,9 @@ function Sections() {
   const [searchString, setSearchString] = useState("");
   const [semester, setSemester] = useState("Loading...");
   const [sectionStatus, setSectionStatus] = useState("All");
+  const [sectionType, setSectionType] = useState("All")
+
+
 
   useEffect(() => {
     if (!!allSemesters.data) {
@@ -77,7 +81,7 @@ function Sections() {
 
   useEffect(() => {
     fetchSection();
-  }, [searchString, fetchSection, semester, sectionStatus]);
+  }, [searchString, fetchSection, semester, sectionStatus, sectionType]);
 
   const {
     isLoading,
@@ -93,6 +97,7 @@ function Sections() {
       search: searchString,
       semester,
       status: sectionStatus,
+      sectionType: sectionType as SectionType
     },
     {
       enabled: false,
@@ -172,8 +177,9 @@ function Sections() {
             />
           </ModalWithButton>
           <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-            <Select options={["All", "Active", "Archive"]} className="flex-1 min-w-[8rem]" value={sectionStatus} onChange={setSectionStatus} />
-            <Select options={allSemesters.data ?? []} className="flex-1 min-w-[12rem]" value={semester} onChange={setSemester} />
+            <Select options={["All", "Active", "Archive"]} className="flex-1 min-w-[8rem]" value={sectionStatus} preMessage="Status" onChange={setSectionStatus} />
+            <Select options={["All", "Lesson", "Exam"]} className="flex-1 min-w-[8rem]" value={sectionType} preMessage="Type" onChange={setSectionType} />
+            <Select options={allSemesters.data ?? []} className="flex-1 min-w-[12rem]" preMessage="Semester" value={semester} onChange={setSemester} />
             <div className="flex h-full w-full items-center gap-2 rounded-lg border border-sand-6 p-2 md:w-fit">
               <Icon icon="carbon:search" className="text-sand-10" />
               <input
@@ -201,7 +207,7 @@ function Sections() {
             ))
           : data?.pages.map((page) =>
             page.sections.map(
-              ({ name, semester, note, id, _count }) => (
+              ({ name, semester, note, id, _count, type }) => (
                 <Link
                   key={id}
                   href={{
@@ -214,6 +220,7 @@ function Sections() {
                   <div className="flex flex-col gap-2 p-2">
                     <div className="flex gap-1">
                       <Badge type="success">{`${semester.term} ${semester.year}`}</Badge>
+                      <Badge type="info">{type}</Badge>
                     </div>
                     <h4 className="text-xl font-medium text-sand-12">
                       {name}
