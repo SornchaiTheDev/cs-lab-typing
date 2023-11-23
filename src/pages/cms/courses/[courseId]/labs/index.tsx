@@ -49,7 +49,7 @@ function Labs() {
     }
   );
 
-  const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
+  const isTeacher = session?.user?.roles.includes("TEACHER");
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

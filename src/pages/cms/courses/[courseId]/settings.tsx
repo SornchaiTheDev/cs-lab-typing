@@ -18,7 +18,7 @@ import type { SearchValue } from "~/types";
 
 function Settings() {
   const { data: session } = useSession();
-  const role = getHighestRole(session?.user?.roles);
+  const role = getHighestRole(session?.user?.roles ?? []);
 
   const isAdmin = role === "ADMIN";
 
@@ -168,7 +168,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   });
   const { courseId } = query;
 
-  const role = getHighestRole(session?.user?.roles);
+  const role = getHighestRole(session?.user?.roles ?? []);
 
   if (role === "STUDENT" || !courseId) {
     return {

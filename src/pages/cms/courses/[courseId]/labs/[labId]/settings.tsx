@@ -15,7 +15,7 @@ import { TRPCError } from "@trpc/server";
 
 function Settings() {
   const { data: session } = useSession();
-  const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
+  const isTeacher = session?.user?.roles.includes("TEACHER");
 
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
@@ -61,7 +61,7 @@ function Settings() {
     }
   };
 
-  const role = getHighestRole(session?.user?.roles);
+  const role = getHighestRole(session?.user?.roles ?? []);
   const isStudent = role === "STUDENT";
 
   return (

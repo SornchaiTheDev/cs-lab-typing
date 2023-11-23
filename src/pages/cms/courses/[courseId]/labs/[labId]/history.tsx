@@ -76,7 +76,7 @@ function LabHistory() {
     [columnHelper]
   );
 
-  const role = getHighestRole(session?.user?.roles);
+  const role = getHighestRole(session?.user?.roles ?? []);
   const isStudent = role === "STUDENT";
 
   return (

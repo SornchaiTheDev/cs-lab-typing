@@ -175,7 +175,7 @@ const LabStatus = ({
   const router = useRouter();
   const { sectionId } = router.query;
 
-  const isTA = getHighestRole(session?.user?.roles) === "STUDENT";
+  const isTA = getHighestRole(session?.user?.roles ?? []) === "STUDENT";
 
   const lab = trpc.labs.getLabStatus.useQuery(
     {

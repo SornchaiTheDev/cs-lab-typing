@@ -257,7 +257,7 @@ function Lab() {
 
   const { labId, courseId } = router.query;
 
-  const isTeacher = session?.user?.roles.split(",").includes("TEACHER");
+  const isTeacher = session?.user?.roles.includes("TEACHER");
 
   const lab = trpc.labs.getLabById.useQuery(
     {
@@ -374,7 +374,7 @@ function Lab() {
 
   const [isShow, setIsShow] = useState(false);
 
-  const role = getHighestRole(session?.user?.roles);
+  const role = getHighestRole(session?.user?.roles ?? []);
   const isStudent = role === "STUDENT";
   return (
     <>
