@@ -5,7 +5,6 @@ import {
   taAboveAndRelatedToSectionProcedure,
   teacherAboveAndRelatedToCourseProcedure,
   teacherAboveAndRelatedToSectionProcedure,
-  teacherAboveProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import { getAllSections } from "./roles/getAllSections";
@@ -14,7 +13,6 @@ import type { Prisma, labs, labs_status } from "@prisma/client";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
-import { isUserInThisSection } from "~/server/utils/checkUser";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
   include: {

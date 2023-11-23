@@ -1,11 +1,11 @@
 import { TRPCError } from "@trpc/server";
-import { router, authedProcedure } from "~/server/api/trpc";
+import { router, authedAndRelateToSectionProcedure } from "~/server/api/trpc";
 import { checkSameHash } from "~/server/utils/checkSameHash";
 import { TypingResultWithHashSchema } from "~/schemas/TypingResult";
 import { saveSubmission } from "./saveSubmission";
 
 export const createFrontRouter = router({
-  submitTyping: authedProcedure
+  submitTyping: authedAndRelateToSectionProcedure
     .input(TypingResultWithHashSchema)
     .mutation(async ({ ctx, input }) => {
       const { sectionId, labId, taskId, startedAt, endedAt, hash, keyStrokes } =

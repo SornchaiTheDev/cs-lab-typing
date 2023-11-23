@@ -2,8 +2,12 @@ import type { labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { findHighestSpeedAndScore } from "~/helpers";
-import { router, authedProcedure, TaAboveProcedure } from "~/server/api/trpc";
-import { isUserInThisSection } from "~/server/utils/checkUser";
+import {
+  router,
+  authedProcedure,
+  TaAboveProcedure,
+  authedAndRelateToSectionProcedure,
+} from "~/server/api/trpc";
 
 export const getFrontRouter = router({
   getCheckUser: authedProcedure.query(async ({ ctx }) => {
@@ -159,7 +163,7 @@ export const getFrontRouter = router({
       });
     }
   }),
-  getLabs: authedProcedure
+  getLabs: authedAndRelateToSectionProcedure
     .input(z.object({ sectionId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { sectionId } = input;
@@ -167,8 +171,6 @@ export const getFrontRouter = router({
       const _sectionId = parseInt(sectionId);
 
       try {
-        await isUserInThisSection(ctx.user.student_id, _sectionId);
-
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -251,7 +253,7 @@ export const getFrontRouter = router({
         });
       }
     }),
-  getTasks: authedProcedure
+  getTasks: authedAndRelateToSectionProcedure
     .input(z.object({ sectionId: z.string(), labId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { labId, sectionId } = input;
@@ -259,8 +261,6 @@ export const getFrontRouter = router({
       const _sectionId = parseInt(sectionId);
       const student_id = ctx.user.student_id;
       try {
-        await isUserInThisSection(ctx.user.student_id, _sectionId);
-
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -374,7 +374,7 @@ export const getFrontRouter = router({
         });
       }
     }),
-  getTaskById: authedProcedure
+  getTaskById: authedAndRelateToSectionProcedure
     .input(
       z.object({ taskId: z.string(), labId: z.string(), sectionId: z.string() })
     )
@@ -386,8 +386,6 @@ export const getFrontRouter = router({
 
       const student_id = ctx.user.student_id;
       try {
-        await isUserInThisSection(ctx.user.student_id, _sectionId);
-
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,
@@ -535,7 +533,7 @@ export const getFrontRouter = router({
         });
       }
     }),
-  getTypingHistory: authedProcedure
+  getTypingHistory: authedAndRelateToSectionProcedure
     .input(
       z.object({
         taskId: z.string(),
@@ -552,8 +550,6 @@ export const getFrontRouter = router({
 
       const student_id = ctx.user.student_id;
       try {
-        await isUserInThisSection(ctx.user.student_id, _sectionId);
-
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,

@@ -189,7 +189,28 @@ const isTaAboveRelateWithSection = isTaAbove.unstable_pipe(async (opts) => {
   return next();
 });
 
+const isAuthedAndRelatedToSection = isAuthed.unstable_pipe(async (opts) => {
+  const { ctx, next, rawInput } = opts;
+  const _rawInput = rawInput as { sectionId: string | number };
+
+  if (typeof _rawInput.sectionId === "string") {
+    _rawInput.sectionId = parseInt(_rawInput.sectionId);
+  }
+
+  const isRelated = await isUserInThisSection(
+    ctx.user.student_id,
+    _rawInput.sectionId
+  );
+
+  if (!isRelated) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next();
+});
+
 export const authedProcedure = publicProcedure.use(isAuthed);
+export const authedAndRelateToSectionProcedure = publicProcedure.use(isAuthedAndRelatedToSection);
 export const TaAboveProcedure = publicProcedure.use(isTaAbove);
 export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
 export const teacherAboveAndRelatedToCourseProcedure = publicProcedure.use(

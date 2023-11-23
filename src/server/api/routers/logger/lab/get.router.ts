@@ -1,11 +1,13 @@
-import { router, teacherAboveProcedure } from "~/server/api/trpc";
+import {
+  router,
+  teacherAboveAndRelatedToSectionProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import type { LabLogger } from "@prisma/client";
-import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 
 export const getLabLogRouter = router({
-  getLabLog: teacherAboveProcedure
+  getLabLog: teacherAboveAndRelatedToSectionProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -22,7 +24,6 @@ export const getLabLogRouter = router({
       const { page, limit, date, sectionId, search } = input;
 
       try {
-        await isUserInThisSection(ctx.user.student_id, parseInt(sectionId));
         const _sectionId = parseInt(sectionId);
 
         let actionType: LabLogger[] = ["ACCESS", "SUBMIT"];
@@ -121,7 +122,7 @@ export const getLabLogRouter = router({
         });
       }
     }),
-  exportLabLoggerCSV: teacherAboveProcedure
+  exportLabLoggerCSV: teacherAboveAndRelatedToSectionProcedure
     .input(
       z.object({
         date: z.object({
@@ -137,8 +138,6 @@ export const getLabLogRouter = router({
       const _sectionId = parseInt(sectionId);
 
       try {
-        await isUserInThisSection(ctx.user.student_id, _sectionId);
-
         const labLoggers = await ctx.prisma.lab_loggers.findMany({
           where: {
             date: {

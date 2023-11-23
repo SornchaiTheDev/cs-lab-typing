@@ -168,7 +168,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteSection.mutateAsync({
-        id: selectedObject.selected.id as number,
+        sectionId: selectedObject.selected.id as number,
       });
 
       callToast({ msg: "Delete Section successfully", type: "success" });

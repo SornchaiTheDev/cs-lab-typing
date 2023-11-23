@@ -1,13 +1,12 @@
 import {
-  TaAboveProcedure,
   router,
   taAboveAndRelatedToCourseProcedure,
+  taAboveAndRelatedToSectionProcedure,
   teacherAboveAndRelatedToCourseProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisSection } from "~/server/utils/checkUser";
 import { findHighestSpeedAndScore } from "~/helpers";
 
 export const getLabRouter = router({
@@ -259,165 +258,162 @@ export const getLabRouter = router({
       }
     }),
 
-  getLabStatus: TaAboveProcedure.input(
-    z.object({ sectionId: z.string(), labId: z.number() })
-  ).query(async ({ ctx, input }) => {
-    const { sectionId, labId } = input;
-    const _sectionId = parseInt(sectionId);
-    try {
-      await isUserInThisSection(ctx.user.student_id, _sectionId);
-      const lab = await ctx.prisma.labs.findUnique({
-        where: {
-          id: labId,
-        },
-        select: {
-          tasks_order: true,
-        },
-      });
-
-      const users = await ctx.prisma.users.findMany({
-        where: {
-          students: {
-            some: {
-              id: _sectionId,
-              deleted_at: null,
-            },
+  getLabStatus: taAboveAndRelatedToSectionProcedure
+    .input(z.object({ sectionId: z.string(), labId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const { sectionId, labId } = input;
+      const _sectionId = parseInt(sectionId);
+      try {
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: labId,
           },
-        },
-        select: {
-          submissions: {
-            where: {
-              lab_id: labId,
-              section_id: _sectionId,
-            },
-            select: {
-              task_id: true,
-              status: true,
-              typing_histories: true,
-            },
+          select: {
+            tasks_order: true,
           },
-          full_name: true,
-          student_id: true,
-        },
-        orderBy: {
-          student_id: "asc",
-        },
-      });
+        });
 
-      const usersTaskStatus = users.map((user) => {
-        const taskStatus =
-          lab?.tasks_order.map((order) => {
-            const submission = user.submissions.find(
-              (submission) => submission.task_id === order
-            );
-
-            return submission?.status ?? "NOT_SUBMITTED";
-          }) ?? [];
-        return { ...user, taskStatus };
-      });
-      const taskLength = lab?.tasks_order.length ?? 0;
-      const taskOrder = lab?.tasks_order ?? [];
-      return { usersTaskStatus, taskLength, taskOrder };
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
-        }
-      }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
-
-  getLabTaskSubmissions: TaAboveProcedure.input(
-    z.object({ labId: z.number(), sectionId: z.string() })
-  ).query(async ({ input, ctx }) => {
-    const { labId, sectionId } = input;
-
-    try {
-      await isUserInThisSection(ctx.user.student_id, parseInt(sectionId));
-
-      const lab = await ctx.prisma.labs.findUnique({
-        where: {
-          id: labId,
-        },
-        select: {
-          tasks_order: true,
-        },
-      });
-
-      const taskOrder = lab?.tasks_order ?? [];
-
-      const tasks = [];
-
-      for (const order of taskOrder) {
         const users = await ctx.prisma.users.findMany({
           where: {
-            submissions: {
+            students: {
               some: {
-                lab_id: labId,
-                section_id: parseInt(sectionId),
-                task_id: order,
+                id: _sectionId,
+                deleted_at: null,
               },
             },
           },
-          include: {
+          select: {
             submissions: {
               where: {
                 lab_id: labId,
-                section_id: parseInt(sectionId),
-                task_id: order,
+                section_id: _sectionId,
               },
               select: {
+                task_id: true,
+                status: true,
                 typing_histories: true,
               },
             },
+            full_name: true,
+            student_id: true,
           },
           orderBy: {
             student_id: "asc",
           },
         });
 
-        const taskSubmissions = users
-          .map(({ submissions, student_id }) =>
-            submissions
-              .map(({ typing_histories }) => {
-                const higestSpeedAndScore = findHighestSpeedAndScore(
-                  typing_histories ?? []
-                );
-                return {
-                  ...higestSpeedAndScore,
-                  student_id,
-                  task_id: order,
-                };
-              })
-              .flat()
-          )
-          .flat();
-        tasks.push(taskSubmissions);
-      }
+        const usersTaskStatus = users.map((user) => {
+          const taskStatus =
+            lab?.tasks_order.map((order) => {
+              const submission = user.submissions.find(
+                (submission) => submission.task_id === order
+              );
 
-      return { taskOrder, tasks };
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
+              return submission?.status ?? "NOT_SUBMITTED";
+            }) ?? [];
+          return { ...user, taskStatus };
+        });
+        const taskLength = lab?.tasks_order.length ?? 0;
+        const taskOrder = lab?.tasks_order ?? [];
+        return { usersTaskStatus, taskLength, taskOrder };
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
         });
       }
-    }
-  }),
+    }),
+
+  getLabTaskSubmissions: taAboveAndRelatedToSectionProcedure
+    .input(z.object({ labId: z.number(), sectionId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { labId, sectionId } = input;
+
+      try {
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: labId,
+          },
+          select: {
+            tasks_order: true,
+          },
+        });
+
+        const taskOrder = lab?.tasks_order ?? [];
+
+        const tasks = [];
+
+        for (const order of taskOrder) {
+          const users = await ctx.prisma.users.findMany({
+            where: {
+              submissions: {
+                some: {
+                  lab_id: labId,
+                  section_id: parseInt(sectionId),
+                  task_id: order,
+                },
+              },
+            },
+            include: {
+              submissions: {
+                where: {
+                  lab_id: labId,
+                  section_id: parseInt(sectionId),
+                  task_id: order,
+                },
+                select: {
+                  typing_histories: true,
+                },
+              },
+            },
+            orderBy: {
+              student_id: "asc",
+            },
+          });
+
+          const taskSubmissions = users
+            .map(({ submissions, student_id }) =>
+              submissions
+                .map(({ typing_histories }) => {
+                  const higestSpeedAndScore = findHighestSpeedAndScore(
+                    typing_histories ?? []
+                  );
+                  return {
+                    ...higestSpeedAndScore,
+                    student_id,
+                    task_id: order,
+                  };
+                })
+                .flat()
+            )
+            .flat();
+          tasks.push(taskSubmissions);
+        }
+
+        return { taskOrder, tasks };
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "SOMETHING_WENT_WRONG",
+          });
+        }
+      }
+    }),
 
   getLabObjectRelation: teacherAboveAndRelatedToCourseProcedure
     .input(z.object({ labId: z.string(), courseId: z.string() }))

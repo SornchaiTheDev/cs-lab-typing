@@ -1,16 +1,13 @@
 import { AddSectionSchema } from "~/schemas/SectionSchema";
 import {
-  TaAboveProcedure,
   router,
   taAboveAndRelatedToSectionProcedure,
   teacherAboveAndRelatedToSectionProcedure,
-  teacherAboveProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { isArrayUnique } from "~/helpers";
-import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 
 export const updateSectionsRouter = router({
   updateSection: teacherAboveAndRelatedToSectionProcedure

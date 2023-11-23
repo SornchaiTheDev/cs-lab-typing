@@ -1,4 +1,3 @@
-import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 import { prisma } from "~/server/db";
 import { getDuration } from "~/components/Typing/utils/getDuration";
 import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
@@ -34,7 +33,6 @@ export const saveSubmission = async ({
   const _labId = parseInt(labId);
   const _taskId = parseInt(taskId);
 
-  await isUserInThisSection(student_id, parseInt(sectionId));
   const section = await prisma.sections.findUnique({
     where: {
       id: _sectionId,
