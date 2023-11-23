@@ -50,7 +50,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
 
     const fetchCourseData = async () => {
       const data = await ctx.courses.getCourseObjectRelation.fetch({
-        id: selectedObject?.selected.id as number,
+        courseId: selectedObject?.selected.id as number,
       });
       setFetchData(data);
     };
@@ -153,7 +153,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
     if (!selectedObject) return;
     try {
       await deleteCourse.mutateAsync({
-        id: selectedObject.selected.id as number,
+        courseId: selectedObject.selected.id as number,
       });
 
       callToast({ msg: "Delete Course successfully", type: "success" });

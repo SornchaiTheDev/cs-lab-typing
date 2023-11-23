@@ -41,14 +41,14 @@ export const getCourseRouter = router({
       }
     }),
   getCourseById: taAboveAndRelatedToCourseProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ courseId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { id } = input;
-      const _id = parseInt(id);
+      const { courseId } = input;
+      const id = parseInt(courseId);
       try {
         const course = await ctx.prisma.courses.findFirst({
           where: {
-            id: _id,
+            id,
             deleted_at: null,
           },
           select: {
@@ -86,13 +86,13 @@ export const getCourseRouter = router({
       }
     }),
   getCourseObjectRelation: adminProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ courseId: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { id } = input;
+      const { courseId } = input;
       try {
         const course = await ctx.prisma.courses.findUnique({
           where: {
-            id,
+            id: courseId,
           },
           include: {
             labs: {

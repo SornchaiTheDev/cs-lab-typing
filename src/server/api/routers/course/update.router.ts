@@ -5,10 +5,10 @@ import { z } from "zod";
 
 export const updateCoursesRouter = router({
   updateCourse: teacherAboveAndInstructorProcedure
-    .input(AddCourseSchema.and(z.object({ id: z.string() })))
+    .input(AddCourseSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const { id, number, name, authors, note, comments } = input;
-      const _id = parseInt(id);
+      const { courseId, number, name, authors, note, comments } = input;
+      const id = parseInt(courseId);
       try {
         const authorsIds = await ctx.prisma.users.findMany({
           where: {
@@ -24,7 +24,7 @@ export const updateCoursesRouter = router({
 
         await ctx.prisma.courses.update({
           where: {
-            id: _id,
+            id,
           },
           data: {
             number,

@@ -201,7 +201,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   try {
     await helper.courses.getCourseById.fetch({
-      id: courseId as string,
+      courseId: courseId as string,
     });
     await helper.sections.getSectionById.fetch({
       id: sectionId as string,

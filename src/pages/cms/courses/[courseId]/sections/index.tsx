@@ -17,7 +17,7 @@ import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import Select from "~/components/Forms/Select";
-import { SectionType } from "@prisma/client";
+import type { SectionType } from "@prisma/client";
 
 function Sections() {
   const router = useRouter();
@@ -26,7 +26,7 @@ function Sections() {
 
   const course = trpc.courses.getCourseById.useQuery(
     {
-      id: courseId as string,
+      courseId: courseId as string,
     },
     {
       enabled: !!courseId,
@@ -276,7 +276,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   try {
     await helper.courses.getCourseById.fetch({
-      id: courseId as string,
+      courseId: courseId as string,
     });
   } catch (err) {
     if (err instanceof TRPCError) {

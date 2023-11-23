@@ -1,4 +1,4 @@
-import type { SectionType, labs, tasks } from "@prisma/client";
+import type { labs, tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { findHighestSpeedAndScore } from "~/helpers";

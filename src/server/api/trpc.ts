@@ -104,7 +104,7 @@ const isAdmin = isAuthed.unstable_pipe(async (opts) => {
   return next();
 });
 
-const isRelateWithCourse = isAuthed.unstable_pipe(async (opts) => {
+const isTaAboveRelateWithCourse = isTaAbove.unstable_pipe(async (opts) => {
   const { ctx, next, rawInput } = opts;
   const _rawInput = rawInput as { id: string };
 
@@ -120,12 +120,32 @@ const isRelateWithCourse = isAuthed.unstable_pipe(async (opts) => {
   return next();
 });
 
+const isTeacherAboveRelateWithCourse = isTeacherAbove.unstable_pipe(
+  async (opts) => {
+    const { ctx, next, rawInput } = opts;
+    const _rawInput = rawInput as { courseId: string };
+
+    const isRelated = await isRelationWithThisCourse(
+      ctx.user.student_id,
+      _rawInput.courseId
+    );
+
+    if (!isRelated) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next();
+  }
+);
+
 export const authedProcedure = publicProcedure.use(isAuthed);
 export const TaAboveProcedure = publicProcedure.use(isTaAbove);
 export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
-export const teacherAboveAndInstructorProcedure =
-  publicProcedure.use(isRelateWithCourse);
-export const taAboveAndRelatedToCourseProcedure =
-  publicProcedure.use(isRelateWithCourse);
+export const teacherAboveAndInstructorProcedure = publicProcedure.use(
+  isTeacherAboveRelateWithCourse
+);
+export const taAboveAndRelatedToCourseProcedure = publicProcedure.use(
+  isTaAboveRelateWithCourse
+);
 export const teacherProcedure = publicProcedure.use(isTeacher);
 export const adminProcedure = publicProcedure.use(isAdmin);

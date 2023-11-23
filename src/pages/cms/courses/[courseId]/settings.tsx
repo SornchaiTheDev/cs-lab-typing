@@ -34,7 +34,7 @@ function Settings() {
     refetch,
   } = trpc.courses.getCourseById.useQuery(
     {
-      id: courseId as string,
+      courseId: courseId as string,
     },
     {
       enabled: !!courseId,
@@ -50,7 +50,7 @@ function Settings() {
     try {
       await editCourseMutation.mutateAsync({
         ...formData,
-        id: courseId as string,
+        courseId: courseId as string,
       });
 
       callToast({ msg: "Edit course successfully", type: "success" });
@@ -177,7 +177,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   const course = await trpc.courses.getCourseById.fetch({
-    id: courseId as string,
+    courseId: courseId as string,
   });
 
   if (!course) {

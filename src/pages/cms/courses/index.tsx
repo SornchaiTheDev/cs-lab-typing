@@ -117,7 +117,7 @@ function Courses() {
                     options:
                       (authorUser.data?.map((user) => ({
                         label: user.full_name,
-                        value: user.student_id,
+                        value: user.id,
                       })) as SearchValue[]) ?? [],
                   },
                   {

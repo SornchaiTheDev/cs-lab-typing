@@ -30,7 +30,7 @@ export const createCourseRouter = router({
             name,
             authors: {
               connect: authors.map((author) => ({
-                email: author.value as string,
+                id: author.value as number,
               })),
             },
             note,

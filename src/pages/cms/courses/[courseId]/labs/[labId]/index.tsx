@@ -435,7 +435,7 @@ export const getServerSideProps: GetServerSideProps = async (
   const { courseId } = ctx.query;
   try {
     await helper.courses.getCourseById.fetch({
-      id: courseId as string,
+      courseId: courseId as string,
     });
   } catch (err) {
     if (err instanceof TRPCError) {
