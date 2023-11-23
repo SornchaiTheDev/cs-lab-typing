@@ -1,20 +1,20 @@
-import { teacherAboveProcedure, router } from "~/server/api/trpc";
+import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisCourse } from "~/server/utils/checkUser";
+import { isRelateWithThisLab } from "~/server/utils/isRelateWithThisLab";
 
 export const deleteLabRouter = router({
   deleteLab: teacherAboveProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ labId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const { id } = input;
+      const { labId } = input;
       const requester = ctx.user.student_id;
       let lab;
       try {
-        await isUserInThisCourse(requester, id);
+        await isRelateWithThisLab(requester, labId);
         const fetchLab = await ctx.prisma.labs.findUnique({
           where: {
-            id,
+            id: labId,
           },
         });
 
@@ -24,13 +24,13 @@ export const deleteLabRouter = router({
 
         lab = await ctx.prisma.labs.delete({
           where: {
-            id,
+            id: labId,
           },
         });
 
         await ctx.prisma.labs_status.deleteMany({
           where: {
-            labId: id,
+            labId,
           },
         });
 
@@ -38,7 +38,7 @@ export const deleteLabRouter = router({
           where: {
             labs: {
               some: {
-                id,
+                id: labId,
               },
             },
           },
@@ -52,11 +52,11 @@ export const deleteLabRouter = router({
             data: {
               labs: {
                 disconnect: {
-                  id,
+                  id: labId,
                 },
               },
               labs_order: {
-                set: section.labs_order.filter((labId) => labId !== id),
+                set: section.labs_order.filter((_labId) => _labId !== labId),
               },
             },
           });
@@ -113,17 +113,15 @@ export const deleteLabRouter = router({
       return lab;
     }),
   deleteTaskFromLab: teacherAboveProcedure
-    .input(
-      z.object({ courseId: z.string(), labId: z.string(), taskId: z.number() })
-    )
+    .input(z.object({ labId: z.string(), taskId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const { courseId, labId, taskId } = input;
+      const { labId, taskId } = input;
       const requester = ctx.user.student_id;
       const _labId = parseInt(labId);
-      const _courseId = parseInt(courseId);
 
       try {
-        await isUserInThisCourse(requester, _courseId);
+        await isRelateWithThisLab(requester, _labId);
+
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,

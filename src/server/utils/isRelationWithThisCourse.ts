@@ -2,9 +2,9 @@ import { getHighestRole } from "~/helpers";
 import { prisma } from "../db";
 export const isRelationWithThisCourse = async (
   student_id: string,
-  course_id: number | string
+  course_id: string
 ) => {
-  const parsedCourseId = parseInt(course_id as string);
+  const parsedCourseId = parseInt(course_id);
   const asInstructor = await prisma.sections.findFirst({
     where: {
       course_id: parsedCourseId,

@@ -1,19 +1,17 @@
-import { router, teacherAboveProcedure } from "~/server/api/trpc";
+import { router, teacherAboveAndRelatedProcedure } from "~/server/api/trpc";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { isUserInThisCourse } from "~/server/utils/checkUser";
 
 export const createLabRouter = router({
-  createLab: teacherAboveProcedure
+  createLab: teacherAboveAndRelatedProcedure
     .input(AddLabSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { active, name, tags, courseId } = input;
       const _courseId = parseInt(courseId);
 
       try {
-        await isUserInThisCourse(ctx.user.student_id, _courseId);
         const user = await ctx.prisma.users.findFirst({
           where: {
             student_id: ctx.user.student_id,
@@ -23,12 +21,6 @@ export const createLabRouter = router({
             id: true,
           },
         });
-
-        // const sections = await ctx.prisma.sections.findMany({
-        //   where: {
-        //     course_id: _courseId,
-        //   },
-        // });
 
         const lab = await ctx.prisma.labs.create({
           data: {
@@ -55,30 +47,8 @@ export const createLabRouter = router({
                 },
               },
             },
-            // sections: {
-            //   connect: sections.map(({ id }) => ({ id })),
-            // },
           },
         });
-
-        // await ctx.prisma.sections.updateMany({
-        //   where: {
-        //     course_id: _courseId,
-        //   },
-        //   data: {
-        //     labs_order: {
-        //       push: lab.id,
-        //     },
-        //   },
-        // });
-
-        // await ctx.prisma.labs_status.createMany({
-        //   data: sections.map(({ id }) => ({
-        //     sectionId: id,
-        //     labId: lab.id,
-        //     status: "ACTIVE",
-        //   })),
-        // });
 
         return lab;
       } catch (err) {

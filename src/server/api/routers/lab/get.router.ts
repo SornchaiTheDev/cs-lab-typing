@@ -1,19 +1,17 @@
 import {
   TaAboveProcedure,
   router,
-  teacherAboveProcedure,
+  taAboveAndRelatedToCourseProcedure,
+  teacherAboveAndRelatedProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import {
-  isUserInThisCourse,
-  isUserInThisSection,
-} from "~/server/utils/checkUser";
+import { isUserInThisSection } from "~/server/utils/checkUser";
 import { findHighestSpeedAndScore } from "~/helpers";
 
 export const getLabRouter = router({
-  getLabPagination: teacherAboveProcedure
+  getLabPagination: teacherAboveAndRelatedProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -25,7 +23,6 @@ export const getLabRouter = router({
     .query(async ({ ctx, input }) => {
       const { page, limit, courseId, search } = input;
       try {
-        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
         const [labs, amount] = await ctx.prisma.$transaction([
           ctx.prisma.labs.findMany({
             where: {
@@ -104,121 +101,120 @@ export const getLabRouter = router({
         });
       }
     }),
-  getLabsInfiniteScroll: TaAboveProcedure.input(
-    z.object({
-      limit: z.number().default(10),
-      cursor: z.number().nullish(),
-      search: z.string().optional(),
-      tags: z.array(z.number()),
-      courseId: z.string(),
-    })
-  ).query(async ({ ctx, input }) => {
-    const { courseId, cursor, limit, search, tags } = input;
+  getLabsInfiniteScroll: taAboveAndRelatedToCourseProcedure
+    .input(
+      z.object({
+        limit: z.number().default(10),
+        cursor: z.number().nullish(),
+        search: z.string().optional(),
+        tags: z.array(z.number()),
+        courseId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { courseId, cursor, limit, search, tags } = input;
 
-    const hasTags = tags.length > 0;
-    try {
-      await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
-      const labs = await ctx.prisma.labs.findMany({
-        where: {
-          deleted_at: null,
-          courseId: parseInt(courseId),
-          name: {
-            contains: search,
-            mode: "insensitive",
-          },
-          tags: hasTags
-            ? {
-                some: {
-                  id: {
-                    in: tags,
+      const hasTags = tags.length > 0;
+      try {
+        const labs = await ctx.prisma.labs.findMany({
+          where: {
+            deleted_at: null,
+            courseId: parseInt(courseId),
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+            tags: hasTags
+              ? {
+                  some: {
+                    id: {
+                      in: tags,
+                    },
                   },
-                },
-              }
-            : undefined,
-        },
-        take: limit + 1,
-        cursor: cursor ? { id: cursor } : undefined,
-        orderBy: {
-          created_at: "asc",
-        },
-        include: {
-          sections: true,
-          tags: {
-            select: {
-              name: true,
+                }
+              : undefined,
+          },
+          take: limit + 1,
+          cursor: cursor ? { id: cursor } : undefined,
+          orderBy: {
+            created_at: "asc",
+          },
+          include: {
+            sections: true,
+            tags: {
+              select: {
+                name: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      let nextCursor: typeof cursor | undefined = undefined;
-      if (labs.length > limit) {
-        const nextItem = labs.pop();
-        nextCursor = nextItem?.id;
-      }
-
-      return { labs, nextCursor };
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
+        let nextCursor: typeof cursor | undefined = undefined;
+        if (labs.length > limit) {
+          const nextItem = labs.pop();
+          nextCursor = nextItem?.id;
         }
-      }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
-  getLabById: TaAboveProcedure.input(
-    z.object({ labId: z.string(), courseId: z.string() })
-  ).query(async ({ ctx, input }) => {
-    const { labId, courseId } = input;
-    const _labId = parseInt(labId);
-    try {
-      await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
 
-      const lab = await ctx.prisma.labs.findFirst({
-        where: {
-          id: _labId,
-          courseId: parseInt(courseId),
-          deleted_at: null,
-        },
-        include: {
-          tags: true,
-          tasks: true,
-        },
-      });
-
-      if (!lab) {
-        throw new Error("UNAUTHORIZED");
-      }
-      const sortedTaskLab = lab.tasks_order.map((id) => {
-        const task = lab?.tasks.find((task) => task.id === id) as tasks;
-        return task;
-      });
-
-      return { ...lab, tasks: sortedTaskLab };
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
+        return { labs, nextCursor };
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
+    }),
+  getLabById: taAboveAndRelatedToCourseProcedure
+    .input(z.object({ labId: z.string(), courseId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { labId, courseId } = input;
+      const _labId = parseInt(labId);
+      try {
+        const lab = await ctx.prisma.labs.findFirst({
+          where: {
+            id: _labId,
+            courseId: parseInt(courseId),
+            deleted_at: null,
+          },
+          include: {
+            tags: true,
+            tasks: true,
+          },
+        });
 
-  getLabHistoryPagination: teacherAboveProcedure
+        if (!lab) {
+          throw new Error("UNAUTHORIZED");
+        }
+        const sortedTaskLab = lab.tasks_order.map((id) => {
+          const task = lab?.tasks.find((task) => task.id === id) as tasks;
+          return task;
+        });
+
+        return { ...lab, tasks: sortedTaskLab };
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+
+  getLabHistoryPagination: teacherAboveAndRelatedProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -228,12 +224,11 @@ export const getLabRouter = router({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { page, limit, labId, courseId } = input;
+      const { page, limit, labId } = input;
 
       const _labId = parseInt(labId);
 
       try {
-        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
         const [labHistory, amount] = await ctx.prisma.$transaction([
           ctx.prisma.lab_histories.findMany({
             where: {
@@ -424,12 +419,11 @@ export const getLabRouter = router({
     }
   }),
 
-  getLabObjectRelation: teacherAboveProcedure
+  getLabObjectRelation: teacherAboveAndRelatedProcedure
     .input(z.object({ labId: z.string(), courseId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { labId, courseId } = input;
       try {
-        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
         const lab = await ctx.prisma.labs.findFirst({
           where: {
             id: parseInt(labId),

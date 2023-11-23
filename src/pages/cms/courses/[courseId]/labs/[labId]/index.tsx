@@ -184,64 +184,64 @@ const AddTaskModal = ({
       <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">
         {tasks.isLoading
           ? new Array(6)
-              .fill(0)
-              .map((_, i) => (
-                <Skeleton
-                  key={i}
-                  height={"12rem"}
-                  className="col-span-12 md:col-span-4"
-                />
-              ))
+            .fill(0)
+            .map((_, i) => (
+              <Skeleton
+                key={i}
+                height={"12rem"}
+                className="col-span-12 md:col-span-4"
+              />
+            ))
           : tasks.data?.map(
-              ({ id, name, tags, submission_count, labs, owner }) => {
-                const isAdded = labs.some((lab) => lab.id === parseInt(labId));
-                return (
-                  <div
-                    key={id}
-                    className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-6"
+            ({ id, name, tags, submission_count, labs, owner }) => {
+              const isAdded = labs.some((lab) => lab.id === parseInt(labId));
+              return (
+                <div
+                  key={id}
+                  className="relative col-span-12 flex h-[12rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-6"
+                >
+                  <button
+                    onClick={() => handleOnClickAdd({ taskId: id, isAdded })}
+                    className={clsx(
+                      "absolute right-2 top-2 flex w-fit items-center gap-2 rounded-xl p-2",
+                      isAdded
+                        ? "bg-lime-9 text-sand-1 hover:bg-lime-10"
+                        : "bg-sand-7 text-sand-12 hover:bg-sand-8"
+                    )}
                   >
-                    <button
-                      onClick={() => handleOnClickAdd({ taskId: id, isAdded })}
-                      className={clsx(
-                        "absolute right-2 top-2 flex w-fit items-center gap-2 rounded-xl p-2",
-                        isAdded
-                          ? "bg-lime-9 text-sand-1 hover:bg-lime-10"
-                          : "bg-sand-7 text-sand-12 hover:bg-sand-8"
-                      )}
-                    >
-                      {isAdded ? (
-                        <Icon icon="tabler:check" />
-                      ) : (
-                        <Icon icon="tabler:plus" />
-                      )}
-                    </button>
-                    <div className="flex flex-col gap-2 p-2">
-                      <div className="flex gap-2">
-                        {tags.map(({ name }) => (
-                          <div
-                            key={name}
-                            className="w-fit rounded-lg bg-lime-9 px-2 text-white"
-                          >
-                            {name}
-                          </div>
-                        ))}
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-medium text-sand-12">
+                    {isAdded ? (
+                      <Icon icon="tabler:check" />
+                    ) : (
+                      <Icon icon="tabler:plus" />
+                    )}
+                  </button>
+                  <div className="flex flex-col gap-2 p-2">
+                    <div className="flex gap-2">
+                      {tags.map(({ name }) => (
+                        <div
+                          key={name}
+                          className="w-fit rounded-lg bg-lime-9 px-2 text-white"
+                        >
                           {name}
-                        </h4>
-                        <h6 className="text-sm text-sand-12">
-                          Submissions : {convertToThousand(submission_count)}
-                        </h6>
-                        <h6 className="text-sm text-sand-12">
-                          Author : {owner.full_name}
-                        </h6>
-                      </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-medium text-sand-12">
+                        {name}
+                      </h4>
+                      <h6 className="text-sm text-sand-12">
+                        Submissions : {convertToThousand(submission_count)}
+                      </h6>
+                      <h6 className="text-sm text-sand-12">
+                        Author : {owner.full_name}
+                      </h6>
                     </div>
                   </div>
-                );
-              }
-            )}
+                </div>
+              );
+            }
+          )}
       </div>
     </Modal>
   );
@@ -281,8 +281,7 @@ function Lab() {
       try {
         await deleteTask.mutateAsync({
           taskId: id,
-          labId: labId as string,
-          courseId: courseId as string,
+          labId: labId as string
         });
         await lab.refetch();
         callToast({

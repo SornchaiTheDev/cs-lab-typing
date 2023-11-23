@@ -1,13 +1,16 @@
-import { router, teacherAboveProcedure } from "~/server/api/trpc";
+import {
+  router,
+  teacherAboveProcedure,
+  teacherAboveAndRelatedProcedure,
+} from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { Prisma } from "@prisma/client";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
-import { isRelationWithThisCourse } from "~/server/utils/isRelationWithThisCourse";
 
 export const updateLabRouter = router({
-  updateLab: teacherAboveProcedure
+  updateLab: teacherAboveAndRelatedProcedure
     .input(
       AddLabSchema.and(z.object({ courseId: z.string(), labId: z.string() }))
     )
@@ -18,15 +21,6 @@ export const updateLabRouter = router({
       const _courseId = parseInt(courseId);
 
       try {
-        const isRelateWithThisCourse = await isRelationWithThisCourse(
-          ctx.user.student_id,
-          _courseId
-        );
-
-        if (!isRelateWithThisCourse) {
-          throw new Error("UNAUTHORIZED");
-        }
-
         await createNotExistTags(
           ctx.prisma,
           tags.map((tag) => tag.value as string)
@@ -102,7 +96,7 @@ export const updateLabRouter = router({
         }
       }
     }),
-  updateTaskOrder: teacherAboveProcedure
+  updateTaskOrder: teacherAboveAndRelatedProcedure
     .input(
       z.object({
         labId: z.string(),
@@ -111,7 +105,7 @@ export const updateLabRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { courseId, labId, tasks } = input;
+      const { labId, tasks } = input;
       const requester = ctx.user.student_id;
 
       const tasks_order = tasks
@@ -119,8 +113,6 @@ export const updateLabRouter = router({
         .map((t) => t.id);
 
       try {
-        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
-
         const user = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,
@@ -166,16 +158,15 @@ export const updateLabRouter = router({
         });
       }
     }),
-  addTask: teacherAboveProcedure
+  addTask: teacherAboveAndRelatedProcedure
     .input(
       z.object({ labId: z.string(), taskId: z.number(), courseId: z.string() })
     )
     .mutation(async ({ ctx, input }) => {
-      const { labId, taskId, courseId } = input;
+      const { labId, taskId } = input;
       const _labId = parseInt(labId);
-      const _courseId = parseInt(courseId);
+
       try {
-        await isUserInThisCourse(ctx.user.student_id, _courseId);
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,
@@ -229,16 +220,15 @@ export const updateLabRouter = router({
         });
       }
     }),
-  removeTask: teacherAboveProcedure
+  removeTask: teacherAboveAndRelatedProcedure
     .input(
       z.object({ courseId: z.string(), labId: z.string(), taskId: z.number() })
     )
     .mutation(async ({ ctx, input }) => {
-      const { courseId, labId, taskId } = input;
+      const { labId, taskId } = input;
       const _labId = parseInt(labId);
 
       try {
-        await isUserInThisCourse(ctx.user.student_id, parseInt(courseId));
         const lab = await ctx.prisma.labs.findUnique({
           where: {
             id: _labId,

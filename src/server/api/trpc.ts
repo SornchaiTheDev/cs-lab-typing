@@ -123,7 +123,11 @@ const isTaAboveRelateWithCourse = isTaAbove.unstable_pipe(async (opts) => {
 const isTeacherAboveRelateWithCourse = isTeacherAbove.unstable_pipe(
   async (opts) => {
     const { ctx, next, rawInput } = opts;
-    const _rawInput = rawInput as { courseId: string };
+    const _rawInput = rawInput as { courseId: string | number };
+
+    if (typeof _rawInput.courseId === "number") {
+      _rawInput.courseId = _rawInput.courseId.toString();
+    }
 
     const isRelated = await isRelationWithThisCourse(
       ctx.user.student_id,
@@ -141,7 +145,7 @@ const isTeacherAboveRelateWithCourse = isTeacherAbove.unstable_pipe(
 export const authedProcedure = publicProcedure.use(isAuthed);
 export const TaAboveProcedure = publicProcedure.use(isTaAbove);
 export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
-export const teacherAboveAndInstructorProcedure = publicProcedure.use(
+export const teacherAboveAndRelatedProcedure = publicProcedure.use(
   isTeacherAboveRelateWithCourse
 );
 export const taAboveAndRelatedToCourseProcedure = publicProcedure.use(
