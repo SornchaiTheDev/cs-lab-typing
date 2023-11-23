@@ -1,10 +1,10 @@
 import { AddCourseSchema } from "~/schemas/CourseSchema";
-import { router, teacherAboveAndRelatedProcedure } from "~/server/api/trpc";
+import { router, teacherAboveAndRelatedToCourseProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const updateCoursesRouter = router({
-  updateCourse: teacherAboveAndRelatedProcedure
+  updateCourse: teacherAboveAndRelatedToCourseProcedure
     .input(AddCourseSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const { courseId, number, name, authors, note, comments } = input;

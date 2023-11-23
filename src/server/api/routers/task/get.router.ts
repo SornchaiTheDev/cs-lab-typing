@@ -2,12 +2,12 @@ import {
   teacherAboveProcedure,
   router,
   TaAboveProcedure,
+  taAboveAndRelatedToSectionProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 import type { task_type } from "@prisma/client";
-import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 import { findHighestSpeedAndScore } from "~/helpers";
 
 export const getTaskRouter = router({
@@ -174,87 +174,88 @@ export const getTaskRouter = router({
         });
       }
     }),
-  getUserTaskStatus: TaAboveProcedure.input(
-    z.object({
-      student_id: z.string(),
-      sectionId: z.string(),
-      labId: z.number(),
-    })
-  ).query(async ({ ctx, input }) => {
-    const { student_id, sectionId, labId } = input;
-    const _sectionId = parseInt(sectionId);
-    try {
-      await isUserInThisSection(ctx.user.student_id, _sectionId);
-      const lab = await ctx.prisma.labs.findUnique({
-        where: {
-          id: labId,
-        },
-      });
-
-      const tasks = await ctx.prisma.tasks.findMany({
-        where: {
-          submissions: {
-            some: {
-              lab_id: labId,
-              section_id: _sectionId,
-              user: {
-                student_id,
-              },
-            },
+  getUserTaskStatus: taAboveAndRelatedToSectionProcedure
+    .input(
+      z.object({
+        student_id: z.string(),
+        sectionId: z.string(),
+        labId: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { student_id, labId, sectionId } = input;
+      const _sectionId = parseInt(sectionId);
+      try {
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: labId,
           },
-        },
-        select: {
-          id: true,
-          name: true,
-          submissions: {
-            where: {
-              lab_id: labId,
-              section_id: _sectionId,
-              user: {
-                student_id,
-              },
-            },
-            include: {
-              typing_histories: true,
-            },
-          },
-        },
-      });
-
-      const sortedTaskByTaskOrder = lab?.tasks_order.map((taskId) =>
-        tasks.find((task) => task.id === taskId)
-      ) as typeof tasks;
-
-      const tasksWithHistory = sortedTaskByTaskOrder
-        .filter((task) => !!task)
-        .map((task) => {
-          const { submissions } = task;
-          const bestSubmission = findHighestSpeedAndScore(
-            submissions[0]?.typing_histories ?? []
-          );
-          return {
-            name: task.name,
-            history: bestSubmission,
-            id: task.id,
-          };
         });
 
-      return tasksWithHistory;
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
+        const tasks = await ctx.prisma.tasks.findMany({
+          where: {
+            submissions: {
+              some: {
+                lab_id: labId,
+                section_id: _sectionId,
+                user: {
+                  student_id,
+                },
+              },
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            submissions: {
+              where: {
+                lab_id: labId,
+                section_id: _sectionId,
+                user: {
+                  student_id,
+                },
+              },
+              include: {
+                typing_histories: true,
+              },
+            },
+          },
+        });
+
+        const sortedTaskByTaskOrder = lab?.tasks_order.map((taskId) =>
+          tasks.find((task) => task.id === taskId)
+        ) as typeof tasks;
+
+        const tasksWithHistory = sortedTaskByTaskOrder
+          .filter((task) => !!task)
+          .map((task) => {
+            const { submissions } = task;
+            const bestSubmission = findHighestSpeedAndScore(
+              submissions[0]?.typing_histories ?? []
+            );
+            return {
+              name: task.name,
+              history: bestSubmission,
+              id: task.id,
+            };
           });
+
+        return tasksWithHistory;
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
+    }),
 
   getTypingHistory: TaAboveProcedure.input(
     z.object({
@@ -269,7 +270,6 @@ export const getTaskRouter = router({
     const _sectionId = parseInt(sectionId);
 
     try {
-      await isUserInThisSection(studentId, _sectionId);
 
       const section = await ctx.prisma.sections.findUnique({
         where: {

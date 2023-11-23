@@ -1,7 +1,6 @@
 import {
   router,
-  teacherAboveProcedure,
-  teacherAboveAndRelatedProcedure,
+  teacherAboveAndRelatedToCourseProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -10,7 +9,7 @@ import { Prisma } from "@prisma/client";
 import { createNotExistTags } from "~/server/utils/createNotExistTags";
 
 export const updateLabRouter = router({
-  updateLab: teacherAboveAndRelatedProcedure
+  updateLab: teacherAboveAndRelatedToCourseProcedure
     .input(
       AddLabSchema.and(z.object({ courseId: z.string(), labId: z.string() }))
     )
@@ -96,7 +95,7 @@ export const updateLabRouter = router({
         }
       }
     }),
-  updateTaskOrder: teacherAboveAndRelatedProcedure
+  updateTaskOrder: teacherAboveAndRelatedToCourseProcedure
     .input(
       z.object({
         labId: z.string(),
@@ -158,7 +157,7 @@ export const updateLabRouter = router({
         });
       }
     }),
-  addTask: teacherAboveAndRelatedProcedure
+  addTask: teacherAboveAndRelatedToCourseProcedure
     .input(
       z.object({ labId: z.string(), taskId: z.number(), courseId: z.string() })
     )
@@ -220,7 +219,7 @@ export const updateLabRouter = router({
         });
       }
     }),
-  removeTask: teacherAboveAndRelatedProcedure
+  removeTask: teacherAboveAndRelatedToCourseProcedure
     .input(
       z.object({ courseId: z.string(), labId: z.string(), taskId: z.number() })
     )

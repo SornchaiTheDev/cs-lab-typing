@@ -2,6 +2,8 @@ import { AddSectionSchema } from "~/schemas/SectionSchema";
 import {
   TaAboveProcedure,
   router,
+  taAboveAndRelatedToSectionProcedure,
+  teacherAboveAndRelatedToSectionProcedure,
   teacherAboveProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
@@ -11,18 +13,25 @@ import { isArrayUnique } from "~/helpers";
 import { isUserInThisSection } from "~/server/utils/checkIfUserIsInThisSection";
 
 export const updateSectionsRouter = router({
-  updateSection: teacherAboveProcedure
-    .input(AddSectionSchema.and(z.object({ id: z.string() })))
+  updateSection: teacherAboveAndRelatedToSectionProcedure
+    .input(AddSectionSchema.and(z.object({ sectionId: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const { id, instructors, name, semester, note, active, type, closed_at } =
-        input;
+      const {
+        sectionId,
+        instructors,
+        name,
+        semester,
+        note,
+        active,
+        type,
+        closed_at,
+      } = input;
 
       const [year, term] = semester.split("/");
 
       const requester = ctx.user.student_id;
-      const _id = parseInt(id);
+      const _sectionid = parseInt(sectionId);
       try {
-        await isUserInThisSection(requester, _id);
         const semester = await ctx.prisma.semesters.findFirst({
           where: {
             year,
@@ -58,7 +67,7 @@ export const updateSectionsRouter = router({
 
         await ctx.prisma.sections.update({
           where: {
-            id: _id,
+            id: _sectionid,
           },
           data: {
             active,
@@ -102,229 +111,229 @@ export const updateSectionsRouter = router({
       }
       return "Success";
     }),
-  addLab: TaAboveProcedure.input(
-    z.object({
-      sectionId: z.string(),
-      labId: z.number(),
-    })
-  ).mutation(async ({ ctx, input }) => {
-    const { labId, sectionId } = input;
+  addLab: taAboveAndRelatedToSectionProcedure
+    .input(
+      z.object({
+        sectionId: z.string(),
+        labId: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { labId, sectionId } = input;
 
-    const _sectionId = parseInt(sectionId);
+      const _sectionId = parseInt(sectionId);
 
-    const requester = ctx.user.student_id;
-    try {
-      await isUserInThisSection(requester, _sectionId);
+      const requester = ctx.user.student_id;
+      try {
+        const _requester = await ctx.prisma.users.findFirst({
+          where: {
+            student_id: requester,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
 
-      const _requester = await ctx.prisma.users.findFirst({
-        where: {
-          student_id: requester,
-          deleted_at: null,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      await ctx.prisma.sections.update({
-        where: {
-          id: _sectionId,
-        },
-        data: {
-          labs: {
-            connect: {
-              id: labId,
+        await ctx.prisma.sections.update({
+          where: {
+            id: _sectionId,
+          },
+          data: {
+            labs: {
+              connect: {
+                id: labId,
+              },
             },
-          },
-          labs_order: {
-            push: labId,
-          },
-          history: {
-            create: {
-              action: "Add lab",
-              user: {
-                connect: {
-                  id: _requester?.id,
+            labs_order: {
+              push: labId,
+            },
+            history: {
+              create: {
+                action: "Add lab",
+                user: {
+                  connect: {
+                    id: _requester?.id,
+                  },
                 },
               },
             },
-          },
-          labs_status: {
-            create: {
-              labs: {
-                connect: {
-                  id: labId,
+            labs_status: {
+              create: {
+                labs: {
+                  connect: {
+                    id: labId,
+                  },
                 },
+                status: "ACTIVE",
               },
-              status: "ACTIVE",
             },
           },
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
+        });
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-    return "Success";
-  }),
-  updateLabOrder: TaAboveProcedure.input(
-    z.object({
-      sectionId: z.string(),
-      order: z.array(z.number()),
-    })
-  ).mutation(async ({ ctx, input }) => {
-    const { sectionId, order } = input;
-    const _sectionId = parseInt(sectionId);
-    const requester = ctx.user.student_id;
+      return "Success";
+    }),
+  updateLabOrder: taAboveAndRelatedToSectionProcedure
+    .input(
+      z.object({
+        sectionId: z.string(),
+        order: z.array(z.number()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { sectionId, order } = input;
+      const _sectionId = parseInt(sectionId);
+      const requester = ctx.user.student_id;
 
-    try {
-      await isUserInThisSection(requester, _sectionId);
-
-      const _requester = await ctx.prisma.users.findFirst({
-        where: {
-          student_id: requester,
-          deleted_at: null,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      await ctx.prisma.sections.update({
-        where: {
-          id: _sectionId,
-        },
-        data: {
-          labs_order: {
-            set: order,
+      try {
+        const _requester = await ctx.prisma.users.findFirst({
+          where: {
+            student_id: requester,
+            deleted_at: null,
           },
-          history: {
-            create: {
-              action: "Re-order lab",
-              user: {
-                connect: {
-                  id: _requester?.id,
+          select: {
+            id: true,
+          },
+        });
+
+        await ctx.prisma.sections.update({
+          where: {
+            id: _sectionId,
+          },
+          data: {
+            labs_order: {
+              set: order,
+            },
+            history: {
+              create: {
+                action: "Re-order lab",
+                user: {
+                  connect: {
+                    id: _requester?.id,
+                  },
                 },
               },
             },
           },
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
+        });
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-    return "Success";
-  }),
-  updateLabStatus: TaAboveProcedure.input(
-    z.object({
-      sectionId: z.string(),
-      labId: z.number(),
-      status: z
-        .literal("ACTIVE")
-        .or(z.literal("READONLY"))
-        .or(z.literal("DISABLED")),
-    })
-  ).mutation(async ({ ctx, input }) => {
-    const { sectionId, labId, status } = input;
+      return "Success";
+    }),
+  updateLabStatus: taAboveAndRelatedToSectionProcedure
+    .input(
+      z.object({
+        sectionId: z.string(),
+        labId: z.number(),
+        status: z
+          .literal("ACTIVE")
+          .or(z.literal("READONLY"))
+          .or(z.literal("DISABLED")),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { sectionId, labId, status } = input;
 
-    const requester = ctx.user.student_id;
-    const _sectionId = parseInt(sectionId);
+      const requester = ctx.user.student_id;
+      const _sectionId = parseInt(sectionId);
 
-    const lab = await ctx.prisma.labs.findUnique({
-      where: {
-        id: labId,
-      },
-    });
-
-    const isLabClosed = lab?.active === false;
-
-    if (isLabClosed) {
-      throw new Error("LAB_CLOSED");
-    }
-
-    try {
-      await isUserInThisSection(requester, _sectionId);
-
-      await ctx.prisma.labs_status.update({
+      const lab = await ctx.prisma.labs.findUnique({
         where: {
-          labId_sectionId: {
-            labId,
-            sectionId: _sectionId,
+          id: labId,
+        },
+      });
+
+      const isLabClosed = lab?.active === false;
+
+      if (isLabClosed) {
+        throw new Error("LAB_CLOSED");
+      }
+
+      try {
+        await ctx.prisma.labs_status.update({
+          where: {
+            labId_sectionId: {
+              labId,
+              sectionId: _sectionId,
+            },
           },
-        },
-        data: {
-          status,
-        },
-      });
+          data: {
+            status,
+          },
+        });
 
-      const _requester = await ctx.prisma.users.findFirst({
-        where: {
-          student_id: requester,
-          deleted_at: null,
-        },
-      });
+        const _requester = await ctx.prisma.users.findFirst({
+          where: {
+            student_id: requester,
+            deleted_at: null,
+          },
+        });
 
-      await ctx.prisma.sections.update({
-        where: {
-          id: _sectionId,
-        },
-        data: {
-          history: {
-            create: {
-              action: "Update lab status",
-              user: {
-                connect: {
-                  id: _requester?.id,
+        await ctx.prisma.sections.update({
+          where: {
+            id: _sectionId,
+          },
+          data: {
+            history: {
+              create: {
+                action: "Update lab status",
+                user: {
+                  connect: {
+                    id: _requester?.id,
+                  },
                 },
               },
             },
           },
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
-        }
+        });
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
 
-        if (err.message === "LAB_CLOSED") {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "LAB_CLOSED",
-          });
+          if (err.message === "LAB_CLOSED") {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "LAB_CLOSED",
+            });
+          }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
-  addUsersToSection: teacherAboveProcedure
+    }),
+  addUsersToSection: teacherAboveAndRelatedToSectionProcedure
     .input(z.object({ studentIds: z.array(z.string()), sectionId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { studentIds, sectionId } = input;
@@ -338,8 +347,6 @@ export const updateSectionsRouter = router({
         });
       }
       try {
-        await isUserInThisSection(requester, _sectionId);
-
         const sectionUsers = await ctx.prisma.sections.findUnique({
           where: {
             id: _sectionId,

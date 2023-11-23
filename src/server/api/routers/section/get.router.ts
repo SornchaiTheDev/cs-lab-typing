@@ -2,6 +2,9 @@ import { getHighestRole } from "~/helpers";
 import {
   TaAboveProcedure,
   router,
+  taAboveAndRelatedToSectionProcedure,
+  teacherAboveAndRelatedToCourseProcedure,
+  teacherAboveAndRelatedToSectionProcedure,
   teacherAboveProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
@@ -11,9 +14,7 @@ import type { Prisma, labs, labs_status } from "@prisma/client";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
-import {
-  isUserInThisSection,
-} from "~/server/utils/checkUser";
+import { isUserInThisSection } from "~/server/utils/checkUser";
 
 type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
   include: {
@@ -29,22 +30,20 @@ type sectionsIncludedStudentLength = Prisma.sectionsGetPayload<{
 export const getSectionsRouter = router({
   getSectionById: TaAboveProcedure.input(
     z.object({
-      id: z.string(),
+      sectionId: z.string(),
     })
   ).query(async ({ ctx, input }) => {
-    const { id } = input;
+    const { sectionId } = input;
 
-    if (/^\d+$/.test(id) === false) {
+    if (/^\d+$/.test(sectionId) === false) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "SOMETHING_WENT_WRONG",
       });
     }
-    const _sectionId = parseInt(id);
+    const _sectionId = parseInt(sectionId);
 
     try {
-      await isUserInThisSection(ctx.user.student_id, _sectionId);
-
       const section = await ctx.prisma.sections.findFirst({
         where: {
           id: _sectionId,
@@ -107,47 +106,47 @@ export const getSectionsRouter = router({
     }
   }),
 
-  getStudentsBySectionId: TaAboveProcedure.input(
-    z.object({
-      sectionId: z.string(),
-    })
-  ).query(async ({ ctx, input }) => {
-    const { sectionId } = input;
-    const _sectionId = parseInt(sectionId);
-    try {
-      await isUserInThisSection(ctx.user.student_id, _sectionId);
-
-      const section = await ctx.prisma.sections.findUnique({
-        where: {
-          id: _sectionId,
-        },
-        select: {
-          _count: {
-            select: {
-              students: true,
+  getStudentsBySectionId: taAboveAndRelatedToSectionProcedure
+    .input(
+      z.object({
+        sectionId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { sectionId } = input;
+      const _sectionId = parseInt(sectionId);
+      try {
+        const section = await ctx.prisma.sections.findUnique({
+          where: {
+            id: _sectionId,
+          },
+          select: {
+            _count: {
+              select: {
+                students: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      return section?._count.students;
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "UNAUTHORIZED") {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "UNAUTHORIZED",
-          });
+        return section?._count.students;
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message === "UNAUTHORIZED") {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
+            });
+          }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "SOMETHING_WENT_WRONG",
-      });
-    }
-  }),
+    }),
 
-  getStudentPagination: teacherAboveProcedure
+  getStudentPagination: teacherAboveAndRelatedToSectionProcedure
     .input(
       z.object({
         sectionId: z.string(),
@@ -160,8 +159,6 @@ export const getSectionsRouter = router({
       const { page, limit, sectionId, search } = input;
       const _sectionId = parseInt(sectionId);
       try {
-        await isUserInThisSection(ctx.user.student_id, _sectionId);
-
         const [pagination, allStudentAmount, allStudents] =
           await ctx.prisma.$transaction([
             ctx.prisma.sections.findUnique({
@@ -243,14 +240,12 @@ export const getSectionsRouter = router({
 
   getLabSet: TaAboveProcedure.input(
     z.object({
-      id: z.string(),
+      sectionId: z.string(),
     })
   ).query(async ({ ctx, input }) => {
-    const { id } = input;
-    const _sectionId = parseInt(id);
+    const { sectionId } = input;
+    const _sectionId = parseInt(sectionId);
     try {
-      await isUserInThisSection(ctx.user.student_id, _sectionId);
-
       const section = await ctx.prisma.sections.findUnique({
         where: {
           id: _sectionId,
@@ -292,7 +287,7 @@ export const getSectionsRouter = router({
       });
     }
   }),
-  getSectionPagination: teacherAboveProcedure
+  getSectionPagination: teacherAboveAndRelatedToCourseProcedure
     .input(
       z.object({
         limit: z.number().default(10),
@@ -319,7 +314,6 @@ export const getSectionsRouter = router({
 
       let sections: sectionsIncludedStudentLength[] = [];
       try {
-        // await isUserInThisCourse(student_id, _courseId);
         if (role === "ADMIN") {
           sections = await getAllSections({
             prisma: ctx.prisma,
@@ -367,7 +361,7 @@ export const getSectionsRouter = router({
       }
     }),
 
-  getSectionHistoryPagination: teacherAboveProcedure
+  getSectionHistoryPagination: teacherAboveAndRelatedToSectionProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -381,8 +375,6 @@ export const getSectionsRouter = router({
       const _sectionId = parseInt(sectionId);
 
       try {
-        await isUserInThisSection(ctx.user.student_id, _sectionId);
-
         const [sectionHistory, amount] = await ctx.prisma.$transaction([
           ctx.prisma.section_histories.findMany({
             where: {
@@ -421,13 +413,11 @@ export const getSectionsRouter = router({
       }
     }),
 
-  getSectionObjectRelation: teacherAboveProcedure
+  getSectionObjectRelation: teacherAboveAndRelatedToSectionProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
       try {
-        await isUserInThisSection(ctx.user.student_id, id);
-
         const section = await ctx.prisma.sections.findUnique({
           where: {
             id,

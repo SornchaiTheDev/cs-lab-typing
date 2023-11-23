@@ -294,7 +294,7 @@ function Lab() {
         }
       }
     },
-    [deleteTask, lab, labId, courseId]
+    [deleteTask, lab, labId]
   );
 
   const adminColumns = useMemo<ColumnDef<tasks, string>[]>(

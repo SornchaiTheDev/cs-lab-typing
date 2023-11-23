@@ -14,7 +14,7 @@ function Sections() {
 
   const section = trpc.sections.getSectionById.useQuery(
     {
-      id: sectionId as string,
+      sectionId: sectionId as string,
     },
     {
       enabled: !!sectionId,
@@ -103,7 +103,7 @@ export const getServerSideProps: GetServerSideProps = async ({
       courseId: courseId as string,
     });
     await helper.sections.getSectionById.fetch({
-      id: sectionId as string,
+      sectionId: sectionId as string,
     });
   } catch (err) {
     return {

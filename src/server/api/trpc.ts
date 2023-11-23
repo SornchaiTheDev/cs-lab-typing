@@ -5,6 +5,7 @@ import { ZodError } from "zod";
 import type { Context } from "../context";
 import { getHighestRole } from "~/helpers";
 import { isRelationWithThisCourse } from "../utils/isRelationWithThisCourse";
+import { isUserInThisSection } from "../utils/checkIfUserIsInThisSection";
 
 const t = initTRPC
   .meta<OpenApiMeta>()
@@ -106,11 +107,15 @@ const isAdmin = isAuthed.unstable_pipe(async (opts) => {
 
 const isTaAboveRelateWithCourse = isTaAbove.unstable_pipe(async (opts) => {
   const { ctx, next, rawInput } = opts;
-  const _rawInput = rawInput as { id: string };
+  const _rawInput = rawInput as { courseId: string | number };
+
+  if (typeof _rawInput.courseId === "number") {
+    _rawInput.courseId = _rawInput.courseId.toString();
+  }
 
   const isRelated = await isRelationWithThisCourse(
     ctx.user.student_id,
-    _rawInput.id
+    _rawInput.courseId
   );
 
   if (!isRelated) {
@@ -142,14 +147,62 @@ const isTeacherAboveRelateWithCourse = isTeacherAbove.unstable_pipe(
   }
 );
 
+const isTeacherAboveRelateWithSection = isTeacherAbove.unstable_pipe(
+  async (opts) => {
+    const { ctx, next, rawInput } = opts;
+    const _rawInput = rawInput as { sectionId: string | number };
+
+    if (typeof _rawInput.sectionId === "string") {
+      _rawInput.sectionId = parseInt(_rawInput.sectionId);
+    }
+
+    const isRelated = await isUserInThisSection(
+      ctx.user.student_id,
+      _rawInput.sectionId
+    );
+
+    if (!isRelated) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next();
+  }
+);
+
+const isTaAboveRelateWithSection = isTaAbove.unstable_pipe(async (opts) => {
+  const { ctx, next, rawInput } = opts;
+  const _rawInput = rawInput as { sectionId: string | number };
+
+  if (typeof _rawInput.sectionId === "string") {
+    _rawInput.sectionId = parseInt(_rawInput.sectionId);
+  }
+
+  const isRelated = await isUserInThisSection(
+    ctx.user.student_id,
+    _rawInput.sectionId
+  );
+
+  if (!isRelated) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next();
+});
+
 export const authedProcedure = publicProcedure.use(isAuthed);
 export const TaAboveProcedure = publicProcedure.use(isTaAbove);
 export const teacherAboveProcedure = publicProcedure.use(isTeacherAbove);
-export const teacherAboveAndRelatedProcedure = publicProcedure.use(
+export const teacherAboveAndRelatedToCourseProcedure = publicProcedure.use(
   isTeacherAboveRelateWithCourse
 );
 export const taAboveAndRelatedToCourseProcedure = publicProcedure.use(
   isTaAboveRelateWithCourse
+);
+export const teacherAboveAndRelatedToSectionProcedure = publicProcedure.use(
+  isTeacherAboveRelateWithSection
+);
+export const taAboveAndRelatedToSectionProcedure = publicProcedure.use(
+  isTaAboveRelateWithSection
 );
 export const teacherProcedure = publicProcedure.use(isTeacher);
 export const adminProcedure = publicProcedure.use(isAdmin);

@@ -2,7 +2,7 @@ import {
   TaAboveProcedure,
   router,
   taAboveAndRelatedToCourseProcedure,
-  teacherAboveAndRelatedProcedure,
+  teacherAboveAndRelatedToCourseProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
@@ -11,7 +11,7 @@ import { isUserInThisSection } from "~/server/utils/checkUser";
 import { findHighestSpeedAndScore } from "~/helpers";
 
 export const getLabRouter = router({
-  getLabPagination: teacherAboveAndRelatedProcedure
+  getLabPagination: teacherAboveAndRelatedToCourseProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -214,7 +214,7 @@ export const getLabRouter = router({
       }
     }),
 
-  getLabHistoryPagination: teacherAboveAndRelatedProcedure
+  getLabHistoryPagination: teacherAboveAndRelatedToCourseProcedure
     .input(
       z.object({
         page: z.number().default(1),
@@ -419,7 +419,7 @@ export const getLabRouter = router({
     }
   }),
 
-  getLabObjectRelation: teacherAboveAndRelatedProcedure
+  getLabObjectRelation: teacherAboveAndRelatedToCourseProcedure
     .input(z.object({ labId: z.string(), courseId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { labId, courseId } = input;

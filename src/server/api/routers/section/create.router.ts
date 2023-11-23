@@ -1,12 +1,14 @@
 import { AddSectionSchema } from "~/schemas/SectionSchema";
-import { teacherAboveProcedure, router } from "~/server/api/trpc";
+import {
+  router,
+  teacherAboveAndRelatedToCourseProcedure,
+} from "~/server/api/trpc";
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-// import { isUserInThisCourse } from "~/server/utils/isRelationWithThisCourse";
 
 export const createSectionsRouter = router({
-  createSection: teacherAboveProcedure
+  createSection: teacherAboveAndRelatedToCourseProcedure
     .input(AddSectionSchema.and(z.object({ courseId: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const {
@@ -25,7 +27,6 @@ export const createSectionsRouter = router({
 
       let section;
       try {
-        // await isUserInThisCourse(requester, _courseId);
         const _requester = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,
