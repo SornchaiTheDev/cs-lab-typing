@@ -18,7 +18,7 @@ export const isRelateWithThisLab = async (
     if (lab) {
       const isRelated = await isRelationWithThisCourse(
         student_id,
-        lab.courseId.toString()
+        lab.courseId
       );
       if (!isRelated) {
         throw new Error("UNAUTHORIZED");
