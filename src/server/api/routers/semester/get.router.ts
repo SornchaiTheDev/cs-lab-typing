@@ -1,7 +1,7 @@
 import {
   adminProcedure,
-  teacherAboveProcedure,
   router,
+  TaAboveProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 import type { Relation } from "~/types/Relation";
@@ -186,7 +186,7 @@ export const getSemesterRouter = router({
         });
       }
     }),
-  getAllSemesters: teacherAboveProcedure.query(async ({ ctx }) => {
+  getAllSemesters: TaAboveProcedure.query(async ({ ctx }) => {
     try {
       const semesters = await ctx.prisma.semesters.findMany({
         where: {

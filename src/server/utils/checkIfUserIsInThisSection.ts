@@ -1,6 +1,6 @@
 import { getHighestRole } from "~/helpers";
 import { prisma } from "../db";
-export const isUserInThisSection = async (
+export const isRelatedToThisSection = async (
   student_id: string,
   section_id: number
 ) => {

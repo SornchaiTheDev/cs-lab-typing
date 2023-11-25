@@ -1,7 +1,6 @@
 import { type FormEvent, useState, useRef, useEffect } from "react";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { BiLoaderCircle } from "react-icons/bi";
-import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { twMerge } from "tailwind-merge";
 
@@ -11,7 +10,6 @@ function WithEmail() {
   const [password, setPassword] = useState("");
   const [isSubmit, setIsSubmit] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const { query } = useRouter();
 
   const handleOnSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -24,9 +22,7 @@ function WithEmail() {
     signIn("credentials", {
       username,
       password,
-      callbackUrl: `${
-        query.callbackUrl ? query.callbackUrl : window.location.origin
-      }`,
+      callbackUrl: "/"
     });
   };
 

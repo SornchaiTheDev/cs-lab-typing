@@ -11,7 +11,7 @@ import useTheme from "~/hooks/useTheme";
 const Login: NextPage = () => {
   const { query } = useRouter();
 
-  const {} = useTheme();
+  useTheme();
 
   const catchError = (error: string) => {
     if (error) {

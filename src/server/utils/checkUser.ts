@@ -1,2 +1,2 @@
 export { isRelationWithThisCourse } from "./isRelationWithThisCourse";
-export { isUserInThisSection } from "./checkIfUserIsInThisSection";
+export { isRelatedToThisSection } from "./checkIfUserIsInThisSection";

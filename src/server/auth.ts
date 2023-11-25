@@ -12,7 +12,7 @@ import { prisma } from "~/server/db";
 import bcrypt from "bcrypt";
 import { api } from "~/services/Axios";
 import NextAuth from "next-auth/next";
-import { roles } from "@prisma/client";
+import type { roles } from "@prisma/client";
 
 declare module "next-auth" {
   /**
@@ -129,13 +129,6 @@ export const authOptions: NextAuthOptions = {
         throw new Error("not-authorize");
       }
       return false;
-    },
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
     },
     async jwt({ token, user }) {
       try {
