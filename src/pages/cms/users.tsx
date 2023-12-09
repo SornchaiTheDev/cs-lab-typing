@@ -32,11 +32,12 @@ dayjs.extend(relativeTime);
 
 const UserHint = () => {
   const [isHover, setIsHover] = useState(false);
+
   const control = useAnimation();
 
   const variants = {
-    visible: { opacity: 1 },
-    hidden: { opacity: 0 },
+    visible: { opacity: 1, display: "block" },
+    hidden: { opacity: 0, display: "none" },
   };
 
   useEffect(() => {
@@ -287,16 +288,16 @@ function Users() {
             isDragReject
               ? "border-red-9 text-red-9"
               : isDragActive
-              ? "border-lime-9 text-lime-11"
-              : "border-sand-6 text-sand-11"
+                ? "border-lime-9 text-lime-11"
+                : "border-sand-6 text-sand-11"
           )}
         >
           <input {...getInputProps()} />
           {isDragReject
             ? "This file is not CSV"
             : isDragActive
-            ? "You can now drop the file here"
-            : "Click or Drop a CSV file here"}
+              ? "You can now drop the file here"
+              : "Click or Drop a CSV file here"}
         </div>
         <Button
           onClick={handleAddUser}

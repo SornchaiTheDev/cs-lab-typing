@@ -22,8 +22,8 @@ const UserHint = () => {
   const control = useAnimation();
 
   const variants = {
-    visible: { opacity: 1 },
-    hidden: { opacity: 0 },
+    visible: { opacity: 1 , display : "block" },
+    hidden: { opacity: 0, display : "none" },
   };
 
   useEffect(() => {
