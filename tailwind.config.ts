@@ -11,6 +11,6 @@ export default {
     require("windy-radix-palette"),
     require("windy-radix-typography"),
     require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
+    // require("@tailwindcss/forms"),
   ],
 } satisfies Config;

@@ -10,14 +10,14 @@ import { TRPCClientError } from "@trpc/client";
 
 interface Props {
   type:
-    | "course"
-    | "section"
-    | "task"
-    | "lab"
-    | "lab-outside"
-    | "lab-inside"
-    | "user"
-    | "semester";
+  | "course"
+  | "section"
+  | "task"
+  | "lab"
+  | "lab-outside"
+  | "lab-inside"
+  | "user"
+  | "semester";
   onDeleted?: () => void;
 }
 
@@ -188,8 +188,11 @@ function DeleteAffect({ type, onDeleted }: Props) {
   const handleDeleteLab = async () => {
     if (!selectedObject) return;
     try {
+      const [labId] = (selectedObject?.selected.id as string).split(
+        "/"
+      );
       await deleteLab.mutateAsync({
-        labId: selectedObject.selected.id as number,
+        labId: parseInt(labId as string),
       });
 
       callToast({ msg: "Delete Lab successfully", type: "success" });

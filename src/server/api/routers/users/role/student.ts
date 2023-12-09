@@ -15,7 +15,18 @@ export const addStudent = async (prisma: PrismaClient, user: string) => {
         deleted_at: null,
       },
     });
-    if (isExist) throw new Error("DUPLICATED_USER");
+
+    if (isExist) {
+      return await prisma.users.update({
+        where: {
+          id: isExist.id,
+        },
+        data: {
+          full_name,
+          email,
+        },
+      });
+    }
 
     await prisma.users.create({
       data: {

@@ -343,39 +343,6 @@ export const updateSectionsRouter = router({
           message: "DUPLICATED_USER",
         });
       }
-      try {
-        const sectionUsers = await ctx.prisma.sections.findUnique({
-          where: {
-            id: _sectionId,
-          },
-          select: {
-            students: {
-              where: {
-                student_id: {
-                  in: studentIds,
-                },
-              },
-            },
-          },
-        });
-
-        if (sectionUsers && sectionUsers?.students.length > 0) {
-          throw new Error("DUPLICATED_USER");
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message === "DUPLICATED_USER") {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "ALREADY_IN_SECTION",
-            });
-          }
-        }
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "SOMETHING_WENT_WRONG",
-        });
-      }
 
       try {
         const _requester = await ctx.prisma.users.findFirst({

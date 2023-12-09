@@ -26,6 +26,7 @@ export const getLabRouter = router({
           ctx.prisma.labs.findMany({
             where: {
               courseId: parseInt(courseId),
+              deleted_at : null,
               OR: [
                 {
                   name: {

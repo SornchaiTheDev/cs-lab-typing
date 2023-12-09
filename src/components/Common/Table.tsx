@@ -164,7 +164,7 @@ function Table({
                 onChange={(e) =>
                   onSearchChange && onSearchChange(e.target.value)
                 }
-                className="w-full bg-transparent text-sand-12 outline-none placeholder:text-sand-8"
+                className="w-full bg-transparent text-sand-12 placeholder:text-sand-8 outline-none"
                 placeholder="Search"
               />
             </div>
