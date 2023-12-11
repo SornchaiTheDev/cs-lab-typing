@@ -188,10 +188,7 @@ export const updateLabRouter = router({
         });
         if (!lab) throw new Error("Lab not found");
 
-        const filteredTasks = lab.tasks
-          .filter((task) => task.id !== taskId)
-          .map((task) => task.id)
-          .concat(taskId);
+        const newTasksOrder = lab.tasks_order.concat(taskId);
 
         await ctx.prisma.labs.update({
           where: {
@@ -199,7 +196,7 @@ export const updateLabRouter = router({
           },
           data: {
             tasks_order: {
-              set: filteredTasks,
+              set: newTasksOrder,
             },
           },
         });

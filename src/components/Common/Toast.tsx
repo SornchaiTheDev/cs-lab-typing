@@ -1,7 +1,7 @@
 import { toast, type Toast } from "react-hot-toast";
-import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
+import { CheckCircle2, Info, Loader, X, XCircle } from 'lucide-react'
 
 interface ToastProps extends Toast {
   msg: string;
@@ -9,23 +9,23 @@ interface ToastProps extends Toast {
 }
 
 const iconType = (type: Toast["type"]) => {
-  let icon = "",
+  let icon: ReactNode | null = null,
     color = "";
   if (type === "success") {
-    icon = "solar:check-circle-line-duotone";
-    color = "#99d52a";
+    icon = <CheckCircle2 size="2rem" color="#99d52a" />;
+    color = "#99d52a"
   }
   if (type === "error") {
-    icon = "solar:close-circle-line-duotone";
-    color = "#e5484d";
+    icon = <XCircle size="2rem" color="#e5484d" />;
+    color = "#e5484d"
   }
   if (type === "loading") {
-    icon = "line-md:loading-twotone-loop";
-    color = "#1b1b18";
+    icon = <Loader size="2rem" color="#1b1b18" />;
+    color = "#1b1b18"
   }
   if (type === "blank") {
-    icon = "solar:info-circle-line-duotone";
-    color = "#0091ff";
+    icon = <Info size="2rem" color="#0091ff" />;
+    color = "#0091ff"
   }
   return { icon, color };
 };
@@ -99,7 +99,10 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
       break;
   }
 
+
+
   return (
+
     <motion.div
       animate={{ translateY: [20, 0], opacity: [0, 1] }}
       onHoverStart={() => setIsPause(true)}
@@ -108,13 +111,12 @@ function Toast({ msg, type, description, duration = 0, id }: ToastProps) {
     >
       <button
         className="absolute right-2 top-2 text-sand-12"
-        onClick={() => toast.dismiss(id)}
+        onClick={() => toast.remove(id)}
       >
-        <Icon icon="material-symbols:close-rounded" className="h-5 w-5" />
+        <X size="1.25rem" />
       </button>
-      <div className="flex h-full flex-col">
-        <Icon icon={icon} className="h-8 w-8" style={{ color }} />
-      </div>
+
+      {icon}
 
       <div className="flex flex-col gap-2">
         <h4 className="text-sand-12">{msg}</h4>

@@ -103,7 +103,7 @@ const TeachingSections = () => {
   );
 };
 function MyCourse() {
-  const { } = useSession();
+  useSession();
   const learn = trpc.front.getSections.useInfiniteQuery(
     { limit: 6 },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
