@@ -125,7 +125,7 @@ function Settings() {
                 setSelectedObj({
                   selected: {
                     display: lab.data?.name as string,
-                    id: `${labId}/${courseId}`,
+                    id: lab.data?.id as number,
                   },
                   type: "lab",
                 })
