@@ -63,12 +63,9 @@ function DeleteAffect({ type, onDeleted }: Props) {
     };
 
     const fetchLabData = async () => {
-      const [labId, courseId] = (selectedObject?.selected.id as string).split(
-        "/"
-      );
+      const labId = selectedObject?.selected.id
       const data = await ctx.labs.getLabObjectRelation.fetch({
-        labId: labId as string,
-        courseId: courseId as string,
+        labId: labId as number,
       });
       setFetchData(data);
     };
@@ -188,9 +185,7 @@ function DeleteAffect({ type, onDeleted }: Props) {
   const handleDeleteLab = async () => {
     if (!selectedObject) return;
     try {
-      const [labId] = (selectedObject?.selected.id as string).split(
-        "/"
-      );
+      const labId = selectedObject?.selected.id
       await deleteLab.mutateAsync({
         labId: parseInt(labId as string),
       });

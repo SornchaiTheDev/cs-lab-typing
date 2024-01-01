@@ -26,7 +26,7 @@ export const getLabRouter = router({
           ctx.prisma.labs.findMany({
             where: {
               courseId: parseInt(courseId),
-              deleted_at : null,
+              deleted_at: null,
               OR: [
                 {
                   name: {
@@ -417,21 +417,20 @@ export const getLabRouter = router({
     }),
 
   getLabObjectRelation: teacherAboveAndRelatedToCourseProcedure
-    .input(z.object({ labId: z.string(), courseId: z.string() }))
+    .input(z.object({ labId: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { labId, courseId } = input;
+      const { labId } = input;
       try {
         const lab = await ctx.prisma.labs.findFirst({
           where: {
-            id: parseInt(labId),
-            courseId: parseInt(courseId),
+            id: labId,
           },
           include: {
             tasks: {
               include: {
                 submissions: {
                   where: {
-                    lab_id: parseInt(labId),
+                    lab_id: labId,
                   },
                 },
               },
