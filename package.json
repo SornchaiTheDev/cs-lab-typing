@@ -10,7 +10,8 @@
     "push": "prisma db push",
     "gen": "prisma generate",
     "pg": "prisma db push && prisma generate",
-    "std": "prisma studio"
+    "std": "prisma studio",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "@codemirror/commands": "^6.2.3",
@@ -111,5 +112,8 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.13.0"
+  },
+  "devDependencies": {
+    "cypress": "^13.6.2"
   }
 }
