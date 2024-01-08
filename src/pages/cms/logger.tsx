@@ -3,7 +3,7 @@ import Layout from "~/layouts";
 import Table from "~/components/Common/Table";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import clsx from "clsx";
-import TimePickerRange from "~/components/TimePickerRange";
+import TimePickerRange from "~/components/Forms/TimePickerRange";
 import { Icon } from "@iconify/react";
 import RangePicker from "~/components/Forms/DatePicker/RangePicker";
 import { trpc } from "~/utils";
