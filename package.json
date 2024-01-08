@@ -1,12 +1,12 @@
 {
   "name": "cs-lab-typing",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start",
+    "start": "next start ./",
     "push": "prisma db push",
     "gen": "prisma generate",
     "pg": "prisma db push && prisma generate",

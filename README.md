@@ -1,8 +1,15 @@
-# CS LAB V0.0.1
+# CS LAB V1.0.0
 
-## TODOS
+## Stack 🛠️
 
-- [ ] Unit testing
+- NextJs (Pages Directory)
+- Trpc
+- Zustand
+- Tailwind
+- Framer motion
+- Zod
+- Prisma
+- Next Auth
 
 ## Environment Variables
 
@@ -18,17 +25,15 @@ you can get those variables at `.env.example`
 
 ## Deployment
 
-in `shell/deploy.sh` you can change destination of standalone folder
-
-Deploy on Server
-
-> 💡 Note : if has standalone directory . Remove it first !!
-
-1. Build project and Setup Database
-
-```sh
-chmod +x ./deploy.sh
-./shell/deploy.sh
+```bash
+git pull origin main
+pm2 status
+pm2 stop 0
+pm2 del 0
+pm2 save --force
+pnpm build
+pm2 start 
+pm2 save
 ```
 
 or using Docker
