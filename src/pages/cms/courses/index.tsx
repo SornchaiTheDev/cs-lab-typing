@@ -1,4 +1,4 @@
-import Layout from "~/Layout";
+import Layout from "~/layouts";
 import ModalWithButton from "~/components/Common/ModalWithButton";
 import Forms from "~/components/Forms";
 import { AddCourseSchema, type TAddCourse } from "~/schemas/CourseSchema";

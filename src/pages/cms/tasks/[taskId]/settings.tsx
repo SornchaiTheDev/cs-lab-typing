@@ -1,4 +1,4 @@
-import InsideTaskLayout from "~/Layout/InsideTaskLayout";
+import InsideTaskLayout from "~/layouts/InsideTaskLayout";
 import { useRouter } from "next/router";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";

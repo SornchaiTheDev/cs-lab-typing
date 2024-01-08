@@ -6,7 +6,7 @@ import {
   type PaginationState,
   createColumnHelper,
 } from "@tanstack/react-table";
-import SectionLayout from "~/Layout/SectionLayout";
+import SectionLayout from "~/layouts/SectionLayout";
 import dayjs from "dayjs";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";

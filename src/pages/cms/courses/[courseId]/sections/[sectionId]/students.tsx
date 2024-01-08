@@ -10,7 +10,7 @@ import { debounce } from "lodash";
 import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
-import SectionLayout from "~/Layout/SectionLayout";
+import SectionLayout from "~/layouts/SectionLayout";
 import Alert from "~/components/Common/Alert";
 import Button from "~/components/Common/Button";
 import Table from "~/components/Common/Table";

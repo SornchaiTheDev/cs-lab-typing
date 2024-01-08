@@ -1,4 +1,4 @@
-import CourseLayout from "~/Layout/CourseLayout";
+import CourseLayout from "~/layouts/CourseLayout";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useRouter } from "next/router";

@@ -1,4 +1,4 @@
-import TaskLayout from "~/Layout/TaskLayout";
+import TaskLayout from "~/layouts/TaskLayout";
 import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Table from "~/components/Common/Table";

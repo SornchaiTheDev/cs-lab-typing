@@ -1,4 +1,4 @@
-import Layout from "~/Layout";
+import Layout from "~/layouts";
 import Table from "~/components/Common/Table";
 import { Icon } from "@iconify/react";
 import {

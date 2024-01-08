@@ -1,4 +1,4 @@
-import SectionLayout from "~/Layout/SectionLayout";
+import SectionLayout from "~/layouts/SectionLayout";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "~/utils";

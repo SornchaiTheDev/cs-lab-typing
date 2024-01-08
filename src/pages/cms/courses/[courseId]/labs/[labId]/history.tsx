@@ -6,7 +6,7 @@ import {
   type PaginationState,
   createColumnHelper,
 } from "@tanstack/react-table";
-import LabLayout from "~/Layout/LabLayout";
+import LabLayout from "~/layouts/LabLayout";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";

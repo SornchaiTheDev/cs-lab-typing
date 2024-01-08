@@ -1,4 +1,4 @@
-import CourseLayout from "~/Layout/CourseLayout";
+import CourseLayout from "~/layouts/CourseLayout";
 import Table from "~/components/Common/Table";
 import { AddLabSchema, type TAddLabSchema } from "~/schemas/LabSchema";
 import { Icon } from "@iconify/react";

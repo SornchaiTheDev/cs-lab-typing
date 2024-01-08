@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
-import CourseLayout from "~/Layout/CourseLayout";
+import CourseLayout from "~/layouts/CourseLayout";
 import Badge from "~/components/Common/Badge";
 import { trpc } from "~/utils";
 import Skeleton from "~/components/Common/Skeleton";

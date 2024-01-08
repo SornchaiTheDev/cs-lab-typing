@@ -1,4 +1,4 @@
-import CourseLayout from "~/Layout/CourseLayout";
+import CourseLayout from "~/layouts/CourseLayout";
 import { useRouter } from "next/router";
 import { AddCourseSchema, type TAddCourse } from "~/schemas/CourseSchema";
 import Button from "~/components/Common/Button";

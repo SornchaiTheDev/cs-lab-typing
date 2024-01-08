@@ -1,4 +1,4 @@
-import LabLayout from "~/Layout/LabLayout";
+import LabLayout from "~/layouts/LabLayout";
 import Table from "~/components/Common/Table";
 import { Icon } from "@iconify/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";

@@ -1,4 +1,4 @@
-import FrontLayout from "~/Layout/FrontLayout";
+import FrontLayout from "~/layouts/FrontLayout";
 import { useRouter } from "next/router";
 import Card from "~/components/Common/Card";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";

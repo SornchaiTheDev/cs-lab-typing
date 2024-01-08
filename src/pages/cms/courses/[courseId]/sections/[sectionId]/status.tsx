@@ -1,4 +1,4 @@
-import SectionLayout from "~/Layout/SectionLayout";
+import SectionLayout from "~/layouts/SectionLayout";
 import { getHighestRole, sanitizeFilename, trpc } from "~/utils";
 import { useRouter } from "next/router";
 import Skeleton from "~/components/Common/Skeleton";

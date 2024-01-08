@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import FrontLayout from "~/Layout/FrontLayout";
+import FrontLayout from "~/layouts/FrontLayout";
 import TypingGame from "~/components/Typing";
 import EndedGame from "~/components/Typing/EndedGame";
 import { useTypingStore } from "~/store";

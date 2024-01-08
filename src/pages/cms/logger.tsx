@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import Layout from "~/Layout";
+import Layout from "~/layouts";
 import Table from "~/components/Common/Table";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import clsx from "clsx";

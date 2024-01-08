@@ -1,4 +1,4 @@
-import FrontLayout from "~/Layout/FrontLayout";
+import FrontLayout from "~/layouts/FrontLayout";
 import { trpc } from "~/utils";
 import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";

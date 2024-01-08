@@ -7,7 +7,7 @@ import RangePicker from "~/components/Forms/DatePicker/RangePicker";
 import { sanitizeFilename, trpc } from "~/utils";
 import type { DateRange } from "react-day-picker";
 import dayjs from "dayjs";
-import SectionLayout from "~/Layout/SectionLayout";
+import SectionLayout from "~/layouts/SectionLayout";
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";

@@ -1,4 +1,4 @@
-import InsideTaskLayout from "~/Layout/InsideTaskLayout";
+import InsideTaskLayout from "~/layouts/InsideTaskLayout";
 import { useEffect, useState } from "react";
 import { trpc } from "~/utils";
 import { useRouter } from "next/router";

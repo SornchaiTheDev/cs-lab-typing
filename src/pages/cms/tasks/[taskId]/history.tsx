@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
-import InsideTaskLayout from "~/Layout/InsideTaskLayout";
+import InsideTaskLayout from "~/layouts/InsideTaskLayout";
 import { useSession } from "next-auth/react";
 import { trpc } from "~/utils";
 import { useRouter } from "next/router";

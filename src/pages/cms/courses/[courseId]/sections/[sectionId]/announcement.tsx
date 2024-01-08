@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React from "react";
-import SectionLayout from "~/Layout/SectionLayout";
+import SectionLayout from "~/layouts/SectionLayout";
 import Announcement from "~/components/Common/Announcement";
 import { trpc } from "~/utils";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";

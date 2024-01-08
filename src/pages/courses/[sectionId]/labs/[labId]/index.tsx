@@ -4,7 +4,7 @@ import type { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import FrontLayout from "~/Layout/FrontLayout";
+import FrontLayout from "~/layouts/FrontLayout";
 import { replaceSlugwithQueryPath } from "~/utils";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import superjson from "superjson";

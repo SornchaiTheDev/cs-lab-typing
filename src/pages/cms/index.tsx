@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 import clsx from "clsx";
 import Link from "next/link";
-import Layout from "~/Layout";
+import Layout from "~/layouts";
 import type { GetServerSideProps } from "next";
 import { authOptions } from "~/server/auth";
 import { getServerSession } from "next-auth/next";
