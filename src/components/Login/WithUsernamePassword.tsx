@@ -1,3 +1,5 @@
+"use client"
+
 import { type FormEvent, useState, useRef, useEffect } from "react";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { BiLoaderCircle } from "react-icons/bi";
