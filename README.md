@@ -31,6 +31,7 @@ pm2 status
 pm2 stop 0
 pm2 del 0
 pm2 save --force
+pnpm i
 pnpm build
 pm2 start 
 pm2 save
