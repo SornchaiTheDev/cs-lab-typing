@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import Forms from "~/components/Forms";
 import Modal from "~/components/Common/Modal";
 import Button from "~/components/Common/Button";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import dayjs from "dayjs";
 import EditSemester from "~/features/Semesters/EditSemester";
 import { useDeleteAffectStore } from "~/store";

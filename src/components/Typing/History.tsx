@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import TypingTable from "./Datas/Table";
 import LineChart from "./Datas/LineChart";
 import { useRouter } from "next/router";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import type { PaginationState } from "@tanstack/react-table";
 import type { Prisma, SectionType } from "@prisma/client";
 

@@ -2,12 +2,12 @@ import { prisma } from "~/server/db";
 import { getDuration } from "~/components/Typing/utils/getDuration";
 import { calculateTypingSpeed } from "~/components/Typing/utils/calculateWPM";
 import { calculateErrorPercentage } from "~/components/Typing/utils/calculateErrorPercentage";
-import { evaluate } from "~/helpers/evaluateTypingScore";
+import { evaluate } from "~/utils/evaluateTypingScore";
 import type { submission_type } from "@prisma/client";
 import dayjs from "dayjs";
 import type { TypingResultWithHashType } from "~/schemas/TypingResult";
-import { getErrorsCharacters } from "~/server/utils/getErrorCharacters";
-import { isSameProblem } from "~/server/utils/isSameProblem";
+import { getErrorsCharacters } from "~/utils/getErrorCharacters";
+import { isSameProblem } from "~/utils/isSameProblem";
 
 interface Params {
   sectionId: string;

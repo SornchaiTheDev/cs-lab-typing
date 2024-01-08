@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react";
 import clsx from "clsx";
-import { checkPassword } from "~/helpers/index";
+import { checkPassword } from "~/utils/index";
 interface Props {
   password: string;
 }

@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { router, authedAndRelateToSectionProcedure } from "~/server/api/trpc";
-import { checkSameHash } from "~/server/utils/checkSameHash";
+import { checkSameHash } from "~/utils/checkSameHash";
 import { TypingResultWithHashSchema } from "~/schemas/TypingResult";
 import { saveSubmission } from "./saveSubmission";
 

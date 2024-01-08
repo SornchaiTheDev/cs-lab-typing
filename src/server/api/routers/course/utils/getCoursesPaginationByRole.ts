@@ -1,5 +1,5 @@
 import type { PrismaClient, roles } from "@prisma/client";
-import { getHighestRole } from "~/helpers";
+import { getHighestRole } from "~/utils";
 import { adminCondition, teacherCondition } from "./rolesCondition";
 
 interface Params {

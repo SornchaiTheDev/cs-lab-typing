@@ -11,7 +11,7 @@ import Table from "~/components/Common/Table";
 import { twMerge } from "tailwind-merge";
 import type { typing_histories } from "../History";
 import type { TypingHistoryOmitScore } from "~/types";
-import type { HigestSpeedAndScoreType } from "~/helpers/findHighestSpeedAndScore";
+import type { HigestSpeedAndScoreType } from "~/utils/findHighestSpeedAndScore";
 
 interface Props {
   datas: TypingHistoryOmitScore[];

@@ -3,7 +3,7 @@ import FrontLayout from "~/Layout/FrontLayout";
 import TypingGame from "~/components/Typing";
 import { useRouter } from "next/router";
 import { useTypingStore } from "~/store";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import Stats from "~/components/Typing/Stats";
 
 function Tryout() {

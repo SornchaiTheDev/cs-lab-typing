@@ -1,5 +1,5 @@
 import FrontLayout from "~/Layout/FrontLayout";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import Card from "~/components/Common/Card";
 import Skeleton from "~/components/Common/Skeleton";
 import { useInView } from "react-intersection-observer";

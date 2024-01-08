@@ -9,7 +9,7 @@ import {
   convertToThousand,
   getHighestRole,
   trpc,
-} from "~/helpers";
+} from "~/utils";
 import { useSession } from "next-auth/react";
 import type { tasks } from "@prisma/client";
 import { TRPCClientError } from "@trpc/client";
@@ -21,7 +21,7 @@ import Multiple from "~/components/Forms/Search/MultipleSearch";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 import type { SearchValue } from "~/types";
 import { debounce } from "lodash";

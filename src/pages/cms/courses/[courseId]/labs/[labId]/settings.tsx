@@ -3,14 +3,14 @@ import { AddLabSchema, type TAddLabSchema } from "~/schemas/LabSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
 import Forms from "~/components/Forms";
-import { getHighestRole, trpc } from "~/helpers";
+import { getHighestRole, trpc } from "~/utils";
 import { useRouter } from "next/router";
 import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
 import { callToast } from "~/services/callToast";
 import { useSession } from "next-auth/react";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 
 function Settings() {

@@ -1,6 +1,6 @@
 import InsideTaskLayout from "~/Layout/InsideTaskLayout";
 import { useEffect, useState } from "react";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useRouter } from "next/router";
 import Button from "~/components/Common/Button";
 import Skeleton from "~/components/Common/Skeleton";

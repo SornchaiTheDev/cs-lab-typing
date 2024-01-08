@@ -4,11 +4,11 @@ import TypingGame from "~/components/Typing";
 import EndedGame from "~/components/Typing/EndedGame";
 import { useTypingStore } from "~/store";
 import { useRouter } from "next/router";
-import { replaceSlugwithQueryPath } from "~/helpers";
+import { replaceSlugwithQueryPath } from "~/utils";
 import Button from "~/components/Common/Button";
 import History from "~/components/Typing/History";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import ProblemList from "~/components/Typing/ProblemList";
 import dayjs from "dayjs";
 

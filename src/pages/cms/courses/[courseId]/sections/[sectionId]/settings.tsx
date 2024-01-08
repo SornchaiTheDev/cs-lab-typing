@@ -3,13 +3,13 @@ import DeleteAffect from "~/components/DeleteAffect";
 import SectionLayout from "~/Layout/SectionLayout";
 import { AddSectionSchema, type TAddSection } from "~/schemas/SectionSchema";
 import Forms from "~/components/Forms";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useRouter } from "next/router";
 import { TRPCClientError } from "@trpc/client";
 import { useDeleteAffectStore } from "~/store";
 import { callToast } from "~/services/callToast";
 import type { GetServerSideProps } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 
 function Settings() {

@@ -1,10 +1,10 @@
 import SectionLayout from "~/Layout/SectionLayout";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useRouter } from "next/router";
 import Skeleton from "~/components/Common/Skeleton";
 import Badge from "~/components/Common/Badge";
 import type { GetServerSideProps } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import format from "date-fns/format";
 
 function Sections() {

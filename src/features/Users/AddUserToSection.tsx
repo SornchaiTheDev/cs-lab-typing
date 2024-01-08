@@ -2,7 +2,7 @@ import Codemirror from "~/codemirror";
 import { addUserLightTheme, addUserDarkTheme } from "~/codemirror/theme";
 import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { TRPCClientError } from "@trpc/client";
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";

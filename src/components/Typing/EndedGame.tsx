@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTypingStore } from "~/store";
 import { Icon } from "@iconify/react";
 import Stats from "./Stats";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useRouter } from "next/router";
 import LineChart from "./Datas/LineChart";
 import TypingTable from "./Datas/Table";

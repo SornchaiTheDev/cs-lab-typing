@@ -1,5 +1,5 @@
 import SectionLayout from "~/Layout/SectionLayout";
-import { getHighestRole, sanitizeFilename, trpc } from "~/helpers";
+import { getHighestRole, sanitizeFilename, trpc } from "~/utils";
 import { useRouter } from "next/router";
 import Skeleton from "~/components/Common/Skeleton";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
@@ -11,7 +11,7 @@ import { getDuration } from "~/components/Typing/utils/getDuration";
 import type { SectionType, submission_type } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import type { GetServerSideProps } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 import LineChart from "~/components/Typing/Datas/LineChart";
 import TypingTable from "~/components/Typing/Datas/Table";

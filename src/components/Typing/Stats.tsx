@@ -1,4 +1,4 @@
-import { evaluate } from "~/helpers/evaluateTypingScore";
+import { evaluate } from "~/utils/evaluateTypingScore";
 import { calculateErrorPercentage } from "./utils/calculateErrorPercentage";
 import { getDuration } from "./utils/getDuration";
 import { useTypingStore } from "~/store";

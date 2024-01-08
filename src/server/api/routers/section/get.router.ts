@@ -1,4 +1,4 @@
-import { getHighestRole } from "~/helpers";
+import { getHighestRole } from "~/utils";
 import {
   TaAboveProcedure,
   router,

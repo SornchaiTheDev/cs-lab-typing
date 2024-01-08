@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Forms from "~/components/Forms";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { TRPCClientError } from "@trpc/client";
 import type { labs } from "@prisma/client";
 import { useDeleteAffectStore } from "~/store";
@@ -18,7 +18,7 @@ import Button from "~/components/Common/Button";
 import { callToast } from "~/services/callToast";
 import { useSession } from "next-auth/react";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 import { debounce } from "lodash";
 interface LabsRow {

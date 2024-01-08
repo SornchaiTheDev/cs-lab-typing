@@ -1,5 +1,5 @@
 import DeleteAffect from "~/components/DeleteAffect";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useDeleteAffectStore } from "~/store";
 import { useState } from "react";
 import Modal from "~/components/Common/Modal";

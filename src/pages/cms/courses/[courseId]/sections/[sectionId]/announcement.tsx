@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 import React from "react";
 import SectionLayout from "~/Layout/SectionLayout";
 import Announcement from "~/components/Common/Announcement";
-import { trpc } from "~/helpers";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { trpc } from "~/utils";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 
 function AnnouncementPage() {
   const router = useRouter();

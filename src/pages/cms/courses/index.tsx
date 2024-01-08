@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { convertToCompact, getHighestRole, trpc } from "~/helpers";
+import { convertToCompact, getHighestRole, trpc } from "~/utils";
 import Skeleton from "~/components/Common/Skeleton";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";

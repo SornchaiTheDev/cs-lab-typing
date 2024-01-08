@@ -1,7 +1,7 @@
 import SectionLayout from "~/Layout/SectionLayout";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import Table from "~/components/Common/Table";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
@@ -17,7 +17,7 @@ import Select from "~/components/Forms/Select";
 import Alert from "~/components/Common/Alert";
 import { TRPCError } from "@trpc/server";
 import type { GetServerSideProps } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import Multiple from "~/components/Forms/Search/MultipleSearch";
 import type { SearchValue } from "~/types";
 import { useInView } from "react-intersection-observer";

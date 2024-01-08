@@ -1,7 +1,7 @@
 import { teacherAboveProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { getHighestRole } from "~/helpers";
+import { getHighestRole } from "~/utils";
 
 export const deleteTaskRouter = router({
   deleteTask: teacherAboveProcedure

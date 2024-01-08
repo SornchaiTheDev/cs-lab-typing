@@ -8,7 +8,7 @@ import { z } from "zod";
 import type { Relation } from "~/types/Relation";
 import { TRPCError } from "@trpc/server";
 import type { task_type } from "@prisma/client";
-import { findHighestSpeedAndScore } from "~/helpers";
+import { findHighestSpeedAndScore } from "~/utils";
 
 export const getTaskRouter = router({
   getTaskPagination: teacherAboveProcedure

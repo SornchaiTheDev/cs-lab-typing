@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import Table from "~/components/Common/Table";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useRouter } from "next/router";
 import {
   type PaginationState,
@@ -9,7 +9,7 @@ import {
 import SectionLayout from "~/Layout/SectionLayout";
 import dayjs from "dayjs";
 import type { GetServerSideProps } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 
 interface HistoryRow {

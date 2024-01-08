@@ -4,7 +4,7 @@ import * as Popover from "@radix-ui/react-popover";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { getHighestRole } from "~/helpers";
+import { getHighestRole } from "~/utils";
 import { signOut, useSession } from "next-auth/react";
 import clsx from "clsx";
 import Skeleton from "~/components/Common/Skeleton";

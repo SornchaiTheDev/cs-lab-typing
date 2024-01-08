@@ -1,7 +1,7 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 // import CommandPallete from "~/components/CommandPallete";
 import { Toaster } from "react-hot-toast";
 import { DndProvider } from "react-dnd";

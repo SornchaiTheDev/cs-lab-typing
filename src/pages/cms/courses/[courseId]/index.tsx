@@ -2,9 +2,9 @@ import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
 import CourseLayout from "~/Layout/CourseLayout";
 import Badge from "~/components/Common/Badge";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import Skeleton from "~/components/Common/Skeleton";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 
 function InCourse() {

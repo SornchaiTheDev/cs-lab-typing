@@ -5,7 +5,7 @@ import Table from "~/components/Common/Table";
 import { AddTaskSchema, type TAddTask } from "~/schemas/TaskSchema";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
-import { convertToCompact, trpc } from "~/helpers";
+import { convertToCompact, trpc } from "~/utils";
 import type { tags, users } from "@prisma/client";
 import Button from "~/components/Common/Button";
 import { TRPCClientError } from "@trpc/client";

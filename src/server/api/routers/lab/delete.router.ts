@@ -1,7 +1,7 @@
 import { router, teacherAboveProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { isRelateWithThisLab } from "~/server/utils/isRelateWithThisLab";
+import { isRelateWithThisLab } from "~/utils/isRelateWithThisLab";
 
 export const deleteLabRouter = router({
   deleteLab: teacherAboveProcedure

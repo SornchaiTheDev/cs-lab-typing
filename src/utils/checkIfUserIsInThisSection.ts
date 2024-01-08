@@ -1,5 +1,5 @@
-import { getHighestRole } from "~/helpers";
-import { prisma } from "../db";
+import { getHighestRole } from "~/utils";
+import { prisma } from "../server/db";
 export const isRelatedToThisSection = async (
   student_id: string,
   section_id: number

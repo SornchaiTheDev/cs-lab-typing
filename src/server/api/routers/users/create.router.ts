@@ -1,7 +1,7 @@
 import { adminProcedure, router } from "~/server/api/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { isArrayUnique, isAllUserValid } from "~/helpers";
+import { isArrayUnique, isAllUserValid } from "~/utils";
 import { addStudent } from "./role/student";
 import { addNonKUStudent } from "./role/nonKU";
 import { addTeacher } from "./role/teacher";

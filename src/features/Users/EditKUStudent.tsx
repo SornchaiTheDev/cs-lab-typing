@@ -3,7 +3,7 @@ import {
   KUStudentSchema,
   type TKUStudentSchema,
 } from "~/schemas/KUStudentSchema";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useDeleteAffectStore } from "~/store";
 import React, { useState } from "react";
 import Modal from "~/components/Common/Modal";

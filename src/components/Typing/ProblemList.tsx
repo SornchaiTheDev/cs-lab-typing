@@ -1,10 +1,10 @@
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/router";
-import { replaceSlugwithQueryPath } from "~/helpers";
+import { replaceSlugwithQueryPath } from "~/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 
 function ProblemList() {
   const router = useRouter();

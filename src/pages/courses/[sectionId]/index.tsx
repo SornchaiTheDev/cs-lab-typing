@@ -2,9 +2,9 @@ import FrontLayout from "~/Layout/FrontLayout";
 import { useRouter } from "next/router";
 import Card from "~/components/Common/Card";
 import ProgressIndicator from "~/components/Common/ProgressIndicator";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import type { GetServerSideProps } from "next";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 
 function Course() {

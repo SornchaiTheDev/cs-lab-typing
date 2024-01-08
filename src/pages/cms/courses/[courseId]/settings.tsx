@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { AddCourseSchema, type TAddCourse } from "~/schemas/CourseSchema";
 import Button from "~/components/Common/Button";
 import DeleteAffect from "~/components/DeleteAffect";
-import { getHighestRole, transformer, trpc } from "~/helpers";
+import { getHighestRole, transformer, trpc } from "~/utils";
 import Forms from "~/components/Forms";
 import { useDeleteAffectStore } from "~/store";
 import { TRPCClientError } from "@trpc/client";

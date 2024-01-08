@@ -15,8 +15,8 @@ import Alert from "~/components/Common/Alert";
 import Button from "~/components/Common/Button";
 import Table from "~/components/Common/Table";
 import AddUser from "~/features/Users/AddUserToSection";
-import { convertToThousand, sanitizeFilename, trpc } from "~/helpers";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { convertToThousand, sanitizeFilename, trpc } from "~/utils";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { callToast } from "~/services/callToast";
 
 function Students() {

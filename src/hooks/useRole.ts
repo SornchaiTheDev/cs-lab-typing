@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import { getHighestRole } from "~/helpers";
+import { getHighestRole } from "~/utils";
 
 function useRole() {
   const { data: session } = useSession();

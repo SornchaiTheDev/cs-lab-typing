@@ -3,8 +3,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { AddTaskSchema } from "~/schemas/TaskSchema";
-import { createNotExistTags } from "~/server/utils/createNotExistTags";
-import { getHighestRole } from "~/helpers";
+import { createNotExistTags } from "~/utils/createNotExistTags";
+import { getHighestRole } from "~/utils";
 
 export const updateTaskRouter = router({
   updateTask: teacherAboveProcedure

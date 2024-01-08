@@ -7,7 +7,7 @@ import {
 import { z } from "zod";
 import type { tasks } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { findHighestSpeedAndScore } from "~/helpers";
+import { findHighestSpeedAndScore } from "~/utils";
 
 export const getLabRouter = router({
   getLabPagination: teacherAboveAndRelatedToCourseProcedure

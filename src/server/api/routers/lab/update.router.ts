@@ -6,7 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { Prisma } from "@prisma/client";
-import { createNotExistTags } from "~/server/utils/createNotExistTags";
+import { createNotExistTags } from "~/utils/createNotExistTags";
 
 export const updateLabRouter = router({
   updateLab: teacherAboveAndRelatedToCourseProcedure

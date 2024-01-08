@@ -3,9 +3,9 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import type { Context } from "../context";
-import { getHighestRole } from "~/helpers";
-import { isRelationWithThisCourse } from "../utils/isRelationWithThisCourse";
-import { isRelatedToThisSection } from "../utils/checkIfUserIsInThisSection";
+import { getHighestRole } from "~/utils";
+import { isRelationWithThisCourse } from "../../utils/isRelationWithThisCourse";
+import { isRelatedToThisSection } from "../../utils/checkIfUserIsInThisSection";
 
 const t = initTRPC
   .meta<OpenApiMeta>()

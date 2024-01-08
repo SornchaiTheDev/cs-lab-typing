@@ -1,6 +1,6 @@
 import DeleteAffect from "~/components/DeleteAffect";
 import { NonKUStudent, type TNonKUStudent } from "~/schemas/NonKUSchema";
-import { trpc } from "~/helpers";
+import { trpc } from "~/utils";
 import { useDeleteAffectStore } from "~/store";
 import { useState } from "react";
 import Modal from "~/components/Common/Modal";

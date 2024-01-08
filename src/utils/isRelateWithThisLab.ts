@@ -1,4 +1,4 @@
-import { prisma } from "../db";
+import { prisma } from "../server/db";
 import { isRelationWithThisCourse } from "./isRelationWithThisCourse";
 
 export const isRelateWithThisLab = async (

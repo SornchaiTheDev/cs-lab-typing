@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import FrontLayout from "~/Layout/FrontLayout";
-import { replaceSlugwithQueryPath } from "~/helpers";
-import { createTrpcHelper } from "~/helpers/createTrpcHelper";
+import { replaceSlugwithQueryPath } from "~/utils";
+import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import superjson from "superjson";
 import type { taskWithStatus } from "~/types";
 
