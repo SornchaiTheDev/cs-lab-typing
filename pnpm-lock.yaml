@@ -14,6 +14,9 @@ dependencies:
   '@codemirror/language':
     specifier: ^6.6.0
     version: 6.10.0
+  '@codemirror/state':
+    specifier: ^6.4.0
+    version: 6.4.0
   '@codemirror/view':
     specifier: ^6.10.0
     version: 6.23.0
@@ -80,6 +83,9 @@ dependencies:
   '@types/bcrypt':
     specifier: ^5.0.0
     version: 5.0.2
+  '@types/codemirror':
+    specifier: ^5.60.15
+    version: 5.60.15
   '@types/eslint':
     specifier: ^8.21.3
     version: 8.56.0
@@ -1816,6 +1822,12 @@ packages:
       '@types/node': 18.19.4
     dev: false
 
+  /@types/codemirror@5.60.15:
+    resolution: {integrity: sha512-dTOvwEQ+ouKJ/rE9LT1Ue2hmP6H1mZv5+CCnNWu2qtiOe2LQa9lCprEY20HxiDmV/Bxh+dXjywmy5aKvoGjULA==}
+    dependencies:
+      '@types/tern': 0.23.9
+    dev: false
+
   /@types/eslint@8.56.0:
     resolution: {integrity: sha512-FlsN0p4FhuYRjIxpbdXovvHQhtlG05O1GG/RNWvdAxTboR438IOTwmrY/vLA+Xfgg06BTkP045M3vpFwTMv1dg==}
     dependencies:
@@ -1931,6 +1943,12 @@ packages:
     resolution: {integrity: sha512-Mo/R7IjDVwtiFPs84pWvh5pI9iyNGBjmfielxqbOh2Jv+8WVSDVe8Nu25kb5BOuV2xmGS3o33jr6nwDJMBcX+Q==}
     dependencies:
       '@types/react': 18.2.46
+    dev: false
+
+  /@types/tern@0.23.9:
+    resolution: {integrity: sha512-ypzHFE/wBzh+BlH6rrBgS5I/Z7RD21pGhZ2rltb/+ZrVM1awdZwjx7hE5XfuYgHWk9uvV5HLZN3SloevCAp3Bw==}
+    dependencies:
+      '@types/estree': 1.0.5
     dev: false
 
   /@types/unist@2.0.10:
