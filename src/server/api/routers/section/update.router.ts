@@ -7,7 +7,6 @@ import {
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { isArrayUnique } from "~/helpers";
 
 export const updateSectionsRouter = router({
   updateSection: teacherAboveAndRelatedToSectionProcedure
@@ -337,14 +336,9 @@ export const updateSectionsRouter = router({
       const requester = ctx.user.student_id;
       const _sectionId = parseInt(sectionId);
 
-      if (!isArrayUnique(studentIds)) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "DUPLICATED_USER",
-        });
-      }
-
-      try {
+      const setOfStudentIds = new Set(studentIds);
+      const noDuplicateStudentIds = Array.from(setOfStudentIds);
+        try {
         const _requester = await ctx.prisma.users.findFirst({
           where: {
             student_id: requester,
@@ -355,7 +349,7 @@ export const updateSectionsRouter = router({
         const _studentsId = await ctx.prisma.users.findMany({
           where: {
             student_id: {
-              in: studentIds,
+              in: noDuplicateStudentIds,
             },
             deleted_at: null,
           },
