@@ -1,5 +1,5 @@
-import Codemirror from "~/codemirror";
-import { addUserLightTheme, addUserDarkTheme } from "~/codemirror/theme";
+import Codemirror from "~/components/Codemirror";
+import { addUserLightTheme, addUserDarkTheme } from "~/components/Codemirror/theme";
 import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
 import { trpc } from "~/utils";

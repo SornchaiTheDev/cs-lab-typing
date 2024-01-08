@@ -8,7 +8,7 @@ import type { Extension } from "@codemirror/state";
 import {
   indentWithTab,
   indentWithTabLess,
-} from "~/codemirror/extensions/indentWithTab";
+} from "~/components/Codemirror/extensions/indentWithTab";
 
 const myTheme = createTheme({
   theme: "light",
