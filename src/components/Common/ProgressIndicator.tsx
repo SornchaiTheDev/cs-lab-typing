@@ -6,19 +6,24 @@ interface Props {
   className?: string;
 }
 function ProgressIndicator({ tasksStatus, className }: Props) {
+  const taskLength = tasksStatus.length;
+  
   return (
-    <div className={twMerge("grid w-full grid-cols-12 gap-1", className)}>
+    <div className="w-full md:w-fit overflow-x-auto">
+    <div className={twMerge("grid gap-1 grid-flow-row", className)}  style={{gridTemplateColumns : `repeat(${Math.ceil(taskLength/2)},10px)`}}>
       {tasksStatus.map((status, i) => (
         <div
           key={i}
+          data-test={i}
           className={twMerge(
-            "col-span-2 h-2 rounded-sm",
+            "aspect-square rounded-sm",
             status === "PASSED" && "bg-lime-9",
             status === "FAILED" && "bg-red-9",
             status === "NOT_SUBMITTED" && "bg-sand-9"
           )}
         ></div>
       ))}
+      </div>
     </div>
   );
 }

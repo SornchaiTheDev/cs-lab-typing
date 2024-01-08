@@ -101,13 +101,15 @@ const RecentTasks = ({
       onClose={onClose}
       isOpen
     >
-      <div className="my-4 flex items-center gap-2 text-sand-12">
+      <div className="my-4 flex flex-col md:flex-row md:items-center gap-2 text-sand-12">
+        <div className="flex flex-1 gap-2 items-center mb-4 md:mb-0">
         <div className="p-2">
           <Icon className="text-xl" icon="solar:user-line-duotone" />
         </div>
         <div className="flex-1">
           <h5 className="font-medium">{fullName}</h5>
           <h6 className="text-sm">{studentId}</h6>
+        </div>
         </div>
         <ProgressIndicator
           className="md:justify-end"
@@ -308,9 +310,9 @@ const LabStatus = ({
           lab.data?.usersTaskStatus?.map(
             ({ full_name, student_id, taskStatus }) => (
               <div key={student_id}>
-                <div className="flex w-full flex-wrap items-center">
-                  <div className="flex w-full flex-1 items-center gap-4">
-                    <div>
+                <div className="flex md:flex-row flex-col items-center w-full flex-wrap">
+                  <div className="flex flex-1 items-center gap-4">
+                    <div className="flex-1 md:flex-none">
                       <h5 className="font-medium">{full_name}</h5>
                       <h6 className="text-sm">{student_id}</h6>
                     </div>
@@ -333,7 +335,7 @@ const LabStatus = ({
 
                   <ProgressIndicator
                     tasksStatus={taskStatus ?? []}
-                    className="mt-4 md:mt-0 md:justify-end"
+                    className="mt-4 md:mt-0"
                   />
                 </div>
                 <hr className="my-2" />

@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 interface Props {
   width?: string | number;
@@ -9,8 +9,8 @@ interface Props {
 function Skeleton({ width, height, className }: Props) {
   return (
     <div
-      className={clsx(
-        "rounded-lg bg-gradient-to-r from-sand-6 to-sand-4 animate-pulse",
+      className={twMerge(
+        "animate-pulse rounded-lg bg-gradient-to-r from-sand-6 to-sand-4",
         className
       )}
       style={{ width, height }}

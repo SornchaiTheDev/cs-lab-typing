@@ -4,7 +4,17 @@ export default {
   darkMode: "class",
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
-    extend: {},
+    extend: {
+      animation : {
+        loading : "moving-line 1.6s linear infinite"
+      },
+      keyframes: {
+        "moving-line": {
+          "100%": { "background-position" : "360px" }, 
+          
+        },
+      },
+    },
   },
 
   plugins: [
