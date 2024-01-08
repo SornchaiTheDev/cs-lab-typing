@@ -14,7 +14,6 @@ function ProgressIndicator({ tasksStatus, className }: Props) {
       {tasksStatus.map((status, i) => (
         <div
           key={i}
-          data-test={i}
           className={twMerge(
             "aspect-square rounded-sm",
             status === "PASSED" && "bg-lime-9",
