@@ -1,19 +1,14 @@
 import { router, adminProcedure } from "~/server/api/trpc";
-import { z } from "zod";
 import bcrypt from "bcrypt";
 import type { roles } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { KUStudentSchema } from "~/schemas/KUStudentSchema";
+import { NonKUStudent } from "~/schemas/NonKUSchema";
+import { TeacherSchema } from "~/schemas/TeacherSchema";
 
 export const updateUserRouter = router({
   updateKUStudent: adminProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        full_name: z.string(),
-        roles: z.array(z.string()),
-        student_id: z.string(),
-      })
-    )
+    .input(KUStudentSchema)
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles, student_id } = input;
       try {
@@ -34,7 +29,7 @@ export const updateUserRouter = router({
             full_name,
             student_id,
             roles: {
-              set: roles.map((role) => role.toUpperCase()) as roles[],
+              set: roles.map((role) => role.value.toUpperCase()) as roles[],
             },
           },
         });
@@ -46,15 +41,7 @@ export const updateUserRouter = router({
       }
     }),
   updateNonKUStudent: adminProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        full_name: z.string(),
-        roles: z.array(z.string()),
-        student_id: z.string(),
-        password: z.string(),
-      })
-    )
+    .input(NonKUStudent)
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles, student_id, password } = input;
       try {
@@ -78,7 +65,7 @@ export const updateUserRouter = router({
               password: await bcrypt.hash(password, 10),
             }),
             roles: {
-              set: roles.map((role) => role.toUpperCase()) as roles[],
+              set: roles.map((role) => role.value.toUpperCase()) as roles[],
             },
           },
         });
@@ -90,13 +77,7 @@ export const updateUserRouter = router({
       }
     }),
   updateTeacher: adminProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        full_name: z.string(),
-        roles: z.array(z.string()),
-      })
-    )
+    .input(TeacherSchema)
     .mutation(async ({ ctx, input }) => {
       const { email, full_name, roles } = input;
       try {
@@ -116,7 +97,7 @@ export const updateUserRouter = router({
           data: {
             full_name,
             roles: {
-              set: roles.map((role) => role.toUpperCase()) as roles[],
+              set: roles.map((role) => role.value.toUpperCase()) as roles[],
             },
           },
         });

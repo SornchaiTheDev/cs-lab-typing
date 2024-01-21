@@ -16,10 +16,7 @@ import { addUserDarkTheme, addUserLightTheme } from "~/components/Codemirror/the
 import { convertToThousand, trpc } from "~/utils";
 import type { users as Users } from "@prisma/client";
 import clsx from "clsx";
-import EditKUStudent from "~/features/Users/EditKUStudent";
-import EditNonKUStudent from "~/features/Users/EditNonKUStudent";
 import { getUserType } from "~/utils/getUserType";
-import EditTeacher from "~/features/Users/EditTeacher";
 import { useDeleteAffectStore } from "~/store/deleteAffect";
 import { useDropzone } from "react-dropzone";
 import { TRPCClientError } from "@trpc/client";
@@ -27,6 +24,8 @@ import { callToast } from "~/services/callToast";
 import useTheme from "~/hooks/useTheme";
 import { debounce } from "lodash";
 import { motion, useAnimation } from "framer-motion";
+import EditUser from '~/components/EditUser'
+import type { UserType } from "~/hooks/useEditUser";
 
 dayjs.extend(relativeTime);
 
@@ -242,17 +241,7 @@ function Users() {
   return (
     <>
       {selectedObj && (
-        <>
-          {selectedObj.type === "KUStudent" && (
-            <EditKUStudent onUpdate={() => users.refetch()} />
-          )}
-          {selectedObj.type === "NonKUStudent" && (
-            <EditNonKUStudent onUpdate={() => users.refetch()} />
-          )}
-          {selectedObj.type === "Teacher" && (
-            <EditTeacher onUpdate={() => users.refetch()} />
-          )}
-        </>
+        <EditUser type={selectedObj.type as UserType} onUpdate={() => users.refetch()} />
       )}
 
       <Modal

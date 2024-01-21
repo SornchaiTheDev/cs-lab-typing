@@ -21,7 +21,7 @@ interface ConfirmBtn {
   isLoading?: boolean;
 }
 
-type EachField<T> = {
+export type EachField<T> = {
   label: keyof T;
   title: string;
   type:
