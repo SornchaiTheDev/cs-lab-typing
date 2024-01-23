@@ -10,7 +10,7 @@ function ProgressIndicator({ tasksStatus, className }: Props) {
   
   return (
     <div className="w-full md:w-fit overflow-x-auto">
-    <div className={twMerge("grid gap-1 grid-flow-row", className)}  style={{gridTemplateColumns : `repeat(${Math.ceil(taskLength/2)},10px)`}}>
+    <div className={twMerge("grid gap-1 grid-flow-row", className)}  style={{gridTemplateColumns : `repeat(${Math.max(Math.ceil(taskLength/2),2)},10px)`}}>
       {tasksStatus.map((status, i) => (
         <div
           key={i}
