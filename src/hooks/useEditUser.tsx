@@ -23,7 +23,7 @@ interface Props<T> {
   onUpdate: () => void;
 }
 
-export type FormSchema<T> = T extends "KUStudent"
+export type FormSchema<T extends UserType> = T extends "KUStudent"
   ? TKUStudentSchema
   : T extends "NonKUStudent"
   ? TNonKUStudent
@@ -87,7 +87,7 @@ export function useEditUser<T extends UserType>({
   }
 
   // get fields from user type
-  const [fields, setFields] = useState<EachField<FormSchema<T>[]>[]>([]);
+  const [fields, setFields] = useState<EachField<FormSchema<"NonKUStudent">>[]>([]);
 
   useEffect(() => {
     if (user.isLoading) return;
