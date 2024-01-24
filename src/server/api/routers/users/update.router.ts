@@ -29,7 +29,7 @@ export const updateUserRouter = router({
             full_name,
             student_id,
             roles: {
-              set: roles.map((role) => role.value.toUpperCase()) as roles[],
+              set: roles.map((role) => (role.value as string).toUpperCase()) as roles[],
             },
           },
         });
@@ -65,7 +65,7 @@ export const updateUserRouter = router({
               password: await bcrypt.hash(password, 10),
             }),
             roles: {
-              set: roles.map((role) => role.value.toUpperCase()) as roles[],
+              set: roles.map((role) => (role.value as string).toUpperCase()) as roles[],
             },
           },
         });
@@ -97,7 +97,7 @@ export const updateUserRouter = router({
           data: {
             full_name,
             roles: {
-              set: roles.map((role) => role.value.toUpperCase()) as roles[],
+              set: roles.map((role) => (role.value as string).toUpperCase()) as roles[],
             },
           },
         });
