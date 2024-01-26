@@ -44,6 +44,7 @@ export function useEditUser<T extends UserType>({
     if (!isValidUserType) throw new Error("Invalid User Type");
   }, [type]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setSelectedObj] = useDeleteAffectStore((state) => [
     state.selectedObj,
     state.setSelectedObj,
@@ -87,21 +88,22 @@ export function useEditUser<T extends UserType>({
   }
 
   // get fields from user type
-  const [fields, setFields] = useState<EachField<FormSchema<"NonKUStudent">>[]>([]);
+  const [fields, setFields] = useState<EachField<FormSchema<T>>[]>([]);
 
   useEffect(() => {
     if (user.isLoading) return;
 
-    console.log(user.data);
+    const _user = user.data as users;
+
     switch (type) {
       case "KUStudent":
-        setFields(getKUStudentFields(user.data as users));
+        setFields(getKUStudentFields(_user) as EachField<FormSchema<T>>[]);
         break;
       case "NonKUStudent":
-        setFields(getNonKUStudentFields(user.data as users));
+        setFields(getNonKUStudentFields(_user) as EachField<FormSchema<T>>[]);
         break;
       case "Teacher":
-        setFields(getTeacherFields(user.data as users));
+        setFields(getTeacherFields(_user));
         break;
     }
   }, [user.isLoading, user.data, type]);

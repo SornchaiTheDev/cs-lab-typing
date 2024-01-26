@@ -1,10 +1,8 @@
 import type { users } from "@prisma/client";
 import type { EachField } from "~/components/Forms";
-import type { FormSchema } from "~/hooks/useEditUser";
+import type { TTeacherSchema } from "~/schemas/TeacherSchema";
 
-export const getTeacherFields = (
-  user: users
-): EachField<FormSchema<"Teacher">>[] => {
+export const getTeacherFields = (user: users): EachField<TTeacherSchema>[] => {
   if (!user) return [];
 
   return [

@@ -1,10 +1,8 @@
 import type { users } from "@prisma/client";
 import type { EachField } from "~/components/Forms";
-import type { FormSchema } from "~/hooks/useEditUser";
+import type { TKUStudentSchema } from "~/schemas/KUStudentSchema";
 
-export const getKUStudentFields = (
-  user: users
-): EachField<FormSchema<"KUStudent">>[] => {
+export function getKUStudentFields(user: users): EachField<TKUStudentSchema>[] {
   if (!user) return [];
 
   return [
@@ -42,4 +40,4 @@ export const getKUStudentFields = (
       })),
     },
   ];
-};
+}

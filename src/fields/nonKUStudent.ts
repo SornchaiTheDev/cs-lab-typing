@@ -1,9 +1,11 @@
 import type { users } from "@prisma/client";
 import type { EachField } from "~/components/Forms";
-import type { FormSchema } from "~/hooks/useEditUser";
+import type { TNonKUStudent } from "~/schemas/NonKUSchema";
 
-export const getNonKUStudentFields = (user: users) : EachField<FormSchema<"NonKUStudent">>[] => {
-  if(!user) return [];
+export const getNonKUStudentFields = (
+  user: users
+): EachField<TNonKUStudent>[] => {
+  if (!user) return [];
 
   return [
     {
