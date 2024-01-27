@@ -111,24 +111,25 @@ export const getUserRouter = router({
         });
       }
     }),
-  getAllUsersInRole: teacherAboveProcedure
+  searchUserByName: teacherAboveProcedure
     .input(
       z.object({
-        roles: z.array(
-          z.literal("ADMIN").or(z.literal("TEACHER")).or(z.literal("STUDENT"))
-        ),
+        full_name: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { roles } = input;
+      const { full_name } = input;
+
       try {
         const users = await ctx.prisma.users.findMany({
           where: {
-            roles: {
-              hasSome: roles,
+            full_name: {
+              contains: full_name,
+              mode: "insensitive",
             },
             deleted_at: null,
           },
+          take: 5,
         });
         return users;
       } catch (err) {

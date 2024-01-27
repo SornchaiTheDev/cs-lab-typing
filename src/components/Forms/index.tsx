@@ -21,27 +21,33 @@ interface ConfirmBtn {
   isLoading?: boolean;
 }
 
-export type EachField<T> = {
+type BaseField<T> = {
   label: keyof T;
   title: string;
-  type:
-    | "select"
-    | "single-search"
-    | "multiple-search"
-    | "text"
-    | "checkbox"
-    | "textarea"
-    | "date"
-    | "dateTime";
   optional?: boolean;
-  options?: string[] | SearchValue[];
-  canAddItemNotInList?: boolean;
-  conditional?: (data: string) => boolean;
-  children?: EachField<T>;
   value?: string | string[] | Date | boolean | SearchValue | SearchValue[];
   disabled?: boolean;
+  conditional?: (data: string) => boolean;
+  children?: EachField<T>;
+};
+
+type GeneralField<T> = BaseField<T> & {
+  type: "text" | "textarea" | "checkbox" | "date" | "dateTime";
+};
+
+type SearchField<T> = BaseField<T> & {
+  type: "single-search" | "multiple-search";
+  queryFn: (value: string) => Promise<SearchValue[]>;
+  canAddItemNotInList?: boolean;
+};
+
+type SelectField<T> = BaseField<T> & {
+  type: "select";
+  options: string[];
   emptyMsg?: string;
 };
+
+export type EachField<T> = GeneralField<T> | SearchField<T> | SelectField<T>;
 
 interface Props<T> {
   onSubmit: (formData: T) => Promise<void>;
@@ -68,6 +74,9 @@ function Forms<T>({
     resolver: zodResolver(schema),
     values: Object.fromEntries(
       fields.map((field) => {
+        if (field.type === "single-search") {
+          return [field.label, field.value ?? { label: "", value: "" }];
+        }
         if (field.type === "multiple-search") {
           return [field.label, (field.value as SearchValue[]) ?? []];
         }
@@ -124,9 +133,9 @@ function Forms<T>({
             render={({ field: { onChange, value } }) => (
               <SingleSearch
                 isLoading={isLoading}
-                datas={(field.options as SearchValue[]) ?? []}
                 title={field.title}
-                value={(value as SearchValue) ?? ""}
+                value={value}
+                queryFn={field.queryFn}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
@@ -146,7 +155,6 @@ function Forms<T>({
             render={({ field: { onChange, value } }) => (
               <MultipleSearch
                 isLoading={isLoading}
-                datas={(field.options as SearchValue[]) ?? []}
                 title={field.title}
                 value={value as SearchValue[]}
                 onChange={onChange}
