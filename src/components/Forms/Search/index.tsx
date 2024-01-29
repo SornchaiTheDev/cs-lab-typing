@@ -22,7 +22,7 @@ interface Props {
   options?: SearchValue[];
 }
 
-const Multiple = (props: Props) => {
+const Search = (props: Props) => {
   const {
     className,
     title,
@@ -122,4 +122,4 @@ const Multiple = (props: Props) => {
   );
 };
 
-export default Multiple;
+export default Search;
