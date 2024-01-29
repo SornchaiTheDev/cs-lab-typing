@@ -3,8 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import Input from "./Input";
 import Select from "./Select";
-import SingleSearch from "./Search/SingleSearch";
-import MultipleSearch from "./Search/MultipleSearch";
+import Search from "./Search";
 import Checkbox from "./Checkbox";
 import type { z, ZodEffects, ZodObject } from "zod";
 import TextArea from "./TextArea";
@@ -25,7 +24,7 @@ type BaseField<T> = {
   label: keyof T;
   title: string;
   optional?: boolean;
-  value?: string | string[] | Date | boolean | SearchValue | SearchValue[];
+  value?: string | string[] | Date | boolean | SearchValue[];
   disabled?: boolean;
   conditional?: (data: string) => boolean;
   children?: EachField<T>;
@@ -41,13 +40,23 @@ type SearchField<T> = BaseField<T> & {
   canAddItemNotInList?: boolean;
 };
 
+type StaticSearchField<T> = BaseField<T> & {
+  type: "static-search";
+  options: SearchValue[];
+  canAddItemNotInList?: boolean;
+};
+
 type SelectField<T> = BaseField<T> & {
   type: "select";
   options: string[];
   emptyMsg?: string;
 };
 
-export type EachField<T> = GeneralField<T> | SearchField<T> | SelectField<T>;
+export type EachField<T> =
+  | GeneralField<T>
+  | SearchField<T>
+  | SelectField<T>
+  | StaticSearchField<T>;
 
 interface Props<T> {
   onSubmit: (formData: T) => Promise<void>;
@@ -74,10 +83,7 @@ function Forms<T>({
     resolver: zodResolver(schema),
     values: Object.fromEntries(
       fields.map((field) => {
-        if (field.type === "single-search") {
-          return [field.label, field.value ?? { label: "", value: "" }];
-        }
-        if (field.type === "multiple-search") {
+        if (["single-search", "multiple-search"].includes(field.type)) {
           return [field.label, (field.value as SearchValue[]) ?? []];
         }
         return [field.label, field.value ?? undefined];
@@ -124,6 +130,30 @@ function Forms<T>({
           />
         );
 
+      case "static-search":
+        return (
+          <Controller
+            key={field.label as string}
+            control={control}
+            name={field.label as string}
+            render={({ field: { onChange, value } }) => (
+              <Search
+                isLoading={isLoading}
+                title={field.title}
+                value={value as SearchValue[]}
+                onChange={onChange}
+                isError={!!errors[field.label]}
+                error={errors[field.label]?.message as string}
+                optional={field.optional}
+                disabled={field.disabled || isSubmitting}
+                options={field.options}
+                canAddItemNotInList={field.canAddItemNotInList ?? false}
+                multiple
+                isStatic
+              />
+            )}
+          />
+        );
       case "single-search":
         return (
           <Controller
@@ -131,11 +161,11 @@ function Forms<T>({
             control={control}
             name={field.label as string}
             render={({ field: { onChange, value } }) => (
-              <SingleSearch
+              <Search
+                queryFn={field.queryFn}
                 isLoading={isLoading}
                 title={field.title}
-                value={value}
-                queryFn={field.queryFn}
+                value={value as SearchValue[]}
                 onChange={onChange}
                 isError={!!errors[field.label]}
                 error={errors[field.label]?.message as string}
@@ -153,7 +183,8 @@ function Forms<T>({
             control={control}
             name={field.label as string}
             render={({ field: { onChange, value } }) => (
-              <MultipleSearch
+              <Search
+                queryFn={field.queryFn}
                 isLoading={isLoading}
                 title={field.title}
                 value={value as SearchValue[]}
@@ -163,6 +194,7 @@ function Forms<T>({
                 optional={field.optional}
                 canAddItemNotInList={field.canAddItemNotInList}
                 disabled={field.disabled || isSubmitting}
+                multiple
               />
             )}
           />

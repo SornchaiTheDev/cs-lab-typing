@@ -35,7 +35,8 @@ export const getNonKUStudentFields = (
     {
       label: "roles",
       title: "Roles",
-      type: "multiple-search",
+      type: "static-search",
+      canAddItemNotInList: true,
       options: [
         { label: "Student", value: "STUDENT" },
         { label: "Teacher", value: "TEACHER" },

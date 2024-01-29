@@ -3,12 +3,10 @@ import { SearchValue } from "./common";
 
 export const AddTaskSchema = z
   .object({
-    name: z.string().nonempty({ message: "Name cannot be empty" }),
+    name: z.string().min(1, { message: "Name cannot be empty" }),
     type: z.literal("Lesson").or(z.literal("Problem")).or(z.literal("Typing")),
     language: z.string().or(z.null()).default(null),
-    owner: SearchValue.refine((arg) => {
-      return arg.value.toString().length > 0 && arg.label.length > 0;
-    }),
+    owner: z.array(SearchValue).length(1),
     isPrivate: z.boolean(),
     note: z.string().optional(),
     tags: z.array(SearchValue).optional(),

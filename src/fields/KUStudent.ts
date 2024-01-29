@@ -28,7 +28,7 @@ export function getKUStudentFields(user: users): EachField<TKUStudentSchema>[] {
     {
       label: "roles",
       title: "Roles",
-      type: "multiple-search",
+      type: "static-search",
       options: [
         { label: "Student", value: "STUDENT" },
         { label: "Teacher", value: "TEACHER" },

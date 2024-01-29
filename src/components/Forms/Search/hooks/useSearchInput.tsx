@@ -5,27 +5,62 @@ import {
   useRef,
   useState,
 } from "react";
+import { useOnClickOutside } from "usehooks-ts";
 import type { SearchValue } from "~/types";
 
 interface Props {
   canAddItemNotInList?: boolean;
-  onChange: (value: SearchValue) => void;
-  queryFn: (query: string) => Promise<SearchValue[]>;
+  value: SearchValue[];
+  onChange: (value: SearchValue[]) => void;
+  queryFn?: (query: string) => Promise<SearchValue[]>;
+  multiple?: boolean;
+  isStatic?: boolean;
+  options?: SearchValue[];
 }
 
 const MINIMUM_SEARCH_LENGTH = 1;
 
-function useSearchInput({ canAddItemNotInList, onChange, queryFn }: Props) {
+function useSearchInput({
+  canAddItemNotInList,
+  onChange,
+  queryFn,
+  multiple = false,
+  value,
+  isStatic = false,
+  options,
+}: Props) {
   const [suggestions, setSuggestions] = useState<SearchValue[]>([]);
   const [search, setSearch] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isQuerying, setIsQuerying] = useState(false);
+  const [isShow, setIsShow] = useState(false);
 
   const selectRef = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(selectRef, () => setIsShow(false));
+
+  useEffect(() => {
+    const _selectRef = selectRef.current;
+    if (!_selectRef) return;
+
+    const handleOnClick = () => {
+      setIsShow(true);
+    };
+
+    _selectRef.addEventListener("click", handleOnClick);
+
+    return () => _selectRef.removeEventListener("click", handleOnClick);
+  }, []);
 
   const isSearching = search.length >= MINIMUM_SEARCH_LENGTH;
 
   const isEmpty = suggestions.length === 0;
+
+  useEffect(() => {
+    if (isStatic && options) {
+      setSuggestions(options);
+    }
+  }, [options, isStatic, suggestions.length]);
 
   const setToInitialState = () => {
     setIsQuerying(false);
@@ -35,28 +70,30 @@ function useSearchInput({ canAddItemNotInList, onChange, queryFn }: Props) {
   };
 
   const addItem = (text: string) => {
-    const isTextInList = suggestions.some(
+    const isTextInSuggestions = suggestions.some(
       (suggestion) => suggestion.label === text
     );
-    if (!canAddItemNotInList && !isTextInList) return;
+
+    const isAlreadyInList = value.some(
+      (selectedItem) => selectedItem.label === text
+    );
+
+    if ((!canAddItemNotInList && !isTextInSuggestions) || isAlreadyInList)
+      return;
+    if (!multiple && value.length > 0) return;
 
     let item: SearchValue;
 
-    if (!text) {
+    if (!isTextInSuggestions) {
       item = { label: text, value: text };
     } else {
       item = suggestions.filter(
         (suggestion) => suggestion.label === text
       )[0] as SearchValue;
     }
+    onChange([...value, item]);
 
-    onChange(item);
-    setToInitialState();
-  };
-
-  const onClear = () => {
-    onChange({ label: "", value: "" });
-    setToInitialState();
+    if (!isStatic) setToInitialState();
   };
 
   const handleOnKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -73,38 +110,55 @@ function useSearchInput({ canAddItemNotInList, onChange, queryFn }: Props) {
         break;
       case "Enter":
         e.preventDefault();
+        if (canAddItemNotInList) {
+          addItem(search);
+        }
         if (isEmpty) return;
         addItem(suggestions[selectedIndex]!.label);
         break;
       case "Backspace":
-        e.preventDefault();
-        onClear();
+        handleOnDelete();
         break;
     }
   };
 
-  useEffect(() => {
-    if (!isSearching) {
-      setToInitialState();
-    } else {
-      setSelectedIndex(0);
+  const handleOnDelete = (selectedItem?: string) => {
+    if (search.length > 0) return;
+    if (selectedItem) {
+      onChange(value.filter((data) => data.label !== selectedItem));
+      return;
     }
-  }, [isSearching]);
+
+    onChange(value.slice(0, -1));
+  };
 
   useEffect(() => {
-    if (!isSearching) return;
+    if (!isSearching && !isStatic) {
+      setToInitialState();
+    }
+  }, [isSearching, isStatic]);
+
+  useEffect(() => {
+    if (!isSearching || isStatic) return;
 
     const query = async (search: string) => {
       setIsQuerying(true);
+      if (!queryFn) {
+        throw new Error("queryFn is required when using Search Component");
+      }
       try {
         const res = await queryFn(search);
-        setSuggestions(res);
-      } catch (err) {
-        if (err instanceof TypeError) {
-          throw new Error("queryFn is required when using SingleSearch");
-        }
-      }
+        updateSuggestions(res);
+      } catch (err) {}
       setIsQuerying(false);
+    };
+
+    const updateSuggestions = (suggestions: SearchValue[]) => {
+      const unselectedSuggestions = suggestions.filter(
+        (suggestion) =>
+          !value.some((selectedItem) => selectedItem.label === suggestion.label)
+      );
+      setSuggestions(unselectedSuggestions);
     };
 
     let timeout = setTimeout(() => {
@@ -112,7 +166,7 @@ function useSearchInput({ canAddItemNotInList, onChange, queryFn }: Props) {
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [search, isSearching, queryFn]);
+  }, [search, isSearching, queryFn, value, isStatic]);
 
   const handleOnSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -126,11 +180,11 @@ function useSearchInput({ canAddItemNotInList, onChange, queryFn }: Props) {
     },
     selectedIndex,
     isQuerying,
-    isSearching,
     handleOnKeyDown,
     addItem,
-    onClear,
+    handleOnDelete,
     selectRef,
+    isShow,
   };
 }
 

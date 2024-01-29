@@ -11,6 +11,7 @@ import { callToast } from "~/services/callToast";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
+import useGetUserByName from "~/hooks/useGetUserByName";
 
 function Settings() {
   const [selectedObj, setSelectedObj] = useDeleteAffectStore((state) => [
@@ -23,9 +24,7 @@ function Settings() {
 
   const ctx = trpc.useContext();
   const getAllSemester = trpc.semesters.getAllSemesters.useQuery();
-  const authorUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER", "STUDENT"],
-  });
+  const queryUsers = useGetUserByName();
 
   const section = trpc.sections.getSectionById.useQuery(
     {
@@ -75,7 +74,7 @@ function Settings() {
                   label: "semester",
                   title: "Semester",
                   type: "select",
-                  options: getAllSemester.data,
+                  options: getAllSemester.data ?? [],
                   value:
                     `${section.data?.semester.year as string}/${
                       section.data?.semester.term as string
@@ -98,12 +97,7 @@ function Settings() {
                   label: "instructors",
                   title: "Instructors",
                   type: "multiple-search",
-                  options: authorUser.data?.map(
-                    ({ full_name, student_id }) => ({
-                      label: full_name,
-                      value: student_id,
-                    })
-                  ),
+                  queryFn: queryUsers,
                   value: section.data?.instructors.map(
                     ({ full_name, student_id }) => ({
                       label: full_name,

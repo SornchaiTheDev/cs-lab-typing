@@ -52,7 +52,7 @@ export const updateTaskRouter = router({
 
         const _owner = await ctx.prisma.users.findFirst({
           where: {
-            student_id: owner.value as string,
+            student_id: owner[0]!.value as string,
             deleted_at: null,
           },
           select: {

@@ -1,4 +1,7 @@
-import { router, teacherAboveAndRelatedToCourseProcedure } from "~/server/api/trpc";
+import {
+  router,
+  teacherAboveAndRelatedToCourseProcedure,
+} from "~/server/api/trpc";
 import { AddLabSchema } from "~/schemas/LabSchema";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
@@ -68,11 +71,12 @@ export const createLabRouter = router({
               cause: "DUPLICATED_LAB",
             });
           }
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "SOMETHING_WENT_WRONG",
-          });
         }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
       }
     }),
 });

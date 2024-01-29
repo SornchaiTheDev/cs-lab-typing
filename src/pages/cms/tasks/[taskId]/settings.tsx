@@ -10,6 +10,8 @@ import { callToast } from "~/services/callToast";
 import { useDeleteAffectStore } from "~/store";
 import { useSession } from "next-auth/react";
 import type { SearchValue } from "~/types";
+import useGetUserByName from "~/hooks/useGetUserByName";
+import useGetTagByName from "~/hooks/useGetTags";
 
 function Settings() {
   const { data: session } = useSession();
@@ -36,9 +38,8 @@ function Settings() {
   const canEdit = isOwner;
   const canDelete = isOwner || isAdmin;
 
-  const authorUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER"],
-  });
+  const queryUsers = useGetUserByName();
+  const queryTags = useGetTagByName();
 
   const editTask = async (formData: TAddTask) => {
     try {
@@ -47,7 +48,6 @@ function Settings() {
         id: taskId as string,
       });
       await task.refetch();
-      await tags.refetch();
       callToast({ msg: "Updated task successfully", type: "success" });
     } catch (err) {
       if (err instanceof TRPCClientError) {
@@ -72,8 +72,6 @@ function Settings() {
       type: "task",
     });
   };
-
-  const tags = trpc.tags.getTags.useQuery();
 
   return (
     <>
@@ -125,11 +123,7 @@ function Settings() {
                   label: "tags",
                   title: "Tags",
                   type: "multiple-search",
-                  options:
-                    tags.data?.map(({ name }) => ({
-                      label: name,
-                      value: name,
-                    })) ?? [],
+                  queryFn: queryTags,
                   optional: true,
                   canAddItemNotInList: true,
                   value:
@@ -143,15 +137,15 @@ function Settings() {
                   label: "owner",
                   title: "Owner",
                   type: "single-search",
-                  options:
-                    authorUser.data?.map(({ full_name, student_id }) => ({
-                      label: full_name,
-                      value: student_id,
-                    })) ?? [],
-                  value: {
-                    label: task.data?.owner.full_name ?? "",
-                    value: task.data?.owner.student_id ?? "",
-                  } as SearchValue,
+                  queryFn: queryUsers,
+                  value: task.isLoading
+                    ? []
+                    : ([
+                        {
+                          label: task.data?.owner.full_name ?? "",
+                          value: task.data?.owner.student_id ?? "",
+                        },
+                      ] as SearchValue[]),
                   disabled: !isOwner,
                 },
                 {

@@ -13,8 +13,10 @@ import { callToast } from "~/services/callToast";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import type { SearchValue } from "~/types";
 import { debounce } from "lodash";
+import useGetUserByName from "~/hooks/useGetUserByName";
+import useGetTagByName from "~/hooks/useGetTags";
+import type { SearchValue } from "~/types";
 
 interface TaskRow {
   id: number;
@@ -86,11 +88,8 @@ function Tasks() {
     }
   };
 
-  const ownerUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER"],
-  });
-
-  const tags = trpc.tags.getTags.useQuery();
+  const queryUser = useGetUserByName();
+  const queryTags = useGetTagByName();
 
   const columns = useMemo<ColumnDef<TaskRow, string | tags[] | users>[]>(
     () => [
@@ -194,26 +193,21 @@ function Tasks() {
               label: "tags",
               title: "Tags",
               type: "multiple-search",
-              options:
-                tags.data?.map(({ name }) => ({ label: name, value: name })) ??
-                [],
+              queryFn: queryTags,
               optional: true,
               canAddItemNotInList: true,
-              value: [],
             },
             {
               label: "owner",
               title: "Owner",
               type: "single-search",
-              options:
-                ownerUser.data?.map(({ full_name, student_id }) => ({
-                  label: full_name,
-                  value: student_id,
-                })) ?? [],
-              value: {
-                label: session?.user?.full_name,
-                value: session?.user?.student_id,
-              } as SearchValue,
+              queryFn: queryUser,
+              value: [
+                {
+                  label: session?.user?.full_name,
+                  value: session?.user?.student_id,
+                },
+              ] as SearchValue[],
             },
             {
               label: "isPrivate",

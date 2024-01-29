@@ -18,10 +18,11 @@ import Alert from "~/components/Common/Alert";
 import { TRPCError } from "@trpc/server";
 import type { GetServerSideProps } from "next";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";
-import Multiple from "~/components/Forms/Search/MultipleSearch";
+import Search from "~/components/Forms/Search";
 import type { SearchValue } from "~/types";
 import { useInView } from "react-intersection-observer";
 import { debounce } from "lodash";
+import useGetTagByName from "~/hooks/useGetTags";
 
 interface AddLabModalProps {
   onClose: () => void;
@@ -32,9 +33,9 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
 
   const { courseId, sectionId } = router.query;
 
-  const ctx = trpc.useContext();
+  const ctx = trpc.useUtils();
 
-  const tags = trpc.tags.getTags.useQuery();
+  const query = useGetTagByName();
   const [searchString, setSearchString] = useState("");
   const [selectedTags, setSelectedTags] = useState<SearchValue[]>([]);
 
@@ -144,17 +145,13 @@ const AddLabModal = ({ onClose }: AddLabModalProps) => {
             placeholder="eg. Typing01"
           />
         </div>
-        <Multiple
+        <Search
+          queryFn={query}
           className="flex-1"
-          datas={
-            tags.data?.map(({ name, id }) => ({
-              label: name,
-              value: id,
-            })) ?? []
-          }
           onChange={setSelectedTags}
           title="Tags"
           value={selectedTags}
+          multiple
         />
       </div>
       <div className="grid grid-cols-12 gap-4 overflow-y-auto px-2 py-4">

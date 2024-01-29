@@ -15,6 +15,7 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { createInnerTRPCContext } from "~/server/context";
 import type { SearchValue } from "~/types";
+import useGetUserByName from "~/hooks/useGetUserByName";
 
 function Settings() {
   const { data: session } = useSession();
@@ -41,10 +42,7 @@ function Settings() {
     }
   );
 
-  const authorUser = trpc.users.getAllUsersInRole.useQuery({
-    roles: ["ADMIN", "TEACHER"],
-  });
-
+  const queryUsers = useGetUserByName();
   const editCourseMutation = trpc.courses.updateCourse.useMutation();
   const editCourse = async (formData: TAddCourse) => {
     try {
@@ -98,11 +96,7 @@ function Settings() {
                   label: "authors",
                   title: "Authors",
                   type: "multiple-search",
-                  options:
-                    (authorUser.data?.map((user) => ({
-                      label: user.full_name,
-                      value: user.student_id,
-                    })) as SearchValue[]) ?? [],
+                  queryFn: queryUsers,
                   value: course?.authors.map(({ full_name, student_id }) => ({
                     label: full_name,
                     value: student_id,

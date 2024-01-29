@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
+import useGetTagByName from "~/hooks/useGetTags";
 
 function Settings() {
   const { data: session } = useSession();
@@ -36,7 +37,7 @@ function Settings() {
     }
   );
 
-  const tags = trpc.tags.getTags.useQuery();
+  const queryTags = useGetTagByName();
 
   const editLabMutation = trpc.labs.updateLab.useMutation();
   const editLab = async (formData: TAddLabSchema) => {
@@ -48,7 +49,6 @@ function Settings() {
       });
 
       await lab.refetch();
-      await tags.refetch();
       callToast({
         msg: "Updated lab successfully",
         type: "success",
@@ -93,11 +93,7 @@ function Settings() {
                   type: "multiple-search",
                   optional: true,
                   canAddItemNotInList: true,
-                  options:
-                    tags.data?.map(({ name }) => ({
-                      label: name,
-                      value: name,
-                    })) ?? [],
+                  queryFn: queryTags,
                   value: lab.data?.tags.map(({ name }) => ({
                     label: name,
                     value: name,

@@ -21,6 +21,7 @@ import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import { TRPCError } from "@trpc/server";
 import { debounce } from "lodash";
+import useGetTagByName from "~/hooks/useGetTags";
 interface LabsRow {
   id: number;
   name: string;
@@ -85,7 +86,7 @@ function Labs() {
 
   useEffect(() => {
     fetchLabs();
-  }, [searchString, fetchLabs,pagination]);
+  }, [searchString, fetchLabs, pagination]);
 
   const addLabMutation = trpc.labs.createLab.useMutation();
   const addLab = async (formData: TAddLabSchema) => {
@@ -118,8 +119,7 @@ function Labs() {
     }
   };
 
-  const tags = trpc.tags.getTags.useQuery();
-
+  const queryTags = useGetTagByName();
   const columns = useMemo<ColumnDef<LabsRow, string | (string | labs)[]>[]>(
     () => [
       {
@@ -202,10 +202,7 @@ function Labs() {
               type: "multiple-search",
               canAddItemNotInList: true,
               optional: true,
-              options: tags.data?.map(({ name }) => ({
-                label: name,
-                value: name,
-              })),
+              queryFn: queryTags,
             },
             {
               label: "active",
