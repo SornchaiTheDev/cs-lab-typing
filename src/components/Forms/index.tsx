@@ -82,12 +82,18 @@ function Forms<T>({
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     values: Object.fromEntries(
-      fields.map((field) => {
-        if (["single-search", "multiple-search"].includes(field.type)) {
-          return [field.label, (field.value as SearchValue[]) ?? []];
-        }
-        return [field.label, field.value ?? undefined];
-      })
+      fields
+        .map((field) => {
+          if (field.children) return [field, field.children];
+          return field;
+        })
+        .flat()
+        .map((field) => {
+          if (["single-search", "multiple-search"].includes(field.type)) {
+            return [field.label, (field.value as SearchValue[]) ?? []];
+          }
+          return [field.label, field.value ?? undefined];
+        })
     ) as z.infer<typeof schema>,
   });
 

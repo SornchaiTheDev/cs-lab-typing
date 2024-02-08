@@ -20,7 +20,8 @@ function InsideTaskLayout({
   const menus = [{ name: "Task", path: "" }];
 
   if (canAccessToHistory) {
-    menus.splice(1, 0, { name: "History", path: "history" });
+    menus.splice(1, 0, { name: "Editor", path: "editor" });
+    menus.splice(2, 0, { name: "History", path: "history" });
   }
 
   return (

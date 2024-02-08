@@ -1,5 +1,4 @@
 import InsideTaskLayout from "~/layouts/InsideTaskLayout";
-import { useEffect, useState } from "react";
 import { trpc } from "~/utils";
 import { useRouter } from "next/router";
 import Button from "~/components/Common/Button";
@@ -11,7 +10,6 @@ import { useSession } from "next-auth/react";
 
 function TypingTask() {
   const { data: session } = useSession();
-  const [text, setText] = useState("");
 
   const router = useRouter();
 
@@ -23,52 +21,19 @@ function TypingTask() {
       enabled: !!taskId,
     }
   );
-  const saveTask = trpc.tasks.setTaskBody.useMutation();
+
+  const isProblemType = task.data?.type === "Problem" || task.isLoading;
 
   const isAdmin = session?.user?.roles.includes("ADMIN") ?? false;
   const isTeacher = session?.user?.roles.includes("TEACHER") ?? false;
   const isOwner = task.data?.owner.full_name === session?.user?.full_name;
   const isNotStudent = isAdmin || isTeacher || isOwner;
 
-  const isAlreadySave = task.data?.body === text;
-
-  const handleOnSave = async () => {
-    try {
-      const sanitizedText = text
-        .split("\n")
-        .filter((line) => !["", " "].includes(line))
-        .map((line) => line.replace(/\s+/g, " ").trim())
-        .join(" ");
-
-      await saveTask.mutateAsync({
-        taskId: taskId as string,
-        body: sanitizedText,
-      });
-      callToast({ msg: "Save task successfully", type: "success" });
-      task.refetch();
-      setText(sanitizedText);
-    } catch (err) {
-      if (err instanceof TRPCClientError) {
-        callToast({ msg: err.message, type: "error" });
-      }
-    }
-  };
-
   const handleTryOut = async () => {
-    if (text.length === 0) {
-      return void callToast({ msg: "Task cannot be empty!", type: "error" });
-    }
-    if (text != task.data?.body) {
-      callToast({
-        msg: "Please save you work before. Try it out!",
-        type: "error",
-      });
-    } else {
-      await router.push({
-        pathname: router.pathname + "/tryout",
-        query: router.query,
-      });
-    }
+    await router.push({
+      pathname: router.pathname + "/tryout",
+      query: router.query,
+    });
   };
 
   const cloneTask = trpc.tasks.cloneTask.useMutation();
@@ -95,12 +60,6 @@ function TypingTask() {
     }
   };
 
-  useEffect(() => {
-    if (task.data?.body) {
-      setText(task.data?.body);
-    }
-  }, [task.data?.body]);
-
   return (
     <InsideTaskLayout
       title={task.data?.name ?? ""}
@@ -117,6 +76,17 @@ function TypingTask() {
           ) : (
             <h4 className="text-lg">{task.data?.type as string}</h4>
           )}
+
+          {isProblemType ? (
+            <>
+              <h5 className="mb-2 mt-4 font-bold">Language</h5>
+              {task.isLoading ? (
+                <Skeleton width={"10rem"} height={"1.5rem"} />
+              ) : (
+                <h4 className="text-lg">{task.data?.language as string}</h4>
+              )}
+            </>
+          ) : null}
           <h5 className="mb-2 mt-4 font-bold">Note</h5>
           {task.isLoading ? (
             <Skeleton width={"10rem"} height={"1.5rem"} />
@@ -153,31 +123,6 @@ function TypingTask() {
             </Button>
           )}
         </div>
-      </div>
-
-      <div className="my-2 mt-4 flex-1">
-        {task.isLoading ? (
-          <Skeleton width={"50%"} height={"10rem"} />
-        ) : (
-          <textarea
-            placeholder="Type here..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            disabled={!isOwner}
-            className="monospace min-h-[10rem] w-full rounded-md border-2 border-dashed border-sand-6 bg-transparent text-sand-12 outline-none focus:border-sand-10 focus:ring-transparent md:w-1/2"
-          />
-        )}
-        {isOwner && (
-          <Button
-            isLoading={saveTask.isLoading}
-            onClick={handleOnSave}
-            disabled={isAlreadySave}
-            className="mt-4 w-full rounded bg-sand-12 px-4 text-sm text-sand-1 active:bg-sand-11 md:w-fit"
-            icon="solar:diskette-line-duotone"
-          >
-            Save
-          </Button>
-        )}
       </div>
     </InsideTaskLayout>
   );

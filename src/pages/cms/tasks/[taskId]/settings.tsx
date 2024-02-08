@@ -115,6 +115,7 @@ function Settings() {
                     label: "language",
                     title: "Language",
                     type: "select",
+                    value: task.data?.language ?? "",
                     options: ["C++", "Python", "Java", "C#", "C"],
                   },
                   value: task.data?.type ?? "",
