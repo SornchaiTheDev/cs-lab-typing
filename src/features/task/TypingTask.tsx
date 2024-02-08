@@ -1,6 +1,6 @@
 import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "~/components/Common/Button";
 import Skeleton from "~/components/Common/Skeleton";
 import { callToast } from "~/services/callToast";
@@ -22,6 +22,10 @@ function TypingTask({ taskId }: Props) {
       enabled: !!taskId,
     }
   );
+
+  useEffect(() => {
+    setText(task.data?.body ?? "");
+  }, [task.data]);
 
   const isOwner = task.data?.owner.full_name === data?.user?.full_name;
   const isAlreadySave = task.data?.body === text;
