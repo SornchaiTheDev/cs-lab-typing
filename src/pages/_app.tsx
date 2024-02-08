@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 import "~/styles/globals.css";
 
+
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
