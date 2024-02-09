@@ -1,67 +1,55 @@
-import { BookOpenText, Code } from "lucide-react";
-import React, { useState } from "react";
+import Button from "~/components/Common/Button";
 import MDXEditor from "~/components/Editor";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
-import { cn } from "~/lib/utils";
+import useTask from "./hooks/useTask";
+import { useEffect, useRef } from "react";
+import type { MDXEditorMethods } from "@mdxeditor/editor";
 
 interface Props {
   taskId: string;
 }
 function ProblemTask({ taskId }: Props) {
-  const [mode, setMode] = useState<"preview" | "edit">("edit");
-  const [description, setDescription] = useState(`Hello World`);
+  const {
+    body,
+    setBody,
+    isOwner,
+    isSaving,
+    isAlreadySave,
+    handleOnSaveProblem,
+  } = useTask({
+    taskId,
+  });
+
+  const ref = useRef<MDXEditorMethods>(null);
+
+  useEffect(() => {
+    if (body != "") {
+      ref.current?.setMarkdown(body);
+    }
+  }, [body]);
 
   return (
-    <div className="mt-8 flex flex-1 flex-col">
-      <div className="flex justify-end gap-2 rounded-lg">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setMode("edit")}
-                className={cn(
-                  "rounded-lg  p-2",
-                  mode === "edit" && "bg-sand-12 text-white hover:bg-sand-12/90"
-                )}
-              >
-                <Code />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>View As Markdown</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setMode("preview")}
-                className={cn(
-                  "rounded-lg  p-2",
-                  mode === "preview" &&
-                    "bg-sand-12 text-white hover:bg-sand-12/90"
-                )}
-              >
-                <BookOpenText />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>View As Preview</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+    <div className="mb-6 mt-6 flex flex-1 flex-col rounded-lg ">
+      <div className="max-h-[60vh] flex-1 overflow-y-auto rounded-lg border border-sand-6">
+        <MDXEditor
+          ref={ref}
+          autoFocus
+          onChange={setBody}
+          className="prose max-w-none dark:prose-headings:text-ascent-1 dark:text-ascent-1 dark:prose-code:text-ascent-1 dark:prose-strong:text-ascent-1 min-w-full"
+          markdown={body}
+        />
       </div>
-      <MDXEditor
-        onChange={setDescription}
-        className="prose flex-1"
-        markdown={description}
-      />
+
+      {isOwner && (
+        <Button
+          isLoading={isSaving}
+          onClick={handleOnSaveProblem}
+          disabled={isAlreadySave}
+          className="mt-4 w-full rounded bg-sand-12 px-4 text-sm text-sand-1 active:bg-sand-11 md:w-fit"
+          icon="solar:diskette-line-duotone"
+        >
+          Save
+        </Button>
+      )}
     </div>
   );
 }

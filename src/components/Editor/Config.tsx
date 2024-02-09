@@ -7,9 +7,15 @@ import {
   markdownShortcutPlugin,
   codeBlockPlugin,
   tablePlugin,
+  toolbarPlugin,
+  imagePlugin,
   MDXEditor,
   type MDXEditorMethods,
   type MDXEditorProps,
+  UndoRedo,
+  BoldItalicUnderlineToggles,
+  CodeToggle,
+  InsertImage,
 } from "@mdxeditor/editor";
 
 import "@mdxeditor/editor/style.css";
@@ -21,9 +27,7 @@ export default function InitializedMDXEditor({
 }: { editorRef: ForwardedRef<MDXEditorMethods> | null } & MDXEditorProps) {
   return (
     <MDXEditor
-      className="proses"
       plugins={[
-        // Example Plugin Usage
         headingsPlugin(),
         listsPlugin(),
         quotePlugin(),
@@ -31,6 +35,24 @@ export default function InitializedMDXEditor({
         markdownShortcutPlugin(),
         codeBlockPlugin(),
         tablePlugin(),
+        imagePlugin({
+          imageUploadHandler: (file : File) => {
+            console.log(file)
+            return Promise.resolve("https://via.placeholder.com/400x300");
+          },
+        }),
+        toolbarPlugin({
+          toolbarContents: () => {
+            return (
+              <>
+                <UndoRedo />
+                <BoldItalicUnderlineToggles />
+                <CodeToggle />
+                <InsertImage />
+              </>
+            );
+          },
+        }),
       ]}
       {...props}
       ref={editorRef}

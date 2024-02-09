@@ -168,7 +168,7 @@ function Layout({
               </Popover.Root>
             </div>
           </div>
-          <div className="mt-6 flex flex-1 flex-col">{children}</div>
+          <div className="mt-4 flex flex-1 flex-col">{children}</div>
         </div>
         <div className="roboto w-full gap-2 bg-sand-12 py-6  text-center text-sand-6 dark:bg-sand-1 dark:text-sand-10">
           <h6>made with 💖 for CS Kasetsart University</h6>
