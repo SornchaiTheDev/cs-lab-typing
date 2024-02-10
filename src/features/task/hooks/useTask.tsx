@@ -1,6 +1,6 @@
 import { TRPCClientError } from "@trpc/client";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { callToast } from "~/services/callToast";
 import { trpc } from "~/utils";
 
@@ -69,12 +69,17 @@ function useTask({ taskId, onTaskLoad }: Props) {
   const isAlreadySave = task.data?.body === body;
   const isLoading = task.isLoading;
 
+  const memoizedTaskLoad = useCallback((body: string) => {
+    if (!onTaskLoad) return;
+    return onTaskLoad(body);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
-    if(!onTaskLoad) return;
     if (!isLoading && task.data) {
-      onTaskLoad(task.data.body ?? "");
+      memoizedTaskLoad(task.data.body ?? "");
     }
-  }, [task, isLoading, onTaskLoad]);
+  }, [task.data, isLoading, memoizedTaskLoad]);
 
   return {
     isLoading,
