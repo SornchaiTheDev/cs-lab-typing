@@ -20,7 +20,6 @@ function ProblemTask({ taskId }: Props) {
   } = useTask({
     taskId,
     onTaskLoad: (body) => {
-      console.log(body);
       ref.current?.setMarkdown(body);
     },
   });

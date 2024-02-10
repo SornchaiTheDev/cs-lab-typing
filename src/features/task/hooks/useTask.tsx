@@ -6,7 +6,7 @@ import { trpc } from "~/utils";
 
 interface Props {
   taskId: string;
-  onTaskLoad: (body: string) => void;
+  onTaskLoad?: (body: string) => void;
 }
 
 function useTask({ taskId, onTaskLoad }: Props) {
@@ -70,6 +70,7 @@ function useTask({ taskId, onTaskLoad }: Props) {
   const isLoading = task.isLoading;
 
   useEffect(() => {
+    if(!onTaskLoad) return;
     if (!isLoading && task.data) {
       onTaskLoad(task.data.body ?? "");
     }
