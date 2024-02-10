@@ -10,6 +10,7 @@ import Nprogress from "nprogress";
 import { useEffect } from "react";
 
 import "~/styles/globals.css";
+import "~/styles/mdxeditor.css"
 
 
 const MyApp: AppType<{ session: Session | null }> = ({

@@ -16,9 +16,8 @@ import {
   BoldItalicUnderlineToggles,
   CodeToggle,
   InsertImage,
+  diffSourcePlugin,
 } from "@mdxeditor/editor";
-
-import "@mdxeditor/editor/style.css";
 
 // Only import this to the next file
 export default function InitializedMDXEditor({
@@ -35,9 +34,10 @@ export default function InitializedMDXEditor({
         markdownShortcutPlugin(),
         codeBlockPlugin(),
         tablePlugin(),
+        diffSourcePlugin({ viewMode: "rich-text", diffMarkdown: "boo" }),
         imagePlugin({
-          imageUploadHandler: (file : File) => {
-            console.log(file)
+          imageUploadHandler: (file: File) => {
+            console.log(file);
             return Promise.resolve("https://via.placeholder.com/400x300");
           },
         }),

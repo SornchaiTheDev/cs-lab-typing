@@ -6,8 +6,10 @@ import { trpc } from "~/utils";
 
 interface Props {
   taskId: string;
+  onTaskLoad: (body: string) => void;
 }
-function useTask({ taskId }: Props) {
+
+function useTask({ taskId, onTaskLoad }: Props) {
   const [body, setBody] = useState<string>("");
   const { data } = useSession();
 
@@ -65,9 +67,16 @@ function useTask({ taskId }: Props) {
   };
 
   const isAlreadySave = task.data?.body === body;
+  const isLoading = task.isLoading;
+
+  useEffect(() => {
+    if (!isLoading && task.data) {
+      onTaskLoad(task.data.body ?? "");
+    }
+  }, [task, isLoading, onTaskLoad]);
 
   return {
-    isLoading: task.isLoading,
+    isLoading,
     isSaving: saveTask.isLoading,
     task: task.data,
     isOwner,
