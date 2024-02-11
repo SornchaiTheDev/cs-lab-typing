@@ -7,10 +7,11 @@ import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import ProblemTask from "~/features/task/ProblemTask";
 
 interface Props {
+  taskName: string;
   taskType: "Lesson" | "Problem" | "Typing";
 }
 
-function Editor({ taskType }: Props) {
+function Editor({ taskName, taskType }: Props) {
   const router = useRouter();
   const { taskId } = router.query;
 
@@ -18,7 +19,7 @@ function Editor({ taskType }: Props) {
   const isProblemTask = taskType === "Problem";
 
   return (
-    <InsideTaskLayout title="Editor" canAccessToHistory canAccessToSettings>
+    <InsideTaskLayout title={taskName} canAccessToHistory canAccessToSettings>
       {isTypingTask && <TypingTask taskId={taskId as string} />}
       {isProblemTask && <ProblemTask taskId={taskId as string} />}
     </InsideTaskLayout>
@@ -43,6 +44,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   }
   return {
     props: {
+      taskName: task.name,
       taskType: task.type,
     },
   };
