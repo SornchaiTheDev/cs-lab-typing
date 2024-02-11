@@ -5,7 +5,6 @@ import {
   quotePlugin,
   thematicBreakPlugin,
   markdownShortcutPlugin,
-  codeBlockPlugin,
   tablePlugin,
   toolbarPlugin,
   imagePlugin,
@@ -14,16 +13,27 @@ import {
   type MDXEditorProps,
   UndoRedo,
   BoldItalicUnderlineToggles,
+  InsertTable,
   CodeToggle,
+  DiffSourceToggleWrapper,
   InsertImage,
+  InsertCodeBlock,
   diffSourcePlugin,
+  ChangeCodeMirrorLanguage,
+  codeMirrorPlugin,
+  ConditionalContents,
+  InsertSandpack,
+  ShowSandpackInfo,
+  codeBlockPlugin,
 } from "@mdxeditor/editor";
+import type { AllEditorProps } from ".";
 
 // Only import this to the next file
 export default function InitializedMDXEditor({
   editorRef,
   ...props
-}: { editorRef: ForwardedRef<MDXEditorMethods> | null } & MDXEditorProps) {
+}: { editorRef: ForwardedRef<MDXEditorMethods> | null } & MDXEditorProps &
+  AllEditorProps) {
   return (
     <MDXEditor
       plugins={[
@@ -32,9 +42,21 @@ export default function InitializedMDXEditor({
         quotePlugin(),
         thematicBreakPlugin(),
         markdownShortcutPlugin(),
-        codeBlockPlugin(),
+        codeBlockPlugin({ defaultCodeBlockLanguage: "python" }),
+        codeMirrorPlugin({
+          codeBlockLanguages: {
+            python: "Python",
+            c: "C",
+            cpp: "C++",
+            java: "Java",
+          },
+          theme: "light",
+        }),
         tablePlugin(),
-        diffSourcePlugin({ viewMode: "rich-text", diffMarkdown: "boo" }),
+        diffSourcePlugin({
+          viewMode: "rich-text",
+          diffMarkdown: props.diffMarkdown,
+        }),
         imagePlugin({
           imageUploadHandler: (file: File) => {
             console.log(file);
@@ -44,12 +66,22 @@ export default function InitializedMDXEditor({
         toolbarPlugin({
           toolbarContents: () => {
             return (
-              <>
+              <DiffSourceToggleWrapper>
                 <UndoRedo />
                 <BoldItalicUnderlineToggles />
                 <CodeToggle />
                 <InsertImage />
-              </>
+                <InsertTable />
+                <ConditionalContents
+                  options={[
+                    {
+                      when: (editor) => editor?.editorType === "codeblock",
+                      contents: () => <ChangeCodeMirrorLanguage />,
+                    },
+                    { fallback: () => <InsertCodeBlock /> },
+                  ]}
+                />
+              </DiffSourceToggleWrapper>
             );
           },
         }),

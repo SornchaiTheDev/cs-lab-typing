@@ -122,6 +122,9 @@ dependencies:
   '@types/react-dom':
     specifier: ^18.0.11
     version: 18.2.19
+  '@types/react-syntax-highlighter':
+    specifier: ^15.5.11
+    version: 15.5.11
   '@types/react-table':
     specifier: ^7.7.14
     version: 7.7.19
@@ -173,6 +176,9 @@ dependencies:
   framer-motion:
     specifier: ^10.12.4
     version: 10.18.0(react-dom@18.2.0)(react@18.2.0)
+  highlight.js:
+    specifier: ^11.9.0
+    version: 11.9.0
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -251,6 +257,9 @@ dependencies:
   react-intersection-observer:
     specifier: ^9.5.2
     version: 9.7.0(react-dom@18.2.0)(react@18.2.0)
+  react-syntax-highlighter:
+    specifier: ^15.5.0
+    version: 15.5.0(react@18.2.0)
   react-table:
     specifier: ^7.8.0
     version: 7.8.0(react@18.2.0)
@@ -2795,6 +2804,12 @@ packages:
       '@types/react': 18.2.55
     dev: false
 
+  /@types/react-syntax-highlighter@15.5.11:
+    resolution: {integrity: sha512-ZqIJl+Pg8kD+47kxUjvrlElrraSUrYa4h0dauY/U/FTUuprSCqvUj+9PNQNQzVc6AJgIWUUxn87/gqsMHNbRjw==}
+    dependencies:
+      '@types/react': 18.2.55
+    dev: false
+
   /@types/react-table@7.7.19:
     resolution: {integrity: sha512-47jMa1Pai7ily6BXJCW33IL5ghqmCWs2VM9s+h1D4mCaK5P4uNkZOW3RMMg8MCXBvAJ0v9+sPqKjhid0PaJPQA==}
     dependencies:
@@ -5177,6 +5192,11 @@ packages:
 
   /highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
+    dev: false
+
+  /highlight.js@11.9.0:
+    resolution: {integrity: sha512-fJ7cW7fQGCYAkgv4CPfwFHrfd/cLS4Hau96JuJ+ZTOWhjnhoeN1ub1tFmALm/+lW5z4WCAuAV9bm05AP0mS6Gw==}
+    engines: {node: '>=12.0.0'}
     dev: false
 
   /hoist-non-react-statics@3.3.2:

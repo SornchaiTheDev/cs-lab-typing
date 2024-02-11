@@ -11,6 +11,7 @@ interface Props {
 
 function useTask({ taskId, onTaskLoad }: Props) {
   const [body, setBody] = useState<string>("");
+  const [diffTaskBody, setDiffTaskBody] = useState<string>("");
   const { data } = useSession();
 
   const task = trpc.tasks.getTaskById.useQuery(
@@ -23,6 +24,7 @@ function useTask({ taskId, onTaskLoad }: Props) {
   useEffect(() => {
     if (task.data) {
       setBody(task.data.body ?? "");
+      setDiffTaskBody(task.data.body ?? "");
     }
   }, [task.data]);
 
@@ -91,6 +93,7 @@ function useTask({ taskId, onTaskLoad }: Props) {
     isAlreadySave,
     body,
     setBody,
+    diffTaskBody,
   };
 }
 

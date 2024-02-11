@@ -11,6 +11,7 @@ interface Props {
 function ProblemTask({ taskId }: Props) {
   const ref = useRef<MDXEditorMethods>(null);
   const {
+    diffTaskBody,
     body,
     setBody,
     isOwner,
@@ -26,11 +27,12 @@ function ProblemTask({ taskId }: Props) {
 
   return (
     <div className="mb-6 mt-6 flex flex-1 flex-col rounded-lg">
-      <div className="flex-1 rounded-lg border border-sand-6">
+      <div className="flex-1 bg-white rounded-lg border border-sand-6">
         <MDXEditor
           ref={ref}
           autoFocus
           onChange={setBody}
+          diffMarkdown={diffTaskBody}
           contentEditableClassName="p-4 prose max-w-none dark:text-ascent-1 before:prose-code:content-[''] after:prose-code:content-['']"
           markdown={body}
         />
