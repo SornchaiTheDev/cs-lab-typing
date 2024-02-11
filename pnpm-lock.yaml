@@ -8,9 +8,15 @@ dependencies:
   '@codemirror/commands':
     specifier: ^6.2.3
     version: 6.3.3
+  '@codemirror/lang-cpp':
+    specifier: ^6.0.2
+    version: 6.0.2
   '@codemirror/lang-javascript':
     specifier: ^6.1.7
     version: 6.2.1
+  '@codemirror/lang-python':
+    specifier: ^6.1.4
+    version: 6.1.4(@codemirror/view@6.23.1)
   '@codemirror/language':
     specifier: ^6.6.0
     version: 6.10.1
@@ -371,6 +377,13 @@ packages:
       '@lezer/common': 1.2.1
     dev: false
 
+  /@codemirror/lang-cpp@6.0.2:
+    resolution: {integrity: sha512-6oYEYUKHvrnacXxWxYa6t4puTlbN3dgV662BDfSH8+MfjQjVmP697/KYTDOqpxgerkvoNm7q5wlFMBeX8ZMocg==}
+    dependencies:
+      '@codemirror/language': 6.10.1
+      '@lezer/cpp': 1.1.2
+    dev: false
+
   /@codemirror/lang-css@6.2.1(@codemirror/view@6.23.1):
     resolution: {integrity: sha512-/UNWDNV5Viwi/1lpr/dIXJNWiwDxpw13I4pTUAsNxZdg6E0mI2kTQb0P2iHczg1Tu+H4EBgJR+hYhKiHKko7qg==}
     dependencies:
@@ -419,6 +432,18 @@ packages:
       '@codemirror/view': 6.23.1
       '@lezer/common': 1.2.1
       '@lezer/markdown': 1.2.0
+    dev: false
+
+  /@codemirror/lang-python@6.1.4(@codemirror/view@6.23.1):
+    resolution: {integrity: sha512-b6d1TDqrkCjFNvMO01SWldFiDoZ39yl3tDMC1Y5f8glA2eZpynPxJhwYVTlGFr0stizcJgrp6ojLEGH2myoZAw==}
+    dependencies:
+      '@codemirror/autocomplete': 6.12.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.0)(@codemirror/view@6.23.1)(@lezer/common@1.2.1)
+      '@codemirror/language': 6.10.1
+      '@codemirror/state': 6.4.0
+      '@lezer/common': 1.2.1
+      '@lezer/python': 1.1.11
+    transitivePeerDependencies:
+      - '@codemirror/view'
     dev: false
 
   /@codemirror/language@6.10.1:
@@ -986,6 +1011,14 @@ packages:
     resolution: {integrity: sha512-yemX0ZD2xS/73llMZIK6KplkjIjf2EvAHcinDi/TfJ9hS25G0388+ClHt6/3but0oOxinTcQHJLDXh6w1crzFQ==}
     dev: false
 
+  /@lezer/cpp@1.1.2:
+    resolution: {integrity: sha512-macwKtyeUO0EW86r3xWQCzOV9/CF8imJLpJlPv3sDY57cPGeUZ8gXWOWNlJr52TVByMV3PayFQCA5SHEERDmVQ==}
+    dependencies:
+      '@lezer/common': 1.2.1
+      '@lezer/highlight': 1.2.0
+      '@lezer/lr': 1.4.0
+    dev: false
+
   /@lezer/css@1.1.7:
     resolution: {integrity: sha512-7BlFFAKNn/b39jJLrhdLSX5A2k56GIJvyLqdmm7UU+7XvequY084iuKDMAEhAmAzHnwDE8FK4OQtsIUssW91tg==}
     dependencies:
@@ -1027,6 +1060,14 @@ packages:
     dependencies:
       '@lezer/common': 1.2.1
       '@lezer/highlight': 1.2.0
+    dev: false
+
+  /@lezer/python@1.1.11:
+    resolution: {integrity: sha512-C3QeLCcdAKJDUOsYjfFP6a1wdn8jhUNX200bgFm8TpKH1eM2PlgYQS5ugw6E38qGeEx7CP21I1Q52SoybXt0OQ==}
+    dependencies:
+      '@lezer/common': 1.2.1
+      '@lezer/highlight': 1.2.0
+      '@lezer/lr': 1.4.0
     dev: false
 
   /@mapbox/node-pre-gyp@1.0.11:

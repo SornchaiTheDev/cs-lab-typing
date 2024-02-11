@@ -22,8 +22,6 @@ import {
   ChangeCodeMirrorLanguage,
   codeMirrorPlugin,
   ConditionalContents,
-  InsertSandpack,
-  ShowSandpackInfo,
   codeBlockPlugin,
 } from "@mdxeditor/editor";
 import type { AllEditorProps } from ".";

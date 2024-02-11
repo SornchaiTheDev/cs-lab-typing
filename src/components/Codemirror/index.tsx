@@ -3,7 +3,8 @@ import Codemirror from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags as t } from "@lezer/highlight";
 import { EditorView, keymap } from "@codemirror/view";
-import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { cpp } from "@codemirror/lang-cpp";
 import type { Extension } from "@codemirror/state";
 import {
   indentWithTab,
@@ -63,7 +64,22 @@ interface Props {
   theme?: Extension;
   autoFocus?: boolean;
   placeHolder?: string;
+  readOnly?: boolean;
+  language?: "javascript" | "python" | "c" | "cpp" | "none";
 }
+
+const getLanguage = (language: string) => {
+  switch (language) {
+    case "python":
+      return python();
+    case "c":
+      return cpp();
+    case "cpp":
+      return cpp();
+    default:
+      return python();
+  }
+};
 
 function CodemirrorRoot({
   value,
@@ -71,13 +87,16 @@ function CodemirrorRoot({
   height = "100%",
   minHeight = "100px",
   className,
-  syntaxHighlighting = true,
+  syntaxHighlighting = false,
   theme,
   autoFocus = false,
   placeHolder,
+  readOnly,
+  language = "none",
 }: Props) {
   return (
     <Codemirror
+      readOnly={readOnly}
       className={className}
       minHeight={minHeight}
       placeholder={placeHolder ? placeHolder : undefined}
@@ -93,7 +112,7 @@ function CodemirrorRoot({
       autoFocus={autoFocus}
       extensions={[
         baseTheme,
-        javascript(),
+        getLanguage(language),
         keymap.of([
           { key: "Tab", run: indentWithTab },
           { key: "Shift-Tab", run: indentWithTabLess },
