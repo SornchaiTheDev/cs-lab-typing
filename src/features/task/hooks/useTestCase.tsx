@@ -48,7 +48,9 @@ function useTestCase({ testCases, setTestCases }: Props) {
 
   const handleOnRemoveTestCase = (number: number) => {
     setTestCases((prev) =>
-      prev.filter((testCase) => testCase.number !== number)
+      prev
+        .filter((testCase) => testCase.number !== number)
+        .map(({ input, output }, index) => ({ number: index + 1, input, output }))
     );
   };
 

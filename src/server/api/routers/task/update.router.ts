@@ -235,8 +235,13 @@ export const updateTaskRouter = router({
 
         const problemId = task.problem!.id;
 
+        await ctx.prisma.testcases.deleteMany({
+          where: {
+            problem_id: problemId,
+          },
+        });
+
         await ctx.prisma.testcases.createMany({
-          skipDuplicates: true,
           data: testcases.map(({ number, input, output }) => ({
             problem_id: problemId,
             number,

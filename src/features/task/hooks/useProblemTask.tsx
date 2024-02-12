@@ -17,7 +17,6 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
   const [diffTaskBody, setDiffTaskBody] = useState<string>("");
   const [allFieldsInitialValues, setInitialValues] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const saveProblemTask = trpc.tasks.setTaskProblem.useMutation();
   const utils = trpc.useUtils();
 
   const handleOnTaskLoad = (task: TaskExtendedWithProblem) => {
@@ -35,6 +34,8 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
   };
 
   const useTaskReturned = useTask({ taskId, onTaskLoad: handleOnTaskLoad });
+
+  const saveProblemTask = trpc.tasks.setTaskProblem.useMutation();
 
   const handleOnSaveProblem = async () => {
     try {
