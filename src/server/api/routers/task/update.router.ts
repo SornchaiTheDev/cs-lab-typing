@@ -185,4 +185,70 @@ export const updateTaskRouter = router({
         });
       }
     }),
+  setTaskProblem: teacherAboveProcedure
+    .input(
+      z.object({
+        taskId: z.string(),
+
+        description: z.string(),
+        sourceCode: z.string(),
+        testcases: z.array(
+          z.object({
+            number: z.number(),
+            input: z.string(),
+            output: z.string(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { taskId, sourceCode, testcases, description } = input;
+      const _taskId = parseInt(taskId);
+
+      try {
+        const task = await ctx.prisma.tasks.update({
+          where: {
+            id: _taskId,
+          },
+          data: {
+            problem: {
+              upsert: {
+                create: {
+                  description,
+                  source_code: sourceCode,
+                },
+                update: {
+                  source_code: sourceCode,
+                  description,
+                },
+              },
+            },
+          },
+          select: {
+            problem: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        const problemId = task.problem!.id;
+
+        await ctx.prisma.testcases.createMany({
+          skipDuplicates: true,
+          data: testcases.map(({ number, input, output }) => ({
+            problem_id: problemId,
+            number,
+            input,
+            output,
+          })),
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
 });

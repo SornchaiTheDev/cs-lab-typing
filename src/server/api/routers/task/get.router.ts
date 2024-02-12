@@ -121,8 +121,14 @@ export const getTaskRouter = router({
         include: {
           tags: true,
           owner: true,
+          problem: {
+            include: {
+              testcases: true,
+            },
+          },
         },
       });
+
       return task;
     } catch (err) {
       throw new TRPCError({
@@ -270,7 +276,6 @@ export const getTaskRouter = router({
     const _sectionId = parseInt(sectionId);
 
     try {
-
       const section = await ctx.prisma.sections.findUnique({
         where: {
           id: _sectionId,

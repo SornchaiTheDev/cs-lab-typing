@@ -1,4 +1,4 @@
-import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
 export interface TestCase {
   number: number;
@@ -6,9 +6,12 @@ export interface TestCase {
   output: string;
 }
 
-function useTestCase() {
-  const [testCases, setTestCases] = useState<TestCase[]>([]);
+interface Props {
+  testCases: TestCase[];
+  setTestCases: Dispatch<SetStateAction<TestCase[]>>;
+}
 
+function useTestCase({ testCases, setTestCases }: Props) {
   const handleOnAddTestCase = () => {
     setTestCases((prev) => [
       ...prev,
@@ -43,12 +46,19 @@ function useTestCase() {
     setTestCases([...testCases]);
   };
 
+  const handleOnRemoveTestCase = (number: number) => {
+    setTestCases((prev) =>
+      prev.filter((testCase) => testCase.number !== number)
+    );
+  };
+
   return {
     testCases,
     handleOnAddTestCase,
     handleOnInputChange,
     handleOnRunTestCase,
     handleOnRunAllTestCase,
+    handleOnRemoveTestCase,
   };
 }
 

@@ -1,11 +1,11 @@
 import Button from "~/components/Common/Button";
 import MDXEditor from "~/components/Editor";
-import useTask from "./hooks/useTask";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
 import Skeleton from "~/components/Common/Skeleton";
 import CodemirrorRoot from "~/components/Codemirror";
 import TestCaseSection from "./components/TestCase/TestCaseSection";
+import useProblemTask from "./hooks/useProblemTask";
 
 interface Props {
   taskId: string;
@@ -14,22 +14,24 @@ interface Props {
 function ProblemTask({ taskId }: Props) {
   const ref = useRef<MDXEditorMethods>(null);
   const {
-    diffTaskBody,
-    body,
-    setBody,
-    isOwner,
     isLoading,
     isSaving,
     isAlreadySave,
+    description,
+    setDescription,
+    sourceCode,
+    setSourceCode,
+    testCases,
+    setTestCases,
+    isOwner,
+    diffTaskBody,
     handleOnSaveProblem,
-  } = useTask({
+  } = useProblemTask({
     taskId,
-    onTaskLoad: (body) => {
-      ref.current?.setMarkdown(body);
+    onDescriptionLoad: (description) => {
+      ref.current?.setMarkdown(description);
     },
   });
-
-  const [sourceCode, setSourceCode] = useState<string>("");
 
   return (
     <div className="mb-6 mt-6 flex flex-1 flex-col rounded-lg">
@@ -42,21 +44,25 @@ function ProblemTask({ taskId }: Props) {
             <MDXEditor
               ref={ref}
               autoFocus
-              onChange={setBody}
+              onChange={setDescription}
               diffMarkdown={diffTaskBody}
               contentEditableClassName="p-4 prose prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-['']"
-              markdown={body}
+              markdown={description}
             />
           </div>
 
           <div className="mb-2 mt-10">
             <h4 className="text-3xl font-bold text-sand-12">Source Code</h4>
-            <div className="mt-4 overflow-hidden rounded-lg border border-sand-6">
-              <CodemirrorRoot syntaxHighlighting value={sourceCode} onChange={setSourceCode} minHeight="300px" />
-            </div>
+            <CodemirrorRoot
+              className="mt-4 h-full overflow-hidden rounded-lg border border-sand-6"
+              syntaxHighlighting
+              value={sourceCode}
+              onChange={setSourceCode}
+              minHeight="300px"
+            />
           </div>
 
-          <TestCaseSection />
+          <TestCaseSection testCases={testCases} setTestCases={setTestCases} />
 
           {isOwner && (
             <Button

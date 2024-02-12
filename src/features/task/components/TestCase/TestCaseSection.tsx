@@ -1,15 +1,21 @@
 import { Play, Plus } from "lucide-react";
 import TestCaseList from "./TestCaseList";
-import useTestCase from "../../hooks/useTestCase";
+import useTestCase, { type TestCase } from "../../hooks/useTestCase";
+import type { Dispatch, SetStateAction } from "react";
 
-function TestCaseSection() {
+interface Props {
+  testCases: TestCase[];
+  setTestCases: Dispatch<SetStateAction<TestCase[]>>;
+}
+
+function TestCaseSection({ testCases, setTestCases }: Props) {
   const {
-    testCases,
     handleOnAddTestCase,
     handleOnInputChange,
     handleOnRunTestCase,
     handleOnRunAllTestCase,
-  } = useTestCase();
+    handleOnRemoveTestCase,
+  } = useTestCase({ testCases, setTestCases });
 
   return (
     <div className="mb-2 mt-10">
@@ -33,6 +39,7 @@ function TestCaseSection() {
       <TestCaseList
         handleOnRunTestCase={handleOnRunTestCase}
         handleOnInputChange={handleOnInputChange}
+        handleOnRemoveTestCase={handleOnRemoveTestCase}
         {...{ testCases }}
       />
     </div>

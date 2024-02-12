@@ -211,6 +211,28 @@ model tasks {
   updated_at       DateTime?        @updatedAt
   deleted_at       DateTime?
   history          task_histories[]
+  problem          problems?
+}
+
+model problems {
+  id          Int         @id @default(autoincrement())
+  task        tasks       @relation(fields: [task_id], references: [id])
+  task_id     Int         @unique
+  description String
+  source_code String
+  testcases   testcases[]
+}
+
+model testcases {
+  id         Int       @id @default(autoincrement())
+  problem    problems  @relation(fields: [problem_id], references: [id])
+  problem_id Int
+  number      Int
+  input      String
+  output     String
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
 }
 
 model task_histories {
