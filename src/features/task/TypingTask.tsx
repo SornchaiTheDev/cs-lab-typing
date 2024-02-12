@@ -1,6 +1,6 @@
 import Button from "~/components/Common/Button";
 import Skeleton from "~/components/Common/Skeleton";
-import useTask from "./hooks/useTask";
+import useTypingTask from "./hooks/useTypingTask";
 
 interface Props {
   taskId: string;
@@ -15,7 +15,7 @@ function TypingTask({ taskId }: Props) {
     isAlreadySave,
     isOwner,
     handleOnSaveTyping,
-  } = useTask({
+  } = useTypingTask({
     taskId,
   });
 

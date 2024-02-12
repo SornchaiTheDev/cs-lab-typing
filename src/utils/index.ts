@@ -17,3 +17,4 @@ export { convertToThousand } from "./convertToThousand";
 export { sanitizeFilename } from "./sanitizeFilename";
 export { findHighestSpeedAndScore } from "./findHighestSpeedAndScore";
 export { convertToCompact } from "./convertToCompact";
+export { isFieldDiff } from "./isFieldDiff";

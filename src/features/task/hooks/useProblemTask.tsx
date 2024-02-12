@@ -3,13 +3,12 @@ import type { TestCase } from "./useTestCase";
 import { trpc } from "~/utils";
 import { callToast } from "~/services/callToast";
 import useTask, { type TaskExtendedWithProblem } from "./useTask";
+import { isFieldDiff } from "~/utils/isFieldDiff";
 
 interface Props {
   taskId: string;
   onDescriptionLoad: (description: string) => void;
 }
-
-const isFieldDiff = (a: string, b: string) => a !== b;
 
 function useProblemTask({ taskId, onDescriptionLoad }: Props) {
   const [description, setDescription] = useState<string>("");
