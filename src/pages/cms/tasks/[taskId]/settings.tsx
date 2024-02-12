@@ -73,6 +73,20 @@ function Settings() {
     });
   };
 
+  const allLanguages = trpc.judge.getAllLanguages.useQuery();
+
+  const transformToSearchValue = (
+    data: { id: number; name: string } | undefined | null
+  ) => {
+    if (!data) return [];
+    return [
+      {
+        label: data.name,
+        value: data.id,
+      },
+    ];
+  };
+
   return (
     <>
       {selectedObj && <DeleteAffect type="task" />}
@@ -114,9 +128,9 @@ function Settings() {
                   children: {
                     label: "language",
                     title: "Language",
-                    type: "select",
-                    value: task.data?.language ?? "",
-                    options: ["C++", "Python", "Java", "C#", "C"],
+                    type: "static-search",
+                    value: transformToSearchValue(task.data?.language),
+                    options: allLanguages.data ?? [],
                   },
                   value: task.data?.type ?? "",
                 },

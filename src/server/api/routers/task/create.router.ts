@@ -26,7 +26,17 @@ export const createTaskRouter = router({
           data: {
             isPrivate,
             name,
-            language,
+            language: {
+              connectOrCreate: {
+                where: {
+                  id: language[0]!.value as number,
+                },
+                create: {
+                  id: language[0]!.value as number,
+                  name: language[0]!.value as string,
+                },
+              },
+            },
             note: note ?? "",
             tags: {
               connectOrCreate: tags?.map(({ value }) => ({
@@ -95,14 +105,26 @@ export const createTaskRouter = router({
           },
         });
         if (originalTask) {
-          const { isPrivate, name, body, language, note, type, tags, owner } =
-            originalTask;
+          const {
+            isPrivate,
+            name,
+            body,
+            language_id,
+            note,
+            type,
+            tags,
+            owner,
+          } = originalTask;
           const cloneTask = await ctx.prisma.tasks.create({
             data: {
               name: `${name} (clone)`,
               body,
               isPrivate,
-              language,
+              language : {
+                connect: {
+                  id: language_id as number,
+                }
+              },
               note,
               type,
               tags: {

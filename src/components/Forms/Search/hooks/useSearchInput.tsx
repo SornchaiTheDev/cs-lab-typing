@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
 } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import type { SearchValue } from "~/types";
@@ -15,6 +16,7 @@ interface Props {
   queryFn?: (query: string) => Promise<SearchValue[]>;
   multiple?: boolean;
   isStatic?: boolean;
+  isSingleSelect?: boolean;
   options?: SearchValue[];
 }
 
@@ -60,14 +62,28 @@ function useSearchInput({
     if (isStatic && options) {
       setSuggestions(options);
     }
-  }, [options, isStatic, suggestions.length]);
+  }, [options, isStatic]);
 
-  const setToInitialState = () => {
+  useEffect(() => {
+    if (isStatic) {
+      setSuggestions(
+        options!.filter(({ label }) =>
+          label.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    }
+  }, [isStatic, search, options, setSuggestions]);
+
+  const setToInitialState = useCallback(() => {
+    if (isStatic) {
+      setSuggestions(options ?? []);
+    } else {
+      setSuggestions([]);
+    }
     setIsQuerying(false);
     setSelectedIndex(0);
     setSearch("");
-    setSuggestions([]);
-  };
+  }, [isStatic, options]);
 
   const addItem = (text: string) => {
     const isTextInSuggestions = suggestions.some(
@@ -93,7 +109,7 @@ function useSearchInput({
     }
     onChange([...value, item]);
 
-    if (!isStatic) setToInitialState();
+    setToInitialState();
   };
 
   const handleOnKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -136,7 +152,7 @@ function useSearchInput({
     if (!isSearching && !isStatic) {
       setToInitialState();
     }
-  }, [isSearching, isStatic]);
+  }, [isSearching, isStatic, setToInitialState]);
 
   useEffect(() => {
     if (!isSearching || isStatic) return;

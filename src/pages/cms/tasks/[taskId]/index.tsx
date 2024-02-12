@@ -83,7 +83,7 @@ function TypingTask() {
               {task.isLoading ? (
                 <Skeleton width={"10rem"} height={"1.5rem"} />
               ) : (
-                <h4 className="text-lg">{task.data?.language as string}</h4>
+                <h4 className="text-lg">{task.data?.language?.name ?? ""}</h4>
               )}
             </>
           ) : null}

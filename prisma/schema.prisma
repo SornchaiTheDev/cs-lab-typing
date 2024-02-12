@@ -192,11 +192,18 @@ model tags {
   tasks      tasks[]   @relation("task_tag")
 }
 
+model languages {
+  id    Int     @id
+  name  String
+  tasks tasks[]
+}
+
 model tasks {
   id               Int              @id @default(autoincrement())
   name             String
   type             task_type
-  language         String?
+  language         languages?        @relation(fields: [language_id], references: [id])
+  language_id       Int?
   tags             tags[]           @relation("task_tag")
   owner            users            @relation(fields: [usersId], references: [id])
   usersId          Int
@@ -227,7 +234,7 @@ model testcases {
   id         Int       @id @default(autoincrement())
   problem    problems  @relation(fields: [problem_id], references: [id])
   problem_id Int
-  number      Int
+  number     Int
   input      String
   output     String
   created_at DateTime  @default(now())

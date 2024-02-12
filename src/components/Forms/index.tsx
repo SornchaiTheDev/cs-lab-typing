@@ -44,6 +44,7 @@ type StaticSearchField<T> = BaseField<T> & {
   type: "static-search";
   options: SearchValue[];
   canAddItemNotInList?: boolean;
+  multiple?: boolean;
 };
 
 type SelectField<T> = BaseField<T> & {
@@ -154,7 +155,7 @@ function Forms<T>({
                 disabled={field.disabled || isSubmitting}
                 options={field.options}
                 canAddItemNotInList={field.canAddItemNotInList ?? false}
-                multiple
+                multiple={field.multiple ?? false}
                 isStatic
               />
             )}

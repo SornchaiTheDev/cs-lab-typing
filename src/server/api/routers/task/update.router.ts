@@ -82,7 +82,17 @@ export const updateTaskRouter = router({
               })),
             },
             isPrivate,
-            language,
+            language: {
+              connectOrCreate: {
+                where: {
+                  id: language[0]!.value as number,
+                },
+                create: {
+                  id: language[0]!.value as number,
+                  name: language[0]!.label as string,
+                },
+              },
+            },
             owner: {
               connect: {
                 id: _owner?.id,

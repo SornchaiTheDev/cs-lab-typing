@@ -155,6 +155,10 @@ function Tasks() {
 
   const isTeacher = session?.user?.roles.includes("TEACHER");
 
+  const allLanguages = trpc.judge.getAllLanguages.useQuery(undefined, {
+    enabled: isShow,
+  });
+
   return (
     <>
       <Modal
@@ -181,12 +185,13 @@ function Tasks() {
               title: "Type",
               options: ["Lesson", "Problem", "Typing"],
               type: "select",
-              conditional: (data) => data !== undefined && data !== "Typing",
+              conditional: (data) =>
+                data ? !["Typing", "Lesson"].includes(data) : false,
               children: {
                 label: "language",
                 title: "Language",
-                type: "select",
-                options: ["C++", "Python", "Java", "C#", "C"],
+                type: "static-search",
+                options: allLanguages.data ?? [],
               },
             },
             {

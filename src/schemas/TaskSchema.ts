@@ -5,7 +5,7 @@ export const AddTaskSchema = z
   .object({
     name: z.string().min(1, { message: "Name cannot be empty" }),
     type: z.literal("Lesson").or(z.literal("Problem")).or(z.literal("Typing")),
-    language: z.string().or(z.null()).default(null),
+    language: z.array(SearchValue).length(1),
     owner: z.array(SearchValue).length(1),
     isPrivate: z.boolean(),
     note: z.string().optional(),

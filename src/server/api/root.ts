@@ -8,6 +8,7 @@ import { labRouter } from "~/server/api/routers/lab";
 import { tagRouter } from "~/server/api/routers/tag";
 import { taskRouter } from "~/server/api/routers/task";
 import { frontRouter } from "~/server/api/routers/front";
+import { judgeRouter } from "./routers/judge";
 
 export const appRouter = router({
   users: usersRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   tags: tagRouter,
   tasks: taskRouter,
   front: frontRouter,
+  judge: judgeRouter,
 });
 
 export type AppRouter = typeof appRouter;
