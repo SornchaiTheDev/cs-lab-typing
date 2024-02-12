@@ -26,6 +26,7 @@ function ProblemTask({ taskId }: Props) {
     isOwner,
     diffTaskBody,
     handleOnSaveProblem,
+    task,
   } = useProblemTask({
     taskId,
     onDescriptionLoad: (description) => {
@@ -62,7 +63,12 @@ function ProblemTask({ taskId }: Props) {
             />
           </div>
 
-          <TestCaseSection testCases={testCases} setTestCases={setTestCases} />
+          <TestCaseSection
+            languageId={task?.language_id as number}
+            sourceCode={sourceCode}
+            testCases={testCases}
+            setTestCases={setTestCases}
+          />
 
           {isOwner && (
             <Button

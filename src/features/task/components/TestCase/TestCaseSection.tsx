@@ -4,18 +4,25 @@ import useTestCase, { type TestCase } from "../../hooks/useTestCase";
 import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
+  languageId: number;
+  sourceCode: string;
   testCases: TestCase[];
   setTestCases: Dispatch<SetStateAction<TestCase[]>>;
 }
 
-function TestCaseSection({ testCases, setTestCases }: Props) {
+function TestCaseSection({
+  languageId,
+  sourceCode,
+  testCases,
+  setTestCases,
+}: Props) {
   const {
     handleOnAddTestCase,
     handleOnInputChange,
     handleOnRunTestCase,
     handleOnRunAllTestCase,
     handleOnRemoveTestCase,
-  } = useTestCase({ testCases, setTestCases });
+  } = useTestCase({ languageId, sourceCode, testCases, setTestCases });
 
   return (
     <div className="mb-2 mt-10">
