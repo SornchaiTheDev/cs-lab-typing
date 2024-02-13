@@ -3,30 +3,17 @@ import Modal from "~/components/Common/Modal";
 import Forms from "~/components/Forms";
 import Table from "~/components/Common/Table";
 import { AddTaskSchema, type TAddTask } from "~/schemas/TaskSchema";
-import type { ColumnDef, PaginationState } from "@tanstack/react-table";
+import type { PaginationState } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
-import { convertToCompact, trpc } from "~/utils";
-import type { tags, users } from "@prisma/client";
+import { trpc } from "~/utils";
 import Button from "~/components/Common/Button";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { debounce } from "lodash";
-import useGetUserByName from "~/hooks/useGetUserByName";
-import useGetTagByName from "~/hooks/useGetTags";
-import type { SearchValue } from "~/types";
-
-interface TaskRow {
-  id: number;
-  name: string;
-  type: string;
-  tags: string[];
-  language: string;
-  owner: string;
-  submission_count: number;
-}
+import { taskPaginationColumns } from "~/columns/taskPagination";
+import useGetAddTaskFields from "~/hooks/useGetAddTaskFields";
 
 function Tasks() {
   const { data: session } = useSession();
@@ -88,76 +75,9 @@ function Tasks() {
     }
   };
 
-  const queryUser = useGetUserByName();
-  const queryTags = useGetTagByName();
-
-  const columns = useMemo<ColumnDef<TaskRow, string | tags[] | users>[]>(
-    () => [
-      {
-        header: "Name",
-        accessorKey: "name",
-        cell: (props) => {
-          return (
-            <Link
-              href={{
-                pathname: router.pathname + "/[taskId]",
-                query: { ...router.query, taskId: props.row.original.id },
-              }}
-              className="font-bold"
-            >
-              {props.getValue() as string}
-            </Link>
-          );
-        },
-      },
-      {
-        header: "Type",
-        accessorKey: "type",
-      },
-      {
-        header: "Tags",
-        accessorKey: "tags",
-        cell: (props) => {
-          if (props.getValue() === undefined) return null;
-          const tags = props.getValue() as tags[];
-          const isEmpty = tags.length === 0;
-          return isEmpty ? "-" : tags.map(({ name }) => name).join(",");
-        },
-      },
-      {
-        header: "Language",
-        accessorKey: "language",
-        cell: (props) => {
-          const language = props.getValue() as string;
-          return language === null ? "-" : language;
-        },
-      },
-      {
-        header: "Submission Count",
-        accessorKey: "submission_count",
-        cell: (props) => {
-          return convertToCompact(props.getValue() as string);
-        },
-      },
-      {
-        header: "Owner",
-        accessorKey: "owner",
-        cell: (props) => {
-          if (props.getValue() === undefined) return null;
-
-          const owner = props.getValue() as users;
-          return owner.full_name;
-        },
-      },
-    ],
-    [router.pathname, router.query]
-  );
-
   const isTeacher = session?.user?.roles.includes("TEACHER");
 
-  const allLanguages = trpc.judge.getAllLanguages.useQuery(undefined, {
-    enabled: isShow,
-  });
+  const addTaskFields = useGetAddTaskFields(isShow);
 
   return (
     <>
@@ -174,66 +94,14 @@ function Tasks() {
           }}
           schema={AddTaskSchema}
           onSubmit={addTask}
-          fields={[
-            {
-              label: "name",
-              title: "Name",
-              type: "text",
-            },
-            {
-              label: "type",
-              title: "Type",
-              options: ["Lesson", "Problem", "Typing"],
-              type: "select",
-              conditional: (data) =>
-                data ? !["Typing", "Lesson"].includes(data) : false,
-              children: {
-                label: "language",
-                title: "Language",
-                type: "static-search",
-                options: allLanguages.data ?? [],
-              },
-            },
-            {
-              label: "tags",
-              title: "Tags",
-              type: "multiple-search",
-              queryFn: queryTags,
-              optional: true,
-              canAddItemNotInList: true,
-            },
-            {
-              label: "owner",
-              title: "Owner",
-              type: "single-search",
-              queryFn: queryUser,
-              value: [
-                {
-                  label: session?.user?.full_name,
-                  value: session?.user?.student_id,
-                },
-              ] as SearchValue[],
-            },
-            {
-              label: "isPrivate",
-              title: "Private",
-              type: "checkbox",
-              value: false,
-            },
-            {
-              label: "note",
-              title: "Note",
-              type: "text",
-              optional: true,
-            },
-          ]}
+          fields={addTaskFields}
         />
       </Modal>
       <TaskLayout title="Tasks">
         <Table
           isLoading={allTasks.isLoading}
           data={allTasks.data?.tasks ?? []}
-          columns={columns}
+          columns={taskPaginationColumns(router)}
           className="mt-6 flex-1"
           pageCount={allTasks.data?.pageCount ?? 0}
           onPaginationChange={setPagination}

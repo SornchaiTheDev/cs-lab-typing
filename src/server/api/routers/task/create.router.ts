@@ -12,16 +12,6 @@ export const createTaskRouter = router({
 
       let task;
       try {
-        const _owner = await ctx.prisma.users.findFirst({
-          where: {
-            student_id: owner[0]!.value as string,
-            deleted_at: null,
-          },
-          select: {
-            id: true,
-          },
-        });
-
         task = await ctx.prisma.tasks.create({
           data: {
             isPrivate,
@@ -33,7 +23,7 @@ export const createTaskRouter = router({
                 },
                 create: {
                   id: language[0]!.value as number,
-                  name: language[0]!.value as string,
+                  name: language[0]!.label as string,
                 },
               },
             },
@@ -46,7 +36,7 @@ export const createTaskRouter = router({
             },
             owner: {
               connect: {
-                id: _owner?.id,
+                email: owner[0]!.value as string,
               },
             },
             type,
@@ -55,7 +45,7 @@ export const createTaskRouter = router({
                 action: "Create a task",
                 user: {
                   connect: {
-                    id: _owner?.id,
+                    email: owner[0]!.value as string,
                   },
                 },
               },
@@ -120,10 +110,10 @@ export const createTaskRouter = router({
               name: `${name} (clone)`,
               body,
               isPrivate,
-              language : {
+              language: {
                 connect: {
                   id: language_id as number,
-                }
+                },
               },
               note,
               type,

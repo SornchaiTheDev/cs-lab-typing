@@ -43,17 +43,9 @@ export const createSectionsRouter = router({
           take: 1,
         });
 
-        const instructorsId = await ctx.prisma.users.findMany({
-          where: {
-            student_id: {
-              in: instructors.map((instructor) => instructor.value as string),
-            },
-            deleted_at: null,
-          },
-          select: {
-            id: true,
-          },
-        });
+        const instructorsId = instructors.map((instructor) => ({
+          id: instructor.value as number,
+        }));
 
         const existSection = await ctx.prisma.sections.findFirst({
           where: {
@@ -106,6 +98,7 @@ export const createSectionsRouter = router({
             },
           },
         });
+        return section;
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === "DUPLICATED_SECTION") {

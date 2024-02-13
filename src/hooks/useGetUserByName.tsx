@@ -10,7 +10,7 @@ function useGetUserByName() {
 
       const searchValueDatas = datas.map((user) => ({
         label: user.full_name,
-        value: user.student_id,
+        value: user.id,
       }));
 
       return searchValueDatas;

@@ -40,6 +40,7 @@ export const createCourseRouter = router({
 
         return course;
       } catch (e) {
+        console.log(e);
         if (e instanceof Error) {
           if (e.message === "DUPLICATED_COURSE") {
             throw new TRPCError({

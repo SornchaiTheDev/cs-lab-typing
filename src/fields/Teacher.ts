@@ -23,6 +23,7 @@ export const getTeacherFields = (user: users): EachField<TTeacherSchema>[] => {
       label: "roles",
       title: "Roles",
       type: "static-search",
+      multiple: true,
       options: [
         { label: "Student", value: "STUDENT" },
         { label: "Teacher", value: "TEACHER" },
