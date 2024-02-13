@@ -7,7 +7,13 @@ export type TaskExtendedWithProblem = Prisma.tasksGetPayload<{
   include: {
     problem: {
       include: {
-        testcases: true;
+        testcases: {
+          select: {
+            input: true;
+            output: true;
+            number: true;
+          };
+        };
       };
     };
   };
@@ -31,7 +37,6 @@ function useTask({ taskId, onTaskLoad }: Props) {
   const isOwner = task.data?.owner.full_name === data?.user?.full_name;
 
   const isLoading = task.isLoading;
-  
 
   const memoizedTaskLoad = useCallback((task: TaskExtendedWithProblem) => {
     if (!onTaskLoad) return;

@@ -15,7 +15,6 @@ function useGetUserByName() {
 
       return searchValueDatas;
     } catch (err) {
-      console.log(err);
       throw new Error("Error fetching users");
     }
   };

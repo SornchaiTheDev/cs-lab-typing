@@ -1,35 +1,18 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { TestCaseStatus } from "~/store/editorTestCase";
+import {
+  addNewTestCaseAtom,
+  problemTaskAtom,
+  removeTestCaseAtom,
+  testCasesAtom,
+} from "~/store/problemTask";
 import { trpc } from "~/utils";
 
-export interface TestCase {
-  number: number;
-  input: string;
-  output: string;
-}
-
-interface Props {
-  languageId: number;
-  sourceCode: string;
-  testCases: TestCase[];
-  setTestCases: Dispatch<SetStateAction<TestCase[]>>;
-}
-
-function useTestCase({
-  languageId,
-  sourceCode,
-  testCases,
-  setTestCases,
-}: Props) {
-  const handleOnAddTestCase = () => {
-    setTestCases((prev) => [
-      ...prev,
-      {
-        number: prev.length + 1,
-        input: "",
-        output: "",
-      },
-    ]);
-  };
+function useTestCase() {
+  const { sourceCode, languageId } = useAtomValue(problemTaskAtom);
+  const [testCases, setTestCases] = useAtom(testCasesAtom);
+  const handleOnAddTestCase = useSetAtom(addNewTestCaseAtom);
+  const handleOnRemoveTestCase = useSetAtom(removeTestCaseAtom);
 
   const handleOnInputChange = (number: number) => (value: string) => {
     const testCase = testCases.find((testCase) => testCase.number === number);
@@ -42,15 +25,19 @@ function useTestCase({
   const submitCode = trpc.judge.cmsSubmitCode.useMutation();
 
   const handleOnRunTestCase = async (number: number) => {
+    if (!languageId) return;
     const testCase = testCases.find((testCase) => testCase.number === number);
     if (testCase) {
       try {
+        testCase.status = TestCaseStatus.RUNNING;
+        setTestCases([...testCases]);
         const result = await submitCode.mutateAsync({
           language_id: languageId,
           source_code: sourceCode,
           stdin: testCase.input,
         });
         testCase.output = result.stdout;
+        testCase.status = TestCaseStatus.IDLE;
         setTestCases([...testCases]);
       } catch (err) {}
     }
@@ -59,6 +46,7 @@ function useTestCase({
   const cmsSubmitCodeBatch = trpc.judge.cmsSubmitCodeBatch.useMutation();
 
   const handleOnRunAllTestCase = async () => {
+    if (!languageId) return;
     const submissions = testCases.map(({ input }) => {
       return {
         language_id: languageId,
@@ -73,18 +61,6 @@ function useTestCase({
       });
     } catch (err) {}
     setTestCases([...testCases]);
-  };
-
-  const handleOnRemoveTestCase = (number: number) => {
-    setTestCases((prev) =>
-      prev
-        .filter((testCase) => testCase.number !== number)
-        .map(({ input, output }, index) => ({
-          number: index + 1,
-          input,
-          output,
-        }))
-    );
   };
 
   return {

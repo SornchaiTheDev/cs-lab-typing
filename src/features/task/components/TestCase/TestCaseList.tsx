@@ -1,25 +1,27 @@
 import { Fragment } from "react";
 import TestCaseItem from "./TestCaseItem";
-import { type TestCase } from "../../hooks/useTestCase";
+import { useAtomValue } from "jotai";
+import { problemTaskAtom } from "~/store/problemTask";
 
 interface Props {
-  testCases: TestCase[];
   handleOnInputChange: (number: number) => (value: string) => void;
   handleOnRunTestCase: (number: number) => void;
   handleOnRemoveTestCase: (number: number) => void;
 }
 
 function TestCaseList({
-  testCases,
   handleOnInputChange,
   handleOnRunTestCase,
   handleOnRemoveTestCase,
 }: Props) {
-  return testCases.map(({ number, input, output }) => {
+  const { testCases } = useAtomValue(problemTaskAtom);
+
+  return testCases.map(({ number, input, output, status }) => {
     const isLastItem = number === testCases.length - 1;
     return (
       <Fragment key={number}>
         <TestCaseItem
+          status={status}
           number={number}
           input={input}
           output={output}

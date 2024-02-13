@@ -1,9 +1,14 @@
 import { useState } from "react";
-import type { TestCase } from "./useTestCase";
 import { trpc } from "~/utils";
 import { callToast } from "~/services/callToast";
 import useTask, { type TaskExtendedWithProblem } from "./useTask";
-import { isFieldDiff } from "~/utils/isFieldDiff";
+import { TestCaseStatus } from "~/store/editorTestCase";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  problemTaskAtom,
+  setInitialProblemTaskAtom,
+  isAlreadySaveAtom,
+} from "~/store/problemTask";
 
 interface Props {
   taskId: string;
@@ -11,25 +16,33 @@ interface Props {
 }
 
 function useProblemTask({ taskId, onDescriptionLoad }: Props) {
-  const [description, setDescription] = useState<string>("");
-  const [sourceCode, setSourceCode] = useState<string>("");
-  const [testCases, setTestCases] = useState<TestCase[]>([]);
-  const [diffTaskBody, setDiffTaskBody] = useState<string>("");
-  const [allFieldsInitialValues, setInitialValues] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [diffTaskBody, setDiffTaskBody] = useState<string>("");
   const utils = trpc.useUtils();
+  const problemTaskStore = useAtomValue(problemTaskAtom);
+  const setInitialProblemTask = useSetAtom(setInitialProblemTaskAtom);
+
+  const { description, testCases, sourceCode } = problemTaskStore;
 
   const handleOnTaskLoad = (task: TaskExtendedWithProblem) => {
     const problem = task?.problem;
     if (problem === null) return;
+
     const { description, source_code, testcases } = problem;
-    setDescription(description);
-    setSourceCode(source_code);
-    setTestCases(testcases);
+    const testCasesWithStatus = testcases.map((testcase) => ({
+      ...testcase,
+      status: TestCaseStatus.IDLE,
+    }));
+
+    setInitialProblemTask({
+      description,
+      sourceCode: source_code,
+      testCases: testCasesWithStatus,
+      languageId: task.language_id,
+    });
+
     setDiffTaskBody(description);
-    setInitialValues(
-      [description, source_code, testcases.toString()].toString()
-    );
+
     onDescriptionLoad(description);
   };
 
@@ -54,28 +67,14 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
     }
   };
 
-  const allFieldCurrentValues = [
-    description,
-    sourceCode,
-    testCases.toString(),
-  ].toString();
+  const isAlreadySave = useAtomValue(isAlreadySaveAtom);
 
-  const isAlreadySave = !isFieldDiff(
-    allFieldCurrentValues,
-    allFieldsInitialValues
-  );
   return {
     ...useTaskReturned,
-    description,
-    setDescription,
-    sourceCode,
-    setSourceCode,
-    testCases,
-    setTestCases,
+    diffTaskBody,
     handleOnSaveProblem,
     isSaving,
     isAlreadySave,
-    diffTaskBody,
   };
 }
 

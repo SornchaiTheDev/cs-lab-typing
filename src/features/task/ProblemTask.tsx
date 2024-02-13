@@ -1,11 +1,11 @@
 import Button from "~/components/Common/Button";
-import MDXEditor from "~/components/Editor";
 import { useRef } from "react";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
 import Skeleton from "~/components/Common/Skeleton";
-import CodemirrorRoot from "~/components/Codemirror";
 import TestCaseSection from "./components/TestCase/TestCaseSection";
 import useProblemTask from "./hooks/useProblemTask";
+import SourceCodeSection from "./components/SourceCode/SourceCodeSection";
+import DescriptionSection from "./components/Description/DescriptionSection";
 
 interface Props {
   taskId: string;
@@ -17,16 +17,9 @@ function ProblemTask({ taskId }: Props) {
     isLoading,
     isSaving,
     isAlreadySave,
-    description,
-    setDescription,
-    sourceCode,
-    setSourceCode,
-    testCases,
-    setTestCases,
     isOwner,
     diffTaskBody,
     handleOnSaveProblem,
-    task,
   } = useProblemTask({
     taskId,
     onDescriptionLoad: (description) => {
@@ -40,35 +33,11 @@ function ProblemTask({ taskId }: Props) {
         <Skeleton width="100%" className="flex-1" />
       ) : (
         <>
-          <h4 className="mb-4 text-3xl font-bold text-sand-12 ">Description</h4>
-          <div className="-z-0 min-h-[300px] overflow-hidden rounded-lg border border-sand-6 bg-white text-sand-12 dark:bg-sand-2 ">
-            <MDXEditor
-              ref={ref}
-              autoFocus
-              onChange={setDescription}
-              diffMarkdown={diffTaskBody}
-              contentEditableClassName="p-4 prose prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-['']"
-              markdown={description}
-            />
-          </div>
+          <DescriptionSection mdxRef={ref} diffTaskBody={diffTaskBody} />
 
-          <div className="mb-2 mt-10">
-            <h4 className="text-3xl font-bold text-sand-12">Source Code</h4>
-            <CodemirrorRoot
-              className="mt-4 h-full overflow-hidden rounded-lg border border-sand-6"
-              syntaxHighlighting
-              value={sourceCode}
-              onChange={setSourceCode}
-              minHeight="300px"
-            />
-          </div>
+          <SourceCodeSection />
 
-          <TestCaseSection
-            languageId={task?.language_id as number}
-            sourceCode={sourceCode}
-            testCases={testCases}
-            setTestCases={setTestCases}
-          />
+          <TestCaseSection />
 
           {isOwner && (
             <Button

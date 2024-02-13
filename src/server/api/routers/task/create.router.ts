@@ -9,9 +9,15 @@ export const createTaskRouter = router({
     .input(AddTaskSchema)
     .mutation(async ({ ctx, input }) => {
       const { isPrivate, language, name, owner, type, note, tags } = input;
-
       let task;
       try {
+        const user = await ctx.prisma.users.findFirst({
+          where: {
+            student_id: owner[0]!.value as string,
+            deleted_at: null,
+          },
+        });
+
         task = await ctx.prisma.tasks.create({
           data: {
             isPrivate,
@@ -36,7 +42,7 @@ export const createTaskRouter = router({
             },
             owner: {
               connect: {
-                email: owner[0]!.value as string,
+                id: user?.id,
               },
             },
             type,
@@ -45,7 +51,7 @@ export const createTaskRouter = router({
                 action: "Create a task",
                 user: {
                   connect: {
-                    email: owner[0]!.value as string,
+                    id: user?.id,
                   },
                 },
               },

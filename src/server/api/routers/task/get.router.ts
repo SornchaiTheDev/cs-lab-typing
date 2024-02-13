@@ -129,7 +129,13 @@ export const getTaskRouter = router({
           language: true,
           problem: {
             include: {
-              testcases: true,
+              testcases: {
+                select : {
+                  input : true,
+                  output: true,
+                  number : true,
+                }
+              },
             },
           },
         },

@@ -1,28 +1,15 @@
 import { Play, Plus } from "lucide-react";
 import TestCaseList from "./TestCaseList";
-import useTestCase, { type TestCase } from "../../hooks/useTestCase";
-import type { Dispatch, SetStateAction } from "react";
+import useTestCase from "../../hooks/useTestCase";
 
-interface Props {
-  languageId: number;
-  sourceCode: string;
-  testCases: TestCase[];
-  setTestCases: Dispatch<SetStateAction<TestCase[]>>;
-}
-
-function TestCaseSection({
-  languageId,
-  sourceCode,
-  testCases,
-  setTestCases,
-}: Props) {
+function TestCaseSection() {
   const {
     handleOnAddTestCase,
     handleOnInputChange,
     handleOnRunTestCase,
     handleOnRunAllTestCase,
     handleOnRemoveTestCase,
-  } = useTestCase({ languageId, sourceCode, testCases, setTestCases });
+  } = useTestCase();
 
   return (
     <div className="mb-2 mt-10">
@@ -36,6 +23,11 @@ function TestCaseSection({
           Run All
         </button>
       </div>
+      <TestCaseList
+        handleOnRunTestCase={handleOnRunTestCase}
+        handleOnInputChange={handleOnInputChange}
+        handleOnRemoveTestCase={handleOnRemoveTestCase}
+      />
       <button
         onClick={handleOnAddTestCase}
         className="mt-3 flex items-center gap-2 rounded-lg bg-sand-12 px-4 py-1 text-sm text-sand-1 shadow hover:bg-sand-11"
@@ -43,12 +35,6 @@ function TestCaseSection({
         <Plus />
         Add Case
       </button>
-      <TestCaseList
-        handleOnRunTestCase={handleOnRunTestCase}
-        handleOnInputChange={handleOnInputChange}
-        handleOnRemoveTestCase={handleOnRemoveTestCase}
-        {...{ testCases }}
-      />
     </div>
   );
 }

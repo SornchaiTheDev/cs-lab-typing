@@ -1,11 +1,14 @@
-import { Play, Trash2 } from "lucide-react";
+import { Loader, Play, Trash2 } from "lucide-react";
 import React from "react";
 import CodemirrorRoot from "~/components/Codemirror";
+import { TestCaseStatus } from "~/store/editorTestCase";
+import { cn } from "~/lib/utils";
 
 interface Props {
   number: number;
   input: string;
   output: string;
+  status: TestCaseStatus;
   onChangeInput: (value: string) => void;
   handleOnRunTestCase: () => void;
   handleOnRemoveTestCase: () => void;
@@ -18,14 +21,24 @@ function TestCaseItem({
   onChangeInput,
   handleOnRunTestCase,
   handleOnRemoveTestCase,
+  status,
 }: Props) {
+  const isRunning = status === TestCaseStatus.RUNNING;
+  const statusText = isRunning ? "Running..." : "Run";
+  const statusIcon = isRunning ? (
+    <Loader className="animate-spin" size="0.9rem" />
+  ) : (
+    <Play size="0.9rem" />
+  );
+  const statusColor = isRunning ? "bg-yellow-9" : "bg-lime-10";
+
   return (
     <>
       <div className="mt-4 flex items-center gap-4">
         <h6 className="text-xl text-sand-12">Case {number}</h6>
         <button
           onClick={handleOnRemoveTestCase}
-          className="flex items-center gap-2 rounded-lg bg-red-9 text-white px-2 py-1 text-sm hover:bg-red-10"
+          className="flex items-center gap-2 rounded-lg bg-red-9 px-2 py-1 text-sm text-white hover:bg-red-10"
         >
           <Trash2 size="0.9rem" />
           Remove
@@ -37,10 +50,13 @@ function TestCaseItem({
             <h6 className="font-medium">Input</h6>
             <button
               onClick={handleOnRunTestCase}
-              className="flex items-center gap-2 rounded-lg bg-lime-9 px-2 py-1 text-sm hover:bg-lime-10"
+              className={cn(
+                "flex items-center gap-2 rounded-lg px-2 py-1 text-sm",
+                statusColor
+              )}
             >
-              <Play size="0.9rem" />
-              Run
+              {statusIcon}
+              {statusText}
             </button>
           </div>
           <CodemirrorRoot
