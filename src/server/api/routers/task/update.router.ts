@@ -199,7 +199,6 @@ export const updateTaskRouter = router({
     .input(
       z.object({
         taskId: z.string(),
-
         description: z.string(),
         sourceCode: z.string(),
         testcases: z.array(
@@ -214,6 +213,7 @@ export const updateTaskRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { taskId, sourceCode, testcases, description } = input;
       const _taskId = parseInt(taskId);
+      const actionUser = ctx.user.student_id;
 
       try {
         const task = await ctx.prisma.tasks.update({
@@ -258,6 +258,32 @@ export const updateTaskRouter = router({
             input,
             output,
           })),
+        });
+        const _actionUser = await ctx.prisma.users.findFirst({
+          where: {
+            student_id: actionUser,
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+          },
+        });
+        await ctx.prisma.tasks.update({
+          where: {
+            id: _taskId,
+          },
+          data: {
+            history: {
+              create: {
+                action: "Edit task body",
+                user: {
+                  connect: {
+                    id: _actionUser?.id,
+                  },
+                },
+              },
+            },
+          },
         });
       } catch (err) {
         throw new TRPCError({
