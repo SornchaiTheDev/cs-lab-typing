@@ -2,6 +2,7 @@ import MDXEditor from "~/components/Editor";
 import React from "react";
 import { useAtom } from "jotai";
 import { descriptionAtom } from "~/store/problemTask";
+import useTheme from "~/hooks/useTheme";
 
 interface Props {
   mdxRef: React.MutableRefObject<any>;
@@ -10,6 +11,7 @@ interface Props {
 
 function DescriptionSection({ mdxRef, diffTaskBody }: Props) {
   const [description, setDescription] = useAtom(descriptionAtom);
+  const { theme } = useTheme();
   return (
     <>
       <h4 className="mb-4 text-3xl font-bold text-sand-12 ">Description</h4>
@@ -19,7 +21,8 @@ function DescriptionSection({ mdxRef, diffTaskBody }: Props) {
           autoFocus
           onChange={setDescription}
           diffMarkdown={diffTaskBody}
-          contentEditableClassName="p-4 bg-sand-2 prose-p:text-sand-12  prose prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-['']"
+          className={theme === "light" ? "light-theme" : "dark-theme"}
+          contentEditableClassName="p-4 prose prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-['']"
           markdown={description}
         />
       </div>
