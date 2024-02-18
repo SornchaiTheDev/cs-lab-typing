@@ -8,6 +8,7 @@ import {
   problemTaskAtom,
   setInitialProblemTaskAtom,
   isAlreadySaveAtom,
+  isSourceCodeChangedAtom,
 } from "~/store/problemTask";
 
 interface Props {
@@ -21,6 +22,8 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
   const utils = trpc.useUtils();
   const problemTaskStore = useAtomValue(problemTaskAtom);
   const setInitialProblemTask = useSetAtom(setInitialProblemTaskAtom);
+  const isAlreadySave = useAtomValue(isAlreadySaveAtom);
+  const isSourceCodeChanged = useAtomValue(isSourceCodeChangedAtom);
 
   const { description, testCases, sourceCode } = problemTaskStore;
 
@@ -67,14 +70,13 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
     }
   };
 
-  const isAlreadySave = useAtomValue(isAlreadySaveAtom);
-
   return {
     ...useTaskReturned,
     diffTaskBody,
     handleOnSaveProblem,
     isSaving,
     isAlreadySave,
+    isSourceCodeChanged,
   };
 }
 

@@ -1,8 +1,8 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
-import { TestCaseStatus } from "~/store/editorTestCase";
 import {
   addNewTestCaseAtom,
+  isSourceCodeChangedAtom,
   problemTaskAtom,
   removeTestCaseAtom,
   testCasesAtom,
@@ -14,33 +14,15 @@ function useTestCase() {
   const [testCases, setTestCases] = useAtom(testCasesAtom);
   const handleOnAddTestCase = useSetAtom(addNewTestCaseAtom);
   const handleOnRemoveTestCase = useSetAtom(removeTestCaseAtom);
+  const [isSourceCodeChanged, updateTmpSourceCode] = useAtom(
+    isSourceCodeChangedAtom
+  );
 
   const handleOnInputChange = (number: number) => (value: string) => {
     const testCase = testCases.find((testCase) => testCase.number === number);
     if (testCase) {
       testCase.input = value;
       setTestCases([...testCases]);
-    }
-  };
-
-  const submitCode = trpc.judge.cmsSubmitCode.useMutation();
-
-  const handleOnRunTestCase = async (number: number) => {
-    if (!languageId) return;
-    const testCase = testCases.find((testCase) => testCase.number === number);
-    if (testCase) {
-      try {
-        testCase.status = TestCaseStatus.RUNNING;
-        setTestCases([...testCases]);
-        const result = await submitCode.mutateAsync({
-          language_id: languageId,
-          source_code: sourceCode,
-          stdin: testCase.input,
-        });
-        testCase.output = result.stdout;
-        testCase.status = TestCaseStatus.IDLE;
-        setTestCases([...testCases]);
-      } catch (err) {}
     }
   };
 
@@ -61,9 +43,10 @@ function useTestCase() {
       const result = await cmsSubmitCodeBatch.mutateAsync(submissions);
 
       result.forEach((res, index) => {
-        testCases[index]!.output = res.stdout;
+        testCases[index]!.output = res.stdout ?? res.stderr ?? res.message;
       });
       setIsAllDone(true);
+      updateTmpSourceCode(sourceCode);
     } catch (err) {}
     setTestCases([...testCases]);
   };
@@ -71,9 +54,9 @@ function useTestCase() {
   return {
     testCases,
     isAllDone,
+    isSourceCodeChanged,
     handleOnAddTestCase,
     handleOnInputChange,
-    handleOnRunTestCase,
     handleOnRunAllTestCase,
     handleOnRemoveTestCase,
   };

@@ -3,13 +3,14 @@ import TestCaseList from "./TestCaseList";
 import useTestCase from "../../hooks/useTestCase";
 import * as Collapse from "~/components/Common/Collapse";
 import RunningButton from "./RunningButton";
+import ExecuteStatus from "./ExecuteStatus";
 
 function TestCaseSection() {
   const {
     isAllDone,
+    isSourceCodeChanged,
     handleOnAddTestCase,
     handleOnInputChange,
-    handleOnRunTestCase,
     handleOnRunAllTestCase,
     handleOnRemoveTestCase,
   } = useTestCase();
@@ -18,18 +19,19 @@ function TestCaseSection() {
     <div className="mb-2 mt-10">
       <Collapse.Root>
         <Collapse.Header>
-          <div className="flex items-center gap-4">
-            <h4 className="text-3xl font-bold text-sand-12">Test Cases</h4>
+          <div className="flex flex-1 items-center gap-4">
+            <h4 className="text-2xl font-bold text-sand-12">Test Cases</h4>
             <RunningButton
               text="Run All"
               isRunning={!isAllDone}
               handleOnRun={handleOnRunAllTestCase}
             />
           </div>
+
+          <ExecuteStatus isSourceCodeChanged={isSourceCodeChanged} />
         </Collapse.Header>
         <Collapse.Body>
           <TestCaseList
-            handleOnRunTestCase={handleOnRunTestCase}
             handleOnInputChange={handleOnInputChange}
             handleOnRemoveTestCase={handleOnRemoveTestCase}
           />

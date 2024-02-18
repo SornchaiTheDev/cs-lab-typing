@@ -17,6 +17,7 @@ function ProblemTask({ taskId }: Props) {
     isLoading,
     isSaving,
     isAlreadySave,
+    isSourceCodeChanged,
     isOwner,
     diffTaskBody,
     handleOnSaveProblem,
@@ -43,7 +44,7 @@ function ProblemTask({ taskId }: Props) {
             <Button
               isLoading={isSaving}
               onClick={handleOnSaveProblem}
-              disabled={isAlreadySave}
+              disabled={isAlreadySave || isSourceCodeChanged}
               className="mt-4 w-full rounded bg-sand-12 px-4 text-sm text-sand-1 active:bg-sand-11 md:w-fit"
               icon="solar:diskette-line-duotone"
             >

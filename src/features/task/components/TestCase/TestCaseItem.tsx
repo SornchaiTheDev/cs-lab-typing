@@ -1,8 +1,7 @@
 import { Trash2 } from "lucide-react";
 import React from "react";
 import CodemirrorRoot from "~/components/Codemirror";
-import { TestCaseStatus } from "~/store/editorTestCase";
-import RunningButton from "./RunningButton";
+import type { TestCaseStatus } from "~/store/editorTestCase";
 
 interface Props {
   number: number;
@@ -10,7 +9,6 @@ interface Props {
   output: string;
   status: TestCaseStatus;
   onChangeInput: (value: string) => void;
-  handleOnRunTestCase: () => void;
   handleOnRemoveTestCase: () => void;
 }
 
@@ -19,12 +17,8 @@ function TestCaseItem({
   input,
   output,
   onChangeInput,
-  handleOnRunTestCase,
   handleOnRemoveTestCase,
-  status,
 }: Props) {
-  const isRunning = status === TestCaseStatus.RUNNING;
-
   return (
     <>
       <div className="mt-4 flex items-center gap-4">
@@ -41,11 +35,6 @@ function TestCaseItem({
         <div className="boder-sand-6 flex-1 overflow-hidden rounded-lg border bg-white">
           <div className="mb-2 flex w-full items-center justify-between p-2">
             <h6 className="font-medium">Input</h6>
-            <RunningButton
-              text="Run"
-              isRunning={isRunning}
-              handleOnRun={handleOnRunTestCase}
-            />
           </div>
           <CodemirrorRoot
             value={input}

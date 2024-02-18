@@ -14,7 +14,7 @@ interface Children {
 }
 
 export const Root = ({ children }: Children) => {
-  const [isCollapse, setIsCollapse] = useState(false);
+  const [isCollapse, setIsCollapse] = useState(true);
 
   return (
     <Collapse.Provider value={{ isCollapse, setIsCollapse }}>
@@ -45,7 +45,7 @@ export const Header = ({ children }: Children) => {
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-wrap items-center gap-2">{children}</div>
+      <div className="flex flex-1 flex-wrap items-center gap-2">{children}</div>
       <button
         className="rounded-full p-2 hover:bg-sand-4"
         onClick={() => setIsCollapse(!isCollapse)}

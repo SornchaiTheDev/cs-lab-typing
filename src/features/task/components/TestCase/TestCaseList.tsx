@@ -5,15 +5,10 @@ import { problemTaskAtom } from "~/store/problemTask";
 
 interface Props {
   handleOnInputChange: (number: number) => (value: string) => void;
-  handleOnRunTestCase: (number: number) => void;
   handleOnRemoveTestCase: (number: number) => void;
 }
 
-function TestCaseList({
-  handleOnInputChange,
-  handleOnRunTestCase,
-  handleOnRemoveTestCase,
-}: Props) {
+function TestCaseList({ handleOnInputChange, handleOnRemoveTestCase }: Props) {
   const { testCases } = useAtomValue(problemTaskAtom);
 
   return testCases.map(({ number, input, output, status }) => {
@@ -25,7 +20,6 @@ function TestCaseList({
           input={input}
           output={output}
           handleOnRemoveTestCase={() => handleOnRemoveTestCase(number)}
-          handleOnRunTestCase={() => handleOnRunTestCase(number)}
           onChangeInput={handleOnInputChange(number)}
         />
       </Fragment>

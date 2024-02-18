@@ -19,6 +19,8 @@ import type { PaginationState } from "@tanstack/react-table";
 import { callToast } from "~/services/callToast";
 import BestScoreStats from "~/components/Typing/BestScoreStats";
 import { twMerge } from "tailwind-merge";
+import { Loader } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 interface TypingSubmissionProps {
   sectionId: string;
@@ -270,17 +272,13 @@ const LabStatus = ({
           <h4 className="text-xl font-semibold">{name}</h4>
         </Collapse.Header>
         <Collapse.Body>
-          <div className="my-4 flex items-center gap-4">
-            {" "}
+          <div className="mb-4 flex items-center gap-4">
             <button
               onClick={handleOnRefresh}
               className="flex items-center gap-2 rounded-lg border px-2 py-1  text-sand-12 hover:bg-sand-2"
             >
+              <Loader className={cn(isLoading && "animate-spin")} size="1rem" />
               Refresh
-              <Icon
-                icon="solar:refresh-line-duotone"
-                className={isLoading ? "animate-spin text-lg" : undefined}
-              />
             </button>
             {!isTA && (
               <button

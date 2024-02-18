@@ -82,7 +82,7 @@ export const createJudgeRouter = router({
         await new Promise((resolve) => setTimeout(resolve, 1000));
         results = await getResults();
         isAllDone = results.submissions.every(
-          (s) => s.status.description === "Accepted"
+          (s) => !["In Queue", "Processing"].includes(s.status.description)
         );
       }
 

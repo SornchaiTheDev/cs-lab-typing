@@ -7,6 +7,7 @@ interface ProblemTaskStore {
   testCases: TestCase[];
   languageId: number | null;
   allFieldsInitialValues: string;
+  tmpSourceCode: string;
 }
 
 const getTestCasesWithoutStatus = (testCases: TestCase[]) => {
@@ -19,6 +20,7 @@ const getTestCasesWithoutStatus = (testCases: TestCase[]) => {
 
 export const problemTaskAtom = atom<ProblemTaskStore>({
   description: "",
+  tmpSourceCode: "",
   sourceCode: "",
   testCases: [],
   languageId: null,
@@ -27,7 +29,11 @@ export const problemTaskAtom = atom<ProblemTaskStore>({
 
 export const setInitialProblemTaskAtom = atom(
   null,
-  (get, set, fields: Omit<ProblemTaskStore, "allFieldsInitialValues">) => {
+  (
+    get,
+    set,
+    fields: Omit<ProblemTaskStore, "allFieldsInitialValues" | "tmpSourceCode">
+  ) => {
     const { description, testCases, sourceCode } = fields;
     const allFieldsInitialValues = [
       description,
@@ -35,7 +41,11 @@ export const setInitialProblemTaskAtom = atom(
       JSON.stringify(getTestCasesWithoutStatus(testCases)),
     ].toString();
 
-    set(problemTaskAtom, { ...fields, allFieldsInitialValues });
+    set(problemTaskAtom, {
+      ...fields,
+      tmpSourceCode: sourceCode,
+      allFieldsInitialValues,
+    });
   }
 );
 
@@ -110,3 +120,17 @@ export const isAlreadySaveAtom = atom((get) => {
   const currentValues = get(getAllFieldsCurrentValuesAtom);
   return initialValues === currentValues;
 });
+
+export const isSourceCodeChangedAtom = atom(
+  (get) => {
+    const tmpSourceCode = get(problemTaskAtom).tmpSourceCode;
+    const currentSourceCode = get(problemTaskAtom).sourceCode;
+    return tmpSourceCode !== currentSourceCode;
+  },
+  (get, set, updatedSourceCode: string) => {
+    set(problemTaskAtom, (prev) => ({
+      ...prev,
+      tmpSourceCode: updatedSourceCode,
+    }));
+  }
+);

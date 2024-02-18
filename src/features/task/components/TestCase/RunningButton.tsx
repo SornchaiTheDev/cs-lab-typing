@@ -14,14 +14,16 @@ function RunningButton({ text, isRunning, handleOnRun }: Props) {
   ) : (
     <Play size="0.9rem" />
   );
-  const statusColor = isRunning ? "bg-yellow-9" : "bg-lime-10";
+  const statusColor = isRunning ? "bg-yellow-9" : "bg-lime-9 hover:bg-lime-10";
+
   return (
     <button
       onClick={handleOnRun}
       className={cn(
-        "flex items-center gap-2 rounded-lg px-2 py-1 text-sm",
+        "flex items-center gap-2 rounded-lg px-2 py-1 text-sm text-lime-2",
         statusColor
       )}
+      disabled={isRunning}
     >
       {statusIcon}
       {statusText}
