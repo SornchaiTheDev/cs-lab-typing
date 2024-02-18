@@ -29,7 +29,7 @@ function Counter({ value, onChange }: Props) {
       </button>
 
       <input
-        className="w-10 rounded-lg border bg-sand-1 p-1 text-center"
+        className="w-20 rounded-lg border bg-sand-1 p-1 text-center"
         onChange={handleOnChange}
         value={value}
       />

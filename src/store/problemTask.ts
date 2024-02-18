@@ -1,6 +1,21 @@
 import { atom } from "jotai";
 import { TestCaseStatus, type TestCase } from "./editorTestCase";
 
+export interface RuntimeConfig {
+  cpu_time_limit: number;
+  cpu_extra_time: number;
+  wall_time_limit: number;
+  memory_limit: number;
+  stack_limit: number;
+  max_processes_and_or_threads: number;
+  enable_per_process_and_thread_time_limit: boolean;
+  enable_per_process_and_thread_memory_limit: boolean;
+  max_file_size: number;
+  number_of_runs: number;
+  redirect_stderr_to_stdout: boolean;
+  enable_network: boolean;
+}
+
 interface ProblemTaskStore {
   description: string;
   sourceCode: string;
@@ -8,6 +23,7 @@ interface ProblemTaskStore {
   languageId: number | null;
   allFieldsInitialValues: string;
   tmpSourceCode: string;
+  config: RuntimeConfig;
 }
 
 const getTestCasesWithoutStatus = (testCases: TestCase[]) => {
@@ -25,6 +41,20 @@ export const problemTaskAtom = atom<ProblemTaskStore>({
   testCases: [],
   languageId: null,
   allFieldsInitialValues: "",
+  config: {
+    cpu_time_limit: 2,
+    cpu_extra_time: 0.5,
+    wall_time_limit: 5,
+    memory_limit: 128000,
+    stack_limit: 64000,
+    max_processes_and_or_threads: 60,
+    enable_per_process_and_thread_time_limit: false,
+    enable_per_process_and_thread_memory_limit: true,
+    max_file_size: 1024,
+    number_of_runs: 1,
+    redirect_stderr_to_stdout: false,
+    enable_network: true,
+  },
 });
 
 export const setInitialProblemTaskAtom = atom(
@@ -32,20 +62,26 @@ export const setInitialProblemTaskAtom = atom(
   (
     get,
     set,
-    fields: Omit<ProblemTaskStore, "allFieldsInitialValues" | "tmpSourceCode">
+    fields: Omit<
+      ProblemTaskStore,
+      "allFieldsInitialValues" | "tmpSourceCode" | "config"
+    >
   ) => {
+    const config = get(problemTaskAtom).config;
     const { description, testCases, sourceCode } = fields;
     const allFieldsInitialValues = [
       description,
       sourceCode,
+      JSON.stringify(config),
       JSON.stringify(getTestCasesWithoutStatus(testCases)),
     ].toString();
 
-    set(problemTaskAtom, {
+    set(problemTaskAtom, (prev) => ({
+      ...prev,
       ...fields,
       tmpSourceCode: sourceCode,
       allFieldsInitialValues,
-    });
+    }));
   }
 );
 
@@ -107,10 +143,11 @@ export const setAllFieldsInitialValuesAtom = atom(
 );
 
 export const getAllFieldsCurrentValuesAtom = atom((get) => {
-  const { description, testCases, sourceCode } = get(problemTaskAtom);
+  const { description, testCases, sourceCode, config } = get(problemTaskAtom);
   return [
     description,
     sourceCode,
+    JSON.stringify(config),
     JSON.stringify(getTestCasesWithoutStatus(testCases)),
   ].toString();
 });
@@ -131,6 +168,26 @@ export const isSourceCodeChangedAtom = atom(
     set(problemTaskAtom, (prev) => ({
       ...prev,
       tmpSourceCode: updatedSourceCode,
+    }));
+  }
+);
+
+export const configAtom = atom(
+  (get) => get(problemTaskAtom).config,
+  (
+    get,
+    set,
+    update: {
+      key: keyof RuntimeConfig;
+      value: RuntimeConfig[keyof RuntimeConfig];
+    }
+  ) => {
+    set(problemTaskAtom, (prev) => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        [update.key]: update.value,
+      },
     }));
   }
 );
