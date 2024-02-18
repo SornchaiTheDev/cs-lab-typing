@@ -6,6 +6,7 @@ import TestCaseSection from "./components/TestCase/TestCaseSection";
 import useProblemTask from "./hooks/useProblemTask";
 import SourceCodeSection from "./components/SourceCode/SourceCodeSection";
 import DescriptionSection from "./components/Description/DescriptionSection";
+import RuntimeConfigSection from "./components/RuntimeConf/RuntimeConfigSection";
 
 interface Props {
   taskId: string;
@@ -24,7 +25,6 @@ function ProblemTask({ taskId }: Props) {
   } = useProblemTask({
     taskId,
     onDescriptionLoad: (description) => {
-      console.log(description)
       ref.current?.setMarkdown(description);
     },
   });
@@ -40,6 +40,8 @@ function ProblemTask({ taskId }: Props) {
           <SourceCodeSection />
 
           <TestCaseSection />
+
+          <RuntimeConfigSection />
 
           {isOwner && (
             <Button

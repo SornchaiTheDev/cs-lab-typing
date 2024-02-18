@@ -32,9 +32,9 @@ function TestCaseItem({
         </button>
       </div>
       <div className="mt-2 flex flex-col flex-wrap gap-8 md:flex-row">
-        <div className="boder-sand-6 flex-1 overflow-hidden rounded-lg border bg-white">
+        <div className="flex-1 overflow-hidden rounded-lg border border-sand-6 bg-sand-2">
           <div className="mb-2 flex w-full items-center justify-between p-2">
-            <h6 className="font-medium">Input</h6>
+            <h6 className="font-medium text-sand-12">Input</h6>
           </div>
           <CodemirrorRoot
             value={input}
@@ -42,8 +42,8 @@ function TestCaseItem({
             onChange={onChangeInput}
           />
         </div>
-        <div className="boder-sand-6 flex-1 overflow-hidden rounded-lg border bg-white">
-          <p className="mb-2 p-2 font-medium">Output</p>
+        <div className="flex-1 overflow-hidden rounded-lg border border-sand-6 bg-sand-2">
+          <p className="mb-2 p-2 font-medium text-sand-12">Output</p>
           <CodemirrorRoot readOnly className="h-full" value={output} />
         </div>
       </div>

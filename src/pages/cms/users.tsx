@@ -12,7 +12,6 @@ import Button from "~/components/Common/Button";
 import { useOnClickOutside } from "usehooks-ts";
 import Modal from "~/components/Common/Modal";
 import Codemirror from "~/components/Codemirror";
-import { addUserDarkTheme, addUserLightTheme } from "~/components/Codemirror/theme";
 import { convertToThousand, trpc } from "~/utils";
 import type { users as Users } from "@prisma/client";
 import clsx from "clsx";
@@ -21,10 +20,9 @@ import { useDeleteAffectStore } from "~/store/deleteAffect";
 import { useDropzone } from "react-dropzone";
 import { TRPCClientError } from "@trpc/client";
 import { callToast } from "~/services/callToast";
-import useTheme from "~/hooks/useTheme";
 import { debounce } from "lodash";
 import { motion, useAnimation } from "framer-motion";
-import EditUser from '~/components/EditUser'
+import EditUser from "~/components/EditUser";
 import type { UserType } from "~/hooks/useEditUser";
 
 dayjs.extend(relativeTime);
@@ -221,8 +219,6 @@ function Users() {
       },
     });
 
-  const { theme } = useTheme();
-
   const handleOnChange = (value: string) => {
     setIsError(false);
     setValue(value);
@@ -241,7 +237,10 @@ function Users() {
   return (
     <>
       {selectedObj && (
-        <EditUser type={selectedObj.type as UserType} onUpdate={() => users.refetch()} />
+        <EditUser
+          type={selectedObj.type as UserType}
+          onUpdate={() => users.refetch()}
+        />
       )}
 
       <Modal
@@ -254,7 +253,6 @@ function Users() {
         <div>
           <Codemirror
             autoFocus
-            theme={theme === "light" ? addUserLightTheme : addUserDarkTheme}
             value={value}
             onChange={handleOnChange}
             height="20rem"
@@ -277,16 +275,16 @@ function Users() {
             isDragReject
               ? "border-red-9 text-red-9"
               : isDragActive
-                ? "border-lime-9 text-lime-11"
-                : "border-sand-6 text-sand-11"
+              ? "border-lime-9 text-lime-11"
+              : "border-sand-6 text-sand-11"
           )}
         >
           <input {...getInputProps()} />
           {isDragReject
             ? "This file is not CSV"
             : isDragActive
-              ? "You can now drop the file here"
-              : "Click or Drop a CSV file here"}
+            ? "You can now drop the file here"
+            : "Click or Drop a CSV file here"}
         </div>
         <Button
           onClick={handleAddUser}

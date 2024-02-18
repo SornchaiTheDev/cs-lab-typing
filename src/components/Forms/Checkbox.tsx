@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import type { FieldValues, Path } from "react-hook-form";
 import Skeleton from "../Common/Skeleton";
 import { motion } from "framer-motion";
-import clsx from "clsx";
+import { cn } from "~/lib/utils";
 
 interface CheckboxProps<T extends FieldValues> {
-  title: string;
-  label: Path<T>;
+  title?: string;
+  label?: Path<T>;
   value: boolean;
   onChange: (value: boolean) => void;
   disabled?: boolean;
@@ -45,24 +45,28 @@ const Checkbox = <T extends FieldValues>({
         {isLoading ? (
           <Skeleton width="100%" height="1.5rem" />
         ) : (
-          <div
-            className={clsx(
-              "relative h-6 w-12 rounded-xl p-1",
-              isActive ? "bg-sand-11" : "bg-sand-6"
-            )}
-          >
+          <div className="relative h-6 w-12 overflow-hidden rounded-xl border bg-sand-4 border-sand-6 p-1">
             <motion.div
+              initial={{ x: isActive ? -4 : -100 }}
+              animate={{ x: isActive ? -40 : -90 }}
+              transition={{ type: "keyframes", duration: 0.25 }}
+              className="absolute top-0 h-96 w-20 bg-lime-9"
+            ></motion.div>
+            <motion.div
+              transition={{ type: "keyframes", duration: 0.25 }}
               initial={
                 isActive
-                  ? { right: 4, left: "auto" }
-                  : { right: "auto", left: 4 }
+                  ? { right: 0, left: "auto" }
+                  : { right: "auto", left: 0 }
               }
               animate={
                 isActive
-                  ? { right: 4, left: "auto" }
-                  : { right: "auto", left: 4 }
+                  ? { right: 0, left: "auto" }
+                  : { right: "auto", left: 0 }
               }
-              className="absolute h-4 w-4 rounded-full bg-sand-1"
+              className={cn(
+                "absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-sand-1 border border-sand-6"
+              )}
             ></motion.div>
           </div>
         )}

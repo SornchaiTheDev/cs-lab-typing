@@ -1,5 +1,4 @@
 import Codemirror from "~/components/Codemirror";
-import { addUserLightTheme, addUserDarkTheme } from "~/components/Codemirror/theme";
 import Button from "~/components/Common/Button";
 import Modal from "~/components/Common/Modal";
 import { trpc } from "~/utils";
@@ -8,7 +7,6 @@ import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { callToast } from "~/services/callToast";
-import useTheme from "~/hooks/useTheme";
 import { motion, useAnimation } from "framer-motion";
 import { Icon } from "@iconify/react";
 
@@ -22,8 +20,8 @@ const UserHint = () => {
   const control = useAnimation();
 
   const variants = {
-    visible: { opacity: 1 , display : "block" },
-    hidden: { opacity: 0, display : "none" },
+    visible: { opacity: 1, display: "block" },
+    hidden: { opacity: 0, display: "none" },
   };
 
   useEffect(() => {
@@ -51,7 +49,7 @@ const UserHint = () => {
         initial="hidden"
         variants={variants}
         animate={control}
-        className="absolute min-w-[16rem] top-8 overflow-x-auto rounded-lg border border-yellow-6  bg-yellow-3 p-2 text-yellow-12"
+        className="absolute top-8 min-w-[16rem] overflow-x-auto rounded-lg border border-yellow-6  bg-yellow-3 p-2 text-yellow-12"
       >
         <h4 className="text-lg font-bold">Example format </h4>
         <p className="leading-snug">
@@ -75,7 +73,6 @@ function AddUser({ sectionId, onAdded }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const ctx = trpc.useContext();
   const addStudent = trpc.sections.addUsersToSection.useMutation();
-  const { theme } = useTheme();
 
   const handleAddStudent = async () => {
     try {
@@ -150,7 +147,6 @@ function AddUser({ sectionId, onAdded }: Props) {
         <div>
           <Codemirror
             autoFocus
-            theme={theme === "light" ? addUserLightTheme : addUserDarkTheme}
             value={value}
             onChange={(value) => setValue(value)}
             height="20rem"

@@ -20,7 +20,7 @@ function TestCaseSection() {
       <Collapse.Root>
         <Collapse.Header>
           <div className="flex flex-1 items-center gap-4">
-            <h4 className="text-2xl font-bold text-sand-12">Test Cases</h4>
+            <h4 className="text-xl font-bold text-sand-12">Test Cases</h4>
             <RunningButton
               text="Run All"
               isRunning={!isAllDone}

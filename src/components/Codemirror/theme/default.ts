@@ -1,7 +1,7 @@
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags as t } from "@lezer/highlight";
 
-export const addUserLightTheme = createTheme({
+export const defaultLightTheme = createTheme({
   theme: "light",
   settings: {
     background: "#f9f9f8",
@@ -16,7 +16,7 @@ export const addUserLightTheme = createTheme({
   styles: [{ tag: t.separator, color: "#59682c" }],
 });
 
-export const addUserDarkTheme = createTheme({
+export const defaultDarkTheme = createTheme({
   theme: "dark", // Changed theme to "dark"
   settings: {
     background: "#21201c", // Changed background color

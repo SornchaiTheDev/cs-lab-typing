@@ -18,7 +18,7 @@ export const Root = ({ children }: Children) => {
 
   return (
     <Collapse.Provider value={{ isCollapse, setIsCollapse }}>
-      <div className="my-4 rounded-md border border-sand-6 bg-white p-4 text-sand-12">
+      <div className="my-4 rounded-md border border-sand-6 bg-sand-1 p-4 text-sand-12">
         {children}
       </div>
     </Collapse.Provider>
