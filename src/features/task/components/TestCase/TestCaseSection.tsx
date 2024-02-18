@@ -1,9 +1,12 @@
-import { Play, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import TestCaseList from "./TestCaseList";
 import useTestCase from "../../hooks/useTestCase";
+import * as Collapse from "~/components/Common/Collapse";
+import RunningButton from "./RunningButton";
 
 function TestCaseSection() {
   const {
+    isAllDone,
     handleOnAddTestCase,
     handleOnInputChange,
     handleOnRunTestCase,
@@ -13,28 +16,32 @@ function TestCaseSection() {
 
   return (
     <div className="mb-2 mt-10">
-      <div className="flex items-center gap-4">
-        <h4 className="text-3xl font-bold text-sand-12">Test Cases</h4>
-        <button
-          onClick={handleOnRunAllTestCase}
-          className="flex items-center gap-2 rounded-lg bg-lime-9 px-2 py-1 text-sm hover:bg-lime-10"
-        >
-          <Play size="0.9rem" />
-          Run All
-        </button>
-      </div>
-      <TestCaseList
-        handleOnRunTestCase={handleOnRunTestCase}
-        handleOnInputChange={handleOnInputChange}
-        handleOnRemoveTestCase={handleOnRemoveTestCase}
-      />
-      <button
-        onClick={handleOnAddTestCase}
-        className="mt-3 flex items-center gap-2 rounded-lg bg-sand-12 px-4 py-1 text-sm text-sand-1 shadow hover:bg-sand-11"
-      >
-        <Plus />
-        Add Case
-      </button>
+      <Collapse.Root>
+        <Collapse.Header>
+          <div className="flex items-center gap-4">
+            <h4 className="text-3xl font-bold text-sand-12">Test Cases</h4>
+            <RunningButton
+              text="Run All"
+              isRunning={!isAllDone}
+              handleOnRun={handleOnRunAllTestCase}
+            />
+          </div>
+        </Collapse.Header>
+        <Collapse.Body>
+          <TestCaseList
+            handleOnRunTestCase={handleOnRunTestCase}
+            handleOnInputChange={handleOnInputChange}
+            handleOnRemoveTestCase={handleOnRemoveTestCase}
+          />
+          <button
+            onClick={handleOnAddTestCase}
+            className="mt-3 flex items-center gap-2 rounded-lg bg-sand-12 px-4 py-1 text-sm text-sand-1 shadow hover:bg-sand-11"
+          >
+            <Plus />
+            Add Case
+          </button>
+        </Collapse.Body>
+      </Collapse.Root>
     </div>
   );
 }

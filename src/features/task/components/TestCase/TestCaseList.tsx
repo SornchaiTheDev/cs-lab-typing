@@ -17,7 +17,6 @@ function TestCaseList({
   const { testCases } = useAtomValue(problemTaskAtom);
 
   return testCases.map(({ number, input, output, status }) => {
-    const isLastItem = number === testCases.length - 1;
     return (
       <Fragment key={number}>
         <TestCaseItem
@@ -29,7 +28,6 @@ function TestCaseList({
           handleOnRunTestCase={() => handleOnRunTestCase(number)}
           onChangeInput={handleOnInputChange(number)}
         />
-        {!isLastItem && <hr className="my-4" />}
       </Fragment>
     );
   });

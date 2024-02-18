@@ -21,6 +21,10 @@ interface Output {
   };
 }
 
+interface Token {
+  token: string;
+}
+
 export const createJudgeRouter = router({
   cmsSubmitCode: teacherAboveProcedure
     .input(
@@ -53,10 +57,35 @@ export const createJudgeRouter = router({
     .mutation(async ({ input }) => {
       const submissions = input;
 
-      const result = await api.post<{ token: string }[]>("/submissions/batch", {
+      const submissionTokens = await api.post<Token[]>("/submissions/batch", {
         submissions,
       });
 
-      return result.data;
+      const tokens = submissionTokens.data
+        .map((submission) => submission.token)
+        .join(",");
+
+      const getResults = async () => {
+        const results = await api.get<{ submissions: Output[] }>(
+          `/submissions/batch?tokens=${tokens}`
+        );
+        return results.data;
+      };
+
+      let results = await getResults();
+
+      let isAllDone = results.submissions.every(
+        (result) => result.status.description === "Accepted"
+      );
+
+      while (!isAllDone) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        results = await getResults();
+        isAllDone = results.submissions.every(
+          (s) => s.status.description === "Accepted"
+        );
+      }
+
+      return results.submissions;
     }),
 });

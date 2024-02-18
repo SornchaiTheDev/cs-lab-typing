@@ -1,8 +1,8 @@
-import { Loader, Play, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import React from "react";
 import CodemirrorRoot from "~/components/Codemirror";
 import { TestCaseStatus } from "~/store/editorTestCase";
-import { cn } from "~/lib/utils";
+import RunningButton from "./RunningButton";
 
 interface Props {
   number: number;
@@ -24,13 +24,6 @@ function TestCaseItem({
   status,
 }: Props) {
   const isRunning = status === TestCaseStatus.RUNNING;
-  const statusText = isRunning ? "Running..." : "Run";
-  const statusIcon = isRunning ? (
-    <Loader className="animate-spin" size="0.9rem" />
-  ) : (
-    <Play size="0.9rem" />
-  );
-  const statusColor = isRunning ? "bg-yellow-9" : "bg-lime-10";
 
   return (
     <>
@@ -48,16 +41,11 @@ function TestCaseItem({
         <div className="boder-sand-6 flex-1 overflow-hidden rounded-lg border bg-white">
           <div className="mb-2 flex w-full items-center justify-between p-2">
             <h6 className="font-medium">Input</h6>
-            <button
-              onClick={handleOnRunTestCase}
-              className={cn(
-                "flex items-center gap-2 rounded-lg px-2 py-1 text-sm",
-                statusColor
-              )}
-            >
-              {statusIcon}
-              {statusText}
-            </button>
+            <RunningButton
+              text="Run"
+              isRunning={isRunning}
+              handleOnRun={handleOnRunTestCase}
+            />
           </div>
           <CodemirrorRoot
             value={input}

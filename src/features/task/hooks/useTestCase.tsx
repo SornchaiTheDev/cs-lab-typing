@@ -1,4 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useState } from "react";
 import { TestCaseStatus } from "~/store/editorTestCase";
 import {
   addNewTestCaseAtom,
@@ -43,6 +44,7 @@ function useTestCase() {
     }
   };
 
+  const [isAllDone, setIsAllDone] = useState(true);
   const cmsSubmitCodeBatch = trpc.judge.cmsSubmitCodeBatch.useMutation();
 
   const handleOnRunAllTestCase = async () => {
@@ -55,16 +57,20 @@ function useTestCase() {
       };
     });
     try {
+      setIsAllDone(false);
       const result = await cmsSubmitCodeBatch.mutateAsync(submissions);
+
       result.forEach((res, index) => {
-        testCases[index]!.output = res.token;
+        testCases[index]!.output = res.stdout;
       });
+      setIsAllDone(true);
     } catch (err) {}
     setTestCases([...testCases]);
   };
 
   return {
     testCases,
+    isAllDone,
     handleOnAddTestCase,
     handleOnInputChange,
     handleOnRunTestCase,
