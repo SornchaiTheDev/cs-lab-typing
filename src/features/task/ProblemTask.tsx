@@ -24,6 +24,7 @@ function ProblemTask({ taskId }: Props) {
   } = useProblemTask({
     taskId,
     onDescriptionLoad: (description) => {
+      console.log(description)
       ref.current?.setMarkdown(description);
     },
   });
