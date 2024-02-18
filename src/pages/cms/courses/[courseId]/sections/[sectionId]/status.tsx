@@ -6,7 +6,7 @@ import ProgressIndicator from "~/components/Common/ProgressIndicator";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 import Modal from "~/components/Common/Modal";
-import Collapse from "~/components/Common/Collapse";
+import * as Collapse from "~/components/Common/Collapse";
 import { getDuration } from "~/components/Typing/utils/getDuration";
 import type { SectionType, submission_type } from "@prisma/client";
 import { useSession } from "next-auth/react";
@@ -101,15 +101,15 @@ const RecentTasks = ({
       onClose={onClose}
       isOpen
     >
-      <div className="my-4 flex flex-col md:flex-row md:items-center gap-2 text-sand-12">
-        <div className="flex flex-1 gap-2 items-center mb-4 md:mb-0">
-        <div className="p-2">
-          <Icon className="text-xl" icon="solar:user-line-duotone" />
-        </div>
-        <div className="flex-1">
-          <h5 className="font-medium">{fullName}</h5>
-          <h6 className="text-sm">{studentId}</h6>
-        </div>
+      <div className="my-4 flex flex-col gap-2 text-sand-12 md:flex-row md:items-center">
+        <div className="mb-4 flex flex-1 items-center gap-2 md:mb-0">
+          <div className="p-2">
+            <Icon className="text-xl" icon="solar:user-line-duotone" />
+          </div>
+          <div className="flex-1">
+            <h5 className="font-medium">{fullName}</h5>
+            <h6 className="text-sm">{studentId}</h6>
+          </div>
         </div>
         <ProgressIndicator
           className="md:justify-end"
@@ -127,24 +127,27 @@ const RecentTasks = ({
         tasks.data?.map(({ name, history, id }) => {
           if (history) {
             return (
-              <Collapse key={name} title={name}>
-                <h4 className="mb-2 text-center text-lg font-bold">
-                  Best Score
-                </h4>
-                <BestScoreStats
-                  adjustedSpeed={history.adjusted_speed ?? 0}
-                  duration={getDuration(
-                    history.started_at as Date,
-                    history.ended_at as Date
-                  )}
-                  errorPercentage={history.percent_error ?? 0}
-                  rawSpeed={history.raw_speed ?? 0}
-                  score={sectionType === "Lesson" ? undefined : history.score}
-                />
-                <TypingSubmissions
-                  {...{ sectionId, labId, taskId: id, studentId }}
-                />
-              </Collapse>
+              <Collapse.Root key={name}>
+                <Collapse.Header></Collapse.Header>
+                <Collapse.Body>
+                  <h4 className="mb-2 text-center text-lg font-bold">
+                    Best Score
+                  </h4>
+                  <BestScoreStats
+                    adjustedSpeed={history.adjusted_speed ?? 0}
+                    duration={getDuration(
+                      history.started_at as Date,
+                      history.ended_at as Date
+                    )}
+                    errorPercentage={history.percent_error ?? 0}
+                    rawSpeed={history.raw_speed ?? 0}
+                    score={sectionType === "Lesson" ? undefined : history.score}
+                  />
+                  <TypingSubmissions
+                    {...{ sectionId, labId, taskId: id, studentId }}
+                  />
+                </Collapse.Body>
+              </Collapse.Root>
             );
           }
         })
@@ -170,7 +173,6 @@ const LabStatus = ({
   sectionType: SectionType;
 }) => {
   const { data: session } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingTasks, setIsFetchingTasks] = useState(false);
 
@@ -184,7 +186,7 @@ const LabStatus = ({
       sectionId: sectionId as string,
       labId,
     },
-    { enabled: !!sectionId && !!labId && isOpen }
+    { enabled: !!sectionId && !!labId } // need to reimplement fetching here
   );
 
   const submissions = trpc.labs.getLabTaskSubmissions.useQuery(
@@ -263,18 +265,21 @@ const LabStatus = ({
           onClose={() => setSelectedUser(null)}
         />
       )}
-      <Collapse
-        onChange={setIsOpen}
-        title={name}
-        titleBtn={
-          <>
+      <Collapse.Root>
+        <Collapse.Header>
+          <h4 className="text-xl font-semibold">{name}</h4>
+        </Collapse.Header>
+        <Collapse.Body>
+          <div className="my-4 flex items-center gap-4">
+            {" "}
             <button
               onClick={handleOnRefresh}
-              className="flex items-center gap-2 rounded border p-1 text-lg text-sand-12"
+              className="flex items-center gap-2 rounded-lg border px-2 py-1  text-sand-12 hover:bg-sand-2"
             >
+              Refresh
               <Icon
                 icon="solar:refresh-line-duotone"
-                className={isLoading ? "animate-spin" : undefined}
+                className={isLoading ? "animate-spin text-lg" : undefined}
               />
             </button>
             {!isTA && (
@@ -296,54 +301,54 @@ const LabStatus = ({
                 {isFetchingTasks ? "Exporting..." : "Export as CSV"}
               </button>
             )}
-          </>
-        }
-      >
-        {lab.isLoading || isLoading ? (
-          <>
-            <Skeleton width="100%" height="3rem" className="my-2" />
-            <Skeleton width="100%" height="3rem" className="my-2" />
-            <Skeleton width="100%" height="3rem" className="my-2" />
-            <Skeleton width="100%" height="3rem" className="my-2" />
-          </>
-        ) : (
-          lab.data?.usersTaskStatus?.map(
-            ({ full_name, student_id, taskStatus }) => (
-              <div key={student_id}>
-                <div className="flex md:flex-row flex-col items-center w-full flex-wrap">
-                  <div className="flex flex-1 items-center gap-4">
-                    <div className="flex-1 md:flex-none">
-                      <h5 className="font-medium">{full_name}</h5>
-                      <h6 className="text-sm">{student_id}</h6>
-                    </div>
-                    <button
-                      onClick={() =>
-                        setSelectedUser({
-                          fullName: full_name,
-                          studentId: student_id,
-                          taskStatus,
-                        })
-                      }
-                      className="flex h-7 w-7 items-center gap-2 rounded border p-1 text-xl text-sand-12"
-                    >
-                      <Icon
-                        icon="solar:eye-line-duotone"
-                        className={isLoading ? "animate-spin" : undefined}
-                      />
-                    </button>
-                  </div>
+          </div>
 
-                  <ProgressIndicator
-                    tasksStatus={taskStatus ?? []}
-                    className="mt-4 md:mt-0"
-                  />
+          {lab.isLoading || isLoading ? (
+            <>
+              <Skeleton width="100%" height="3rem" className="my-2" />
+              <Skeleton width="100%" height="3rem" className="my-2" />
+              <Skeleton width="100%" height="3rem" className="my-2" />
+              <Skeleton width="100%" height="3rem" className="my-2" />
+            </>
+          ) : (
+            lab.data?.usersTaskStatus?.map(
+              ({ full_name, student_id, taskStatus }) => (
+                <div key={student_id}>
+                  <div className="flex w-full flex-col flex-wrap items-center md:flex-row">
+                    <div className="flex flex-1 items-center gap-4">
+                      <div className="flex-1 md:flex-none">
+                        <h5 className="font-medium">{full_name}</h5>
+                        <h6 className="text-sm">{student_id}</h6>
+                      </div>
+                      <button
+                        onClick={() =>
+                          setSelectedUser({
+                            fullName: full_name,
+                            studentId: student_id,
+                            taskStatus,
+                          })
+                        }
+                        className="flex h-7 w-7 items-center gap-2 rounded border p-1 text-xl text-sand-12"
+                      >
+                        <Icon
+                          icon="solar:eye-line-duotone"
+                          className={isLoading ? "animate-spin" : undefined}
+                        />
+                      </button>
+                    </div>
+
+                    <ProgressIndicator
+                      tasksStatus={taskStatus ?? []}
+                      className="mt-4 md:mt-0"
+                    />
+                  </div>
+                  <hr className="my-2" />
                 </div>
-                <hr className="my-2" />
-              </div>
+              )
             )
-          )
-        )}
-      </Collapse>
+          )}
+        </Collapse.Body>
+      </Collapse.Root>
     </>
   );
 };
