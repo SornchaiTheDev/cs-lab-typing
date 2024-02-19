@@ -19,6 +19,7 @@ export interface RuntimeConfig {
 
 interface ProblemTaskStore {
   description: string;
+  diffTaskBody: string;
   sourceCode: string;
   testCases: TestCase[];
   languageId: number | null;
@@ -38,6 +39,7 @@ const getTestCasesWithoutStatus = (testCases: TestCase[]) => {
 export const problemTaskAtom = atom<ProblemTaskStore>({
   description: "",
   tmpSourceCode: "",
+  diffTaskBody: "",
   sourceCode: "",
   testCases: [],
   languageId: null,

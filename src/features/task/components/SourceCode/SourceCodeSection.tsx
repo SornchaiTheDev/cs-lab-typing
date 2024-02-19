@@ -1,11 +1,13 @@
-import { useAtom } from "jotai";
 import CodemirrorRoot from "~/components/Codemirror";
-import { sourceCodeAtom } from "~/store/problemTask";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import useTheme from "~/hooks/useTheme";
 
-function SourceCodeSection() {
-  const [sourceCode, setSourceCode] = useAtom(sourceCodeAtom);
+interface Props {
+  sourceCode: string;
+  setSourceCode: (sourceCode: string) => void;
+}
+
+function SourceCodeSection({ sourceCode, setSourceCode }: Props) {
   const { theme } = useTheme();
   const codeMirrorTheme = theme === "light" ? githubLight : githubDark;
   return (

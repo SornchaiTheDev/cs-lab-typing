@@ -1,6 +1,4 @@
 import Button from "~/components/Common/Button";
-import { useRef } from "react";
-import type { MDXEditorMethods } from "@mdxeditor/editor";
 import Skeleton from "~/components/Common/Skeleton";
 import TestCaseSection from "./components/TestCase/TestCaseSection";
 import useProblemTask from "./hooks/useProblemTask";
@@ -14,13 +12,16 @@ interface Props {
 }
 
 function ProblemTask({ taskId }: Props) {
-  const ref = useRef<MDXEditorMethods>(null);
   const {
     isLoading,
     isSaving,
     isAlreadySave,
     isSourceCodeChanged,
     isOwner,
+    description,
+    setDescription,
+    sourceCode,
+    setSourceCode,
     diffTaskBody,
     handleOnSaveProblem,
     config,
@@ -29,9 +30,6 @@ function ProblemTask({ taskId }: Props) {
     isAlreadyDefaultRuntimeConfig,
   } = useProblemTask({
     taskId,
-    onDescriptionLoad: (description) => {
-      ref.current?.setMarkdown(description);
-    },
   });
 
   return (
@@ -40,9 +38,16 @@ function ProblemTask({ taskId }: Props) {
         <Skeleton width="100%" className="flex-1" />
       ) : (
         <>
-          <DescriptionSection mdxRef={ref} diffTaskBody={diffTaskBody} />
+          <DescriptionSection
+            description={description}
+            onChange={setDescription}
+            diffTaskBody={diffTaskBody}
+          />
 
-          <SourceCodeSection />
+          <SourceCodeSection
+            sourceCode={sourceCode}
+            setSourceCode={setSourceCode}
+          />
 
           <TestCaseSection />
 

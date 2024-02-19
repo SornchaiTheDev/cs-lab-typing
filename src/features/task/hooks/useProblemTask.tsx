@@ -3,7 +3,7 @@ import { trpc } from "~/utils";
 import { callToast } from "~/services/callToast";
 import useTask, { type TaskExtendedWithProblem } from "./useTask";
 import { TestCaseStatus } from "~/store/editorTestCase";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   problemTaskAtom,
   setInitialProblemTaskAtom,
@@ -12,24 +12,24 @@ import {
   type RuntimeConfig,
   resetRuntimeConfigAtom,
   updateConfigAtom,
+  descriptionAtom,
+  sourceCodeAtom,
 } from "~/store/problemTask";
 import { runtimeConfig } from "~/constants/runtime_config";
 
 interface Props {
   taskId: string;
-  onDescriptionLoad: (description: string) => void;
 }
 
-function useProblemTask({ taskId, onDescriptionLoad }: Props) {
+function useProblemTask({ taskId }: Props) {
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [diffTaskBody, setDiffTaskBody] = useState<string>("");
   const utils = trpc.useUtils();
   const problemTaskStore = useAtomValue(problemTaskAtom);
   const setInitialProblemTask = useSetAtom(setInitialProblemTaskAtom);
   const isAlreadySave = useAtomValue(isAlreadySaveAtom);
   const isSourceCodeChanged = useAtomValue(isSourceCodeChangedAtom);
 
-  const { description, testCases, sourceCode, config } = problemTaskStore;
+  const { testCases, diffTaskBody, config } = problemTaskStore;
 
   const handleOnTaskLoad = (task: TaskExtendedWithProblem) => {
     const problem = task?.problem;
@@ -43,16 +43,16 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
 
     setInitialProblemTask({
       description,
+      diffTaskBody: description,
       sourceCode: source_code,
       testCases: testCasesWithStatus,
       languageId: task.language_id,
       config: runtime_config,
     });
-
-    setDiffTaskBody(description);
-
-    onDescriptionLoad(description);
   };
+
+  const [description, setDescription] = useAtom(descriptionAtom);
+  const [sourceCode, setSourceCode] = useAtom(sourceCodeAtom);
 
   const useTaskReturned = useTask({ taskId, onTaskLoad: handleOnTaskLoad });
 
@@ -84,6 +84,10 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
 
   return {
     ...useTaskReturned,
+    description,
+    setDescription,
+    sourceCode,
+    setSourceCode,
     diffTaskBody,
     handleOnSaveProblem,
     isSaving,
