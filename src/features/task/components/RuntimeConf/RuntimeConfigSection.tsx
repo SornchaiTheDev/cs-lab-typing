@@ -41,23 +41,25 @@ function RuntimeConfigSection({
           Reset to Default
         </button>
         <div className="mt-4">
-          {Object.entries(config).map(([key, value]) => {
-            const config = runtimeConfigDetails.find(
-              (config) => config.key === key
-            );
-            const name = config?.name;
-            const description = config?.description;
-
-            if (typeof value === "boolean") {
-              return (
-                <Fragment key={key}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h5 className="text-lg font-medium">{name}</h5>
-                      <p className="text-sm">{description}</p>
-                    </div>
+          {runtimeConfigDetails.map((detail) => {
+            const { name, key, description, type } = detail;
+            return (
+              <Fragment key={key}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h5 className="text-lg font-medium">{name}</h5>
+                    <p className="text-sm">
+                      {description}
+                      {type === "counter" && (
+                        <span className="text-xs text-sand-10">
+                          (in {detail.unit})
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  {type === "checkbox" ? (
                     <Checkbox
-                      value={value}
+                      value={config[key] as boolean}
                       onChange={(value) =>
                         onUpdate({
                           key: key as keyof RuntimeConfig,
@@ -65,31 +67,17 @@ function RuntimeConfigSection({
                         })
                       }
                     />
-                  </div>
-                  <hr className="my-4 border-sand-6" />
-                </Fragment>
-              );
-            }
-
-            return (
-              <Fragment key={key}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h5 className="text-lg font-medium">{name}</h5>
-                    <p className="text-sm">
-                      {description}{" "}
-                      <span className="text-xs text-sand-10">(in seconds)</span>
-                    </p>
-                  </div>
-                  <Counter
-                    value={value}
-                    onChange={(value) =>
-                      onUpdate({
-                        key: key as keyof RuntimeConfig,
-                        value,
-                      })
-                    }
-                  />
+                  ) : (
+                    <Counter
+                      value={config[key] as number}
+                      onChange={(value) =>
+                        onUpdate({
+                          key: key as keyof RuntimeConfig,
+                          value,
+                        })
+                      }
+                    />
+                  )}
                 </div>
                 <hr className="my-4 border-sand-6" />
               </Fragment>
