@@ -49,7 +49,7 @@ function RuntimeConfigSection({
                   <div>
                     <h5 className="text-lg font-medium">{name}</h5>
                     <p className="text-sm">
-                      {description}
+                      {description}{" "}
                       {type === "counter" && (
                         <span className="text-xs text-sand-10">
                           (in {detail.unit})
