@@ -26,6 +26,7 @@ function ProblemTask({ taskId }: Props) {
     config,
     updateRuntimeConfigWhereKey,
     resetRunTimeConfig,
+    isAlreadyDefaultRuntimeConfig,
   } = useProblemTask({
     taskId,
     onDescriptionLoad: (description) => {
@@ -46,6 +47,7 @@ function ProblemTask({ taskId }: Props) {
           <TestCaseSection />
 
           <RuntimeConfigSection
+            isAlreadyDefaultRuntimeConfig={isAlreadyDefaultRuntimeConfig}
             config={config as RuntimeConfig}
             onUpdate={updateRuntimeConfigWhereKey}
             onReset={resetRunTimeConfig}

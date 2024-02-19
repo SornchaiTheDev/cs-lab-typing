@@ -10,9 +10,15 @@ interface Props {
   config: RuntimeConfig;
   onUpdate: ({ key, value }: UpdateRuntimeConfig) => void;
   onReset: () => void;
+  isAlreadyDefaultRuntimeConfig: boolean;
 }
 
-function RuntimeConfigSection({ config, onUpdate, onReset }: Props) {
+function RuntimeConfigSection({
+  config,
+  onUpdate,
+  onReset,
+  isAlreadyDefaultRuntimeConfig,
+}: Props) {
   return (
     <Collapse.Root>
       <Collapse.Header>
@@ -27,8 +33,9 @@ function RuntimeConfigSection({ config, onUpdate, onReset }: Props) {
       </Collapse.Header>
       <Collapse.Body>
         <button
+          disabled={isAlreadyDefaultRuntimeConfig}
           onClick={onReset}
-          className="mt-2 flex items-center gap-2 rounded-lg bg-red-9 px-4 py-2 text-sm text-red-2 hover:bg-red-10"
+          className="mt-2 flex items-center gap-2 rounded-lg bg-red-9 px-4 py-2 text-sm text-red-2 hover:bg-red-10 disabled:bg-sand-8 disabled:text-sand-3"
         >
           <RotateCcw size="1rem" />
           Reset to Default

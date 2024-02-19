@@ -13,6 +13,7 @@ import {
   resetRuntimeConfigAtom,
   updateConfigAtom,
 } from "~/store/problemTask";
+import { runtimeConfig } from "~/constants/runtime_config";
 
 interface Props {
   taskId: string;
@@ -78,6 +79,9 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
   const updateRuntimeConfigWhereKey = useSetAtom(updateConfigAtom);
   const resetRunTimeConfig = useSetAtom(resetRuntimeConfigAtom);
 
+  const isAlreadyDefaultRuntimeConfig =
+    JSON.stringify(config) === JSON.stringify(runtimeConfig);
+
   return {
     ...useTaskReturned,
     diffTaskBody,
@@ -88,6 +92,7 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
     config,
     updateRuntimeConfigWhereKey,
     resetRunTimeConfig,
+    isAlreadyDefaultRuntimeConfig,
   };
 }
 
