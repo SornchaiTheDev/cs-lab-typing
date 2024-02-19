@@ -9,6 +9,9 @@ import {
   setInitialProblemTaskAtom,
   isAlreadySaveAtom,
   isSourceCodeChangedAtom,
+  type RuntimeConfig,
+  resetRuntimeConfigAtom,
+  updateConfigAtom,
 } from "~/store/problemTask";
 
 interface Props {
@@ -25,13 +28,13 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
   const isAlreadySave = useAtomValue(isAlreadySaveAtom);
   const isSourceCodeChanged = useAtomValue(isSourceCodeChangedAtom);
 
-  const { description, testCases, sourceCode } = problemTaskStore;
+  const { description, testCases, sourceCode, config } = problemTaskStore;
 
   const handleOnTaskLoad = (task: TaskExtendedWithProblem) => {
     const problem = task?.problem;
     if (problem === null) return;
 
-    const { description, source_code, testcases } = problem;
+    const { description, source_code, testcases, runtime_config } = problem;
     const testCasesWithStatus = testcases.map((testcase) => ({
       ...testcase,
       status: TestCaseStatus.IDLE,
@@ -42,6 +45,7 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
       sourceCode: source_code,
       testCases: testCasesWithStatus,
       languageId: task.language_id,
+      config: runtime_config,
     });
 
     setDiffTaskBody(description);
@@ -61,6 +65,7 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
         description,
         sourceCode,
         testcases: testCases,
+        runtimeConfig: config as RuntimeConfig,
       });
       callToast({ msg: "Save task successfully", type: "success" });
       utils.tasks.invalidate();
@@ -70,6 +75,9 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
     }
   };
 
+  const updateRuntimeConfigWhereKey = useSetAtom(updateConfigAtom);
+  const resetRunTimeConfig = useSetAtom(resetRuntimeConfigAtom);
+
   return {
     ...useTaskReturned,
     diffTaskBody,
@@ -77,6 +85,9 @@ function useProblemTask({ taskId, onDescriptionLoad }: Props) {
     isSaving,
     isAlreadySave,
     isSourceCodeChanged,
+    config,
+    updateRuntimeConfigWhereKey,
+    resetRunTimeConfig,
   };
 }
 

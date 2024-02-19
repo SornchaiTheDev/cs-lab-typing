@@ -7,6 +7,7 @@ export type TaskExtendedWithProblem = Prisma.tasksGetPayload<{
   include: {
     problem: {
       include: {
+        runtime_config: true;
         testcases: {
           select: {
             input: true;

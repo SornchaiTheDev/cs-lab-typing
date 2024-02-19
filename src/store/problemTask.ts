@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { TestCaseStatus, type TestCase } from "./editorTestCase";
+import { runtimeConfig } from "~/constants/runtime_config";
 
 export interface RuntimeConfig {
   cpu_time_limit: number;
@@ -23,7 +24,7 @@ interface ProblemTaskStore {
   languageId: number | null;
   allFieldsInitialValues: string;
   tmpSourceCode: string;
-  config: RuntimeConfig;
+  config: RuntimeConfig | null;
 }
 
 const getTestCasesWithoutStatus = (testCases: TestCase[]) => {
@@ -41,20 +42,7 @@ export const problemTaskAtom = atom<ProblemTaskStore>({
   testCases: [],
   languageId: null,
   allFieldsInitialValues: "",
-  config: {
-    cpu_time_limit: 2,
-    cpu_extra_time: 0.5,
-    wall_time_limit: 5,
-    memory_limit: 128000,
-    stack_limit: 64000,
-    max_processes_and_or_threads: 60,
-    enable_per_process_and_thread_time_limit: false,
-    enable_per_process_and_thread_memory_limit: true,
-    max_file_size: 1024,
-    number_of_runs: 1,
-    redirect_stderr_to_stdout: false,
-    enable_network: true,
-  },
+  config: runtimeConfig,
 });
 
 export const setInitialProblemTaskAtom = atom(
@@ -62,19 +50,20 @@ export const setInitialProblemTaskAtom = atom(
   (
     get,
     set,
-    fields: Omit<
-      ProblemTaskStore,
-      "allFieldsInitialValues" | "tmpSourceCode" | "config"
-    >
+    fields: Omit<ProblemTaskStore, "allFieldsInitialValues" | "tmpSourceCode">
   ) => {
-    const config = get(problemTaskAtom).config;
-    const { description, testCases, sourceCode } = fields;
+    const { description, testCases, sourceCode, config } = fields;
+
     const allFieldsInitialValues = [
       description,
       sourceCode,
       JSON.stringify(config),
       JSON.stringify(getTestCasesWithoutStatus(testCases)),
     ].toString();
+
+    if (config === null) {
+      fields.config = get(problemTaskAtom).config;
+    }
 
     set(problemTaskAtom, (prev) => ({
       ...prev,
@@ -172,22 +161,30 @@ export const isSourceCodeChangedAtom = atom(
   }
 );
 
-export const configAtom = atom(
-  (get) => get(problemTaskAtom).config,
-  (
-    get,
-    set,
-    update: {
-      key: keyof RuntimeConfig;
-      value: RuntimeConfig[keyof RuntimeConfig];
-    }
-  ) => {
-    set(problemTaskAtom, (prev) => ({
-      ...prev,
-      config: {
-        ...prev.config,
-        [update.key]: update.value,
-      },
-    }));
+export interface UpdateRuntimeConfig {
+  key: keyof RuntimeConfig;
+  value: RuntimeConfig[keyof RuntimeConfig];
+}
+
+export const updateConfigAtom = atom(
+  null,
+  (get, set, update: UpdateRuntimeConfig) => {
+    set(problemTaskAtom, (prev) => {
+      if (prev.config === null) {
+        prev.config = runtimeConfig;
+      }
+
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          [update.key]: update.value,
+        },
+      };
+    });
   }
 );
+
+export const resetRuntimeConfigAtom = atom(null, (get, set) => {
+  set(problemTaskAtom, (prev) => ({ ...prev, config: runtimeConfig }));
+});

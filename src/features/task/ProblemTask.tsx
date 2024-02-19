@@ -7,6 +7,7 @@ import useProblemTask from "./hooks/useProblemTask";
 import SourceCodeSection from "./components/SourceCode/SourceCodeSection";
 import DescriptionSection from "./components/Description/DescriptionSection";
 import RuntimeConfigSection from "./components/RuntimeConf/RuntimeConfigSection";
+import type { RuntimeConfig } from "~/store/problemTask";
 
 interface Props {
   taskId: string;
@@ -22,6 +23,9 @@ function ProblemTask({ taskId }: Props) {
     isOwner,
     diffTaskBody,
     handleOnSaveProblem,
+    config,
+    updateRuntimeConfigWhereKey,
+    resetRunTimeConfig,
   } = useProblemTask({
     taskId,
     onDescriptionLoad: (description) => {
@@ -41,7 +45,11 @@ function ProblemTask({ taskId }: Props) {
 
           <TestCaseSection />
 
-          <RuntimeConfigSection />
+          <RuntimeConfigSection
+            config={config as RuntimeConfig}
+            onUpdate={updateRuntimeConfigWhereKey}
+            onReset={resetRunTimeConfig}
+          />
 
           {isOwner && (
             <Button

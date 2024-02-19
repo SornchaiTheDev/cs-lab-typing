@@ -129,12 +129,28 @@ export const getTaskRouter = router({
           language: true,
           problem: {
             include: {
+              runtime_config: {
+                select: {
+                  cpu_time_limit: true,
+                  cpu_extra_time: true,
+                  wall_time_limit: true,
+                  memory_limit: true,
+                  stack_limit: true,
+                  max_processes_and_or_threads: true,
+                  enable_per_process_and_thread_time_limit: true,
+                  enable_per_process_and_thread_memory_limit: true,
+                  max_file_size: true,
+                  number_of_runs: true,
+                  redirect_stderr_to_stdout: true,
+                  enable_network: true,
+                },
+              },
               testcases: {
-                select : {
-                  input : true,
+                select: {
+                  input: true,
                   output: true,
-                  number : true,
-                }
+                  number: true,
+                },
               },
             },
           },

@@ -20,7 +20,7 @@ model users {
   id                Int                 @id @default(autoincrement())
   student_id        String
   full_name         String
-  email             String              
+  email             String
   password          String?
   last_logined      DateTime?
   roles             roles[]
@@ -222,12 +222,30 @@ model tasks {
 }
 
 model problems {
-  id          Int         @id @default(autoincrement())
-  task        tasks       @relation(fields: [task_id], references: [id])
-  task_id     Int         @unique
-  description String
-  source_code String
-  testcases   testcases[]
+  id             Int             @id @default(autoincrement())
+  task           tasks           @relation(fields: [task_id], references: [id])
+  task_id        Int             @unique
+  description    String
+  source_code    String
+  testcases      testcases[]
+  runtime_config runtime_config?
+}
+
+model runtime_config {
+  problem                                    problems @relation(fields: [problem_id], references: [id])
+  problem_id                                 Int      @id
+  cpu_time_limit                             Float
+  cpu_extra_time                             Float
+  wall_time_limit                            Float
+  memory_limit                               Int
+  stack_limit                                Int
+  max_processes_and_or_threads               Int
+  enable_per_process_and_thread_time_limit   Boolean
+  enable_per_process_and_thread_memory_limit Boolean
+  max_file_size                              Int
+  number_of_runs                             Int
+  redirect_stderr_to_stdout                  Boolean
+  enable_network                             Boolean
 }
 
 model testcases {

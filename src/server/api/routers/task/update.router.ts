@@ -208,10 +208,25 @@ export const updateTaskRouter = router({
             output: z.string(),
           })
         ),
+        runtimeConfig: z.object({
+          cpu_time_limit: z.number(),
+          cpu_extra_time: z.number(),
+          wall_time_limit: z.number(),
+          memory_limit: z.number(),
+          stack_limit: z.number(),
+          max_processes_and_or_threads: z.number(),
+          enable_per_process_and_thread_time_limit: z.boolean(),
+          enable_per_process_and_thread_memory_limit: z.boolean(),
+          max_file_size: z.number(),
+          number_of_runs: z.number(),
+          redirect_stderr_to_stdout: z.boolean(),
+          enable_network: z.boolean(),
+        }),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { taskId, sourceCode, testcases, description } = input;
+      const { taskId, sourceCode, testcases, description, runtimeConfig } =
+        input;
       const _taskId = parseInt(taskId);
       const actionUser = ctx.user.student_id;
 
@@ -226,10 +241,19 @@ export const updateTaskRouter = router({
                 create: {
                   description,
                   source_code: sourceCode,
+                  runtime_config: {
+                    create: runtimeConfig,
+                  },
                 },
                 update: {
                   source_code: sourceCode,
                   description,
+                  runtime_config: {
+                    upsert: {
+                      create: runtimeConfig,
+                      update: runtimeConfig,
+                    },
+                  },
                 },
               },
             },
@@ -238,6 +262,7 @@ export const updateTaskRouter = router({
             problem: {
               select: {
                 id: true,
+                runtime_config: true,
               },
             },
           },
@@ -286,6 +311,7 @@ export const updateTaskRouter = router({
           },
         });
       } catch (err) {
+        console.log(err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
