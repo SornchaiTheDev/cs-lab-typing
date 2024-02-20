@@ -55,7 +55,7 @@ const TeachingSections = () => {
         </>
       ) : teach.data && teach.data.pages.length > 0 ? (
         <>
-          <div className="mt-4 flex justify-between items-center">
+          <div className="mt-4 flex justify-between items-start md:items-center gap-4 flex-col md:flex-row">
             <h4 className="text-2xl font-medium text-sand-12 md:text-3xl">
               Teach
             </h4>
