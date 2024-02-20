@@ -16,7 +16,7 @@ interface Props {
   sectionType: "Lesson" | "Exam";
 }
 
-function ProblemTask({ taskName, courseName, labName }: Props) {
+function ProblemTask({ courseName, labName }: Props) {
   const router = useRouter();
   return (
     <FrontLayout
@@ -44,7 +44,7 @@ function ProblemTask({ taskName, courseName, labName }: Props) {
       className="px-4 pb-4 pt-8"
     >
       <div className="flex h-full">
-        <Sidebar taskName={taskName} />
+        <Sidebar />
         <CodeSection />
       </div>
     </FrontLayout>
