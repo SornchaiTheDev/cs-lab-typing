@@ -50,6 +50,9 @@ function useDragSection({ minSize, initialSize, maxSize, direction }: Props) {
         currentPositon = e.clientY - sectionOffset - dragHeight / 2;
       }
 
+      if (currentPositon < minSize) currentPositon = minSize;
+      if (maxSize && currentPositon > maxSize) currentPositon = maxSize;
+
       setSize(currentPositon);
     };
 

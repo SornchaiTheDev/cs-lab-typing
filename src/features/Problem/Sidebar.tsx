@@ -1,5 +1,6 @@
 import React from "react";
 import useDragSection, { Direction } from "./hooks/useDragSection";
+import { MoveLeft } from "lucide-react";
 
 interface Props {
   taskName: string;
@@ -11,6 +12,7 @@ function Sidebar({ taskName }: Props) {
       direction: Direction.HORIZONTAL,
       minSize: 300,
       initialSize: 600,
+      maxSize: 1000,
     });
   return (
     <>
@@ -19,18 +21,31 @@ function Sidebar({ taskName }: Props) {
         className="flex flex-col overflow-hidden rounded-lg border border-sand-6 bg-sand-1"
         style={style}
       >
-        <div className="flex items-center border-b border-sand-6">
-          <button className="w-[200px] bg-sand-12 p-2 font-bold text-sand-1 shadow-lg shadow-sand-6/20">
+        <div className="flex items-center gap-2 border-b border-sand-6 p-2">
+          <button className="rounde-lg  flex-1 rounded-lg p-2 text-sand-12 hover:bg-sand-6">
+            All Problems
+          </button>
+          <button className="flex-1 rounded-lg bg-sand-12 p-2 font-bold text-sand-1 shadow-lg shadow-sand-6/20">
             Problem
           </button>
-          <button className="w-[200px] bg-sand-3 p-2 text-sand-12 hover:bg-sand-6">
+          <button className="flex-1  rounded-lg p-2 text-sand-12 hover:bg-sand-6">
             Submissions
           </button>
         </div>
         <div className="overflow-y-auto p-4">
-          <h2 className="mt-4 rounded-t-lg text-2xl font-medium text-sand-12">
+          <button className="group flex items-center gap-1 text-sand-11 hover:text-sand-12">
+            <MoveLeft
+              size="1rem"
+              className="transition-transform group-hover:-translate-x-1"
+            />
+            <h5>All Problems</h5>
+          </button>
+          <h2 className="mt-4 rounded-t-lg text-2xl font-bold text-sand-12">
             {taskName}
           </h2>
+          <div className="mt-2 w-fit rounded-lg bg-sand-4 p-2">
+            <p className="text-sand-12">PPPP</p>
+          </div>
           <div className="prose prose-sand mt-4">
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
@@ -141,6 +156,10 @@ function Sidebar({ taskName }: Props) {
               anim id est laborum.
             </p>
           </div>
+        </div>
+        <div className="flex gap-2 p-2">
+          <button className="flex-1 rounded-lg hover:bg-sand-2 active:bg-sand-4 border p-2">Previous</button>
+          <button className="flex-1 rounded-lg bg-sand-12/90 active:bg-sand-12 text-sand-1 border p-2">Next</button>
         </div>
       </div>
       <div
