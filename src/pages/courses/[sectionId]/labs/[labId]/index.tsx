@@ -9,6 +9,7 @@ import { replaceSlugwithQueryPath } from "~/utils";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import superjson from "superjson";
 import type { taskWithStatus } from "~/types";
+import type { task_type } from "@prisma/client";
 
 interface Props {
   courseName: string;
@@ -16,11 +17,24 @@ interface Props {
   tasks: string;
 }
 
+const routeByTaskType = (type: task_type) => {
+  let pathName = "";
+  switch (type) {
+    case "Lesson":
+      throw new Error("Not yet implement");
+    case "Problem":
+      pathName = "[labId]/problem/[taskId]";
+      break;
+    case "Typing":
+      pathName = "[labId]/typing/[taskId]";
+      break;
+  }
+  return pathName;
+};
 function Labs({ courseName, labName, tasks }: Props) {
   const router = useRouter();
 
   const _tasks: taskWithStatus[] = superjson.parse(tasks);
-
 
   return (
     <FrontLayout
@@ -41,11 +55,11 @@ function Labs({ courseName, labName, tasks }: Props) {
       ]}
     >
       <div className="my-10 grid grid-cols-12 gap-6">
-        {_tasks.map(({ id, name, status }) => (
+        {_tasks.map(({ id, name, status, type }) => (
           <Link
             key={id}
             href={{
-              pathname: "[labId]/typing/[taskId]",
+              pathname: routeByTaskType(type),
               query: { ...router.query, taskId: id },
             }}
             className="relative col-span-12 flex h-[8rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"

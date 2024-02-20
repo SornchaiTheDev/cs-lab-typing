@@ -8,7 +8,7 @@ export const createTaskRouter = router({
   addTask: teacherAboveProcedure
     .input(AddTaskSchema)
     .mutation(async ({ ctx, input }) => {
-      const { isPrivate, language, name, owner, type, note, tags } = input;
+      const { isPrivate, name, owner, type, note, tags } = input;
       let task;
       try {
         const user = await ctx.prisma.users.findFirst({
@@ -22,17 +22,6 @@ export const createTaskRouter = router({
           data: {
             isPrivate,
             name,
-            language: {
-              connectOrCreate: {
-                where: {
-                  id: language[0]!.value as number,
-                },
-                create: {
-                  id: language[0]!.value as number,
-                  name: language[0]!.label as string,
-                },
-              },
-            },
             note: note ?? "",
             tags: {
               connectOrCreate: tags?.map(({ value }) => ({
@@ -58,6 +47,31 @@ export const createTaskRouter = router({
             },
           },
         });
+
+        if (type === "Problem") {
+          const { language } = input;
+          await ctx.prisma.languages.upsert({
+            where: {
+              id: language[0]!.value as number,
+            },
+            create: {
+              id: language[0]!.value as number,
+              name: language[0]!.label as string,
+              tasks: {
+                connect: {
+                  id: task.id,
+                },
+              },
+            },
+            update: {
+              tasks: {
+                connect: {
+                  id: task.id,
+                },
+              },
+            },
+          });
+        }
         return task;
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {

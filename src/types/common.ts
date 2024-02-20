@@ -4,7 +4,11 @@ export type taskWithStatus = Prisma.tasksGetPayload<{
   select: {
     id: true;
     name: true;
+    type: true;
   };
 }> & { status: "PASSED" | "FAILED" | "NOT_SUBMITTED" };
 
-export type TypingHistoryOmitScore = Omit<typing_histories, "submission_id" | "score" | "updated_at">;
+export type TypingHistoryOmitScore = Omit<
+  typing_histories,
+  "submission_id" | "score" | "updated_at"
+>;

@@ -5,13 +5,13 @@ import Input from "./Input";
 import Select from "./Select";
 import Search from "./Search";
 import Checkbox from "./Checkbox";
-import type { z, ZodEffects, ZodObject } from "zod";
 import TextArea from "./TextArea";
 import Button from "~/components/Common/Button";
 import clsx from "clsx";
 import SinglePicker from "./DatePicker/SinglePicker";
 import type { SearchValue } from "~/types";
 import DateTimePicker from "./DatePicker/DateTimePicker";
+import type { z } from "zod";
 
 interface ConfirmBtn {
   title: string;
@@ -61,7 +61,7 @@ export type EachField<T> =
 
 interface Props<T> {
   onSubmit: (formData: T) => Promise<void>;
-  schema: ZodEffects<ZodObject<any>> | ZodObject<any>;
+  schema: any;
   fields: EachField<T>[];
   confirmBtn?: ConfirmBtn;
   isLoading?: boolean;
