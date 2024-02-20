@@ -7,6 +7,7 @@ const DefaultTaskSchema = z.object({
   isPrivate: z.boolean(),
   note: z.string().optional(),
   tags: z.array(SearchValue).optional(),
+  language: z.array(SearchValue).length(1).optional(),
 });
 
 const TypingTaskSchema = DefaultTaskSchema.extend({

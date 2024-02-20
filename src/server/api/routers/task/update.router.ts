@@ -10,16 +10,7 @@ export const updateTaskRouter = router({
   updateTask: teacherAboveProcedure
     .input(AddTaskSchema.and(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const {
-        isPrivate,
-        language,
-        owner,
-        type,
-        note,
-        name,
-        tags = [],
-        id,
-      } = input;
+      const { isPrivate, owner, type, note, name, tags = [], id } = input;
       const _id = parseInt(id);
       const actionUser = ctx.user.student_id;
       let task;
@@ -82,17 +73,6 @@ export const updateTaskRouter = router({
               })),
             },
             isPrivate,
-            language: {
-              connectOrCreate: {
-                where: {
-                  id: language[0]!.value as number,
-                },
-                create: {
-                  id: language[0]!.value as number,
-                  name: language[0]!.label as string,
-                },
-              },
-            },
             owner: {
               connect: {
                 id: _owner?.id,
@@ -112,6 +92,31 @@ export const updateTaskRouter = router({
             },
           },
         });
+
+        if (type === "Problem") {
+          const { language } = input;
+          await ctx.prisma.languages.upsert({
+            where: {
+              id: language[0]!.value as number,
+            },
+            create: {
+              id: language[0]!.value as number,
+              name: language[0]!.label as string,
+              tasks: {
+                connect: {
+                  id: task.id,
+                },
+              },
+            },
+            update: {
+              tasks: {
+                connect: {
+                  id: task.id,
+                },
+              },
+            },
+          });
+        }
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") {
