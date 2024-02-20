@@ -126,7 +126,7 @@ function MyCourse() {
   }, [inView, learn]);
 
   return (
-    <FrontLayout title="My Courses">
+    <FrontLayout title="My Courses" className="container mx-auto">
       {learn.isLoading ? (
         <div className="my-4 grid grid-cols-12 gap-6">
           {new Array(3).fill(0).map((_, i) => (

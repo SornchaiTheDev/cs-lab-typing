@@ -53,6 +53,7 @@ function Labs({ courseName, labName, tasks }: Props) {
           )}`,
         },
       ]}
+      className="container mx-auto"
     >
       <div className="my-10 grid grid-cols-12 gap-6">
         {_tasks.map(({ id, name, status, type }) => (

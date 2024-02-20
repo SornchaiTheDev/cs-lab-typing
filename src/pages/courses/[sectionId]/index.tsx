@@ -24,6 +24,7 @@ function Course() {
       isLoading={section.isLoading}
       customBackPath="/"
       breadcrumbs={[{ label: "My Course", path: "/" }]}
+      className="container mx-auto"
     >
       {/* <Announcement /> */}
 

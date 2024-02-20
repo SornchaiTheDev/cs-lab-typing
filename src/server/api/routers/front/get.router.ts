@@ -500,10 +500,6 @@ export const getFrontRouter = router({
           lab.status.find((status) => status.sectionId === _sectionId)
             ?.status ?? "DISABLED";
 
-        if (task.body === null) {
-          throw new Error("NOT_FOUND");
-        }
-
         return {
           taskName: task.name,
           taskBody: task.body,

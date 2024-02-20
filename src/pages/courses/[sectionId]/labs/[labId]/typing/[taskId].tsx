@@ -27,7 +27,7 @@ function TypingTask({
   courseName,
   labName,
   labStatus,
-  sectionType
+  sectionType,
 }: Props) {
   const router = useRouter();
 
@@ -46,7 +46,6 @@ function TypingTask({
   const isEndedPhase = status === "Ended";
   const isHistoryPhase = status === "History";
   const isReadOnly = labStatus === "READONLY";
-
 
   return (
     <>
@@ -120,20 +119,31 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const { helper } = await createTrpcHelper({ req, res });
   const { labId, sectionId, taskId } = ctx.query;
   try {
-
-    const { courseName, labName, labStatus, taskName, taskBody, closed_at, sectionType } =
-      await helper.front.getTaskById.fetch({
-        labId: labId as string,
-        sectionId: sectionId as string,
-        taskId: taskId as string,
-      });
-
+    const {
+      courseName,
+      labName,
+      labStatus,
+      taskName,
+      taskBody,
+      closed_at,
+      sectionType,
+    } = await helper.front.getTaskById.fetch({
+      labId: labId as string,
+      sectionId: sectionId as string,
+      taskId: taskId as string,
+    });
 
     let _labStatus = labStatus;
     const now = dayjs();
 
     if (dayjs(closed_at).diff(now, "second") <= 0) {
       _labStatus = "READONLY";
+    }
+
+    if (taskBody === null) {
+      return {
+        notFound: true,
+      };
     }
 
     return {
@@ -143,7 +153,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         labStatus: _labStatus,
         taskName,
         taskBody,
-        sectionType
+        sectionType,
       },
     };
   } catch (err) {
