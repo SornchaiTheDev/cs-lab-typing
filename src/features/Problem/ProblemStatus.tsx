@@ -11,7 +11,7 @@ const ProblemStatus = ({ status }: Props) => {
   return (
     <div
       className={cn(
-        "mt-4 flex items-center justify-between gap-2 rounded-lg px-2 py-1",
+        "flex items-center justify-between gap-2 rounded-lg px-2 py-1",
         isPassed && "bg-green-4 text-green-9",
         isFailed && "bg-red-4 text-red-9"
       )}

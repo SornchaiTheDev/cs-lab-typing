@@ -33,7 +33,7 @@ function ProblemDescriptionTab({ onBackToAllProblem }: Props) {
         </button>
         <ProblemStatus status="Passed" />
       </div>
-      <h2 className="mt-2 rounded-t-lg text-2xl font-bold text-sand-12">
+      <h2 className="mt-6 rounded-t-lg text-2xl font-bold text-sand-12">
         {data?.name}
       </h2>
       <div className="prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-[''] mt-4">
