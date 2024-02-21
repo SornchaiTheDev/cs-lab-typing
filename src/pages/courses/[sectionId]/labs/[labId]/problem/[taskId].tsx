@@ -41,7 +41,7 @@ function ProblemTask({ courseName, labName }: Props) {
           )}/labs/${replaceSlugwithQueryPath("[labId]", router.query)}`,
         },
       ]}
-      className="px-4 pb-4 pt-8"
+      className="min-h-0 px-4 pb-4 pt-8"
     >
       <div className="flex h-full">
         <Sidebar />

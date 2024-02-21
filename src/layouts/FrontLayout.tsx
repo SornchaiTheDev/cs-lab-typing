@@ -188,9 +188,7 @@ function FrontLayout({
             </Popover.Root>
           </div>
         </div>
-        <div className={cn("flex min-h-0 flex-1 flex-col", className)}>
-          {children}
-        </div>
+        <div className={cn("flex flex-1 flex-col", className)}>{children}</div>
         <div className="roboto w-full gap-2 bg-sand-12 py-6  text-center text-sand-6 dark:bg-sand-1 dark:text-sand-10">
           <h6>made with 💖 for CS Kasetsart University</h6>
 

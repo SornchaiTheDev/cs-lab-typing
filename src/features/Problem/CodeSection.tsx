@@ -8,7 +8,7 @@ function CodeSection() {
     useDragSection({
       direction: Direction.VERTICAL,
       minSize: 300,
-      initialSize: 500,
+      initialSize: 300,
       maxSize: 700,
     });
   return (
