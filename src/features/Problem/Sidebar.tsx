@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import useDragSection, { Direction } from "./hooks/useDragSection";
 import ButtonGroup from "./ButtonGroup";
-import ProblemTab from "./ProblemTab";
+import ProblemDescriptionTab from "./ProblemTab";
 import AllProblemTab from "./AllProblemTab";
 import SubmissionsTab from "./SubmissionsTab";
 
@@ -31,7 +31,7 @@ function Sidebar() {
         return <AllProblemTab />;
       case Tab.Description:
         return (
-          <ProblemTab
+          <ProblemDescriptionTab
             onBackToAllProblem={() => setActiveTab(Tab.AllProblems)}
           />
         );

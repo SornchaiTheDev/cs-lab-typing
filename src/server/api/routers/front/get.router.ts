@@ -8,6 +8,8 @@ import {
   TaAboveProcedure,
   authedAndRelateToSectionProcedure,
 } from "~/server/api/trpc";
+import { serialize } from "next-mdx-remote/serialize";
+import remarkGfm from "remark-gfm";
 
 export const getFrontRouter = router({
   getCheckUser: authedProcedure.query(async ({ ctx }) => {
@@ -645,6 +647,56 @@ export const getFrontRouter = router({
             });
           }
         }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "SOMETHING_WENT_WRONG",
+        });
+      }
+    }),
+
+  getProblemDescription: authedAndRelateToSectionProcedure
+    .input(
+      z.object({ sectionId: z.string(), labId: z.string(), taskId: z.string() })
+    )
+    .query(async ({ ctx, input }) => {
+      const { labId, taskId } = input;
+
+      try {
+        const lab = await ctx.prisma.labs.findUnique({
+          where: {
+            id: parseInt(labId),
+          },
+          select: {
+            tasks: {
+              where: {
+                id: parseInt(taskId),
+              },
+              select: {
+                name: true,
+                problem: {
+                  select: {
+                    description: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+        const serializedDescription = await serialize(
+          lab?.tasks[0]?.problem?.description ?? "",
+          {
+            mdxOptions: {
+              remarkPlugins: [remarkGfm],
+              rehypePlugins: [],
+            },
+          }
+        );
+        return {
+          name: lab?.tasks[0]?.name,
+          description: serializedDescription,
+        };
+      } catch (err) {
+        console.log(err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "SOMETHING_WENT_WRONG",
