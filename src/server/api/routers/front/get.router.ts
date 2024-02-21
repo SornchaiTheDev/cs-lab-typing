@@ -342,11 +342,13 @@ export const getFrontRouter = router({
 
           const sortedTaskLab = lab.tasks_order.map((id) => {
             const task = lab?.tasks.find((task) => task.id === id) as tasks;
+            if (!task) throw new Error("NOT_FOUND");
+            const { name, type } = task;
             const status =
               lab.submissions.find(
                 (submission) => submission.task_id === task.id
               )?.status ?? "NOT_SUBMITTED";
-            return { ...task, status };
+            return { id, name, type, status };
           });
 
           return {

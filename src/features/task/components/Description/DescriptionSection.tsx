@@ -1,7 +1,7 @@
-import MDXEditor from "~/components/Editor";
-import React, { useEffect } from "react";
-import useTheme from "~/hooks/useTheme";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
+import React, { useEffect, useState } from "react";
+import MDXEditor from "~/components/Editor";
+import useTheme from "~/hooks/useTheme";
 
 interface Props {
   description: string;
@@ -10,13 +10,17 @@ interface Props {
 }
 
 function DescriptionSection({ diffTaskBody, description, onChange }: Props) {
+  const [isAlreadySetDescription, setIsAlreadySetDescription] = useState(false);
   const { theme } = useTheme();
 
   const ref = React.useRef<MDXEditorMethods>(null);
   useEffect(() => {
+    if (isAlreadySetDescription) return;
+
     ref.current?.setMarkdown(description);
-  }, [description]);
-  
+    setIsAlreadySetDescription(true);
+  }, [description, setIsAlreadySetDescription, isAlreadySetDescription]);
+
   return (
     <>
       <h4 className="mb-4 text-3xl font-bold text-sand-12 ">Description</h4>
@@ -27,7 +31,7 @@ function DescriptionSection({ diffTaskBody, description, onChange }: Props) {
           onChange={onChange}
           diffMarkdown={diffTaskBody}
           className={theme === "light" ? "light-theme" : "dark-theme"}
-          contentEditableClassName="p-4 prose prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-['']"
+          contentEditableClassName="p-4 prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-['']"
           markdown={description}
         />
       </div>

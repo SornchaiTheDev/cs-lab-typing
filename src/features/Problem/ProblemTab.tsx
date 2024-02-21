@@ -36,7 +36,7 @@ function ProblemDescriptionTab({ onBackToAllProblem }: Props) {
       <h2 className="mt-2 rounded-t-lg text-2xl font-bold text-sand-12">
         {data?.name}
       </h2>
-      <div className="prose prose-sand mt-4">
+      <div className="prose-sand max-w-none prose before:prose-code:content-[''] after:prose-code:content-[''] mt-4">
         {!isLoading && <MDXRender mdxSource={data?.description!} />}
       </div>
       <div className="flex gap-2 p-2">
