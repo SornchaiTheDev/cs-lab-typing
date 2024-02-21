@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useDragSection, { Direction } from "./hooks/useDragSection";
 import ButtonGroup from "./ButtonGroup";
 import ProblemTab from "./ProblemTab";
 import AllProblemTab from "./AllProblemTab";
+import SubmissionsTab from "./SubmissionsTab";
 
 export enum Tab {
   AllProblems = "All Problems",
@@ -21,7 +22,10 @@ function Sidebar() {
       maxSize: 1000,
     });
 
+  const scrollSectionRef = useRef<HTMLDivElement>(null);
+
   const ActiveTab = () => {
+    scrollSectionRef.current?.scrollTo(0, 0);
     switch (activeTab) {
       case Tab.AllProblems:
         return <AllProblemTab />;
@@ -32,9 +36,10 @@ function Sidebar() {
           />
         );
       case Tab.Submissions:
-        return <div>Submissions</div>;
+        return <SubmissionsTab />;
     }
   };
+
   return (
     <>
       <div
@@ -43,7 +48,7 @@ function Sidebar() {
         style={style}
       >
         <ButtonGroup activeTab={activeTab} onClick={setActiveTab} />
-        <div className="overflow-y-auto p-4">
+        <div ref={scrollSectionRef} className="overflow-y-auto p-4">
           <ActiveTab />
         </div>
       </div>

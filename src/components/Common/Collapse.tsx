@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react";
 import { useState, useContext } from "react";
 import { type ReactNode, createContext } from "react";
+import { cn } from "~/lib/utils";
 
 interface CollapseContext {
   isCollapse: boolean;
@@ -10,15 +11,26 @@ interface CollapseContext {
 const Collapse = createContext<CollapseContext | undefined>(undefined);
 
 interface Children {
+  initialCollpase?: boolean;
   children?: ReactNode;
+  className?: string;
 }
 
-export const Root = ({ children }: Children) => {
-  const [isCollapse, setIsCollapse] = useState(true);
+export const Root = ({
+  initialCollpase = true,
+  children,
+  className,
+}: Children) => {
+  const [isCollapse, setIsCollapse] = useState(initialCollpase);
 
   return (
     <Collapse.Provider value={{ isCollapse, setIsCollapse }}>
-      <div className="my-4 rounded-md border border-sand-6 bg-sand-1 p-4 text-sand-12">
+      <div
+        className={cn(
+          "rounded-md border border-sand-6 bg-sand-1 p-4 text-sand-12",
+          className
+        )}
+      >
         {children}
       </div>
     </Collapse.Provider>
@@ -40,11 +52,11 @@ const useCollapseContext = () => {
   return context;
 };
 
-export const Header = ({ children }: Children) => {
+export const Header = ({ children, className }: Children) => {
   const { isCollapse, setIsCollapse } = useCollapseContext();
 
   return (
-    <div className="flex items-center justify-between">
+    <div className={cn("flex items-center justify-between", className)}>
       <div className="flex flex-1 flex-wrap items-center gap-2">{children}</div>
       <button
         className="rounded-full p-2 hover:bg-sand-4"

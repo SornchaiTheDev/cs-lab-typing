@@ -1,28 +1,30 @@
 import { MoveLeft } from "lucide-react";
 import React from "react";
+import ProblemStatus from "./ProblemStatus";
 
 interface Props {
   onBackToAllProblem: () => void;
 }
+
 function ProblemTab({ onBackToAllProblem }: Props) {
   return (
     <>
-      <button
-        onClick={onBackToAllProblem}
-        className="group flex items-center gap-1 text-sand-11 hover:text-sand-12"
-      >
-        <MoveLeft
-          size="1rem"
-          className="transition-transform group-hover:-translate-x-1"
-        />
-        <h5>All Problems</h5>
-      </button>
-      <h2 className="mt-4 rounded-t-lg text-2xl font-bold text-sand-12">
+      <div className="flex items-center justify-between">
+        <button
+          onClick={onBackToAllProblem}
+          className="group flex items-center gap-1 text-sand-11 hover:text-sand-12"
+        >
+          <MoveLeft
+            size="1rem"
+            className="transition-transform group-hover:-translate-x-1"
+          />
+          <h5>All Problems</h5>
+        </button>
+        <ProblemStatus status="Passed" />
+      </div>
+      <h2 className="mt-2 rounded-t-lg text-2xl font-bold text-sand-12">
         TEST
       </h2>
-      <div className="mt-2 w-fit rounded-lg bg-sand-4 p-2">
-        <p className="text-sand-12">PPPP</p>
-      </div>
       <div className="prose prose-sand mt-4">
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do

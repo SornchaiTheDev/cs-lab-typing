@@ -20,7 +20,7 @@ function RuntimeConfigSection({
   isAlreadyDefaultRuntimeConfig,
 }: Props) {
   return (
-    <Collapse.Root>
+    <Collapse.Root className="my-4">
       <Collapse.Header>
         <div className="flex w-full items-center justify-between">
           <div className="flex flex-1 items-center gap-2">
