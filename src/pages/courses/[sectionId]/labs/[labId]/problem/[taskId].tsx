@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import React from "react";
-import CodeSection from "~/features/Problem/CodeSection";
+import CodeSection from "~/features/Problem/CodeSection/CodeSection";
 import Sidebar from "~/features/Problem/Sidebar";
 import FrontLayout from "~/layouts/FrontLayout";
 import { replaceSlugwithQueryPath } from "~/utils";
