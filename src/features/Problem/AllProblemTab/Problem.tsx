@@ -41,7 +41,7 @@ const Problem = ({ order, id, name, type, status }: Props) => {
   return (
     <button
       onClick={handleOnClickTask}
-      className="rounded-lg border border-sand-4 bg-sand-2 bg-gradient-to-r from-sand-2 to-sand-4 p-4 shadow"
+      className="rounded-lg text-start border border-sand-4 bg-sand-2 bg-gradient-to-r from-sand-2 to-sand-4 p-4 shadow"
     >
       <div className="flex items-center gap-2">
         <div
@@ -52,7 +52,7 @@ const Problem = ({ order, id, name, type, status }: Props) => {
             isNotStarted && "bg-sand-9"
           )}
         ></div>
-        <h5 className="text-lg font-medium">
+        <h5 className="font-medium">
           {order}. {name}
         </h5>
       </div>
