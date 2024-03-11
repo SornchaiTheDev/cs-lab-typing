@@ -89,7 +89,7 @@ function EndedGame({ sectionType }: Props) {
         <Icon icon="solar:restart-line-duotone" fontSize="2rem" />
         <h6>Restart the test</h6>
       </button>
-      <Stats />
+      <Stats type={sectionType} />
       <div className="h-[10rem] w-full">
         <LineChart datas={typingHistories.data?.histories ?? []} />
       </div>
