@@ -121,15 +121,13 @@
     "windy-radix-palette": "^0.6.1",
     "windy-radix-typography": "^0.2.1",
     "zod": "^3.21.4",
-    "zustand": "^4.3.7"
+    "zustand": "^4.3.7",
+    "cypress": "^13.6.2"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "ct3aMetadata": {
     "initVersion": "7.13.0"
-  },
-  "devDependencies": {
-    "cypress": "^13.6.2"
   }
 }
