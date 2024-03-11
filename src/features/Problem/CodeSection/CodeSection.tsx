@@ -10,6 +10,8 @@ import { Status, saveStatusAtom } from "~/store/frontProblemTask";
 
 function CodeSection() {
   const [sourceCode, setSourceCode] = useState("");
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useAtom(saveStatusAtom);
   const { sectionRef, dragRef, style, onMouseDown, resetToInitialSize } =
     useDragSection({
@@ -38,11 +40,11 @@ function CodeSection() {
         <div className="flex justify-between px-4 py-2">
           <SaveStatus />
           <div className="flex gap-2">
-            <button className="flex items-center gap-1 text-sm rounded-lg border border-sand-10 px-4 py-2 font-bold text-sand-12 hover:bg-sand-2 active:bg-sand-4">
+            <button className="flex items-center gap-1 rounded-lg border border-sand-10 px-4 py-2 text-sm font-bold text-sand-12 hover:bg-sand-2 active:bg-sand-4">
               <Play size="1rem" />
               Run
             </button>
-            <button className="flex items-center gap-1 text-sm rounded-lg bg-sand-12 px-4 py-2 font-bold text-sand-1 hover:bg-sand-12/90 active:bg-sand-12">
+            <button className="flex items-center gap-1 rounded-lg bg-sand-12 px-4 py-2 text-sm font-bold text-sand-1 hover:bg-sand-12/90 active:bg-sand-12">
               <Play size="1rem" />
               Submit
             </button>

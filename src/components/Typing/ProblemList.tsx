@@ -1,10 +1,10 @@
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/router";
-import { replaceSlugwithQueryPath } from "~/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { trpc } from "~/utils";
+import Link from "next/link";
 
 function ProblemList() {
   const router = useRouter();
@@ -16,16 +16,6 @@ function ProblemList() {
     labId: labId as string,
     sectionId: sectionId as string,
   });
-
-  const isExam = lab.data?.sectionType === "Exam";
-  const LESSON_PATH = replaceSlugwithQueryPath(
-    "/courses/[sectionId]/labs/[labId]/typing",
-    router.query
-  );
-  const EXAM_PATH = replaceSlugwithQueryPath(
-    "/courses/[sectionId]/labs/[labId]/typing/exam",
-    router.query
-  );
 
   return (
     <motion.div
@@ -57,9 +47,12 @@ function ProblemList() {
       ) : (
         <div className="mt-4 h-full overflow-y-auto px-2 pb-16">
           {lab.data?.tasks.map(({ id, name, status }) => (
-            <a
+            <Link
               key={id}
-              href={isExam ? `${EXAM_PATH}/${id}` : `${LESSON_PATH}/${id}`}
+              href={{
+                pathname: `/courses/[sectionId]/labs/[labId]/typing/${id}`,
+                query: { sectionId, labId },
+              }}
               className="relative col-span-12 mb-2 flex h-[8rem] w-full flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
             >
               <div
@@ -74,7 +67,7 @@ function ProblemList() {
               <div className="mb-2 flex flex-col gap-2 p-2">
                 <h4 className="text-xl font-medium text-sand-12">{name}</h4>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}
