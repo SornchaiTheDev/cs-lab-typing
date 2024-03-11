@@ -3,8 +3,7 @@ import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
-import { trpc } from "~/utils";
-import Link from "next/link";
+import { replaceSlugwithQueryPath, trpc } from "~/utils";
 
 function ProblemList() {
   const router = useRouter();
@@ -47,12 +46,13 @@ function ProblemList() {
       ) : (
         <div className="mt-4 h-full overflow-y-auto px-2 pb-16">
           {lab.data?.tasks.map(({ id, name, status }) => (
-            <Link
+            <a
               key={id}
-              href={{
-                pathname: `/courses/[sectionId]/labs/[labId]/typing/${id}`,
-                query: { sectionId, labId },
-              }}
+              onClick={() => router.reload()}
+              href={replaceSlugwithQueryPath(
+                `/courses/[sectionId]/labs/[labId]/typing/${id}`,
+                { sectionId, labId }
+              )}
               className="relative col-span-12 mb-2 flex h-[8rem] w-full flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
             >
               <div
@@ -67,7 +67,7 @@ function ProblemList() {
               <div className="mb-2 flex flex-col gap-2 p-2">
                 <h4 className="text-xl font-medium text-sand-12">{name}</h4>
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       )}
