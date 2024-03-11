@@ -73,7 +73,7 @@ function TypingTask({
           },
         ]}
       >
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col mx-24">
           {!isReadOnly && !isEndedPhase && (
             <Button
               icon={
