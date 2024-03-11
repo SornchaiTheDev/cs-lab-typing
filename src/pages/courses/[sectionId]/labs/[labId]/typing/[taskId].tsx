@@ -73,7 +73,7 @@ function TypingTask({
           },
         ]}
       >
-        <div className="flex flex-1 flex-col mx-24">
+        <div className="mx-24 flex flex-1 flex-col">
           {!isReadOnly && !isEndedPhase && (
             <Button
               icon={
@@ -101,7 +101,7 @@ function TypingTask({
                 <EndedGame {...{ sectionType }} />
               </>
             ) : (
-              isHistoryPhase && <History />
+              isHistoryPhase && <History type={sectionType} />
             )}
           </div>
         </div>

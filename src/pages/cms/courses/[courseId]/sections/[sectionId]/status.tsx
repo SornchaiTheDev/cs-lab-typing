@@ -129,8 +129,8 @@ const RecentTasks = ({
         tasks.data?.map(({ name, history, id }) => {
           if (history) {
             return (
-              <Collapse.Root key={name}>
-                <Collapse.Header></Collapse.Header>
+              <Collapse.Root className="mb-4" key={name}>
+                <Collapse.Header><h5 className="font-bold">{name}</h5></Collapse.Header>
                 <Collapse.Body>
                   <h4 className="mb-2 text-center text-lg font-bold">
                     Best Score
