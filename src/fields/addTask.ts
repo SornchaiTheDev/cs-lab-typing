@@ -21,12 +21,6 @@ export const getAddTaskFields = (
       type: "select",
       conditional: (data: string) =>
         data ? !["Typing", "Lesson"].includes(data) : false,
-      children: {
-        label: "language",
-        title: "Language",
-        type: "static-search",
-        options: languages,
-      },
     },
     {
       label: "tags",

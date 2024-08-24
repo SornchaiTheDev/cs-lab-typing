@@ -2,9 +2,9 @@ import { teacherAboveProcedure, router } from "../../trpc";
 import axios from "axios";
 import { env } from "~/env.mjs";
 
-const JUDGE0_API_URL = env.JUDGE0_API_URL;
+// const JUDGE0_API_URL = env.JUDGE0_API_URL;
 
-const api = axios.create({ baseURL: JUDGE0_API_URL });
+const api = axios.create({ baseURL: "" });
 
 type Language = {
   id: number;

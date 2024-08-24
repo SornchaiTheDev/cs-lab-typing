@@ -93,30 +93,30 @@ export const updateTaskRouter = router({
           },
         });
 
-        if (type === "Problem") {
-          const { language } = input;
-          await ctx.prisma.languages.upsert({
-            where: {
-              id: language[0]!.value as number,
-            },
-            create: {
-              id: language[0]!.value as number,
-              name: language[0]!.label as string,
-              tasks: {
-                connect: {
-                  id: task.id,
-                },
-              },
-            },
-            update: {
-              tasks: {
-                connect: {
-                  id: task.id,
-                },
-              },
-            },
-          });
-        }
+        // if (type === "Problem") {
+        //   const { language } = input;
+        //   await ctx.prisma.languages.upsert({
+        //     where: {
+        //       id: language[0]!.value as number,
+        //     },
+        //     create: {
+        //       id: language[0]!.value as number,
+        //       name: language[0]!.label as string,
+        //       tasks: {
+        //         connect: {
+        //           id: task.id,
+        //         },
+        //       },
+        //     },
+        //     update: {
+        //       tasks: {
+        //         connect: {
+        //           id: task.id,
+        //         },
+        //       },
+        //     },
+        //   });
+        // }
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
           if (e.code === "P2002") {

@@ -77,16 +77,16 @@ function TypingTask() {
             <h4 className="text-lg">{task.data?.type as string}</h4>
           )}
 
-          {isProblemType ? (
-            <>
-              <h5 className="mb-2 mt-4 font-bold">Language</h5>
-              {task.isLoading ? (
-                <Skeleton width={"10rem"} height={"1.5rem"} />
-              ) : (
-                <h4 className="text-lg">{task.data?.language?.name ?? ""}</h4>
-              )}
-            </>
-          ) : null}
+          {/* {isProblemType ? ( */}
+          {/*   <> */}
+          {/*     <h5 className="mb-2 mt-4 font-bold">Language</h5> */}
+          {/*     {task.isLoading ? ( */}
+          {/*       <Skeleton width={"10rem"} height={"1.5rem"} /> */}
+          {/*     ) : ( */}
+          {/*       <h4 className="text-lg">{task.data?.language?.name ?? ""}</h4> */}
+          {/*     )} */}
+          {/*   </> */}
+          {/* ) : null} */}
           <h5 className="mb-2 mt-4 font-bold">Note</h5>
           {task.isLoading ? (
             <Skeleton width={"10rem"} height={"1.5rem"} />

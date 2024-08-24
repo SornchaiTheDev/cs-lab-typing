@@ -16,11 +16,6 @@ type TaskPaginationFields = Prisma.tasksGetPayload<{
         full_name: true;
       };
     };
-    language: {
-      select: {
-        name: true;
-      };
-    };
   };
 }>;
 
@@ -56,16 +51,6 @@ export const taskPaginationColumns = (router: NextRouter) => [
       if (tags === undefined) return;
       const isEmpty = tags.length === 0;
       return isEmpty ? "-" : tags.map(({ name }) => name).join(",");
-    },
-  }),
-  columnHelper.accessor((row) => row.language, {
-    id: "language",
-    header: "Language",
-    cell: (data) => {
-      const language = data.getValue();
-      if (language === undefined) return;
-      const isNotAProblem = language === null;
-      return isNotAProblem ? "-" : language.name;
     },
   }),
   columnHelper.accessor((row) => row.submission_count, {

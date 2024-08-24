@@ -46,7 +46,6 @@ function useProblemTask({ taskId }: Props) {
       diffTaskBody: description,
       sourceCode: source_code,
       testCases: testCasesWithStatus,
-      languageId: task.language_id,
       config: runtime_config,
     });
   };

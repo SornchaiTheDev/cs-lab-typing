@@ -3,9 +3,9 @@ import axios from "axios";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 
-const JUDGE0_API_URL = env.JUDGE0_API_URL;
+// const JUDGE0_API_URL = env.JUDGE0_API_URL;
 
-const api = axios.create({ baseURL: JUDGE0_API_URL });
+const api = axios.create({ baseURL: "" });
 
 interface Output {
   stdout: string;

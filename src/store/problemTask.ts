@@ -22,7 +22,6 @@ interface ProblemTaskStore {
   diffTaskBody: string;
   sourceCode: string;
   testCases: TestCase[];
-  languageId: number | null;
   allFieldsInitialValues: string;
   tmpSourceCode: string;
   config: RuntimeConfig | null;
@@ -42,7 +41,6 @@ export const problemTaskAtom = atom<ProblemTaskStore>({
   diffTaskBody: "",
   sourceCode: "",
   testCases: [],
-  languageId: null,
   allFieldsInitialValues: "",
   config: runtimeConfig,
 });
