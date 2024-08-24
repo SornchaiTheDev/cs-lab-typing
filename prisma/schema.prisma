@@ -192,18 +192,10 @@ model tags {
   tasks      tasks[]   @relation("task_tag")
 }
 
-model languages {
-  id    Int     @id
-  name  String
-  tasks tasks[]
-}
-
 model tasks {
   id               Int              @id @default(autoincrement())
   name             String
   type             task_type
-  language         languages?       @relation(fields: [language_id], references: [id])
-  language_id      Int?
   tags             tags[]           @relation("task_tag")
   owner            users            @relation(fields: [usersId], references: [id])
   usersId          Int

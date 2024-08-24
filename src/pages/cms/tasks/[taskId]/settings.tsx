@@ -73,8 +73,6 @@ function Settings() {
     });
   };
 
-  const allLanguages = trpc.judge.getAllLanguages.useQuery();
-
   const transformToSearchValue = (
     data: { id: number; name: string } | undefined | null
   ) => {
@@ -125,13 +123,6 @@ function Settings() {
                   disabled: true,
                   conditional: (data) =>
                     data !== undefined && data !== "Typing",
-                  children: {
-                    label: "language",
-                    title: "Language",
-                    type: "static-search",
-                    value: transformToSearchValue(task.data?.language),
-                    options: allLanguages.data ?? [],
-                  },
                   value: task.data?.type ?? "",
                 },
                 {

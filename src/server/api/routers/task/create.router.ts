@@ -48,30 +48,6 @@ export const createTaskRouter = router({
           },
         });
 
-        if (type === "Problem") {
-          const { language } = input;
-          await ctx.prisma.languages.upsert({
-            where: {
-              id: language[0]!.value as number,
-            },
-            create: {
-              id: language[0]!.value as number,
-              name: language[0]!.label as string,
-              tasks: {
-                connect: {
-                  id: task.id,
-                },
-              },
-            },
-            update: {
-              tasks: {
-                connect: {
-                  id: task.id,
-                },
-              },
-            },
-          });
-        }
         return task;
       } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -115,26 +91,13 @@ export const createTaskRouter = router({
           },
         });
         if (originalTask) {
-          const {
-            isPrivate,
-            name,
-            body,
-            language_id,
-            note,
-            type,
-            tags,
-            owner,
-          } = originalTask;
+          const { isPrivate, name, body, note, type, tags, owner } =
+            originalTask;
           const cloneTask = await ctx.prisma.tasks.create({
             data: {
               name: `${name} (clone)`,
               body,
               isPrivate,
-              language: {
-                connect: {
-                  id: language_id as number,
-                },
-              },
               note,
               type,
               tags: {

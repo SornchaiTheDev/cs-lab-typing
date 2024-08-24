@@ -7,18 +7,12 @@ const DefaultTaskSchema = z.object({
   isPrivate: z.boolean(),
   note: z.string().optional(),
   tags: z.array(SearchValue).optional(),
-  language: z.array(SearchValue).length(1).optional(),
 });
 
 const TypingTaskSchema = DefaultTaskSchema.extend({
   type: z.literal("Typing"),
 });
 
-const ProblemTaskSchema = DefaultTaskSchema.extend({
-  type: z.literal("Problem"),
-  language: z.array(SearchValue).length(1),
-});
-
-export const AddTaskSchema = TypingTaskSchema.or(ProblemTaskSchema);
+export const AddTaskSchema = TypingTaskSchema;
 
 export type TAddTask = z.infer<typeof AddTaskSchema>;

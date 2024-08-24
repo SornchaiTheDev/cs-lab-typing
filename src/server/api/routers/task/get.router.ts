@@ -78,11 +78,6 @@ export const getTaskRouter = router({
                   full_name: true,
                 },
               },
-              language: {
-                select: {
-                  name: true,
-                },
-              },
             },
             orderBy: {
               updated_at: "desc",
@@ -126,7 +121,6 @@ export const getTaskRouter = router({
         include: {
           tags: true,
           owner: true,
-          language: true,
           problem: {
             include: {
               runtime_config: {

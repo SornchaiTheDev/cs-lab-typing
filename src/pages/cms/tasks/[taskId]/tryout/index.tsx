@@ -42,9 +42,13 @@ function Tryout() {
       isLoading={task.isLoading}
       customBackPath={backPath}
     >
-      <div className="mt-10 flex flex-1 flex-col">
-        {isEnded && <Stats />}
-        <TypingGame text={task.data?.body ?? ""} />
+      <div className="mx-24 flex flex-1 flex-col">
+        <div className="mt-10 flex-1">
+          {isEnded && <Stats />}
+          <div className="mt-4">
+            <TypingGame text={task.data?.body ?? ""} />
+          </div>
+        </div>
       </div>
     </FrontLayout>
   );
