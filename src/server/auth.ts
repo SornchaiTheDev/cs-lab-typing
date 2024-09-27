@@ -54,6 +54,9 @@ export const authOptions: NextAuthOptions = {
           response_type: "code",
         },
       },
+      httpOptions: {
+        timeout: 1 * 60 * 1000,
+      },
     }),
     CredentialsProvider({
       name: "NonKU Login",
