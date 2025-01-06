@@ -88,11 +88,11 @@ export const authOptions: NextAuthOptions = {
                   email: user.email,
                 };
               }
-              await api.post("/auth-logger", {
-                type: "FAILED-LOGIN",
-                email: user.email,
-                ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
-              });
+              // await api.post("/auth-logger", {
+              //   type: "FAILED-LOGIN",
+              //   email: user.email,
+              //   ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
+              // });
             }
             throw new Error("wrong-credential");
           }
@@ -177,28 +177,28 @@ export const getServerAuthSession = (ctx: {
 export const withAuth = async (req: NextApiRequest, res: NextApiResponse) => {
   const authOptionsPlusEvents: NextAuthOptions = {
     ...authOptions,
-    events: {
-      async signIn(message) {
-        const { user } = message;
-        try {
-          await api.post("/auth-logger", {
-            type: "LOGIN",
-            email: user.email,
-            ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
-          });
-        } catch (err) {}
-      },
-      async signOut(message) {
-        const { token } = message;
-        try {
-          await api.post("/auth-logger", {
-            type: "LOGOUT",
-            email: token.email,
-            ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
-          });
-        } catch (err) {}
-      },
-    },
+    // events: {
+    //   async signIn(message) {
+    //     const { user } = message;
+    //     try {
+    //       await api.post("/auth-logger", {
+    //         type: "LOGIN",
+    //         email: user.email,
+    //         ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
+    //       });
+    //     } catch (err) {}
+    //   },
+    //   async signOut(message) {
+    //     const { token } = message;
+    //     try {
+    //       await api.post("/auth-logger", {
+    //         type: "LOGOUT",
+    //         email: token.email,
+    //         ip: req.headers ? req.headers["x-forwarded-for"] : "localhost",
+    //       });
+    //     } catch (err) {}
+    //   },
+    // },
   };
   return NextAuth(req, res, authOptionsPlusEvents);
 };
