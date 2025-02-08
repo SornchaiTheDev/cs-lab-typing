@@ -3,8 +3,12 @@ services:
   cs-lab-typing:
     build:
       context: .
-      args:
-        - DATABASE_URL
+    environment:
+      - NEXTAUTH_URL
+      - NEXTAUTH_SECRET
+      - GOOGLE_CLIENT_ID
+      - GOOGLE_CLIENT_SECRET
+      - DATABASE_URL
     ports:
       - 3000:3000
     restart: always
