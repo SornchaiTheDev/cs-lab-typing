@@ -127,6 +127,7 @@ export const authOptions: NextAuthOptions = {
               throw new Error("not-found");
             }
           } catch (err) {
+            console.log(err)
             throw new Error("something-went-wrong");
           }
         }
