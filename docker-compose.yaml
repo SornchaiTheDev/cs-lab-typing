@@ -11,5 +11,15 @@ services:
       - DATABASE_URL
     ports:
       - 3000:3000
-    network_mode: host
     restart: always
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    volumes:
+      - db_vol:/var/lib/postgresql/data
+
+volumes:
+  db_vol:
