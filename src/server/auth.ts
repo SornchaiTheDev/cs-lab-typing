@@ -106,6 +106,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ account, profile }) {
+      console.log("Sign In Callback")
       if (account) {
         if (account.type === "credentials") {
           return true;
@@ -134,6 +135,7 @@ export const authOptions: NextAuthOptions = {
       return false;
     },
     async jwt({ token, user }) {
+      console.log("JWT Callback")
       try {
         const fetchUser = await prisma.users.findFirst({
           where: {
@@ -153,6 +155,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
+      console.log("Session Callback")
       return {
         ...session,
         user: {
