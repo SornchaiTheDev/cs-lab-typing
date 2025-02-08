@@ -45,6 +45,7 @@ RUN corepack enable pnpm && pnpm gen
 
 # Install necessary dependencies for bcrypt
 RUN apk add --no-cache python3 make g++ 
+RUN npm rebuild bcrypt --build-from-source
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \

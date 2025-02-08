@@ -6,6 +6,7 @@ await import("./src/env.mjs");
 
 /** @type {import("next").NextConfig} */
 const config = {
+  output: "standalone",
   transpilePackages: ["@mdxeditor/editor"],
   webpack: (config) => {
     // this will override the experiments
