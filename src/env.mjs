@@ -47,4 +47,5 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     // JUDGE0_API_URL: process.env.JUDGE0_API_URL,
   },
+  skipValidation: process.env.ISDOCKER === "true",
 });
