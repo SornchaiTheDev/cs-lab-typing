@@ -109,7 +109,7 @@
     "react-typing-game-hook": "^1.4.2",
     "remark-gfm": "^3.0.1",
     "request-ip": "^3.3.0",
-    "sharp": "^0.32.4",
+    "sharp": "^0.32.6",
     "superjson": "1.12.2",
     "swagger-ui-react": "^4.18.3",
     "tailwind-merge": "^1.14.0",
