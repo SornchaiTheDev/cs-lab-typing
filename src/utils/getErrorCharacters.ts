@@ -9,6 +9,9 @@ export const getErrorsCharacters = ({ keyStrokes, problemKeys }: Params) => {
   for (let i = 0; i < keyStrokes.length && j < problemKeys.length; i++) {
     if (keyStrokes[i] === "DEL") {
       j--;
+      if (j <= 0) {
+        j = 0;
+      }
       continue;
     }
 
