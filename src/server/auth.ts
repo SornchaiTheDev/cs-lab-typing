@@ -10,7 +10,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import bcrypt from "bcrypt";
-import { api } from "~/services/Axios";
 import NextAuth from "next-auth/next";
 import type { roles } from "@prisma/client";
 
@@ -106,7 +105,6 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      console.log("Sign In Callback")
       if (account) {
         if (account.type === "credentials") {
           return true;
@@ -127,7 +125,6 @@ export const authOptions: NextAuthOptions = {
               throw new Error("not-found");
             }
           } catch (err) {
-            console.log(err)
             throw new Error("something-went-wrong");
           }
         }
@@ -136,7 +133,6 @@ export const authOptions: NextAuthOptions = {
       return false;
     },
     async jwt({ token, user }) {
-      console.log("JWT Callback")
       try {
         const fetchUser = await prisma.users.findFirst({
           where: {
@@ -156,7 +152,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      console.log("Session Callback")
       return {
         ...session,
         user: {
