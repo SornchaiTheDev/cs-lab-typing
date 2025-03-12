@@ -9,15 +9,16 @@ import { replaceSlugwithQueryPath } from "~/utils";
 import { createTrpcHelper } from "~/utils/createTrpcHelper";
 import superjson from "superjson";
 import type { taskWithStatus } from "~/types";
-import type { task_type } from "@prisma/client";
+import type { task_type, SectionType } from "@prisma/client";
 
 interface Props {
   courseName: string;
   labName: string;
   tasks: string;
+  sectionType: SectionType;
 }
 
-const routeByTaskType = (type: task_type) => {
+const routeByTaskType = (type: task_type, sectionType: SectionType) => {
   let pathName = "";
   switch (type) {
     case "Lesson":
@@ -26,12 +27,16 @@ const routeByTaskType = (type: task_type) => {
       pathName = "[labId]/problem/[taskId]";
       break;
     case "Typing":
-      pathName = "[labId]/typing/[taskId]";
+      if (sectionType === "Lesson") {
+        pathName = "[labId]/typing/[taskId]";
+      } else if (sectionType === "Exam") {
+        pathName = "[labId]/typing/exam/[taskId]";
+      }
       break;
   }
   return pathName;
 };
-function Labs({ courseName, labName, tasks }: Props) {
+function Labs({ courseName, labName, tasks , sectionType}: Props) {
   const router = useRouter();
 
   const _tasks: taskWithStatus[] = superjson.parse(tasks);
@@ -60,7 +65,7 @@ function Labs({ courseName, labName, tasks }: Props) {
           <Link
             key={id}
             href={{
-              pathname: routeByTaskType(type),
+              pathname: routeByTaskType(type,sectionType),
               query: { ...router.query, taskId: id },
             }}
             className="relative col-span-12 flex h-[8rem] flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
@@ -100,12 +105,13 @@ export const getServerSideProps: GetServerSideProps = async ({
       sectionId: sectionId as string,
     });
     if (lab) {
-      const { courseName, labName, tasks } = lab;
+      const { courseName, labName, tasks, sectionType } = lab;
       return {
         props: {
           courseName,
           labName,
           tasks: superjson.stringify(tasks),
+          sectionType,
         },
       };
     }

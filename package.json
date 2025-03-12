@@ -129,5 +129,20 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.13.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "bcrypt",
+      "core-js-pure",
+      "cypress",
+      "es5-ext",
+      "prisma",
+      "sharp",
+      "tree-sitter",
+      "tree-sitter-json",
+      "tree-sitter-yaml"
+    ]
   }
 }

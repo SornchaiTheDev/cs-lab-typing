@@ -19,3 +19,23 @@ export const TypingResultWithHashSchema = TypingResultSchema.and(
 export type TypingResultWithHashType = z.infer<
   typeof TypingResultWithHashSchema
 >;
+
+export const ExamTypingResultSchema = z.object({
+  liame: z.string(),
+  dInoitces: z.string(),
+  dIbal: z.string(),
+  dIksat: z.string(),
+  sekortSyek: z.array(z.string()),
+  tAdetrats: z.date(),
+  tAdedne: z.date(),
+});
+
+export type ExamTypingResultType = z.infer<typeof ExamTypingResultSchema>;
+
+export const ExamTypingResultWithHashSchema = ExamTypingResultSchema.and(
+  z.object({ hsah: z.string().optional() })
+);
+
+export type ExamTypingResultWithHashType = z.infer<
+  typeof ExamTypingResultWithHashSchema
+>;
