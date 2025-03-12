@@ -18,7 +18,6 @@ interface Props {
   courseName: string;
   labName: string;
   labStatus: string;
-  sectionType: "Lesson" | "Exam";
 }
 
 function TypingTask({
@@ -27,7 +26,6 @@ function TypingTask({
   courseName,
   labName,
   labStatus,
-  sectionType,
 }: Props) {
   const router = useRouter();
 
@@ -92,16 +90,16 @@ function TypingTask({
 
           <div className="mt-12 flex-1">
             {isReadOnly ? (
-              <History type={sectionType} />
+              <History type="Lesson" />
             ) : isTypingPhase ? (
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
               <>
                 <ProblemList />
-                <EndedGame {...{ sectionType }} />
+                <EndedGame sectionType="Lesson" />
               </>
             ) : (
-              isHistoryPhase && <History type={sectionType} />
+              isHistoryPhase && <History type="Lesson" />
             )}
           </div>
         </div>
@@ -146,6 +144,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       };
     }
 
+    if (sectionType !== "Lesson") {
+      return {
+        notFound: true,
+      };
+    }
+
     return {
       props: {
         courseName,
@@ -153,7 +157,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
         labStatus: _labStatus,
         taskName,
         taskBody,
-        sectionType,
       },
     };
   } catch (err) {
