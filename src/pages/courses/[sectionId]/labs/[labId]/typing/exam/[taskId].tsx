@@ -95,7 +95,7 @@ function TypingTask({
               <TypingGame text={taskBody} />
             ) : isEndedPhase ? (
               <>
-                <ProblemList />
+                <ProblemList sectionType="Exam" />
                 <ExamEndedGame />
               </>
             ) : (

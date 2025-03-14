@@ -4,8 +4,13 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { replaceSlugwithQueryPath, trpc } from "~/utils";
+import type { SectionType } from "@prisma/client";
 
-function ProblemList() {
+interface Props {
+  sectionType: SectionType;
+}
+
+function ProblemList({ sectionType }: Props) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
 
@@ -50,7 +55,9 @@ function ProblemList() {
               key={id}
               onClick={() => router.reload()}
               href={replaceSlugwithQueryPath(
-                `/courses/[sectionId]/labs/[labId]/typing/${id}`,
+                sectionType === "Lesson"
+                  ? `/courses/[sectionId]/labs/[labId]/typing/${id}`
+                  : `/courses/[sectionId]/labs/[labId]/typing/exam/${id}`,
                 { sectionId, labId }
               )}
               className="relative col-span-12 mb-2 flex h-[8rem] w-full flex-col justify-end overflow-hidden rounded-lg border border-sand-6 bg-sand-4 shadow-lg hover:bg-sand-5 md:col-span-4"
