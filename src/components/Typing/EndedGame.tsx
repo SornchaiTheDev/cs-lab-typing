@@ -34,7 +34,7 @@ function EndedGame({ sectionType }: Props) {
       labId: labId as string,
     },
     {
-      enabled: !!sectionId && !!taskId && !!labId,
+      enabled: false,
     }
   );
 
@@ -44,7 +44,12 @@ function EndedGame({ sectionType }: Props) {
     state.reset,
   ]);
 
-  const submitTyping = trpc.front.submitTyping.useMutation();
+  const submitTyping = trpc.front.submitTyping.useMutation({
+    onSuccess: () => {
+      typingHistories.refetch();
+      ctx.front.getTasks.refetch();
+    },
+  });
   const ctx = trpc.useContext();
 
   useEffect(() => {
@@ -59,14 +64,11 @@ function EndedGame({ sectionType }: Props) {
           taskId: taskId as string,
           startedAt: startedAt as Date,
           endedAt: endedAt as Date,
-          keyStrokes
+          keyStrokes,
         };
-
 
         result.hash = objectHash(result);
         await submitTyping.mutateAsync(result);
-        await typingHistories.refetch();
-        await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
           // router.push("/");

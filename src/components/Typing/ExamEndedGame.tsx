@@ -31,7 +31,7 @@ function ExamEndedGame() {
       labId: labId as string,
     },
     {
-      enabled: !!sectionId && !!taskId && !!labId,
+      enabled: false,
     }
   );
 
@@ -41,7 +41,12 @@ function ExamEndedGame() {
     state.reset,
   ]);
 
-  const submitTyping = trpc.front.submitExamTyping.useMutation();
+  const submitTyping = trpc.front.submitExamTyping.useMutation({
+    onSuccess: () => {
+      typingHistories.refetch();
+      ctx.front.getTasks.refetch();
+    },
+  });
   const ctx = trpc.useContext();
 
   useEffect(() => {
@@ -61,8 +66,6 @@ function ExamEndedGame() {
 
         result.hsah = objectHash(result);
         await submitTyping.mutateAsync(result);
-        await typingHistories.refetch();
-        await ctx.front.getTasks.refetch();
       } catch (err) {
         if (err instanceof TRPCClientError) {
           // router.push("/");

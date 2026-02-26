@@ -298,6 +298,7 @@ model typing_histories {
   score          Float       @default(0.0)
   started_at     DateTime
   ended_at       DateTime
+  key_strokes    String[]
   created_at     DateTime    @default(now())
   updated_at     DateTime?   @updatedAt
 }

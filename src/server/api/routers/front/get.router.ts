@@ -593,6 +593,7 @@ export const getFrontRouter = router({
             started_at: true,
             ended_at: true,
             created_at: true,
+            key_strokes: true,
           },
           orderBy: {
             created_at: "desc",
@@ -611,6 +612,7 @@ export const getFrontRouter = router({
             raw_speed,
             started_at,
             score,
+            key_strokes,
           } = history;
           const typingHistory = {
             id,
@@ -620,6 +622,7 @@ export const getFrontRouter = router({
             ended_at,
             percent_error,
             raw_speed,
+            key_strokes,
           };
           if (section?.type === "Exam") {
             return {
