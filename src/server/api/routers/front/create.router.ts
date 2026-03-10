@@ -23,7 +23,7 @@ export const createFrontRouter = router({
           message: "INVALID_INPUT",
         });
       }
-      processRequest(ctx, input);
+      await processRequest(ctx, input);
     }),
   submitExamTyping: authedAndRelateToSectionProcedure
     .input(ExamTypingResultWithHashSchema)
@@ -50,7 +50,7 @@ export const createFrontRouter = router({
         });
       }
 
-      processRequest(ctx, {
+      await processRequest(ctx, {
         sectionId,
         labId,
         taskId,
