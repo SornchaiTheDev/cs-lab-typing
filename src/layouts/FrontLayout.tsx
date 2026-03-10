@@ -108,12 +108,7 @@ function FrontLayout({
               <Popover.Trigger asChild>
                 <button className="min-h-[40px] min-w-[40px] overflow-hidden rounded-full bg-sand-6">
                   {profileImage && (
-                    <Image
-                      src={profileImage}
-                      alt={`${data.user?.full_name} - Profile Image`}
-                      width={40}
-                      height={40}
-                    />
+                    <Image src={profileImage} alt="" width={40} height={40} />
                   )}
                 </button>
               </Popover.Trigger>
